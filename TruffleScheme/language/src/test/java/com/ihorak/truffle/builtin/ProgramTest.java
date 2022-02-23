@@ -20,4 +20,15 @@ public class ProgramTest {
 
         assertEquals(832040L, result);
     }
+
+    @Test
+    public void test2() {
+        var program = "(define foo (lambda () x)) (define bar (lambda (x) (foo))) (bar 1)";
+        var rootNode = Reader.readProgram(CharStreams.fromString(program));
+        GlobalEnvironment globalEnvironment = new GlobalEnvironment();
+
+        var result = Truffle.getRuntime().createDirectCallNode(rootNode.getCallTarget()).call();
+
+        assertEquals(832040L, result);
+    }
 }

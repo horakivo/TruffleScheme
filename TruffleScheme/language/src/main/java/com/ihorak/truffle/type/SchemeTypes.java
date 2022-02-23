@@ -17,9 +17,9 @@ public abstract class SchemeTypes {
         return value;
     }
 
-//    @ImplicitCast
-//    public static long convertIntToLong(int value) {
-//        return value;
-//    }
+    @ImplicitCast
+    public static long convertIntToLong(int value) {
+        return value;
+    }
 
 }

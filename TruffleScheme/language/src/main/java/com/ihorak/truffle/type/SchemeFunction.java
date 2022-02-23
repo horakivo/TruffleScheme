@@ -32,11 +32,8 @@ public class SchemeFunction {
     }
 
     public static SchemeFunction createBuiltinFunction(SchemeExpression schemeExpression, Integer expectedNumberOfArgs) {
-        var rootNode = new SchemeRootNode(null, null, List.of(schemeExpression));
-        var callTarget = Truffle.getRuntime().createCallTarget(rootNode);
+        var rootNode = new SchemeRootNode(null, new FrameDescriptor(), List.of(schemeExpression));
 
-        return new SchemeFunction(callTarget, expectedNumberOfArgs);
+        return new SchemeFunction(rootNode.getCallTarget(), expectedNumberOfArgs);
     }
-
-
 }

@@ -1,3 +1,5 @@
+
+   
 # Compiled class file
 *.class
 
@@ -27,8 +29,28 @@
 !src/**/build/
 *.DS_Store
 !gradle-wrapper.jar
+target
+TruffleScheme/language/target
 
 # Cache of project
 .gradletasknamecache
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+
+*~
+*.cfg
+*.iml
+target/
+graalvm/
+.settings/
+./.project
+.factorypath
+.classpath
+.idea/
+.project
+/bin/
+/Coco.jar
+component/sl-component.jar
+language/dependency-reduced-pom.xml
+native/slnative
