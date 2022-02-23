@@ -15,6 +15,7 @@ import com.oracle.truffle.api.frame.VirtualFrame;
 public abstract class WriteLocalVariableExprNode extends SchemeExpression {
 
     protected abstract int getFrameIndex();
+
     protected abstract SchemeSymbol getName();
 
     @Specialization
@@ -51,6 +52,13 @@ public abstract class WriteLocalVariableExprNode extends SchemeExpression {
      */
     @Specialization(replaces = {"writeLong", "writeBoolean", "writeDouble"})
     protected Object write(VirtualFrame frame, Object value) {
+        /*
+         * Regardless of the type before, the new and final type of the local variable is Object.
+         * Changing the slot kind also discards compiled code, because the variable type is
+         * important when the compiler optimizes a method.
+         *
+         * No-op if kind is already Object.
+         */
         frame.getFrameDescriptor().setSlotKind(getFrameIndex(), FrameSlotKind.Object);
         frame.setObject(getFrameIndex(), value);
         return null;

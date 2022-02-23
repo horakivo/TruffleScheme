@@ -4,7 +4,7 @@ import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.exprs.ReadProcedureArgExprNode;
 import com.ihorak.truffle.node.special_form.*;
 import com.ihorak.truffle.node.special_form.lambda.LambdaExprNode;
-import com.ihorak.truffle.node.special_form.lambda.LetStarExprNode;
+import com.ihorak.truffle.node.special_form.LetStarExprNode;
 import com.ihorak.truffle.node.special_form.lambda.WriteLocalVariableExprNode;
 import com.ihorak.truffle.node.special_form.lambda.WriteLocalVariableExprNodeGen;
 import com.ihorak.truffle.type.SchemeCell;
@@ -76,10 +76,13 @@ public class SpecialFormConverter {
         if (potentialSymbol instanceof SchemeSymbol) {
             var symbol = (SchemeSymbol) potentialSymbol;
             SchemeExpression valueToStore = ListToExpressionConverter.convert(defineList.get(2), context);
-            if (context.getLexicalScope() == Context.LexicalScope.LAMBDA || context.getLexicalScope() == Context.LexicalScope.LET) {
-                context.getLocalVariables().remove(symbol);
+            var index = context.findLocalSymbol(symbol);
+            if (index != null) {
+                return WriteLocalVariableExprNodeGen.create(valueToStore, index, symbol);
+            } else {
+                int frameIndex = context.addLocalSymbol(symbol);
+                return WriteLocalVariableExprNodeGen.create(valueToStore, frameIndex, symbol);
             }
-            return DefineExprNodeGen.create(valueToStore, symbol);
         } else {
             throw new ParserException("define: expected: Symbol \n given: " + potentialSymbol);
         }
@@ -89,7 +92,7 @@ public class SpecialFormConverter {
      *  --> (lambda (param1 .. paramN) expr1...exprN))
      * */
     private static LambdaExprNode convertLambda(SchemeCell lambdaList, Context context) {
-        Context lambdaContext = new Context(context, Context.LexicalScope.LAMBDA, context.getLocalVariables());
+        Context lambdaContext = new Context(context, Context.LexicalScope.LAMBDA);
 
         var params = (SchemeCell) lambdaList.get(1);
         var expressions = (SchemeCell) ((SchemeCell) lambdaList.cdr).cdr;
@@ -110,8 +113,7 @@ public class SpecialFormConverter {
         List<WriteLocalVariableExprNode> result = new ArrayList<>();
         for (int i = 0; i < parameters.size(); i++) {
             var currentSymbol = (SchemeSymbol) parameters.get(i);
-            int frameIndex = context.addSymbol(currentSymbol);
-            context.getLocalVariables().add(currentSymbol);
+            int frameIndex = context.addLocalSymbol(currentSymbol);
             var localVariableNode = WriteLocalVariableExprNodeGen.create(new ReadProcedureArgExprNode(i), frameIndex, currentSymbol);
             result.add(localVariableNode);
         }
@@ -136,7 +138,7 @@ public class SpecialFormConverter {
     }
 
     private static LetExprNode convertLet(SchemeCell letList, Context context) {
-        Context letContext = new Context(context, Context.LexicalScope.LET, context.getLocalVariables());
+        Context letContext = new Context(context, Context.LexicalScope.LET);
         SchemeCell parameters = (SchemeCell) letList.get(1);
         SchemeCell body = (SchemeCell) ((SchemeCell) letList.cdr).cdr;
 
@@ -165,8 +167,7 @@ public class SpecialFormConverter {
                 var symbolExpected = currentList.car;
                 if (symbolExpected instanceof SchemeSymbol) {
                     var symbol = (SchemeSymbol) symbolExpected;
-                    context.getLocalVariables().add(symbol);
-                    int frameIndex = context.addSymbol(symbol);
+                    int frameIndex = context.addLocalSymbol(symbol);
                     var expr = ListToExpressionConverter.convert(currentList.get(1), context);
                     var localVariableNode = WriteLocalVariableExprNodeGen.create(expr, frameIndex, symbol);
                     result.add(localVariableNode);

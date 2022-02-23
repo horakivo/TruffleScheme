@@ -4,6 +4,7 @@ import com.ihorak.truffle.GlobalEnvironment;
 import com.ihorak.truffle.node.exprs.ProcedureCallExprNode;
 import com.ihorak.truffle.parser.Reader;
 import com.ihorak.truffle.type.SchemeFunction;
+import com.oracle.truffle.api.Truffle;
 import org.antlr.v4.runtime.CharStreams;
 import org.junit.Test;
 
@@ -48,7 +49,7 @@ public class LambdaExprNodeTest {
         assertEquals(8L, result);
         assertEquals(ProcedureCallExprNode.class, expr.getClass());
         var procedureExprCall = (ProcedureCallExprNode) expr;
-        assertEquals(1 ,procedureExprCall.getArguments().length);
+        assertEquals(1, procedureExprCall.getArguments().length);
         //assertEquals(1 ,procedureExprCall.getArguments()[0].);
     }
 
@@ -105,6 +106,16 @@ public class LambdaExprNodeTest {
         assertEquals(15L, result);
     }
 
+    @Test
+    public void givenDefinedNestedLambda_whenExecuted_thenCorrectResultIsReturned() {
+        var program = "(define fun (lambda (x) ((lambda (y) (+ x y)) 1))) (fun 5) (fun 20)";
+        var rootNode = Reader.readProgram(CharStreams.fromString(program));
+
+        var result = Truffle.getRuntime().createDirectCallNode(rootNode.getCallTarget()).call();
+
+        assertEquals(21L, result);
+    }
+
 //    @Test
 //    public void fast_test_2() {
 //        var program = "((lambda (x) (define plus +) (plus x 5)) 5)";
@@ -134,6 +145,26 @@ public class LambdaExprNodeTest {
 
         var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
         assertEquals(15L, result);
+    }
+
+    @Test
+    public void givenLambdaWithDefine_whenExecuted_thenCorrectResultIsReturned() {
+        var program = "((lambda (x) (define y 10) (+ x y)) 5)";
+        var expr = Reader.readExpr(CharStreams.fromString(program));
+        GlobalEnvironment globalEnvironment = new GlobalEnvironment();
+
+        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
+        assertEquals(15L, result);
+    }
+
+    @Test
+    public void givenLambdaWithRedefinitionOfLocalVariable_whenExecuted_thenCorrectResultIsReturned() {
+        var program = "((lambda (x) (define x 10) x) 5)";
+        var expr = Reader.readExpr(CharStreams.fromString(program));
+        GlobalEnvironment globalEnvironment = new GlobalEnvironment();
+
+        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
+        assertEquals(10L, result);
     }
 
     @Test

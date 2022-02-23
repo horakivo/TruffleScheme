@@ -4,9 +4,13 @@ import com.ihorak.truffle.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.parser.ParserException;
 import com.ihorak.truffle.type.SchemeSymbol;
+import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.NodeField;
 import com.oracle.truffle.api.dsl.Specialization;
+import com.oracle.truffle.api.frame.FrameSlotKind;
 import com.oracle.truffle.api.frame.VirtualFrame;
+
+import static com.ihorak.truffle.node.special_form.lambda.FrameDescriptorUtil.findGlobalEnv;
 
 
 @NodeField(name = "symbol", type = SchemeSymbol.class)
@@ -38,14 +42,14 @@ public abstract class ReadLocalVariableExprNode extends SchemeExpression {
         return correctFrame.getDouble(getFrameSlotIndex());
     }
 
-    @Specialization(replaces = {"readLong", "readBoolean", "readDouble"})
+    @Specialization(guards = "isObject(frame)", replaces = {"readLong", "readBoolean", "readDouble"})
     protected Object read(VirtualFrame frame) {
-        var correctFrame = findCorrectVirtualFrame(frame);
-        if (!correctFrame.isObject(getFrameSlotIndex())) {
-            throw new SchemeException("TODO zjistit co udelat, viz. simple language");
-        } else {
-            return correctFrame.getObject(getFrameSlotIndex());
-        }
+        return findCorrectVirtualFrame(frame).getObject(getFrameSlotIndex());
+    }
+
+    @Fallback
+    protected void fallback(VirtualFrame frame) {
+        throw new SchemeException(getSymbol() + ": undefined\ncannot reference an identifier before its definition. FrameSlotKind: " + findGlobalEnv(frame).getFrameDescriptor().getSlotKind(getFrameSlotIndex()));
     }
 
 
@@ -70,17 +74,18 @@ public abstract class ReadLocalVariableExprNode extends SchemeExpression {
     }
 
     public boolean isLong(VirtualFrame frame) {
-        var correctFrame = findCorrectVirtualFrame(frame);
-        return correctFrame.isLong(getFrameSlotIndex());
+        return findCorrectVirtualFrame(frame).getFrameDescriptor().getSlotKind(getFrameSlotIndex()) == FrameSlotKind.Long;
     }
 
     public boolean isBoolean(VirtualFrame frame) {
-        var correctFrame = findCorrectVirtualFrame(frame);
-        return correctFrame.isBoolean(getFrameSlotIndex());
+        return findCorrectVirtualFrame(frame).getFrameDescriptor().getSlotKind(getFrameSlotIndex()) == FrameSlotKind.Boolean;
     }
 
     public boolean isDouble(VirtualFrame frame) {
-        var correctFrame = findCorrectVirtualFrame(frame);
-        return correctFrame.isDouble(getFrameSlotIndex());
+        return findCorrectVirtualFrame(frame).getFrameDescriptor().getSlotKind(getFrameSlotIndex()) == FrameSlotKind.Double;
+    }
+
+    public boolean isObject(VirtualFrame frame) {
+        return findCorrectVirtualFrame(frame).getFrameDescriptor().getSlotKind(getFrameSlotIndex()) == FrameSlotKind.Object;
     }
 }

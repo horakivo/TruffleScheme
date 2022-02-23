@@ -1,9 +1,11 @@
 package com.ihorak.truffle.parser;
 
+import com.ihorak.truffle.node.literals.SymbolExprNodeGen;
 import com.ihorak.truffle.parser.Util.Pair;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlotKind;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,24 +19,27 @@ public class Context {
     private Mode mode = Mode.PARSER;
     private final FrameDescriptor.Builder frameDescriptorBuilder;
     private final Map<SchemeSymbol, Integer> map = new HashMap<>();
-    private final List<SchemeSymbol> localVariables;
 
-    public Context(Context parent, LexicalScope lexicalScope, List<SchemeSymbol> localVariables) {
+    public Context(Context parent, LexicalScope lexicalScope) {
         this.lexicalScope = lexicalScope;
-        this.localVariables = localVariables;
         this.parent = parent;
         this.frameDescriptorBuilder = FrameDescriptor.newBuilder();
     }
 
     public Context() {
         this.lexicalScope = LexicalScope.GLOBAL;
-        this.localVariables = new ArrayList<>();
         this.parent = null;
         this.frameDescriptorBuilder = FrameDescriptor.newBuilder();
     }
 
+    @Nullable
     public Pair findSymbol(SchemeSymbol symbol) {
         return findSymbol(this, symbol, 0);
+    }
+
+    @Nullable
+    public Integer findLocalSymbol(SchemeSymbol symbol) {
+        return map.get(symbol);
     }
 
     private Pair findSymbol(Context context, SchemeSymbol symbol, int depth) {
@@ -50,7 +55,7 @@ public class Context {
         return new Pair(frameDescriptorIndex, depth);
     }
 
-    public int addSymbol(SchemeSymbol symbol) {
+    public int addLocalSymbol(SchemeSymbol symbol) {
         if (mode == Mode.RUN_TIME) {
             throw new ParserException("Parser: Values shouldn't be added during runtime! Parser mistake");
         }
@@ -59,9 +64,32 @@ public class Context {
             int index = frameDescriptorBuilder.addSlot(FrameSlotKind.Illegal, symbol, null);
             map.put(symbol, index);
             return index;
-        } else {
-            return frameDescriptorIndex;
         }
+        return frameDescriptorIndex;
+    }
+
+    public int addGlobalSymbol(SchemeSymbol symbol) {
+        if (mode == Mode.RUN_TIME) {
+            throw new ParserException("Parser: Values shouldn't be added during runtime! Parser mistake");
+        }
+
+        var globalContext = findGlobalContext();
+        var frameDescriptorIndex = globalContext.map.get(symbol);
+        if (frameDescriptorIndex == null) {
+            var index = globalContext.frameDescriptorBuilder.addSlot(FrameSlotKind.Illegal, symbol, null);
+            globalContext.map.put(symbol, index);
+            return index;
+        }
+        return frameDescriptorIndex;
+    }
+
+    private Context findGlobalContext() {
+        var currentContext = this;
+        while (currentContext.parent != null) {
+            currentContext = currentContext.parent;
+        }
+
+        return currentContext;
     }
 
     public FrameDescriptor getFrameDescriptor() {
@@ -78,10 +106,6 @@ public class Context {
 
     public void setMode(Mode mode) {
         this.mode = mode;
-    }
-
-    public List<SchemeSymbol> getLocalVariables() {
-        return localVariables;
     }
 
     enum LexicalScope {

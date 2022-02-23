@@ -32,7 +32,7 @@ public class ProcedureCallExprNode extends SchemeExpression {
     @Override
     public Object executeGeneric(VirtualFrame virtualFrame) {
         SchemeFunction function = getFunction(virtualFrame);
-        Object[] arguments = getProcedureArguments(virtualFrame);
+        Object[] arguments = getProcedureArguments(function, virtualFrame);
 
         if (function.getExpectedNumberOfArgs() != null && function.getExpectedNumberOfArgs() != this.arguments.length) {
             throw new SchemeException("Procedure was called with wrong number of arguments." +
@@ -51,9 +51,12 @@ public class ProcedureCallExprNode extends SchemeExpression {
         }
     }
 
-    private Object[] getProcedureArguments(VirtualFrame parentFrame) {
+    private Object[] getProcedureArguments(SchemeFunction function, VirtualFrame parentFrame) {
         Object[] arguments = new Object[this.arguments.length + 1];
-        arguments[0] = parentFrame;
+        if (function.getParentFrame() == null) {
+            throw new SchemeException("User defined procedures should always have parent enviroment!");
+        }
+        arguments[0] = function.getParentFrame();
 
         int index = 1;
         for (SchemeExpression expression : this.arguments) {

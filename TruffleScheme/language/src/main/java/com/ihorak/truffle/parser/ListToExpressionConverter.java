@@ -4,6 +4,8 @@ import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.literals.BooleanLiteralNode;
 import com.ihorak.truffle.node.literals.LongLiteralNode;
 import com.ihorak.truffle.node.literals.SymbolExprNodeGen;
+import com.ihorak.truffle.node.special_form.lambda.ReadGlobalVariableExprNode;
+import com.ihorak.truffle.node.special_form.lambda.ReadGlobalVariableExprNodeGen;
 import com.ihorak.truffle.node.special_form.lambda.ReadLocalVariableExprNodeGen;
 import com.ihorak.truffle.parser.Util.SpecialFormUtils;
 import com.ihorak.truffle.type.*;
@@ -35,21 +37,14 @@ public class ListToExpressionConverter {
     }
 
     private static SchemeExpression convert(SchemeSymbol symbol, Context context) {
-        if (isLocalScope(context, symbol)) {
-            var symbolResult = context.findSymbol(symbol);
-            if (symbolResult != null) {
-                return ReadLocalVariableExprNodeGen.create(symbol, symbolResult.getFrameIndex(), symbolResult.getLexicalScopeDepth());
-            }
+        var indexPair = context.findSymbol(symbol);
+        if (indexPair != null) {
+            return ReadLocalVariableExprNodeGen.create(symbol, indexPair.getFrameIndex(), indexPair.getLexicalScopeDepth());
+        } else {
+            //the variable was not define yet, therefore it will be defined later in global env (can't be defined somewhere in local environment because then we would have parse it )
+            var index = context.addGlobalSymbol(symbol);
+            return ReadGlobalVariableExprNodeGen.create(symbol, index);
         }
-        //is not local variable
-        return SymbolExprNodeGen.create(symbol);
-    }
-
-    private static boolean isLocalScope(Context context, SchemeSymbol symbol) {
-        if (context.getLexicalScope() == Context.LexicalScope.LAMBDA || context.getLexicalScope() == Context.LexicalScope.LET) {
-            return context.getLocalVariables().contains(symbol);
-        }
-        return false;
     }
 
     private static SchemeExpression convert(SchemeCell list, Context context) {
@@ -70,6 +65,6 @@ public class ListToExpressionConverter {
     }
 
     private static boolean isMacro(Object firstElementOfList) {
-        return firstElementOfList instanceof SchemeSymbol && ((SchemeSymbol) firstElementOfList).equals(new SchemeSymbol("define-macro"));
+        return firstElementOfList instanceof SchemeSymbol && firstElementOfList.equals(new SchemeSymbol("define-macro"));
     }
 }
