@@ -1,6 +1,7 @@
 package com.ihorak.truffle.special_form;
 
 import com.ihorak.truffle.GlobalEnvironment;
+import com.ihorak.truffle.context.Context;
 import com.ihorak.truffle.node.exprs.ProcedureCallExprNode;
 import com.ihorak.truffle.parser.Reader;
 import com.ihorak.truffle.type.SchemeFunction;
@@ -140,10 +141,11 @@ public class LambdaExprNodeTest {
     @Test
     public void givenLambdaWithEvalAndQuote_whenExecuted_thenCorrectResultIsReturned() {
         var program = "((lambda (x) (eval '(define y 10)) (+ x y)) 5)";
-        var expr = Reader.readExpr(CharStreams.fromString(program));
+        var context = new Context();
+        var expr = Reader.test(CharStreams.fromString(program), context);
         GlobalEnvironment globalEnvironment = new GlobalEnvironment();
 
-        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
+        var result = expr.executeGeneric(Truffle.getRuntime().createVirtualFrame(new Object[]{}, context.getFrameDescriptor()));
         assertEquals(15L, result);
     }
 

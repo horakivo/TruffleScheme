@@ -1,7 +1,8 @@
 package com.ihorak.truffle.node.exprs.builtin;
 
+import com.ihorak.truffle.context.Mode;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.parser.Context;
+import com.ihorak.truffle.context.Context;
 import com.ihorak.truffle.parser.ListToExpressionConverter;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeFunction;
@@ -12,10 +13,7 @@ import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
 
 @NodeChild(value = "value")
-@NodeField(name = "context", type = Context.class)
 public abstract class EvalExprNode extends SchemeExpression {
-
-    protected abstract Context getContext();
 
     @Specialization
     public long evalLong(long value) {
@@ -34,13 +32,20 @@ public abstract class EvalExprNode extends SchemeExpression {
 
     @Specialization
     public Object evalSymbol(VirtualFrame frame, SchemeSymbol value) {
-        return ListToExpressionConverter.convert(value, getContext()).executeGeneric(frame);
+        return ListToExpressionConverter.convert(value, createRuntimeContext()).executeGeneric(frame);
     }
 
     @Specialization
     public Object evalList(VirtualFrame frame, SchemeCell schemeCell) {
-        var context = getContext();
-        context.setMode(Context.Mode.RUN_TIME);
-        return ListToExpressionConverter.convert(schemeCell, context).executeGeneric(frame);
+        return ListToExpressionConverter.convert(schemeCell, createRuntimeContext()).executeGeneric(frame);
+    }
+
+    //TODO in the future maybe add Mode directly to constructor, right now I would be big effort to change
+    //TODO all the tests if I am not sure if this impl will stay
+    private Context createRuntimeContext() {
+        var context = new Context();
+        context.setMode(Mode.RUN_TIME);
+
+        return context;
     }
 }

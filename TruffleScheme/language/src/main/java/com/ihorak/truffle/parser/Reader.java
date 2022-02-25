@@ -1,5 +1,7 @@
 package com.ihorak.truffle.parser;
 
+import com.ihorak.truffle.context.Context;
+import com.ihorak.truffle.context.Mode;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.SchemeRootNode;
 import com.ihorak.truffle.parser.antlr.AntlrToProgram;
@@ -21,10 +23,16 @@ public class Reader {
         return ListToExpressionConverter.convert(program.getInternalRepresentations().get(0), globalContext);
     }
 
+    public static SchemeExpression test(CharStream charStream, Context context) {
+        var program = parseProgram(charStream);
+        return ListToExpressionConverter.convert(program.getInternalRepresentations().get(0), context);
+    }
+
+
     public static SchemeExpression readRuntimeExpr(CharStream charStream) {
         var program = parseProgram(charStream);
         var globalContext = new Context();
-        globalContext.setMode(Context.Mode.RUN_TIME);
+        globalContext.setMode(Mode.RUN_TIME);
         return ListToExpressionConverter.convert(program.getInternalRepresentations().get(0), globalContext);
     }
 

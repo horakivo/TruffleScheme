@@ -42,4 +42,61 @@ public class ProgramTest {
         var result = Truffle.getRuntime().createDirectCallNode(rootNode.getCallTarget()).call();
         assertEquals(88L, result);
     }
+
+    @Test
+    public void test4() {
+        var program = "" +
+                "(define start (current-milliseconds))\n" +
+                "\n" +
+                "(define fib\n" +
+                "  (lambda (n)\n" +
+                "    (if (<= n 2)\n" +
+                "        1\n" +
+                "        (+ (fib (- n 1)) (fib (- n 2))))))\n" +
+                "\n" +
+                "\n" +
+                "(display (fib 30))\n" +
+                "\n" +
+                "(define end (current-milliseconds))\n" +
+                "(newline)\n" +
+                "(- end start)\n";
+        var rootNode = Reader.readProgram(CharStreams.fromString(program));
+
+        var result = Truffle.getRuntime().createDirectCallNode(rootNode.getCallTarget()).call();
+        System.out.println(result);
+    }
+
+    @Test
+    public void test5() {
+        var program = "" +
+                "(define fib\n" +
+                "  (lambda (n)\n" +
+                "    (if (<= n 2)\n" +
+                "        1\n" +
+                "        (+ (fib (- n 1)) (fib (- n 2))))))\n" +
+                "\n" +
+                "(fib 30)\n" +
+                "(fib 30)\n" +
+                "(fib 30)\n" +
+                "(fib 30)\n" +
+                "(fib 30)\n" +
+                "(fib 30)\n" +
+                "(fib 30)\n" +
+                "(fib 30)\n" +
+                "(fib 30)\n" +
+                "(fib 30)\n" +
+                "(fib 30)\n" +
+                "\n" +
+                "(define start (current-milliseconds))\n" +
+                "\n" +
+                "(fib 30)\n" +
+                "\n" +
+                "(define end (current-milliseconds))\n" +
+                "(newline)\n" +
+                "(- end start)";
+        var rootNode = Reader.readProgram(CharStreams.fromString(program));
+
+        var result = Truffle.getRuntime().createDirectCallNode(rootNode.getCallTarget()).call();
+        System.out.println(result);
+    }
 }

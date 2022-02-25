@@ -1,7 +1,7 @@
 package com.ihorak.truffle;
 
 import com.ihorak.truffle.node.SchemeRootNode;
-import com.ihorak.truffle.parser.Context;
+import com.ihorak.truffle.context.Context;
 import com.ihorak.truffle.parser.Reader;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.TruffleLanguage;

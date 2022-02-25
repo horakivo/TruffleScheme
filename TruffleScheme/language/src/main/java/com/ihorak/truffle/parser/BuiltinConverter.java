@@ -1,5 +1,6 @@
 package com.ihorak.truffle.parser;
 
+import com.ihorak.truffle.context.Context;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeSymbol;
 
@@ -40,8 +41,13 @@ public class BuiltinConverter {
                 return BuiltinFactory.createMapBuiltin(convertedArguments);
             case "<=":
                 return BuiltinFactory.createLessThenOrEqual(convertedArguments);
-            case "test":
-                return BuiltinFactory.test(convertedArguments);
+            case "current-milliseconds":
+                return BuiltinFactory.createCurrentMillisBuiltin(convertedArguments);
+            case "display":
+                return BuiltinFactory.createDisplayBuiltin(convertedArguments);
+            case "newline":
+                return BuiltinFactory.createNewlineBuiltin(convertedArguments);
+
             default:
                 throw new RuntimeException("Unable to convert builtin procedure from list to AST. Builtin: " + operand);
         }

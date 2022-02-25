@@ -1,15 +1,11 @@
-package com.ihorak.truffle.parser;
+package com.ihorak.truffle.context;
 
-import com.ihorak.truffle.node.literals.SymbolExprNodeGen;
-import com.ihorak.truffle.parser.Util.Pair;
+import com.ihorak.truffle.parser.ParserException;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlotKind;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Context {
@@ -34,11 +30,17 @@ public class Context {
 
     @Nullable
     public Pair findSymbol(SchemeSymbol symbol) {
+        if (mode == Mode.RUN_TIME) {
+            throw new ParserException("Parser: Values shouldn't be added during runtime! Parser mistake");
+        }
         return findSymbol(this, symbol, 0);
     }
 
     @Nullable
     public Integer findLocalSymbol(SchemeSymbol symbol) {
+        if (mode == Mode.RUN_TIME) {
+            throw new ParserException("Parser: Values shouldn't be added during runtime! Parser mistake");
+        }
         return map.get(symbol);
     }
 
@@ -106,16 +108,5 @@ public class Context {
 
     public void setMode(Mode mode) {
         this.mode = mode;
-    }
-
-    enum LexicalScope {
-        LAMBDA,
-        GLOBAL,
-        LET
-    }
-
-    public enum Mode {
-        PARSER,
-        RUN_TIME
     }
 }

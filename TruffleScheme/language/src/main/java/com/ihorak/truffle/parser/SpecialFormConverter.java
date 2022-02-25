@@ -1,5 +1,8 @@
 package com.ihorak.truffle.parser;
 
+import com.ihorak.truffle.context.Context;
+import com.ihorak.truffle.context.LexicalScope;
+import com.ihorak.truffle.context.Mode;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.exprs.ReadProcedureArgExprNode;
 import com.ihorak.truffle.node.special_form.*;
@@ -10,6 +13,7 @@ import com.ihorak.truffle.node.special_form.lambda.WriteLocalVariableExprNodeGen
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeFunction;
 import com.ihorak.truffle.type.SchemeSymbol;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,23 +80,36 @@ public class SpecialFormConverter {
         if (potentialSymbol instanceof SchemeSymbol) {
             var symbol = (SchemeSymbol) potentialSymbol;
             SchemeExpression valueToStore = ListToExpressionConverter.convert(defineList.get(2), context);
-            var index = context.findLocalSymbol(symbol);
-            if (index != null) {
-                return WriteLocalVariableExprNodeGen.create(valueToStore, index, symbol);
+            if (context.getMode() == Mode.RUN_TIME) {
+                return handleDefineInRuntime(symbol, valueToStore);
             } else {
-                int frameIndex = context.addLocalSymbol(symbol);
-                return WriteLocalVariableExprNodeGen.create(valueToStore, frameIndex, symbol);
+                return handleDefineInParseTime(symbol, valueToStore, context);
             }
         } else {
             throw new ParserException("define: expected: Symbol \n given: " + potentialSymbol);
         }
     }
 
+    @NotNull
+    private static SchemeExpression handleDefineInParseTime(SchemeSymbol symbol, SchemeExpression valueToStore, Context context) {
+        var index = context.findLocalSymbol(symbol);
+        if (index != null) {
+            return WriteLocalVariableExprNodeGen.create(valueToStore, index, symbol);
+        } else {
+            int frameIndex = context.addLocalSymbol(symbol);
+            return WriteLocalVariableExprNodeGen.create(valueToStore, frameIndex, symbol);
+        }
+    }
+
+    private static SchemeExpression handleDefineInRuntime(SchemeSymbol symbol, SchemeExpression valueToStore) {
+        return DefineExprNodeGen.create(valueToStore, symbol);
+    }
+
     /*
      *  --> (lambda (param1 .. paramN) expr1...exprN))
      * */
     private static LambdaExprNode convertLambda(SchemeCell lambdaList, Context context) {
-        Context lambdaContext = new Context(context, Context.LexicalScope.LAMBDA);
+        Context lambdaContext = new Context(context, LexicalScope.LAMBDA);
 
         var params = (SchemeCell) lambdaList.get(1);
         var expressions = (SchemeCell) ((SchemeCell) lambdaList.cdr).cdr;
@@ -109,17 +126,26 @@ public class SpecialFormConverter {
         return new LambdaExprNode(function);
     }
 
-    private static List<WriteLocalVariableExprNode> createLocalVariablesForLambda(SchemeCell parameters, Context context) {
-        List<WriteLocalVariableExprNode> result = new ArrayList<>();
-        for (int i = 0; i < parameters.size(); i++) {
-            var currentSymbol = (SchemeSymbol) parameters.get(i);
-            int frameIndex = context.addLocalSymbol(currentSymbol);
-            var localVariableNode = WriteLocalVariableExprNodeGen.create(new ReadProcedureArgExprNode(i), frameIndex, currentSymbol);
-            result.add(localVariableNode);
-        }
+    private static List<SchemeExpression> createLocalVariablesForLambda(SchemeCell parameters, Context context) {
+        List<SchemeExpression> result = new ArrayList<>();
+        if (context.getMode() == Mode.RUN_TIME) {
+            for (int i = 0; i < parameters.size(); i++) {
+                var currentSymbol = (SchemeSymbol) parameters.get(i);
+                result.add(DefineExprNodeGen.create(new ReadProcedureArgExprNode(i), currentSymbol));
+            }
+        } else {
+            for (int i = 0; i < parameters.size(); i++) {
+                var currentSymbol = (SchemeSymbol) parameters.get(i);
+                int frameIndex = context.addLocalSymbol(currentSymbol);
+                var localVariableNode = WriteLocalVariableExprNodeGen.create(new ReadProcedureArgExprNode(i), frameIndex, currentSymbol);
+                result.add(localVariableNode);
+            }
 
+        }
         return result;
+
     }
+
 
     private static QuoteExprNode convertQuote(SchemeCell quoteList, Context context) {
         if (quoteList.size() == 2) {
@@ -131,14 +157,14 @@ public class SpecialFormConverter {
 
     private static QuasiquoteExprNode convertQuasiquote(SchemeCell quasiquoteList, Context context) {
         if (quasiquoteList.size() == 2) {
-            return new QuasiquoteExprNode(quasiquoteList.get(1), context);
+            return new QuasiquoteExprNode(quasiquoteList.get(1));
         } else {
             throw new ParserException("quasiquote: arity mismatch \n expected: 1 \n given: " + (quasiquoteList.size() - 1));
         }
     }
 
     private static LetExprNode convertLet(SchemeCell letList, Context context) {
-        Context letContext = new Context(context, Context.LexicalScope.LET);
+        Context letContext = new Context(context, LexicalScope.LET);
         SchemeCell parameters = (SchemeCell) letList.get(1);
         SchemeCell body = (SchemeCell) ((SchemeCell) letList.cdr).cdr;
 

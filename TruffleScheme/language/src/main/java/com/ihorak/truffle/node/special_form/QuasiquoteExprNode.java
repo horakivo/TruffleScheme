@@ -1,8 +1,9 @@
 package com.ihorak.truffle.node.special_form;
 
 import com.ihorak.truffle.SchemeException;
+import com.ihorak.truffle.context.Mode;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.parser.Context;
+import com.ihorak.truffle.context.Context;
 import com.ihorak.truffle.parser.ListToExpressionConverter;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeSymbol;
@@ -14,11 +15,9 @@ import java.util.List;
 public class QuasiquoteExprNode extends SchemeExpression {
 
     private final Object datum;
-    private final Context context;
 
-    public QuasiquoteExprNode(Object datum, Context context) {
+    public QuasiquoteExprNode(Object datum) {
         this.datum = datum;
-        this.context = context;
     }
 
     @Override
@@ -26,7 +25,6 @@ public class QuasiquoteExprNode extends SchemeExpression {
         if (datum instanceof Long || datum instanceof Boolean || datum instanceof SchemeSymbol) {
             return datum;
         } else if (datum instanceof SchemeCell) {
-            context.setMode(Context.Mode.RUN_TIME);
             return convertList((SchemeCell) datum, false, virtualFrame);
         }
         throw new SchemeException("Unsupported data type. Type: " + datum);
@@ -95,7 +93,7 @@ public class QuasiquoteExprNode extends SchemeExpression {
             if (valueToBeEvaluated instanceof SchemeCell && isDefineExpression((SchemeCell) valueToBeEvaluated)) {
                 throw new SchemeException("define: not allowed in an expression context in: " + valueToBeEvaluated);
             }
-            return ListToExpressionConverter.convert(valueToBeEvaluated, context).executeGeneric(frame);
+            return ListToExpressionConverter.convert(valueToBeEvaluated, createRuntimeContext()).executeGeneric(frame);
         }
         throw new SchemeException("unquote: expects exactly one expression");
     }
@@ -115,5 +113,12 @@ public class QuasiquoteExprNode extends SchemeExpression {
         } else {
             throw new SchemeException("unquote-splicing: expects exactly one expression");
         }
+    }
+
+    private Context createRuntimeContext() {
+        var context = new Context();
+        context.setMode(Mode.RUN_TIME);
+
+        return context;
     }
 }

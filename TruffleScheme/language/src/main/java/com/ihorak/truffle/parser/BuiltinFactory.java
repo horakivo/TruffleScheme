@@ -1,10 +1,14 @@
 package com.ihorak.truffle.parser;
 
 import com.ihorak.truffle.SchemeException;
+import com.ihorak.truffle.context.Context;
 import com.ihorak.truffle.node.EvalArgumentsNode;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.exprs.ReduceExprNode;
+import com.ihorak.truffle.node.exprs.builtin.CurrentMillisecondsExprNodeGen;
+import com.ihorak.truffle.node.exprs.builtin.DisplayExprNodeGen;
 import com.ihorak.truffle.node.exprs.builtin.EvalExprNodeGen;
+import com.ihorak.truffle.node.exprs.builtin.NewlineExprNodeGen;
 import com.ihorak.truffle.node.exprs.builtin.arithmetic.DivideExprNodeGen;
 import com.ihorak.truffle.node.exprs.builtin.arithmetic.MinusExprNodeGen;
 import com.ihorak.truffle.node.exprs.builtin.arithmetic.MultiplyExprNodeGen;
@@ -44,10 +48,6 @@ public class BuiltinFactory {
         }
     }
 
-    public static SchemeExpression createLessThenOrEqual(List<SchemeExpression> arguments) {
-        return LessThenOrEqualExprNodeGen.create(new EvalArgumentsNode(arguments));
-    }
-
     public static SchemeExpression createMultipleBuiltin(List<SchemeExpression> arguments) {
         if (arguments.size() > 0) {
             return new ReduceExprNode(MultiplyExprNodeGen.create(), arguments, 1L);
@@ -60,7 +60,7 @@ public class BuiltinFactory {
 
     public static SchemeExpression createEvalBuiltin(List<SchemeExpression> arguments, Context context) {
         if (arguments.size() == 1) {
-            return EvalExprNodeGen.create(arguments.get(0), context);
+            return EvalExprNodeGen.create(arguments.get(0));
         } else {
             throw new SchemeException("eval: arity mismatch; Expected number of arguments does not match the given number \n expected: 1 \n given: " + arguments.size());
         }
@@ -120,8 +120,28 @@ public class BuiltinFactory {
         }
     }
 
-    public static SchemeExpression test(List<SchemeExpression> arguments) {
-        return new EvalArgumentsNode(arguments);
+    public static SchemeExpression createLessThenOrEqual(List<SchemeExpression> arguments) {
+        return LessThenOrEqualExprNodeGen.create(new EvalArgumentsNode(arguments));
     }
 
+    public static SchemeExpression createCurrentMillisBuiltin(List<SchemeExpression> arguments) {
+        if (arguments.size() == 0) {
+            return CurrentMillisecondsExprNodeGen.create();
+        }
+        throw new SchemeException("current-milliseconds: arity mismatch; Expected number of arguments does not match the given number\nExpected: 0\nGiven: " + arguments.size());
+    }
+
+    public static SchemeExpression createDisplayBuiltin(List<SchemeExpression> arguments) {
+        if (arguments.size() == 1) {
+            return DisplayExprNodeGen.create(arguments.get(0));
+        }
+        throw new SchemeException("display: arity mismatch; Expected number of arguments does not match the given number\nExpected: 1\nGiven: " + arguments.size());
+    }
+
+    public static SchemeExpression createNewlineBuiltin(List<SchemeExpression> arguments) {
+        if (arguments.size() == 0) {
+            return NewlineExprNodeGen.create();
+        }
+        throw new SchemeException("newline: arity mismatch; Expected number of arguments does not match the given number\nExpected: 0\nGiven: " + arguments.size());
+    }
 }

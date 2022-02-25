@@ -6,6 +6,8 @@ import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.dsl.NodeField;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @NodeField(name = "symbol", type = SchemeSymbol.class)
 public abstract class SymbolExprNode extends SchemeExpression {
@@ -17,6 +19,7 @@ public abstract class SymbolExprNode extends SchemeExpression {
         return findValue(frame);
     }
 
+    @Nullable
     private Object getParentEnvironment(VirtualFrame virtualFrame) {
         if (virtualFrame.getArguments().length > 0) {
             return virtualFrame.getArguments()[0];
@@ -24,6 +27,7 @@ public abstract class SymbolExprNode extends SchemeExpression {
         return null;
     }
 
+    @NotNull
     private Object findValue(VirtualFrame frame) {
         var index = frame.getFrameDescriptor().getAuxiliarySlots().get(getSymbol());
 

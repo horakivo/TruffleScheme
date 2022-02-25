@@ -1,10 +1,12 @@
 package com.ihorak.truffle.parser;
 
+import com.ihorak.truffle.context.Context;
+import com.ihorak.truffle.context.Mode;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.literals.BooleanLiteralNode;
 import com.ihorak.truffle.node.literals.LongLiteralNode;
+import com.ihorak.truffle.node.literals.SymbolExprNode;
 import com.ihorak.truffle.node.literals.SymbolExprNodeGen;
-import com.ihorak.truffle.node.special_form.lambda.ReadGlobalVariableExprNode;
 import com.ihorak.truffle.node.special_form.lambda.ReadGlobalVariableExprNodeGen;
 import com.ihorak.truffle.node.special_form.lambda.ReadLocalVariableExprNodeGen;
 import com.ihorak.truffle.parser.Util.SpecialFormUtils;
@@ -37,6 +39,18 @@ public class ListToExpressionConverter {
     }
 
     private static SchemeExpression convert(SchemeSymbol symbol, Context context) {
+        if (context.getMode() == Mode.RUN_TIME) {
+            return handleSymbolInRuntime(symbol);
+        } else {
+            return handleSymbolInParseTime(symbol, context);
+        }
+    }
+
+    private static SchemeExpression handleSymbolInRuntime(SchemeSymbol symbol) {
+        return SymbolExprNodeGen.create(symbol);
+    }
+
+    private static SchemeExpression handleSymbolInParseTime(SchemeSymbol symbol, Context context) {
         var indexPair = context.findSymbol(symbol);
         if (indexPair != null) {
             return ReadLocalVariableExprNodeGen.create(symbol, indexPair.getFrameIndex(), indexPair.getLexicalScopeDepth());

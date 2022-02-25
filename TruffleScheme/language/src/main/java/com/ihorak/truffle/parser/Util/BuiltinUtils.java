@@ -19,7 +19,9 @@ public class BuiltinUtils {
             case "append":
             case "map":
             case "<=":
-            case "test":
+            case "current-milliseconds":
+            case "display":
+            case "newline":
                 return true;
             default:
                 return false;
