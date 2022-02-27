@@ -6,7 +6,9 @@ import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 
-
+/**
+ * Expected at least 2 arguments, one arguments can be resolved during parsing by returning directly true
+ * */
 public abstract class ReduceComparisonExprNode extends BinaryReducibleOperation {
 
     @ExplodeLoop

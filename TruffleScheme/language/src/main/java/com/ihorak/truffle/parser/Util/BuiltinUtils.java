@@ -22,6 +22,7 @@ public class BuiltinUtils {
             case "current-milliseconds":
             case "display":
             case "newline":
+            case "=":
                 return true;
             default:
                 return false;

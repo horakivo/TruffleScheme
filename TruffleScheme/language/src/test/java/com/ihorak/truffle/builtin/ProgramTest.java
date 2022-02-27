@@ -67,6 +67,22 @@ public class ProgramTest {
     }
 
     @Test
+    public void test7() {
+        var program = "" +
+                "(define fact\n" +
+                "  (lambda (n)\n" +
+                "    (if (= n 0)\n" +
+                "        1\n" +
+                "        (* n (- n 1)))))\n" +
+                "\n" +
+                "(fact 5312)";
+        var rootNode = Reader.readProgram(CharStreams.fromString(program));
+
+        var result = Truffle.getRuntime().createDirectCallNode(rootNode.getCallTarget()).call();
+        assertEquals(28212032L, result);
+    }
+
+    @Test
     public void test5() {
         var program = "" +
                 "(define fib\n" +
@@ -93,6 +109,37 @@ public class ProgramTest {
                 "\n" +
                 "(define end (current-milliseconds))\n" +
                 "(newline)\n" +
+                "(- end start)";
+        var rootNode = Reader.readProgram(CharStreams.fromString(program));
+
+        var result = Truffle.getRuntime().createDirectCallNode(rootNode.getCallTarget()).call();
+        System.out.println(result);
+    }
+
+
+    @Test
+    public void test6() {
+        var program = "" +
+                "(define fact\n" +
+                "  (lambda (n)\n" +
+                "    (if (= n 0)\n" +
+                "        1\n" +
+                "        (* n (- n 1)))))\n" +
+                "\n" +
+                "\n" +
+                "(fact 987659876543876521)\n" +
+                "(fact 987659876543876521)\n" +
+                "(fact 987659876543876521)\n" +
+                "(fact 987659876543876521)\n" +
+                "(fact 987659876543876521)\n" +
+                "(fact 987659876543876521)\n" +
+                "\n" +
+                "(define start (current-milliseconds))\n" +
+                "\n" +
+                "(fact 987659876543876521)\n" +
+                "\n" +
+                "(define end (current-milliseconds))\n" +
+                "\n" +
                 "(- end start)";
         var rootNode = Reader.readProgram(CharStreams.fromString(program));
 

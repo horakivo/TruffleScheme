@@ -2,10 +2,7 @@ package com.ihorak.truffle.node.exprs.builtin.logical;
 
 import com.ihorak.truffle.SchemeException;
 import com.ihorak.truffle.node.exprs.builtin.BinaryOperationNode;
-import com.ihorak.truffle.node.exprs.builtin.BinaryReducibleOperation;
-import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.dsl.Specialization;
-import com.oracle.truffle.api.profiles.BranchProfile;
 
 import java.math.BigInteger;
 

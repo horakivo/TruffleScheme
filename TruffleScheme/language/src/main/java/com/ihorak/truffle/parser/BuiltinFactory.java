@@ -10,6 +10,7 @@ import com.ihorak.truffle.node.exprs.builtin.EvalExprNodeGen;
 import com.ihorak.truffle.node.exprs.builtin.NewlineExprNodeGen;
 import com.ihorak.truffle.node.exprs.builtin.arithmetic.*;
 import com.ihorak.truffle.node.exprs.builtin.list.*;
+import com.ihorak.truffle.node.exprs.builtin.logical.EqualExprNodeGen;
 import com.ihorak.truffle.node.exprs.builtin.logical.LessThenOrEqualExprNodeGen;
 import com.ihorak.truffle.node.exprs.builtin.logical.ReduceComparisonExprNodeGen;
 import com.ihorak.truffle.node.literals.BooleanLiteralNode;
@@ -133,6 +134,17 @@ public class BuiltinFactory {
             }
         }
         throw new SchemeException("<=: arity mismatch; Expected number of argument does not match the given number \n expected: at least 1 \n given: 0");
+    }
+
+    public static SchemeExpression createEqual(List<SchemeExpression> arguments) {
+        if (arguments.size() > 0) {
+            if (arguments.size() == 1) {
+                return new BooleanLiteralNode(true);
+            } else {
+                return ReduceComparisonExprNodeGen.create(arguments.toArray(new SchemeExpression[0]), EqualExprNodeGen.create());
+            }
+        }
+        throw new SchemeException("=: arity mismatch; Expected number of argument does not match the given number\nExpected: at least 1\nGiven: 0");
     }
 
     public static SchemeExpression createCurrentMillisBuiltin(List<SchemeExpression> arguments) {
