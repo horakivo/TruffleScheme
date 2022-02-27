@@ -1,8 +1,7 @@
 package com.ihorak.truffle.builtin;
 
 import com.ihorak.truffle.GlobalEnvironment;
-import com.ihorak.truffle.SchemeException;
-import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.parser.Reader;
 import com.oracle.truffle.api.Truffle;
 import org.antlr.v4.runtime.CharStreams;
@@ -140,6 +139,27 @@ public class ProgramTest {
                 "\n" +
                 "(define end (current-milliseconds))\n" +
                 "\n" +
+                "(- end start)";
+        var rootNode = Reader.readProgram(CharStreams.fromString(program));
+
+        var result = Truffle.getRuntime().createDirectCallNode(rootNode.getCallTarget()).call();
+        System.out.println(result);
+    }
+
+    @Test
+    public void test8() {
+        var program = "" +
+                "(define countdown\n" +
+                "  (lambda (n)\n" +
+                "    (if (< n 1)\n" +
+                "        0\n" +
+                "        (countdown (- n 1)))))\n" +
+                "\n" +
+                "(define start (current-milliseconds))\n" +
+                "\n" +
+                "(countdown 10000)\n" +
+                "\n" +
+                "(define end (current-milliseconds))\n" +
                 "(- end start)";
         var rootNode = Reader.readProgram(CharStreams.fromString(program));
 

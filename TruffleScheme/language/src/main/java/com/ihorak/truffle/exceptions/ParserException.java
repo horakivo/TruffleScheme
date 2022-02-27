@@ -1,4 +1,4 @@
-package com.ihorak.truffle.parser;
+package com.ihorak.truffle.exceptions;
 
 public class ParserException extends IllegalArgumentException {
 

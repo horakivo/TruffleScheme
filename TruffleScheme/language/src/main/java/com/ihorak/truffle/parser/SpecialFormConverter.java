@@ -3,6 +3,7 @@ package com.ihorak.truffle.parser;
 import com.ihorak.truffle.context.Context;
 import com.ihorak.truffle.context.LexicalScope;
 import com.ihorak.truffle.context.Mode;
+import com.ihorak.truffle.exceptions.ParserException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.exprs.ReadProcedureArgExprNode;
 import com.ihorak.truffle.node.special_form.*;

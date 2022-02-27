@@ -1,6 +1,6 @@
 package com.ihorak.truffle.context;
 
-import com.ihorak.truffle.parser.ParserException;
+import com.ihorak.truffle.exceptions.ParserException;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlotKind;

@@ -23,6 +23,7 @@ public class BuiltinUtils {
             case "display":
             case "newline":
             case "=":
+            case "<":
                 return true;
             default:
                 return false;

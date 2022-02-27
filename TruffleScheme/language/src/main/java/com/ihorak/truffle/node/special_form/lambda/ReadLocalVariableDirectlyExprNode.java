@@ -1,14 +1,10 @@
 package com.ihorak.truffle.node.special_form.lambda;
 
-import com.ihorak.truffle.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.oracle.truffle.api.dsl.Fallback;
-import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.NodeField;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.FrameSlotTypeException;
 import com.oracle.truffle.api.frame.MaterializedFrame;
-import com.oracle.truffle.api.frame.VirtualFrame;
 
 
 //TODO discover this idea

@@ -1,4 +1,4 @@
-package com.ihorak.truffle;
+package com.ihorak.truffle.exceptions;
 
 import com.ihorak.truffle.node.SchemeExpression;
 import com.oracle.truffle.api.exception.AbstractTruffleException;

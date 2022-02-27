@@ -1,6 +1,6 @@
 package com.ihorak.truffle.node.special_form.lambda;
 
-import com.ihorak.truffle.SchemeException;
+import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import org.jetbrains.annotations.NotNull;

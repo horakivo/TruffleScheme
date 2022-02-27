@@ -1,6 +1,6 @@
 package com.ihorak.truffle.node.exprs.builtin.list;
 
-import com.ihorak.truffle.SchemeException;
+import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.exprs.builtin.BinaryOperationNode;
 import com.ihorak.truffle.type.SchemeCell;
 import com.oracle.truffle.api.dsl.Specialization;

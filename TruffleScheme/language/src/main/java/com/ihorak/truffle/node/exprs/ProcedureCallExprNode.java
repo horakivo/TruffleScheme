@@ -1,6 +1,6 @@
 package com.ihorak.truffle.node.exprs;
 
-import com.ihorak.truffle.SchemeException;
+import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.ProcedureDispatchNode;
 import com.ihorak.truffle.node.ProcedureDispatchNodeGen;
 import com.ihorak.truffle.node.SchemeExpression;

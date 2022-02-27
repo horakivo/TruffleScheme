@@ -1,11 +1,7 @@
 package com.ihorak.truffle.node.special_form.lambda;
 
-import com.ihorak.truffle.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.literals.SymbolExprNodeGen;
 import com.ihorak.truffle.type.SchemeSymbol;
-import com.oracle.truffle.api.CompilerDirectives;
-import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.NodeField;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.FrameSlotKind;

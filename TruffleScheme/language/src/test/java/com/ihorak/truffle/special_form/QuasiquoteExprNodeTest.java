@@ -1,8 +1,8 @@
 package com.ihorak.truffle.special_form;
 
 import com.ihorak.truffle.GlobalEnvironment;
-import com.ihorak.truffle.SchemeException;
-import com.ihorak.truffle.parser.ParserException;
+import com.ihorak.truffle.exceptions.SchemeException;
+import com.ihorak.truffle.exceptions.ParserException;
 import com.ihorak.truffle.parser.Reader;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeSymbol;

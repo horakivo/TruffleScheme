@@ -1,6 +1,6 @@
 package com.ihorak.truffle.node.exprs.arithmetic;
 
-import com.ihorak.truffle.SchemeException;
+import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.exprs.builtin.BinaryOperationNode;
 import com.oracle.truffle.api.dsl.NodeField;

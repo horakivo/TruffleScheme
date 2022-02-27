@@ -1,7 +1,7 @@
 package com.ihorak.truffle.builtin;
 
 import com.ihorak.truffle.GlobalEnvironment;
-import com.ihorak.truffle.SchemeException;
+import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.parser.Reader;
 import com.ihorak.truffle.type.SchemeFunction;
 import org.antlr.v4.runtime.CharStreams;

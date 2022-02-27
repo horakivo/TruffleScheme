@@ -1,16 +1,12 @@
 package com.ihorak.truffle.node.exprs.builtin.arithmetic;
 
-import com.ihorak.truffle.SchemeException;
-import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.exprs.builtin.BinaryOperationNode;
+import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.exprs.builtin.BinaryReducibleOperation;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Fallback;
-import com.oracle.truffle.api.dsl.NodeField;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
-import com.oracle.truffle.api.nodes.UnexpectedResultException;
 
 
 /**

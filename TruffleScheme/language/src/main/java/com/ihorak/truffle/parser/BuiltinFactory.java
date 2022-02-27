@@ -1,6 +1,6 @@
 package com.ihorak.truffle.parser;
 
-import com.ihorak.truffle.SchemeException;
+import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.context.Context;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.exprs.ReduceExprNode;
@@ -11,6 +11,7 @@ import com.ihorak.truffle.node.exprs.builtin.NewlineExprNodeGen;
 import com.ihorak.truffle.node.exprs.builtin.arithmetic.*;
 import com.ihorak.truffle.node.exprs.builtin.list.*;
 import com.ihorak.truffle.node.exprs.builtin.logical.EqualExprNodeGen;
+import com.ihorak.truffle.node.exprs.builtin.logical.LessThenExprNodeGen;
 import com.ihorak.truffle.node.exprs.builtin.logical.LessThenOrEqualExprNodeGen;
 import com.ihorak.truffle.node.exprs.builtin.logical.ReduceComparisonExprNodeGen;
 import com.ihorak.truffle.node.literals.BooleanLiteralNode;
@@ -142,6 +143,17 @@ public class BuiltinFactory {
                 return new BooleanLiteralNode(true);
             } else {
                 return ReduceComparisonExprNodeGen.create(arguments.toArray(new SchemeExpression[0]), EqualExprNodeGen.create());
+            }
+        }
+        throw new SchemeException("=: arity mismatch; Expected number of argument does not match the given number\nExpected: at least 1\nGiven: 0");
+    }
+
+    public static SchemeExpression createLessThen(List<SchemeExpression> arguments) {
+        if (arguments.size() > 0) {
+            if (arguments.size() == 1) {
+                return new BooleanLiteralNode(true);
+            } else {
+                return ReduceComparisonExprNodeGen.create(arguments.toArray(new SchemeExpression[0]), LessThenExprNodeGen.create());
             }
         }
         throw new SchemeException("=: arity mismatch; Expected number of argument does not match the given number\nExpected: at least 1\nGiven: 0");

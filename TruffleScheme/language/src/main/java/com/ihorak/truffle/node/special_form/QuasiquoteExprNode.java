@@ -1,6 +1,6 @@
 package com.ihorak.truffle.node.special_form;
 
-import com.ihorak.truffle.SchemeException;
+import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.context.Mode;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.context.Context;

@@ -5,11 +5,11 @@ import com.oracle.truffle.api.dsl.Specialization;
 
 import java.math.BigInteger;
 
-public abstract class LessThenOrEqualExprNode extends BinaryOperationNode {
+public abstract class LessThenExprNode extends BinaryOperationNode {
 
     @Specialization
-    protected boolean lessThenEqualLongs(long left, long right) {
-        return left <= right;
+    protected boolean lessThenLongs(long left, long right) {
+        return left < right;
     }
 
     /*
@@ -18,8 +18,7 @@ public abstract class LessThenOrEqualExprNode extends BinaryOperationNode {
      * -1: if the value of this BigInteger is less than that of the BigInteger object passed as a parameter/
      */
     @Specialization
-    protected boolean lessThenEqualBigInts(BigInteger left, BigInteger right) {
-        var result = left.compareTo(right);
-        return result <= 0;
+    protected boolean lessThenBigInts(BigInteger left, BigInteger right) {
+        return left.compareTo(right) < 0;
     }
 }
