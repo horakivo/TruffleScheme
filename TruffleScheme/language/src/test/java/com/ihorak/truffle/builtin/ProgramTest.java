@@ -31,7 +31,7 @@ public class ProgramTest {
 
         var exceptionMsg = assertThrows(SchemeException.class, () -> Truffle.getRuntime().createDirectCallNode(rootNode.getCallTarget()).call()).getMessage();
         assertEquals("'x: undefined\n" +
-                "cannot reference an identifier before its definition. FrameSlotKind: Illegal", exceptionMsg);
+                "cannot reference an identifier before its definition", exceptionMsg);
     }
 
     @Test

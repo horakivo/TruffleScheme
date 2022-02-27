@@ -2,14 +2,17 @@ package com.ihorak.truffle.node.special_form.lambda;
 
 import com.ihorak.truffle.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.literals.SymbolExprNodeGen;
 import com.ihorak.truffle.type.SchemeSymbol;
+import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.NodeField;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.FrameSlotKind;
 import com.oracle.truffle.api.frame.VirtualFrame;
 
-import static com.ihorak.truffle.node.special_form.lambda.FrameDescriptorUtil.findGlobalEnv;
+import static com.ihorak.truffle.node.special_form.lambda.FrameUtil.findAuxiliaryValue;
+import static com.ihorak.truffle.node.special_form.lambda.FrameUtil.findGlobalEnv;
 
 
 @NodeField(name = "symbol", type = SchemeSymbol.class)
@@ -40,10 +43,15 @@ public abstract class ReadGlobalVariableExprNode extends SchemeExpression {
         return findGlobalEnv(frame).getObject(getFrameSlotIndex());
     }
 
-    @Fallback
-    protected void fallback(VirtualFrame frame) {
-        throw new SchemeException(getSymbol() + ": undefined\ncannot reference an identifier before its definition. FrameSlotKind: " + findGlobalEnv(frame).getFrameDescriptor().getSlotKind(getFrameSlotIndex()));
+    @Specialization(replaces = "read")
+    protected Object readRuntimeVariable(VirtualFrame frame) {
+        return findAuxiliaryValue(frame, getSymbol());
     }
+
+//    @Fallback
+//    protected void fallback(VirtualFrame frame) {
+//        throw new SchemeException(getSymbol() + ": undefined\ncannot reference an identifier before its definition. FrameSlotKind: " + findGlobalEnv(frame).getFrameDescriptor().getSlotKind(getFrameSlotIndex()));
+//    }
 
 
     public boolean isLong(VirtualFrame frame) {

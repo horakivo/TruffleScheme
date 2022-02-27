@@ -8,6 +8,7 @@ import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import static com.ihorak.truffle.node.special_form.lambda.FrameUtil.findAuxiliaryValue;
 
 @NodeField(name = "symbol", type = SchemeSymbol.class)
 public abstract class SymbolExprNode extends SchemeExpression {
@@ -16,29 +17,7 @@ public abstract class SymbolExprNode extends SchemeExpression {
 
     @Specialization
     protected Object read(VirtualFrame frame) {
-        return findValue(frame);
+        return findAuxiliaryValue(frame, getSymbol());
     }
 
-    @Nullable
-    private Object getParentEnvironment(VirtualFrame virtualFrame) {
-        if (virtualFrame.getArguments().length > 0) {
-            return virtualFrame.getArguments()[0];
-        }
-        return null;
-    }
-
-    @NotNull
-    private Object findValue(VirtualFrame frame) {
-        var index = frame.getFrameDescriptor().getAuxiliarySlots().get(getSymbol());
-
-        if (index != null) {
-            return frame.getAuxiliarySlot(index);
-        }
-
-        var parentFrame = getParentEnvironment(frame);
-        if (parentFrame == null) {
-            throw new SchemeException(getSymbol() + ": undefined\ncannot reference an identifier before its definition");
-        }
-        return findValue((VirtualFrame) parentFrame);
-    }
 }
