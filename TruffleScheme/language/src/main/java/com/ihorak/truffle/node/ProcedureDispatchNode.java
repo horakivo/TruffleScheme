@@ -10,14 +10,14 @@ import com.oracle.truffle.api.nodes.Node;
 public abstract class ProcedureDispatchNode extends Node {
     public abstract Object executeDispatch(SchemeFunction function, Object[] arguments);
 
-    @Specialization(guards = "function.getCallTarget() == directCallNode.getCallTarget()", limit = "2")
-    protected static Object directlyDispatch(SchemeFunction function,
-                                             Object[] arguments,
-                                             @Cached("create(function.getCallTarget())") DirectCallNode directCallNode) {
-        return directCallNode.call(arguments);
-    }
+//    @Specialization(guards = "function.getCallTarget() == directCallNode.getCallTarget()", limit = "2")
+//    protected static Object directlyDispatch(SchemeFunction function,
+//                                             Object[] arguments,
+//                                             @Cached("create(function.getCallTarget())") DirectCallNode directCallNode) {
+//        return directCallNode.call(arguments);
+//    }
 
-    @Specialization(replaces = "directlyDispatch")
+    @Specialization//(replaces = "directlyDispatch")
     protected static Object indirectlyDispatch(
             SchemeFunction function,
             Object[] arguments,

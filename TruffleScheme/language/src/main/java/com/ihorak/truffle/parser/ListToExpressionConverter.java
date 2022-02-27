@@ -3,14 +3,13 @@ package com.ihorak.truffle.parser;
 import com.ihorak.truffle.context.Context;
 import com.ihorak.truffle.context.Mode;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.literals.BooleanLiteralNode;
-import com.ihorak.truffle.node.literals.LongLiteralNode;
-import com.ihorak.truffle.node.literals.SymbolExprNode;
-import com.ihorak.truffle.node.literals.SymbolExprNodeGen;
+import com.ihorak.truffle.node.literals.*;
 import com.ihorak.truffle.node.special_form.lambda.ReadGlobalVariableExprNodeGen;
 import com.ihorak.truffle.node.special_form.lambda.ReadLocalVariableExprNodeGen;
 import com.ihorak.truffle.parser.Util.SpecialFormUtils;
 import com.ihorak.truffle.type.*;
+
+import java.math.BigInteger;
 
 public class ListToExpressionConverter {
 
@@ -24,14 +23,27 @@ public class ListToExpressionConverter {
             return convert((boolean) obj);
         } else if (obj instanceof SchemeCell) {
             return convert((SchemeCell) obj, context);
+        } else if (obj instanceof BigInteger) {
+            return convert((BigInteger) obj);
+        } else if (obj instanceof Double) {
+            return convert((double) obj);
         } else {
             throw new IllegalArgumentException("ListToExpressionConverter: Unexpected type during conversion. Type: " + obj);
+
         }
     }
 
 
     private static SchemeExpression convert(long schemeLong) {
         return new LongLiteralNode(schemeLong);
+    }
+
+    private static SchemeExpression convert(BigInteger bigInteger) {
+        return new BigIntLiteralNode(bigInteger);
+    }
+
+    private static SchemeExpression convert(double schemeDouble) {
+        return new DoubleLiteralNode(schemeDouble);
     }
 
     private static SchemeExpression convert(boolean schemeBoolean) {

@@ -63,6 +63,13 @@ public interface R5RSVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitNumber(R5RSParser.NumberContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code Float}
+	 * labeled alternative in {@link R5RSParser#literal}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFloat(R5RSParser.FloatContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code Boolean}
 	 * labeled alternative in {@link R5RSParser#literal}.
 	 * @param ctx the parse tree

@@ -1,6 +1,10 @@
 package com.ihorak.truffle;
 
+import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.exprs.ReadProcedureArgExprNode;
 import com.ihorak.truffle.node.exprs.arithmetic.*;
+import com.ihorak.truffle.node.exprs.builtin.EvalExprNodeGen;
+import com.ihorak.truffle.node.exprs.builtin.arithmetic.*;
 import com.ihorak.truffle.type.SchemeFunction;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.Truffle;
@@ -41,44 +45,20 @@ public class GlobalEnvironment {
             globalVirtualFrame.setAuxiliarySlot(index, builtinFunction.get(symbol));
         }
 
-
-//        for (int i = 0; i < frameSlotIndexes.size(); i++) {
-//            globalVirtualFrame.setObject(frameSlotIndexes.get(i), builtinFunction.get(i));
-//        }
-
         return globalVirtualFrame;
-
-
-//        var plusFrameSlot = globalFrameDescriptor.addFrameSlot(new SchemeSymbol("+"), FrameSlotKind.Object);
-//        var minusFrameSlot = globalFrameDescriptor.addFrameSlot(new SchemeSymbol("-"), FrameSlotKind.Object);
-//        var multiplyFrameSlot = globalFrameDescriptor.addFrameSlot(new SchemeSymbol("*"), FrameSlotKind.Object);
-//        var divideFrameSlot = globalFrameDescriptor.addFrameSlot(new SchemeSymbol("/"), FrameSlotKind.Object);
-//        var evalFrameSlot = globalFrameDescriptor.addFrameSlot(new SchemeSymbol("eval"), FrameSlotKind.Object);
-//        var test = globalFrameDescriptor.addFrameSlot(new SchemeSymbol("test"), FrameSlotKind.Boolean);
-//
-//
-//        //globalVirtualFrame.setObject(plusFrameSlot, plusFunction);
-//        globalVirtualFrame.setBo
-//        globalVirtualFrame.setObject(minusFrameSlot, minusFunction);
-//        globalVirtualFrame.setObject(multiplyFrameSlot, multiplyFunction);
-//        globalVirtualFrame.setObject(divideFrameSlot, divideFunction);
-//        globalVirtualFrame.setObject(evalFrameSlot, evalFunction);
-//        globalVirtualFrame.setBoolean(test, true);
-
     }
 
     private static Map<SchemeSymbol, SchemeFunction> getAllBuiltinFunctions() {
-        var plusExpr = ReducePlusExprNodeGen.create(PlusExprRuntimeNodeGen.create());
+        var plusExpr = ReducePlusExprRuntimeNodeGen.create(PlusExprNodeGen.create());
         SchemeFunction plusFunction = SchemeFunction.createBuiltinFunction(plusExpr, null);
-        var minusExpr = ReduceMinusExprNodeGen.create(MinusExprRuntimeNodeGen.create());
+        var minusExpr = ReduceMinusExprRuntimeNodeGen.create(MinusExprNodeGen.create());
         SchemeFunction minusFunction = SchemeFunction.createBuiltinFunction(minusExpr, null);
-        var multiplyExpr = ReduceMultiplyExprNodeGen.create(MultiplicationExprRuntimeNodeGen.create());
+        var multiplyExpr = ReduceMultiplyExprRuntimeNodeGen.create(MultiplyExprNodeGen.create());
         SchemeFunction multiplyFunction = SchemeFunction.createBuiltinFunction(multiplyExpr, null);
-        var divideExpr = ReduceDivideExprNodeGen.create(DivideExprRuntimeNodeGen.create());
+        var divideExpr = ReduceDivideExprRuntimeNodeGen.create(DivideExprNodeGen.create());
         SchemeFunction divideFunction = SchemeFunction.createBuiltinFunction(divideExpr, null);
-        //eval
-//        SchemeExpression evalExpr = EvalExprNodeGen.create(new ReadProcedureArgExprNode(0));
-//        SchemeFunction evalFunction = SchemeFunction.createBuiltinFunction(evalExpr, 1);
+        SchemeExpression evalExpr = EvalExprNodeGen.create(new ReadProcedureArgExprNode(0));
+        SchemeFunction evalFunction = SchemeFunction.createBuiltinFunction(evalExpr, 1);
 
 
         return Map.of(

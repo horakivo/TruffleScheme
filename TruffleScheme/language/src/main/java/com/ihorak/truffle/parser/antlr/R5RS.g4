@@ -41,17 +41,20 @@ unquote_splicing
 
 literal
     : NUMBER                    # Number
+    | FLOAT                     # Float
     | BOOLEAN                   # Boolean
     | STRING                    # String
     | SYMBOL                    # Symbol
     ;
 
 
-NUMBER: '-'?[0-9]+;
+NUMBER: '-'?DIGIT+;
+FLOAT: '-'?DIGIT+ '.' DIGIT*;
 STRING: '"' ( ~'"' | '\\' '"')* '"';
 BOOLEAN: '#' ('t' | 'T' | 'f' | 'F');
-/* is it equal to ~('#'|'"'|'\''|[()]|[ \t\r\n])+ ?? */
 SYMBOL: ~('@'|','|'`'|'#'|'"'|'\''|[()]|[ \t\r\n]) ~('@'|','|'`'|'"'|'\''|[()]|[ \t\r\n])*;
+
+fragment DIGIT: [0-9];
 
 
 WS: [ \t\r\n] -> skip;

@@ -4,6 +4,8 @@ import com.ihorak.truffle.type.*;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.UnexpectedResultException;
 
+import java.math.BigInteger;
+
 public abstract class SchemeExpression extends SchemeNode {
 
     /**
@@ -32,7 +34,7 @@ public abstract class SchemeExpression extends SchemeNode {
         return SchemeTypesGen.expectSchemeCell(executeGeneric(virtualFrame));
     }
 
-    //    public BigInteger executeBigInt(VirtualFrame virtualFrame) throws UnexpectedResultException {
-//        return SchemeTypesGen.expectBigInteger(executeGeneric(virtualFrame));
-//    }
+    public BigInteger executeBigInt(VirtualFrame virtualFrame) throws UnexpectedResultException {
+        return SchemeTypesGen.expectBigInteger(executeGeneric(virtualFrame));
+    }
 }

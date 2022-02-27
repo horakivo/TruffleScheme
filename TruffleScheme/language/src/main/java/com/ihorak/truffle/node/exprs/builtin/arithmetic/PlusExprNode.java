@@ -1,52 +1,29 @@
 package com.ihorak.truffle.node.exprs.builtin.arithmetic;
 
-import com.ihorak.truffle.node.exprs.builtin.BuiltinExpression;
+import com.ihorak.truffle.node.exprs.builtin.BinaryOperationNode;
 import com.oracle.truffle.api.dsl.Specialization;
 
-public abstract class PlusExprNode extends BuiltinExpression {
+import java.math.BigInteger;
 
-//    @Specialization(guards = "twoElements(arguments)")
-//    public long addTwoLongs(long[] arguments) {
-//        long result = 0;
-//        for (long argument : arguments) {
-//            result = Math.addExact(result, argument);
-//        }
-//
-//        return result;
-//    }
+public abstract class PlusExprNode extends BinaryOperationNode {
 
-//    @ExplodeLoop
-//    @Specialization(guards = "arguments.length == cachedLength")
-//    public long addCachedLongs(long[] arguments,
-//                               @Cached("arguments.length")  int cachedLength) {
-//        long result = 0;
-//        for (int n = 0; n < cachedLength; n++) {
-//            result = Math.addExact(result, arguments[n]);
-//        }
-//
-//        return result;
-//    }
-
-    @Specialization//(replaces ="addTwoLongs") //(rewriteOn = ArithmeticException.class)
-    public long addAnyNumberOfLongs(long... arguments) {
-        long result = 0;
-        for (long argument : arguments) {
-            result = Math.addExact(result, argument);
-        }
-
-        return result;
+    @Specialization(rewriteOn = ArithmeticException.class)
+    protected long addLongs(long left, long right) {
+        return Math.addExact(left, right);
     }
-//
-//    @Specialization
-//    public Object addObjects(Object[] arguments) {
-//        if (arguments.length == 0) {
-//            return 0L;
-//        }
-//        throw new SchemeException("Not implemented yet. Here will be the most general adding. Such as BigInt");
-//    }
 
-//    @Specialization(replaces = "doLong")
-//    public BigInteger doBigInt(BigInteger left, BigInteger right) {
-//        return left.add(right);
-//    }
+    @Specialization(replaces = "addLongs")
+    protected BigInteger addBigInts(BigInteger left, BigInteger right) {
+        return left.add(right);
+    }
+
+    @Specialization
+    protected double addDoubles(double left, double right) {
+        return left + right;
+    }
+
+    @Override
+    public String toString() {
+        return "+";
+    }
 }

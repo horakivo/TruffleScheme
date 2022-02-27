@@ -7,29 +7,29 @@ import com.oracle.truffle.api.dsl.NodeField;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
 
-@NodeField(name = "minusOperation", type = BinaryOperationNode.class)
-public abstract class ReduceMinusExprNode extends SchemeExpression {
+@NodeField(name = "divideOperation", type = BinaryOperationNode.class)
+public abstract class ReduceDivideExprRuntimeNode extends SchemeExpression {
 
-    protected abstract BinaryOperationNode getMinusOperation();
+    protected abstract BinaryOperationNode getDivideOperation();
 
     @Specialization(guards = "frame.getArguments().length == 1")
-    protected Object noArguments(VirtualFrame frame) {
-        throw new SchemeException("-: arity mismatch; Expected number of arguments does not match the given number \n expected: at least 1 \n given: 0");
+    protected Object noRuntimeArguments(VirtualFrame frame) {
+        throw new SchemeException("/: arity mismatch; Expected number of arguments does not match the given number \n expected: at least 1 \n given: 0");
     }
 
     @Specialization(guards = "frame.getArguments().length == 2")
-    protected Object oneArgument(VirtualFrame frame) {
+    protected Object oneRuntimeArgument(VirtualFrame frame) {
         var argument = frame.getArguments()[1];
         if (argument instanceof Long) {
-            return -(long) argument;
+            return 1 / ((Long) argument).doubleValue();
         }
 
-        throw new SchemeException("-: contract violation;\nExpected: number?\nGiven: " + argument);
+        throw new SchemeException("/: contract violation;\nExpected: number?\nGiven: " + argument);
     }
 
     @Specialization
-    protected Object subtractAnyNumberOfArguments(VirtualFrame frame) {
-        var operation = getMinusOperation();
+    protected Object divideAnyNumberOfArgumentsRuntime(VirtualFrame frame) {
+        var operation = getDivideOperation();
         var arguments = frame.getArguments();
         var result = arguments[1];
 
@@ -39,5 +39,4 @@ public abstract class ReduceMinusExprNode extends SchemeExpression {
 
         return result;
     }
-
 }

@@ -94,6 +94,18 @@ public interface R5RSListener extends ParseTreeListener {
 	 */
 	void exitNumber(R5RSParser.NumberContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code Float}
+	 * labeled alternative in {@link R5RSParser#literal}.
+	 * @param ctx the parse tree
+	 */
+	void enterFloat(R5RSParser.FloatContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code Float}
+	 * labeled alternative in {@link R5RSParser#literal}.
+	 * @param ctx the parse tree
+	 */
+	void exitFloat(R5RSParser.FloatContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code Boolean}
 	 * labeled alternative in {@link R5RSParser#literal}.
 	 * @param ctx the parse tree

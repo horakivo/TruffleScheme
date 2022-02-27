@@ -6,16 +6,16 @@ import com.oracle.truffle.api.dsl.NodeField;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
 
-@NodeField(name = "multiplicationOperation", type = BinaryOperationNode.class)
-public abstract class ReduceMultiplyExprNode extends SchemeExpression {
+@NodeField(name = "plusOperation", type = BinaryOperationNode.class)
+public abstract class ReducePlusExprRuntimeNode extends SchemeExpression {
 
-    protected abstract BinaryOperationNode getMultiplicationOperation();
+    protected abstract BinaryOperationNode getPlusOperation();
 
     @Specialization
-    protected Object multiplyAnyNumberOfArgs(VirtualFrame frame) {
-        var operation = getMultiplicationOperation();
+    protected Object addAnyNumberOfArgsRuntime(VirtualFrame frame) {
+        var operation = getPlusOperation();
         var arguments = frame.getArguments();
-        Object result = 1;
+        Object result = 0L;
 
         for (int i = 1; i < arguments.length; i++) {
             result = operation.execute(result, arguments[i]);

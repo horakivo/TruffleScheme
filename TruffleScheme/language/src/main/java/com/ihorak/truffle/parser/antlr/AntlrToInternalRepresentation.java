@@ -2,6 +2,8 @@ package com.ihorak.truffle.parser.antlr;
 
 import com.ihorak.truffle.type.*;
 
+import java.math.BigInteger;
+
 public class AntlrToInternalRepresentation extends R5RSBaseVisitor<Object> {
 
     @Override
@@ -21,8 +23,17 @@ public class AntlrToInternalRepresentation extends R5RSBaseVisitor<Object> {
     }
 
     @Override
-    public Long visitNumber(R5RSParser.NumberContext ctx) {
-        return Long.parseLong(ctx.NUMBER().getText());
+    public Object visitNumber(R5RSParser.NumberContext ctx) {
+        try {
+            return Long.parseLong(ctx.NUMBER().getText());
+        } catch (NumberFormatException e) {
+            return new BigInteger(ctx.NUMBER().getText());
+        }
+    }
+
+    @Override
+    public Object visitFloat(R5RSParser.FloatContext ctx) {
+        return Double.parseDouble(ctx.FLOAT().getText());
     }
 
     @Override

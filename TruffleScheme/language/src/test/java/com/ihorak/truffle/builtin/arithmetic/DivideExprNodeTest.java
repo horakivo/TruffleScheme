@@ -7,6 +7,7 @@ import org.antlr.v4.runtime.CharStreams;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 public class DivideExprNodeTest {
 
@@ -20,13 +21,16 @@ public class DivideExprNodeTest {
         assertEquals(1 / 4D, result);
     }
 
-    @Test(expected = SchemeException.class)
+    @Test
     public void givenNoNumber_whenDivideCalled_thenSchemeExceptionShouldBeThrown() {
         var program = "(/)";
-        var expr = Reader.readExpr(CharStreams.fromString(program));
-        GlobalEnvironment globalEnvironment = new GlobalEnvironment();
 
-        expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
+        var msg = assertThrows(SchemeException.class, () ->  Reader.readExpr(CharStreams.fromString(program))).getMessage();
+
+        assertEquals("/: arity mismatch; Expected number of arguments does not match the given number \n" +
+                " expected: at least 1 \n" +
+                " given: 0", msg);
+
     }
 
     @Test

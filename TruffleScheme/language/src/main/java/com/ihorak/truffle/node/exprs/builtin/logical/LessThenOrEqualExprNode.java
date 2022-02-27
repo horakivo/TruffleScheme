@@ -1,27 +1,29 @@
 package com.ihorak.truffle.node.exprs.builtin.logical;
 
 import com.ihorak.truffle.SchemeException;
-import com.ihorak.truffle.node.exprs.builtin.BuiltinExpression;
+import com.ihorak.truffle.node.exprs.builtin.BinaryOperationNode;
+import com.ihorak.truffle.node.exprs.builtin.BinaryReducibleOperation;
+import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.dsl.Specialization;
+import com.oracle.truffle.api.profiles.BranchProfile;
 
-public abstract class LessThenOrEqualExprNode extends BuiltinExpression {
+import java.math.BigInteger;
 
+public abstract class LessThenOrEqualExprNode extends BinaryOperationNode {
 
     @Specialization
-    protected boolean lessThanEqualAnyNumberOfLongs(long[] arguments) {
-        if (arguments.length == 0) {
-            throw new SchemeException("<=: arity mismatch;\nthe expected number of arguments does not match the given number\nexpected: at least 1\ngiven: 0");
-        }
-        if (arguments.length == 1) {
-            return true;
-        }
-
-        for (int i = 0; i < arguments.length - 1; i++) {
-            if (arguments[i] > arguments[i + 1]) {
-                return false;
-            }
-        }
-        return true;
+    protected boolean lessThenEqualLongs(long left, long right) {
+        return left <= right;
     }
 
+    /*
+     * 0: if the value of this BigInteger is equal to that of the BigInteger object passed as a parameter.
+     * 1: if the value of this BigInteger is greater than that of the BigInteger object passed as a parameter.
+     * -1: if the value of this BigInteger is less than that of the BigInteger object passed as a parameter/
+     */
+    @Specialization
+    protected boolean lessThenEqualBigInts(BigInteger left, BigInteger right) {
+        var result = left.compareTo(right);
+        return result <= 0;
+    }
 }

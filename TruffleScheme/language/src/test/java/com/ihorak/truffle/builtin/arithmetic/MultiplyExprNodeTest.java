@@ -9,22 +9,20 @@ import java.math.BigInteger;
 
 import static org.junit.Assert.assertEquals;
 
-
-public class PlusExprNodeTest {
-
+public class MultiplyExprNodeTest {
     @Test
-    public void givenSmallNumbers_whenAddThem_thenReturnCorrectResult() {
-        var program = "(+ 1 2 3 4)";
+    public void givenSmallNumbers_whenMultiplyThem_thenReturnCorrectResult() {
+        var program = "(* 1 2 3 4)";
         var expr = Reader.readExpr(CharStreams.fromString(program));
         GlobalEnvironment globalEnvironment = new GlobalEnvironment();
 
         var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
-        assertEquals(10L, result);
+        assertEquals(24L, result);
     }
 
     @Test
-    public void givenOneNumber_whenAddIsCalled_thenSameValueShouldBeReturned() {
-        var program = "(+ 88)";
+    public void givenOneNumber_whenMultiplied_thenSameValueShouldBeReturned() {
+        var program = "(* 88)";
         var expr = Reader.readExpr(CharStreams.fromString(program));
         GlobalEnvironment globalEnvironment = new GlobalEnvironment();
 
@@ -33,43 +31,33 @@ public class PlusExprNodeTest {
     }
 
     @Test
-    public void givenNoNumber_whenAddIsCalled_thenZeroShouldBeReturned() {
-        var program = "(+)";
+    public void givenNoNumber_whenMultiplyCalled_thenOneShouldBeReturned() {
+        var program = "(*)";
         var expr = Reader.readExpr(CharStreams.fromString(program));
         GlobalEnvironment globalEnvironment = new GlobalEnvironment();
 
         var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
-        assertEquals(0L, result);
-    }
-
-    @Test
-    public void givenFloatingDecimalNumber_whenAddIsCalled_thenShouldReturnResult() {
-        var program = "(+ 12.3 5.3)";
-        var expr = Reader.readExpr(CharStreams.fromString(program));
-        GlobalEnvironment globalEnvironment = new GlobalEnvironment();
-
-        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
-        assertEquals(17.6D, result);
+        assertEquals(1L, result);
     }
 
 
     @Test
-    public void givenBigNumber_whenAddThem_thenOverflowShouldOccurAndBigIntShouldBeReturned()  {
-        var program = "(+ 1 2 " + Long.MAX_VALUE + ")" ;
+    public void givenBigNumber_whenMultiplied_thenOverflowShouldOccurAndBigIntShouldBeReturned()  {
+        var program = "(* 1 2 " + Long.MAX_VALUE + ")" ;
         var expr = Reader.readExpr(CharStreams.fromString(program));
         GlobalEnvironment globalEnvironment = new GlobalEnvironment();
 
         var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
-        assertEquals(new BigInteger(String.valueOf(Long.MAX_VALUE)).add(new BigInteger("3")), result);
+        assertEquals(BigInteger.valueOf(Long.MAX_VALUE).multiply(new BigInteger("2")), result);
     }
 
     @Test
     public void givenNumbersBiggerThenLong_whenAddThem_thenBigIntShouldBeReturned()  {
-        var program = "(+ 1 2 " + BigInteger.TWO.add(BigInteger.valueOf(Long.MAX_VALUE)) + ")" ;
+        var program = "(* 1 2 " + BigInteger.TWO.add(BigInteger.valueOf(Long.MAX_VALUE)) + ")" ;
         var expr = Reader.readExpr(CharStreams.fromString(program));
         GlobalEnvironment globalEnvironment = new GlobalEnvironment();
 
         var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
-        assertEquals(BigInteger.valueOf(Long.MAX_VALUE).add(new BigInteger("5")), result);
+        assertEquals(BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.TWO).multiply(BigInteger.TWO), result);
     }
 }

@@ -2,21 +2,20 @@ package com.ihorak.truffle.node.exprs.arithmetic;
 
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.exprs.builtin.BinaryOperationNode;
-import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.NodeField;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
 
-@NodeField(name = "plusOperation", type = BinaryOperationNode.class)
-public abstract class ReducePlusExprNode extends SchemeExpression {
+@NodeField(name = "multiplicationOperation", type = BinaryOperationNode.class)
+public abstract class ReduceMultiplyExprRuntimeNode extends SchemeExpression {
 
-    protected abstract BinaryOperationNode getPlusOperation();
+    protected abstract BinaryOperationNode getMultiplicationOperation();
 
     @Specialization
-    protected Object addAnyNumberOfArgs(VirtualFrame frame) {
-        var operation = getPlusOperation();
+    protected Object multiplyAnyNumberOfArgsRuntime(VirtualFrame frame) {
+        var operation = getMultiplicationOperation();
         var arguments = frame.getArguments();
-        Object result = 0L;
+        Object result = 1;
 
         for (int i = 1; i < arguments.length; i++) {
             result = operation.execute(result, arguments[i]);
