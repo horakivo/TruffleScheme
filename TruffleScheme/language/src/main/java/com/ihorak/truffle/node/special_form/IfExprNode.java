@@ -37,4 +37,13 @@ public class IfExprNode extends SchemeExpression {
         //TODO is here nil value? Everything except #f is true
         return !(result instanceof Boolean) || (boolean) result;
     }
+
+    @Override
+    public void setTailRecursiveAsTrue() {
+        super.setTailRecursiveAsTrue();
+        thenExpr.setTailRecursiveAsTrue();
+        if (elseExpr != null) {
+            elseExpr.setTailRecursiveAsTrue();
+        }
+    }
 }

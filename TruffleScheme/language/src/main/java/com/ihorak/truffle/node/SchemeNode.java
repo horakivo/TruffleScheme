@@ -8,10 +8,4 @@ import com.oracle.truffle.api.nodes.Node;
 @TypeSystemReference(SchemeTypes.class)
 public abstract class SchemeNode extends Node {
 
-    @CompilerDirectives.CompilationFinal
-    private boolean isTailRecursive = false;
-
-    public void setTailRecursive() {
-        this.isTailRecursive = true;
-    }
 }

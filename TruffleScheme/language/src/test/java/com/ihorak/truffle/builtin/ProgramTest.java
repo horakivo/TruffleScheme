@@ -157,10 +157,36 @@ public class ProgramTest {
                 "\n" +
                 "(define start (current-milliseconds))\n" +
                 "\n" +
-                "(countdown 10000)\n" +
+                "(countdown 100000)\n" +
                 "\n" +
                 "(define end (current-milliseconds))\n" +
                 "(- end start)";
+        var rootNode = Reader.readProgram(CharStreams.fromString(program));
+
+        var result = Truffle.getRuntime().createDirectCallNode(rootNode.getCallTarget()).call();
+        System.out.println(result);
+    }
+
+    @Test
+    public void test9() {
+        var program = "" +
+                "(define foo\n" +
+                "  (lambda (x)\n" +
+                "    (a x)))\n" +
+                "\n" +
+                "(define a\n" +
+                "  (lambda (y)\n" +
+                "    (b y)))\n" +
+                "\n" +
+                "(define b\n" +
+                "  (lambda (z)\n" +
+                "    (c z)))\n" +
+                "\n" +
+                "(define c\n" +
+                "  (lambda (q)\n" +
+                "    q))\n" +
+                "\n" +
+                "(foo 5)";
         var rootNode = Reader.readProgram(CharStreams.fromString(program));
 
         var result = Truffle.getRuntime().createDirectCallNode(rootNode.getCallTarget()).call();

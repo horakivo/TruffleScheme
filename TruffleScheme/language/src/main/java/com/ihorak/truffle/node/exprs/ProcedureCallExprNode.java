@@ -1,10 +1,13 @@
 package com.ihorak.truffle.node.exprs;
 
 import com.ihorak.truffle.exceptions.SchemeException;
+import com.ihorak.truffle.exceptions.TailCallException;
 import com.ihorak.truffle.node.ProcedureDispatchNode;
 import com.ihorak.truffle.node.ProcedureDispatchNodeGen;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeFunction;
+import com.oracle.truffle.api.CallTarget;
+import com.oracle.truffle.api.CompilerAsserts;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.UnexpectedResultException;
 
@@ -25,7 +28,6 @@ public class ProcedureCallExprNode extends SchemeExpression {
     public ProcedureCallExprNode(SchemeExpression functionNode, List<SchemeExpression> arguments) {
         this.functionNode = functionNode;
         this.arguments = arguments.toArray(SchemeExpression[]::new);
-        //TODO Direct or indirect? I still dont understand properly which to use when
         dispatchNode = ProcedureDispatchNodeGen.create();
     }
 
@@ -40,7 +42,23 @@ public class ProcedureCallExprNode extends SchemeExpression {
                     " \n Given: " + this.arguments.length);
         }
 
-        return dispatchNode.executeDispatch(function, arguments);
+        return call(function.getCallTarget(), arguments, virtualFrame);
+    }
+
+    private Object call(CallTarget callTarget, Object[] arguments, VirtualFrame frame) {
+        CompilerAsserts.partialEvaluationConstant(this.isTailRecursive());
+        if (this.isTailRecursive()) {
+            throw new TailCallException(callTarget, arguments);
+        } else {
+            while (true) {
+                try {
+                    return dispatchNode.executeDispatch(callTarget, arguments);
+                } catch (TailCallException tailCallException) {
+                    callTarget = tailCallException.getCallTarget();
+                    arguments = tailCallException.getArguments();
+                }
+            }
+        }
     }
 
     private SchemeFunction getFunction(VirtualFrame frame) {

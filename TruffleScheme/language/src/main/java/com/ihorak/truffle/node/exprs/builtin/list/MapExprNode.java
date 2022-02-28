@@ -46,7 +46,7 @@ public class MapExprNode extends SchemeExpression {
             int numberOfCalls = argumentsAsLists.get(0).size();
             for (int i = numberOfCalls; i-- > 0; ) {
                 var arguments = getArgumentsForGivenDispatch(i, numberOfArgumentsInEachDispatch, argumentsAsLists, virtualFrame);
-                result = result.cons(dispatchNode.executeDispatch(function, arguments), result);
+                result = result.cons(dispatchNode.executeDispatch(function.getCallTarget(), arguments), result);
             }
         }
 

@@ -115,16 +115,24 @@ public class SpecialFormConverter {
         var params = (SchemeCell) lambdaList.get(1);
         var expressions = (SchemeCell) ((SchemeCell) lambdaList.cdr).cdr;
 
-        List<SchemeExpression> lambdaExprs = new ArrayList<>(createLocalVariablesForLambda(params, lambdaContext));
-
-        for (Object obj : expressions) {
-            lambdaExprs.add(ListToExpressionConverter.convert(obj, lambdaContext));
-        }
+        List<SchemeExpression> allLambdaExprs = createLocalVariablesForLambda(params, lambdaContext);
+        allLambdaExprs.addAll(createLambdaBody(expressions, lambdaContext));
 
         var frameDescriptor = lambdaContext.getFrameDescriptor();
-        SchemeFunction function = SchemeFunction.createFunction(lambdaExprs, params, frameDescriptor);
+        SchemeFunction function = SchemeFunction.createFunction(allLambdaExprs, params, frameDescriptor);
 
         return new LambdaExprNode(function);
+    }
+
+    private static List<SchemeExpression> createLambdaBody(SchemeCell expressions, Context lambdaContext) {
+        List<SchemeExpression> bodyExprs = new ArrayList<>();
+        for (Object obj : expressions) {
+            bodyExprs.add(ListToExpressionConverter.convert(obj, lambdaContext));
+        }
+
+        bodyExprs.get(bodyExprs.size() - 1).setTailRecursiveAsTrue();
+
+        return bodyExprs;
     }
 
     private static List<SchemeExpression> createLocalVariablesForLambda(SchemeCell parameters, Context context) {

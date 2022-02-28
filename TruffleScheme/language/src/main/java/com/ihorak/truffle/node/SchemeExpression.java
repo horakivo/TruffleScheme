@@ -1,12 +1,16 @@
 package com.ihorak.truffle.node;
 
 import com.ihorak.truffle.type.*;
+import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.UnexpectedResultException;
 
 import java.math.BigInteger;
 
 public abstract class SchemeExpression extends SchemeNode {
+
+    @CompilerDirectives.CompilationFinal
+    private boolean isTailRecursive = false;
 
     /**
      * The execute method when no specialization is possible. This is the most general case,
@@ -36,5 +40,13 @@ public abstract class SchemeExpression extends SchemeNode {
 
     public BigInteger executeBigInt(VirtualFrame virtualFrame) throws UnexpectedResultException {
         return SchemeTypesGen.expectBigInteger(executeGeneric(virtualFrame));
+    }
+
+    public void setTailRecursiveAsTrue() {
+        this.isTailRecursive = true;
+    }
+
+    public boolean isTailRecursive() {
+        return isTailRecursive;
     }
 }
