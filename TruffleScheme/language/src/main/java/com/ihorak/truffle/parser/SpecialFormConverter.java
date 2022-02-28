@@ -94,12 +94,11 @@ public class SpecialFormConverter {
     @NotNull
     private static SchemeExpression handleDefineInParseTime(SchemeSymbol symbol, SchemeExpression valueToStore, Context context) {
         var index = context.findLocalSymbol(symbol);
-        if (index != null) {
-            return WriteLocalVariableExprNodeGen.create(valueToStore, index, symbol);
-        } else {
-            int frameIndex = context.addLocalSymbol(symbol);
-            return WriteLocalVariableExprNodeGen.create(valueToStore, frameIndex, symbol);
+        if (index == null) {
+            index = context.addLocalSymbol(symbol);
         }
+
+        return WriteLocalVariableExprNodeGen.create(valueToStore, index, symbol);
     }
 
     private static SchemeExpression handleDefineInRuntime(SchemeSymbol symbol, SchemeExpression valueToStore) {
