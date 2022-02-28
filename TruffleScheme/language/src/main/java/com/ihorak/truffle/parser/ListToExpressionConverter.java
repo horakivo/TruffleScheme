@@ -65,7 +65,7 @@ public class ListToExpressionConverter {
     private static SchemeExpression handleSymbolInParseTime(SchemeSymbol symbol, Context context) {
         var indexPair = context.findSymbol(symbol);
         if (indexPair != null) {
-            return ReadLocalVariableExprNodeGen.create(symbol, indexPair.getFrameIndex(), indexPair.getLexicalScopeDepth());
+            return ReadLocalVariableExprNodeGen.create(indexPair.getLexicalScopeDepth(), indexPair.getFrameIndex(), symbol);
         } else {
             //the variable was not define yet, therefore it will be defined later in global env (can't be defined somewhere in local environment because then we would have parse it )
             var index = context.addGlobalSymbol(symbol);

@@ -22,7 +22,7 @@ public class GlobalEnvironment {
 
     public GlobalEnvironment() {
         this.globalVirtualFrame = createGlobalVirtualFrame();
-        this.globalMaterializedFrame = globalVirtualFrame.materialize();
+        //this.globalMaterializedFrame = globalVirtualFrame.materialize();
     }
 
     private static void addPrimitiveProcedures(VirtualFrame frame) {

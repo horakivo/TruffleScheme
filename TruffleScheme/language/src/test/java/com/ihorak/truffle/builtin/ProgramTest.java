@@ -2,6 +2,7 @@ package com.ihorak.truffle.builtin;
 
 import com.ihorak.truffle.GlobalEnvironment;
 import com.ihorak.truffle.exceptions.SchemeException;
+import com.ihorak.truffle.node.special_form.lambda.WriteLocalVariableExprNode;
 import com.ihorak.truffle.parser.Reader;
 import com.oracle.truffle.api.Truffle;
 import org.antlr.v4.runtime.CharStreams;
@@ -189,6 +190,34 @@ public class ProgramTest {
                 "(foo 5)";
         var rootNode = Reader.readProgram(CharStreams.fromString(program));
 
+        var result = Truffle.getRuntime().createDirectCallNode(rootNode.getCallTarget()).call();
+        System.out.println(result);
+    }
+
+    @Test
+    public void test10() {
+        var program = "" +
+                "(define fibonacci\n" +
+                "  (lambda (n)\n" +
+                "    (if (< n 2)\n" +
+                "        1\n" +
+                "        (+ (fibonacci (- n 1))\n" +
+                "           (fibonacci (- n 2))))))\n" +
+                "           \n" +
+                "(fibonacci 30)\n" +
+                "(fibonacci 30)\n" +
+                "(fibonacci 30)\n" +
+                "(fibonacci 30)\n" +
+                "(fibonacci 30)\n" +
+                "(fibonacci 30)\n" +
+                "(fibonacci 30)\n" +
+                "(define start (current-milliseconds))\n" +
+                "\n" +
+                "(fibonacci 30)\n" +
+                "\n" +
+                "(define end (current-milliseconds))" +
+                "(- end start)";
+        var rootNode = Reader.readProgram(CharStreams.fromString(program));
         var result = Truffle.getRuntime().createDirectCallNode(rootNode.getCallTarget()).call();
         System.out.println(result);
     }
