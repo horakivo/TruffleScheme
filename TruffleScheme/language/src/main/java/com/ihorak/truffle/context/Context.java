@@ -1,29 +1,34 @@
 package com.ihorak.truffle.context;
 
+import com.ihorak.truffle.SchemeTruffleLanguage;
 import com.ihorak.truffle.exceptions.ParserException;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlotKind;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class Context {
 
     private Context parent;
+    private final SchemeTruffleLanguage language;
     private final LexicalScope lexicalScope;
     private Mode mode = Mode.PARSER;
     private final FrameDescriptor.Builder frameDescriptorBuilder;
     private final Map<SchemeSymbol, Integer> map = new HashMap<>();
 
-    public Context(Context parent, LexicalScope lexicalScope) {
+    public Context(Context parent, LexicalScope lexicalScope, SchemeTruffleLanguage language) {
         this.lexicalScope = lexicalScope;
+        this.language = language;
         this.parent = parent;
         this.frameDescriptorBuilder = FrameDescriptor.newBuilder();
     }
 
-    public Context() {
+    public Context(SchemeTruffleLanguage language) {
         this.lexicalScope = LexicalScope.GLOBAL;
+        this.language = language;
         this.parent = null;
         this.frameDescriptorBuilder = FrameDescriptor.newBuilder();
     }
@@ -108,5 +113,9 @@ public class Context {
 
     public void setMode(Mode mode) {
         this.mode = mode;
+    }
+
+    public SchemeTruffleLanguage getLanguage() {
+        return language;
     }
 }

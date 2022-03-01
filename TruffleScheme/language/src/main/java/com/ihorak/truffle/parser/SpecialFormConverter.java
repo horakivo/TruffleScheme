@@ -5,6 +5,7 @@ import com.ihorak.truffle.context.LexicalScope;
 import com.ihorak.truffle.context.Mode;
 import com.ihorak.truffle.exceptions.ParserException;
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.SchemeRootNode;
 import com.ihorak.truffle.node.exprs.ReadProcedureArgExprNode;
 import com.ihorak.truffle.node.special_form.*;
 import com.ihorak.truffle.node.special_form.lambda.LambdaExprNode;
@@ -14,6 +15,7 @@ import com.ihorak.truffle.node.special_form.lambda.WriteLocalVariableExprNodeGen
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeFunction;
 import com.ihorak.truffle.type.SchemeSymbol;
+import com.oracle.truffle.api.frame.FrameDescriptor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -109,18 +111,20 @@ public class SpecialFormConverter {
      *  --> (lambda (param1 .. paramN) expr1...exprN))
      * */
     private static LambdaExprNode convertLambda(SchemeCell lambdaList, Context context) {
-        Context lambdaContext = new Context(context, LexicalScope.LAMBDA);
+        Context lambdaContext = new Context(context, LexicalScope.LAMBDA, context.getLanguage());
 
         var params = (SchemeCell) lambdaList.get(1);
         var expressions = (SchemeCell) ((SchemeCell) lambdaList.cdr).cdr;
 
-        List<SchemeExpression> allLambdaExprs = createLocalVariablesForLambda(params, lambdaContext);
-        allLambdaExprs.addAll(createLambdaBody(expressions, lambdaContext));
+        List<SchemeExpression> paramExprs = createLocalVariablesForLambda(params, lambdaContext);
+        List<SchemeExpression> bodyExprs = createLambdaBody(expressions, lambdaContext);
 
+        List<SchemeExpression> allLambdaExpressions = new ArrayList<>();
+        allLambdaExpressions.addAll(paramExprs);
+        allLambdaExpressions.addAll(bodyExprs);
         var frameDescriptor = lambdaContext.getFrameDescriptor();
-        SchemeFunction function = SchemeFunction.createFunction(allLambdaExprs, params, frameDescriptor);
-
-        return new LambdaExprNode(function);
+        var rootNode = new SchemeRootNode(context.getLanguage(), frameDescriptor, allLambdaExpressions);
+        return new LambdaExprNode(new SchemeFunction(rootNode.getCallTarget(), paramExprs.size()));
     }
 
     private static List<SchemeExpression> createLambdaBody(SchemeCell expressions, Context lambdaContext) {
@@ -132,6 +136,20 @@ public class SpecialFormConverter {
         bodyExprs.get(bodyExprs.size() - 1).setTailRecursiveAsTrue();
 
         return bodyExprs;
+    }
+
+    /*
+    * This method just add the variables to the descriptor, so we can during parse time find the symbol and get their
+    * lexical scope depth.
+    *
+    * */
+    private static void addLocalVariablesToContext(SchemeCell parameters, Context context) {
+        if (context.getMode() == Mode.RUN_TIME) return;
+
+        for (int i = 0; i < parameters.size(); i++) {
+            var currentSymbol = (SchemeSymbol) parameters.get(i);
+            context.addLocalSymbol(currentSymbol);
+        }
     }
 
     private static List<SchemeExpression> createLocalVariablesForLambda(SchemeCell parameters, Context context) {
@@ -172,7 +190,7 @@ public class SpecialFormConverter {
     }
 
     private static LetExprNode convertLet(SchemeCell letList, Context context) {
-        Context letContext = new Context(context, LexicalScope.LET);
+        Context letContext = new Context(context, LexicalScope.LET, context.getLanguage());
         SchemeCell parameters = (SchemeCell) letList.get(1);
         SchemeCell body = (SchemeCell) ((SchemeCell) letList.cdr).cdr;
 

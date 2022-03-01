@@ -116,7 +116,8 @@ public class QuasiquoteExprNode extends SchemeExpression {
     }
 
     private Context createRuntimeContext() {
-        var context = new Context();
+        //TODO
+        var context = new Context(null);
         context.setMode(Mode.RUN_TIME);
 
         return context;

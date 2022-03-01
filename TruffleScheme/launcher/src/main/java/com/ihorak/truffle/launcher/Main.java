@@ -44,7 +44,7 @@ public final class Main {
         Context context;
         PrintStream err = System.err;
         try {
-            context = Context.newBuilder(SCM).in(in).out(out).options(options).build();
+            context = Context.newBuilder(SCM).in(in).out(out).options(options).allowExperimentalOptions(true).build();
         } catch (IllegalArgumentException e) {
             err.println(e.getMessage());
             return 1;
@@ -53,10 +53,11 @@ public final class Main {
 
         try {
             Value result = context.eval(source);
-            if (context.getBindings(SCM).getMember("main") == null) {
-                err.println("No function main() defined in SL source file.");
-                return 1;
-            }
+//            System.out.println(context.getBindings(SCM).getMemberKeys());
+//            if (context.getBindings(SCM).getMember("main") == null) {
+//                err.println("No function main() defined in SL source file.");
+//                return 1;
+//            }
             if (!result.isNull()) {
                 out.println(result.toString());
             }

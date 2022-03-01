@@ -43,7 +43,8 @@ public abstract class EvalExprNode extends SchemeExpression {
     //TODO in the future maybe add Mode directly to constructor, right now I would be big effort to change
     //TODO all the tests if I am not sure if this impl will stay
     private Context createRuntimeContext() {
-        var context = new Context();
+        //TOOD
+        var context = new Context(null);
         context.setMode(Mode.RUN_TIME);
 
         return context;

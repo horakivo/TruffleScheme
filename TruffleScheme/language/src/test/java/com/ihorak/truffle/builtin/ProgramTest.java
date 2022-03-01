@@ -6,6 +6,7 @@ import com.ihorak.truffle.node.special_form.lambda.WriteLocalVariableExprNode;
 import com.ihorak.truffle.parser.Reader;
 import com.oracle.truffle.api.Truffle;
 import org.antlr.v4.runtime.CharStreams;
+import org.graalvm.polyglot.Context;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -220,5 +221,38 @@ public class ProgramTest {
         var rootNode = Reader.readProgram(CharStreams.fromString(program));
         var result = Truffle.getRuntime().createDirectCallNode(rootNode.getCallTarget()).call();
         System.out.println(result);
+    }
+
+    @Test
+    public void test11() {
+        Context context = Context.create();
+        var program = "" +
+                "(define fibonacci\n" +
+                "  (lambda (n)\n" +
+                "    (if (< n 2)\n" +
+                "        1\n" +
+                "        (+ (fibonacci (- n 1))\n" +
+                "           (fibonacci (- n 2))))))\n" +
+                "           \n" +
+                "(fibonacci 30)\n" +
+                "(fibonacci 30)\n" +
+                "(fibonacci 30)\n" +
+                "(fibonacci 30)\n" +
+                "(fibonacci 30)\n" +
+                "(fibonacci 30)\n" +
+                "(fibonacci 30)\n" +
+                "(fibonacci 30)\n" +
+                "(fibonacci 30)\n" +
+                "(fibonacci 30)\n" +
+                "(fibonacci 30)\n" +
+                "(define start (current-milliseconds))\n" +
+                "\n" +
+                "(fibonacci 30)\n" +
+                "\n" +
+                "(define end (current-milliseconds))" +
+                "(- end start)";
+
+        var test = context.eval("scm", program);
+        System.out.println(test);
     }
 }

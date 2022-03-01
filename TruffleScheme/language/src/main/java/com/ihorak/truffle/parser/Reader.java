@@ -19,7 +19,7 @@ public class Reader {
 
     public static SchemeExpression readExpr(CharStream charStream) {
         var program = parseProgram(charStream);
-        var globalContext = new Context();
+        var globalContext = new Context(null);
         return ListToExpressionConverter.convert(program.getInternalRepresentations().get(0), globalContext);
     }
 
@@ -31,7 +31,7 @@ public class Reader {
 
     public static SchemeExpression readRuntimeExpr(CharStream charStream) {
         var program = parseProgram(charStream);
-        var globalContext = new Context();
+        var globalContext = new Context(null);
         globalContext.setMode(Mode.RUN_TIME);
         return ListToExpressionConverter.convert(program.getInternalRepresentations().get(0), globalContext);
     }
@@ -39,7 +39,7 @@ public class Reader {
     public static SchemeRootNode readProgram(CharStream charStream) {
 
         var program = parseProgram(charStream);
-        var globalContext = new Context();
+        var globalContext = new Context(null);
         List<SchemeExpression> expressionList = new ArrayList<>();
         for (Object obj : program.getInternalRepresentations()) {
             expressionList.add(ListToExpressionConverter.convert(obj, globalContext));

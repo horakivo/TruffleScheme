@@ -12,7 +12,7 @@ public class SchemeTruffleLanguage extends TruffleLanguage<Void> {
 
     @Override
     protected CallTarget parse(ParsingRequest request) throws Exception {
-        var globalContext = new Context();
+        var globalContext = new Context(this);
         var exprs = Reader.readProgram2(CharStreams.fromReader(request.getSource().getReader()), globalContext);
         var rootNode = new SchemeRootNode(this, globalContext.getFrameDescriptor(), exprs);
         return rootNode.getCallTarget();

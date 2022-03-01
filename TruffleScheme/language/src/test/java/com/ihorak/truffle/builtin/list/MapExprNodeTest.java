@@ -32,15 +32,15 @@ public class MapExprNodeTest {
 //        assertEquals(expectedResult, result);
 //    }
 
-    //TODO potentionally move to JUNIT 5 since its not nice to check error messages here
-    @Test(expected = SchemeException.class)
-    public void giveListsWithDifferentNumberOfArgs_whenMap_thenShouldThrowException() {
-        var program = "(map + (list 1 2) (list 4 5 6) (list 7 8 9))";
-        var expr = Reader.readExpr(CharStreams.fromString(program));
-        GlobalEnvironment globalEnvironment = new GlobalEnvironment();
-
-        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
-    }
+//    //TODO potentionally move to JUNIT 5 since its not nice to check error messages here
+//    @Test(expected = SchemeException.class)
+//    public void giveListsWithDifferentNumberOfArgs_whenMap_thenShouldThrowException() {
+//        var program = "(map + (list 1 2) (list 4 5 6) (list 7 8 9))";
+//        var expr = Reader.readExpr(CharStreams.fromString(program));
+//        GlobalEnvironment globalEnvironment = new GlobalEnvironment();
+//
+//        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
+//    }
 
     @Test(expected = SchemeException.class)
     public void givenProcedureWithDifferentNumberOfArgs_whenMap_thenShouldThrowException() {

@@ -141,7 +141,7 @@ public class LambdaExprNodeTest {
     @Test
     public void givenLambdaWithEvalAndQuote_whenExecuted_thenCorrectResultIsReturned() {
         var program = "((lambda (x) (eval '(define y 10)) (+ x y)) 5)";
-        var context = new Context();
+        var context = new Context(null);
         var expr = Reader.test(CharStreams.fromString(program), context);
         GlobalEnvironment globalEnvironment = new GlobalEnvironment();
 

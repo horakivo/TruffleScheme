@@ -36,11 +36,6 @@ public class SchemeFunction {
         return expectedNumberOfArgs;
     }
 
-    public static SchemeFunction createFunction(List<SchemeExpression> schemeExpressions, SchemeCell parameters, FrameDescriptor frameDescriptor) {
-        var callTarget = new SchemeRootNode(null, frameDescriptor, schemeExpressions).getCallTarget();
-        return new SchemeFunction(callTarget, parameters.size());
-    }
-
     public static SchemeFunction createBuiltinFunction(SchemeExpression schemeExpression, Integer expectedNumberOfArgs) {
         var rootNode = new SchemeRootNode(null, new FrameDescriptor(), List.of(schemeExpression));
 
