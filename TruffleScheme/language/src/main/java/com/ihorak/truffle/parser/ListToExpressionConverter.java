@@ -4,8 +4,8 @@ import com.ihorak.truffle.context.Context;
 import com.ihorak.truffle.context.Mode;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.literals.*;
+import com.ihorak.truffle.node.special_form.lambda.ReadClosureVariableExprNodeGen;
 import com.ihorak.truffle.node.special_form.lambda.ReadGlobalVariableExprNodeGen;
-import com.ihorak.truffle.node.special_form.lambda.ReadLocalVariableExprNodeGen;
 import com.ihorak.truffle.parser.Util.SpecialFormUtils;
 import com.ihorak.truffle.type.*;
 
@@ -65,7 +65,7 @@ public class ListToExpressionConverter {
     private static SchemeExpression handleSymbolInParseTime(SchemeSymbol symbol, Context context) {
         var indexPair = context.findSymbol(symbol);
         if (indexPair != null) {
-            return ReadLocalVariableExprNodeGen.create(indexPair.getLexicalScopeDepth(), indexPair.getFrameIndex(), symbol);
+            return ReadClosureVariableExprNodeGen.create(indexPair.getLexicalScopeDepth(), indexPair.getFrameIndex(), symbol);
         } else {
             //the variable was not define yet, therefore it will be defined later in global env (can't be defined somewhere in local environment because then we would have parse it )
             var index = context.addGlobalSymbol(symbol);

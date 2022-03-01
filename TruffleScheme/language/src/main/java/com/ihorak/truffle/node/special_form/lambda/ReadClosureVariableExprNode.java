@@ -2,12 +2,9 @@ package com.ihorak.truffle.node.special_form.lambda;
 
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.exceptions.ParserException;
 import com.ihorak.truffle.type.SchemeSymbol;
-import com.oracle.truffle.api.CompilerAsserts;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.dsl.Fallback;
-import com.oracle.truffle.api.dsl.NodeField;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlotKind;
@@ -19,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import static com.ihorak.truffle.node.special_form.lambda.FrameUtil.findGlobalEnv;
 
 
-public abstract class ReadLocalVariableExprNode extends SchemeExpression {
+public abstract class ReadClosureVariableExprNode extends SchemeExpression {
 
     private final int lexicalScopeDepth;
     private final int frameSlotIndex;
@@ -28,7 +25,7 @@ public abstract class ReadLocalVariableExprNode extends SchemeExpression {
     private FrameDescriptor frameDescriptor;
     private final BranchProfile parentNotFound = BranchProfile.create();
 
-    public ReadLocalVariableExprNode(int lexicalScopeDepth, int frameSlotIndex, SchemeSymbol symbol) {
+    public ReadClosureVariableExprNode(int lexicalScopeDepth, int frameSlotIndex, SchemeSymbol symbol) {
         this.lexicalScopeDepth = lexicalScopeDepth;
         this.frameSlotIndex = frameSlotIndex;
         this.symbol = symbol;
