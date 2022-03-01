@@ -82,11 +82,14 @@ public class SpecialFormConverter {
 
         if (potentialSymbol instanceof SchemeSymbol) {
             var symbol = (SchemeSymbol) potentialSymbol;
-            SchemeExpression valueToStore = ListToExpressionConverter.convert(defineList.get(2), context);
+            //If we eval the value here then if we use recursion (therefore use the name of the function somewhere)
+            //then we treat is as a global function is not necessary
+            //SchemeExpression valueToStore = ListToExpressionConverter.convert(defineList.get(2), context);
+            var defineBody = defineList.get(2);
             if (context.getMode() == Mode.RUN_TIME) {
-                return handleDefineInRuntime(symbol, valueToStore);
+                return handleDefineInRuntime(symbol, defineBody, context);
             } else {
-                return handleDefineInParseTime(symbol, valueToStore, context);
+                return handleDefineInParseTime(symbol, defineBody, context);
             }
         } else {
             throw new ParserException("define: expected: Symbol \n given: " + potentialSymbol);
@@ -94,16 +97,17 @@ public class SpecialFormConverter {
     }
 
     @NotNull
-    private static SchemeExpression handleDefineInParseTime(SchemeSymbol symbol, SchemeExpression valueToStore, Context context) {
+    private static SchemeExpression handleDefineInParseTime(SchemeSymbol symbol, Object defineBody, Context context) {
         var index = context.findLocalSymbol(symbol);
         if (index == null) {
             index = context.addLocalSymbol(symbol);
         }
-
-        return WriteLocalVariableExprNodeGen.create(valueToStore, index, symbol);
+        SchemeExpression valueToStore = ListToExpressionConverter.convert(defineBody, context);
+        return WriteLocalVariableExprNodeGen.create(index, symbol, valueToStore);
     }
 
-    private static SchemeExpression handleDefineInRuntime(SchemeSymbol symbol, SchemeExpression valueToStore) {
+    private static SchemeExpression handleDefineInRuntime(SchemeSymbol symbol, Object defineBody, Context context) {
+        SchemeExpression valueToStore = ListToExpressionConverter.convert(defineBody, context);
         return DefineExprNodeGen.create(valueToStore, symbol);
     }
 
@@ -139,10 +143,10 @@ public class SpecialFormConverter {
     }
 
     /*
-    * This method just add the variables to the descriptor, so we can during parse time find the symbol and get their
-    * lexical scope depth.
-    *
-    * */
+     * This method just add the variables to the descriptor, so we can during parse time find the symbol and get their
+     * lexical scope depth.
+     *
+     * */
     private static void addLocalVariablesToContext(SchemeCell parameters, Context context) {
         if (context.getMode() == Mode.RUN_TIME) return;
 
@@ -163,7 +167,7 @@ public class SpecialFormConverter {
             for (int i = 0; i < parameters.size(); i++) {
                 var currentSymbol = (SchemeSymbol) parameters.get(i);
                 int frameIndex = context.addLocalSymbol(currentSymbol);
-                var localVariableNode = WriteLocalVariableExprNodeGen.create(new ReadProcedureArgExprNode(i), frameIndex, currentSymbol);
+                var localVariableNode = WriteLocalVariableExprNodeGen.create(frameIndex, currentSymbol, new ReadProcedureArgExprNode(i));
                 result.add(localVariableNode);
             }
 
@@ -220,8 +224,8 @@ public class SpecialFormConverter {
                 if (symbolExpected instanceof SchemeSymbol) {
                     var symbol = (SchemeSymbol) symbolExpected;
                     int frameIndex = context.addLocalSymbol(symbol);
-                    var expr = ListToExpressionConverter.convert(currentList.get(1), context);
-                    var localVariableNode = WriteLocalVariableExprNodeGen.create(expr, frameIndex, symbol);
+                    var valueToStore = ListToExpressionConverter.convert(currentList.get(1), context);
+                    var localVariableNode = WriteLocalVariableExprNodeGen.create(frameIndex, symbol, valueToStore);
                     result.add(localVariableNode);
                     continue;
                 }

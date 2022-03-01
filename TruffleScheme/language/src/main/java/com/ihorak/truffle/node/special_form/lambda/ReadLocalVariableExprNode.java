@@ -9,8 +9,9 @@ import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.NodeField;
 import com.oracle.truffle.api.dsl.Specialization;
+import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlotKind;
-import com.oracle.truffle.api.frame.FrameSlotTypeException;
+import com.oracle.truffle.api.profiles.BranchProfile;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 import org.jetbrains.annotations.NotNull;
@@ -23,6 +24,9 @@ public abstract class ReadLocalVariableExprNode extends SchemeExpression {
     private final int lexicalScopeDepth;
     private final int frameSlotIndex;
     private final SchemeSymbol symbol;
+    @CompilerDirectives.CompilationFinal
+    private FrameDescriptor frameDescriptor;
+    private final BranchProfile parentNotFound = BranchProfile.create();
 
     public ReadLocalVariableExprNode(int lexicalScopeDepth, int frameSlotIndex, SchemeSymbol symbol) {
         this.lexicalScopeDepth = lexicalScopeDepth;
@@ -49,7 +53,7 @@ public abstract class ReadLocalVariableExprNode extends SchemeExpression {
     }
 
     @Specialization(guards = "isObject(frame)", replaces = {"readLong", "readBoolean", "readDouble"})
-    protected Object read(VirtualFrame frame)  {
+    protected Object read(VirtualFrame frame) {
         return findCorrectVirtualFrame(frame).getObject(frameSlotIndex);
     }
 
@@ -62,12 +66,11 @@ public abstract class ReadLocalVariableExprNode extends SchemeExpression {
 
     @NotNull
     private Object getParentEnvironment(VirtualFrame virtualFrame) {
-        if (virtualFrame.getArguments().length > 0) {
-            return virtualFrame.getArguments()[0];
-        } else {
-            CompilerDirectives.transferToInterpreter();
-            throw new ParserException("This should never happen. It means that there is mistake in parser!");
+        if (virtualFrame.getArguments().length == 0) {
+            parentNotFound.enter();
+            throw new IllegalStateException("No parent found in ReadLocalVariable! This is mistake in the parser!");
         }
+        return virtualFrame.getArguments()[0];
     }
 
     @ExplodeLoop
@@ -80,19 +83,33 @@ public abstract class ReadLocalVariableExprNode extends SchemeExpression {
         return currentFrame;
     }
 
+    @ExplodeLoop
+    private FrameDescriptor findCorrectFrameDescriptor(VirtualFrame frame) {
+        if (this.frameDescriptor == null) {
+            CompilerDirectives.transferToInterpreterAndInvalidate();
+            VirtualFrame currentFrame = frame;
+            for (int i = 0; i < lexicalScopeDepth; i++) {
+                currentFrame = (VirtualFrame) getParentEnvironment(currentFrame);
+            }
+            this.frameDescriptor = currentFrame.getFrameDescriptor();
+        }
+
+        return frameDescriptor;
+    }
+
     public boolean isLong(VirtualFrame frame) {
-        return findCorrectVirtualFrame(frame).getFrameDescriptor().getSlotKind(frameSlotIndex) == FrameSlotKind.Long;
+        return findCorrectFrameDescriptor(frame).getSlotKind(frameSlotIndex) == FrameSlotKind.Long;
     }
 
     public boolean isBoolean(VirtualFrame frame) {
-        return findCorrectVirtualFrame(frame).getFrameDescriptor().getSlotKind(frameSlotIndex) == FrameSlotKind.Boolean;
+        return findCorrectFrameDescriptor(frame).getSlotKind(frameSlotIndex) == FrameSlotKind.Boolean;
     }
 
     public boolean isDouble(VirtualFrame frame) {
-        return findCorrectVirtualFrame(frame).getFrameDescriptor().getSlotKind(frameSlotIndex) == FrameSlotKind.Double;
+        return findCorrectFrameDescriptor(frame).getSlotKind(frameSlotIndex) == FrameSlotKind.Double;
     }
 
     public boolean isObject(VirtualFrame frame) {
-        return findCorrectVirtualFrame(frame).getFrameDescriptor().getSlotKind(frameSlotIndex) == FrameSlotKind.Object;
+        return findCorrectFrameDescriptor(frame).getSlotKind(frameSlotIndex) == FrameSlotKind.Object;
     }
 }

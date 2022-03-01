@@ -4,38 +4,39 @@ import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.NodeChild;
-import com.oracle.truffle.api.dsl.NodeField;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.FrameSlotKind;
 import com.oracle.truffle.api.frame.VirtualFrame;
 
 @NodeChild(value = "valueToStore")
-@NodeField(name = "frameIndex", type = int.class)
-@NodeField(name = "name", type = SchemeSymbol.class)
 public abstract class WriteLocalVariableExprNode extends SchemeExpression {
 
-    protected abstract int getFrameIndex();
+    private final int frameIndex;
+    private final SchemeSymbol symbol;
 
-    protected abstract SchemeSymbol getName();
+    public WriteLocalVariableExprNode(int frameIndex, SchemeSymbol symbol) {
+        this.frameIndex = frameIndex;
+        this.symbol = symbol;
+    }
 
     @Specialization
     protected Object writeLong(VirtualFrame frame, long value) {
-        frame.getFrameDescriptor().setSlotKind(getFrameIndex(), FrameSlotKind.Long);
-        frame.setLong(getFrameIndex(), value);
+        frame.getFrameDescriptor().setSlotKind(frameIndex, FrameSlotKind.Long);
+        frame.setLong(frameIndex, value);
         return null;
     }
 
     @Specialization
     protected Object writeBoolean(VirtualFrame frame, boolean value) {
-        frame.getFrameDescriptor().setSlotKind(getFrameIndex(), FrameSlotKind.Boolean);
-        frame.setBoolean(getFrameIndex(), value);
+        frame.getFrameDescriptor().setSlotKind(frameIndex, FrameSlotKind.Boolean);
+        frame.setBoolean(frameIndex, value);
         return null;
     }
 
     @Specialization
     protected Object writeDouble(VirtualFrame frame, double value) {
-        frame.getFrameDescriptor().setSlotKind(getFrameIndex(), FrameSlotKind.Double);
-        frame.setDouble(getFrameIndex(), value);
+        frame.getFrameDescriptor().setSlotKind(frameIndex, FrameSlotKind.Double);
+        frame.setDouble(frameIndex, value);
         return null;
     }
 
@@ -59,8 +60,8 @@ public abstract class WriteLocalVariableExprNode extends SchemeExpression {
          *
          * No-op if kind is already Object.
          */
-        frame.getFrameDescriptor().setSlotKind(getFrameIndex(), FrameSlotKind.Object);
-        frame.setObject(getFrameIndex(), value);
+        frame.getFrameDescriptor().setSlotKind(frameIndex, FrameSlotKind.Object);
+        frame.setObject(frameIndex, value);
         return null;
     }
 }
