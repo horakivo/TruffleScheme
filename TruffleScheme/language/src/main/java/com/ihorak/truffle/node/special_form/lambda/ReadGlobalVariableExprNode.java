@@ -2,18 +2,21 @@ package com.ihorak.truffle.node.special_form.lambda;
 
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeSymbol;
+import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.dsl.Specialization;
+import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlotKind;
 import com.oracle.truffle.api.frame.VirtualFrame;
 
 import static com.ihorak.truffle.node.special_form.lambda.FrameUtil.findAuxiliaryValue;
-import static com.ihorak.truffle.node.special_form.lambda.FrameUtil.findGlobalEnv;
 
 
 public abstract class ReadGlobalVariableExprNode extends SchemeExpression {
 
     private final SchemeSymbol symbol;
     private final int frameSlotIndex;
+    @CompilerDirectives.CompilationFinal
+    private FrameDescriptor frameDescriptor;
 
     public ReadGlobalVariableExprNode(SchemeSymbol symbol, int frameSlotIndex) {
         this.symbol = symbol;
@@ -46,26 +49,40 @@ public abstract class ReadGlobalVariableExprNode extends SchemeExpression {
         return findAuxiliaryValue(frame, symbol);
     }
 
-//    @Fallback
-//    protected void fallback(VirtualFrame frame) {
-//        throw new SchemeException(getSymbol() + ": undefined\ncannot reference an identifier before its definition. FrameSlotKind: " + findGlobalEnv(frame).getFrameDescriptor().getSlotKind(getFrameSlotIndex()));
-//    }
-
 
     public boolean isLong(VirtualFrame frame) {
-        return findGlobalEnv(frame).getFrameDescriptor().getSlotKind(frameSlotIndex) == FrameSlotKind.Long;
+        return findGlobalFrameDescriptor(frame).getSlotKind(frameSlotIndex) == FrameSlotKind.Long;
     }
 
     public boolean isBoolean(VirtualFrame frame) {
-        return findGlobalEnv(frame).getFrameDescriptor().getSlotKind(frameSlotIndex) == FrameSlotKind.Boolean;
+        return findGlobalFrameDescriptor(frame).getSlotKind(frameSlotIndex) == FrameSlotKind.Boolean;
     }
 
     public boolean isDouble(VirtualFrame frame) {
-        return findGlobalEnv(frame).getFrameDescriptor().getSlotKind(frameSlotIndex) == FrameSlotKind.Double;
+        return findGlobalFrameDescriptor(frame).getSlotKind(frameSlotIndex) == FrameSlotKind.Double;
     }
 
     public boolean isObject(VirtualFrame frame) {
-        return findGlobalEnv(frame).getFrameDescriptor().getSlotKind(frameSlotIndex) == FrameSlotKind.Object;
+        return findGlobalFrameDescriptor(frame).getSlotKind(frameSlotIndex) == FrameSlotKind.Object;
     }
+
+    public VirtualFrame findGlobalEnv(VirtualFrame frame) {
+        VirtualFrame currentFrame = frame;
+
+        while (currentFrame.getArguments().length != 0) {
+            currentFrame = (VirtualFrame) currentFrame.getArguments()[0];
+        }
+
+        return currentFrame;
+    }
+
+    public FrameDescriptor findGlobalFrameDescriptor(VirtualFrame frame) {
+        if (frameDescriptor == null) {
+            CompilerDirectives.transferToInterpreterAndInvalidate();
+            this.frameDescriptor = findGlobalEnv(frame).getFrameDescriptor();
+        }
+        return frameDescriptor;
+    }
+
 
 }

@@ -8,16 +8,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class FrameUtil {
 
-    public static VirtualFrame findGlobalEnv(VirtualFrame frame) {
-        VirtualFrame currentFrame = frame;
-
-        while (currentFrame.getArguments().length != 0) {
-            currentFrame = (VirtualFrame) currentFrame.getArguments()[0];
-        }
-
-        return currentFrame;
-    }
-
     @NotNull
     public static Object findAuxiliaryValue(VirtualFrame frame, SchemeSymbol symbol) {
         var index = frame.getFrameDescriptor().getAuxiliarySlots().get(symbol);

@@ -13,17 +13,14 @@ import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 import org.jetbrains.annotations.NotNull;
 
-import static com.ihorak.truffle.node.special_form.lambda.FrameUtil.findGlobalEnv;
-
 
 public abstract class ReadClosureVariableExprNode extends SchemeExpression {
 
     private final int lexicalScopeDepth;
     private final int frameSlotIndex;
     private final SchemeSymbol symbol;
-    @CompilerDirectives.CompilationFinal
-    private FrameDescriptor frameDescriptor;
     private final BranchProfile parentNotFound = BranchProfile.create();
+    @CompilerDirectives.CompilationFinal private FrameDescriptor frameDescriptor;
 
     public ReadClosureVariableExprNode(int lexicalScopeDepth, int frameSlotIndex, SchemeSymbol symbol) {
         this.lexicalScopeDepth = lexicalScopeDepth;
@@ -57,7 +54,7 @@ public abstract class ReadClosureVariableExprNode extends SchemeExpression {
 
     @Fallback
     protected void fallback(VirtualFrame frame) {
-        throw new SchemeException(symbol + ": undefined\ncannot reference an identifier before its definition. FrameSlotKind: " + findGlobalEnv(frame).getFrameDescriptor().getSlotKind(frameSlotIndex));
+        throw new SchemeException(symbol + ": undefined\ncannot reference an identifier before its definition. FrameSlotKind: " + findCorrectVirtualFrame(frame).getFrameDescriptor().getSlotKind(frameSlotIndex));
     }
 
 
