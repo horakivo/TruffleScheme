@@ -117,15 +117,15 @@ public class LambdaExprNodeTest {
         assertEquals(21L, result);
     }
 
-    @Test
-    public void givenSimpleLambdaWithUndefinedVariable_whenExecuted_thenCorrectResultIsReturned() {
-        var program = "(define fun (lambda () (+ x))) (fun)";
-        var rootNode = Reader.readProgram(CharStreams.fromString(program));
-
-        var result = Truffle.getRuntime().createDirectCallNode(rootNode.getCallTarget()).call();
-
-        assertEquals(21L, result);
-    }
+//    @Test
+//    public void givenSimpleLambdaWithUndefinedVariable_whenExecuted_thenCorrectResultIsReturned() {
+//        var program = "(define fun (lambda () (+ x))) (fun)";
+//        var rootNode = Reader.readProgram(CharStreams.fromString(program));
+//
+//        var result = Truffle.getRuntime().createDirectCallNode(rootNode.getCallTarget()).call();
+//
+//        assertEquals(21L, result);
+//    }
 
 //    @Test
 //    public void fast_test_2() {

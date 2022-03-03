@@ -60,6 +60,4 @@ public abstract class ReadLocalVariableExprNode extends SchemeExpression {
     protected boolean isObject(VirtualFrame frame) {
         return frame.getFrameDescriptor().getSlotKind(frameSlotIndex) == FrameSlotKind.Object;
     }
-
-
 }
