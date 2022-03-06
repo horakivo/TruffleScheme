@@ -5,71 +5,83 @@ import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.parser.Reader;
 import com.ihorak.truffle.type.SchemeCell;
 import org.antlr.v4.runtime.CharStreams;
+import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.PolyglotException;
+import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class AppendExprNodeTest {
+
+    private Context context;
+
+    @Before
+    public void setUp() {
+        context = Context.create();
+    }
 
     @Test
     public void givenTwoList_whenAppend_thenShouldReturnMergedLists() {
         var program = "(append (list 1 2) (list 3 4))";
-        var expr = Reader.readExpr(CharStreams.fromString(program));
-        GlobalEnvironment globalEnvironment = new GlobalEnvironment();
 
-        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
-        var expectedResult =
-                new SchemeCell(1L,
-                        new SchemeCell(2L,
-                                new SchemeCell(3L,
-                                        new SchemeCell(4L, SchemeCell.EMPTY_LIST))));
-        assertEquals(expectedResult, result);
+        var result = context.eval("scm", program);
+
+
+        assertTrue(result.hasArrayElements());
+        assertEquals(4L, result.getArraySize());
+        assertEquals(1L, result.getArrayElement(0).asLong());
+        assertEquals(2L, result.getArrayElement(1).asLong());
+        assertEquals(3L, result.getArrayElement(2).asLong());
+        assertEquals(4L, result.getArrayElement(3).asLong());
     }
 
     @Test
     public void givenOneList_whenAppend_thenShouldReturnGivenList() {
         var program = "(append (list 1 2))";
-        var expr = Reader.readExpr(CharStreams.fromString(program));
-        GlobalEnvironment globalEnvironment = new GlobalEnvironment();
 
-        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
-        var expectedResult = new SchemeCell(1L, new SchemeCell(2L, SchemeCell.EMPTY_LIST));
-        assertEquals(expectedResult, result);
+        var result = context.eval("scm", program);
+
+        assertTrue(result.hasArrayElements());
+        assertEquals(2L, result.getArraySize());
+        assertEquals(1L, result.getArrayElement(0).asLong());
+        assertEquals(2L, result.getArrayElement(1).asLong());
     }
 
     @Test
     public void givenNoArgs_whenAppend_thenShouldReturnEmptyList() {
         var program = "(append)";
-        var expr = Reader.readExpr(CharStreams.fromString(program));
-        GlobalEnvironment globalEnvironment = new GlobalEnvironment();
 
-        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
-        assertEquals(SchemeCell.EMPTY_LIST, result);
+        var result = context.eval("scm", program);
+
+        assertTrue(result.hasArrayElements());
+        assertEquals(0L, result.getArraySize());
     }
 
     @Test
     public void givenArbitraryNumberOfArgs_whenAppend_thenShouldReturnEmptyList() {
         var program = "(append (list 1 2) (list 3 4) (list 5 6))";
-        var expr = Reader.readExpr(CharStreams.fromString(program));
-        GlobalEnvironment globalEnvironment = new GlobalEnvironment();
 
-        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
-        var expectedResult =
-                new SchemeCell(1L,
-                        new SchemeCell(2L,
-                                new SchemeCell(3L,
-                                        new SchemeCell(4L,
-                                                new SchemeCell(5L,
-                                                        new SchemeCell(6L, SchemeCell.EMPTY_LIST))))));
-        assertEquals(expectedResult, result);
+
+        var result = context.eval("scm", program);
+
+        assertTrue(result.hasArrayElements());
+        assertEquals(6L, result.getArraySize());
+        assertEquals(1L, result.getArrayElement(0).asLong());
+        assertEquals(2L, result.getArrayElement(1).asLong());
+        assertEquals(3L, result.getArrayElement(2).asLong());
+        assertEquals(4L, result.getArrayElement(3).asLong());
+        assertEquals(5L, result.getArrayElement(4).asLong());
+        assertEquals(6L, result.getArrayElement(5).asLong());
     }
 
-    @Test(expected = SchemeException.class)
+    @Test
     public void givenOneListOnePair_whenAppend_thenShouldThrowException() {
         var program = "(append (list 1 2) (cons 3 4))";
-        var expr = Reader.readExpr(CharStreams.fromString(program));
-        GlobalEnvironment globalEnvironment = new GlobalEnvironment();
 
-        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
+
+        var msg = assertThrows(PolyglotException.class, () ->  context.eval("scm", program)).getMessage();
+
+        assertEquals("append: contract violation\nexpecting all arguments lists", msg);
     }
 }

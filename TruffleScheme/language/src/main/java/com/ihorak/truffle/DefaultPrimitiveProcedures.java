@@ -1,5 +1,6 @@
 package com.ihorak.truffle;
 
+import com.ihorak.truffle.node.ProcedureRootNode;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.exprs.ReadProcedureArgExprNode;
 import com.ihorak.truffle.node.exprs.arithmetic.ReduceDivideExprRuntimeNodeGen;
@@ -45,15 +46,15 @@ public class DefaultPrimitiveProcedures {
 
     private static Map<SchemeSymbol, SchemeFunction> getAllPrimitiveProcedures() {
         var plusExpr = ReducePlusExprRuntimeNodeGen.create(PlusExprNodeGen.create());
-        SchemeFunction plusFunction = SchemeFunction.createBuiltinFunction(plusExpr, null);
+        SchemeFunction plusFunction = createBuiltinFunction(plusExpr, null);
         var minusExpr = ReduceMinusExprRuntimeNodeGen.create(MinusExprNodeGen.create());
-        SchemeFunction minusFunction = SchemeFunction.createBuiltinFunction(minusExpr, null);
+        SchemeFunction minusFunction = createBuiltinFunction(minusExpr, null);
         var multiplyExpr = ReduceMultiplyExprRuntimeNodeGen.create(MultiplyExprNodeGen.create());
-        SchemeFunction multiplyFunction = SchemeFunction.createBuiltinFunction(multiplyExpr, null);
+        SchemeFunction multiplyFunction = createBuiltinFunction(multiplyExpr, null);
         var divideExpr = ReduceDivideExprRuntimeNodeGen.create(DivideExprNodeGen.create());
-        SchemeFunction divideFunction = SchemeFunction.createBuiltinFunction(divideExpr, null);
+        SchemeFunction divideFunction = createBuiltinFunction(divideExpr, null);
         SchemeExpression evalExpr = EvalExprNodeGen.create(new ReadProcedureArgExprNode(0));
-        SchemeFunction evalFunction = SchemeFunction.createBuiltinFunction(evalExpr, 1);
+        SchemeFunction evalFunction = createBuiltinFunction(evalExpr, 1);
 
 
         return Map.of(
@@ -62,6 +63,12 @@ public class DefaultPrimitiveProcedures {
                 new SchemeSymbol("*"), multiplyFunction,
                 new SchemeSymbol("/"), divideFunction
         );
+    }
+
+    public static SchemeFunction createBuiltinFunction(SchemeExpression schemeExpression, Integer expectedNumberOfArgs) {
+        var rootNode = new ProcedureRootNode(null, new FrameDescriptor(), List.of(schemeExpression));
+
+        return new SchemeFunction(rootNode.getCallTarget(), expectedNumberOfArgs);
     }
 
     public static final class DefaultPrimitiveProceduresContainer {

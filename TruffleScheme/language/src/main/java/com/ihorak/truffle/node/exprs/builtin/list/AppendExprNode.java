@@ -24,7 +24,7 @@ public abstract class AppendExprNode extends BinaryOperationNode {
 
             return result;
         } else {
-            throw new SchemeException("append: contract violation \n expecting all arguments lists");
+            throw new SchemeException("append: contract violation\nexpecting all arguments lists");
         }
     }
 }

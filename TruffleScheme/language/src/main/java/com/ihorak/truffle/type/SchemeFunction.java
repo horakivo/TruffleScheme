@@ -1,20 +1,23 @@
 package com.ihorak.truffle.type;
 
-import com.ihorak.truffle.node.ProcedureRootNode;
-import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.SchemeRootNode;
+import com.ihorak.truffle.node.*;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.MaterializedFrame;
+import com.oracle.truffle.api.interop.TruffleObject;
+import com.oracle.truffle.api.library.ExportLibrary;
+import com.oracle.truffle.api.interop.InteropLibrary;
 
 import java.util.List;
 
-public class SchemeFunction {
+@ExportLibrary(InteropLibrary.class)
+public class SchemeFunction implements TruffleObject {
 
     private final CallTarget callTarget;
     private final Integer expectedNumberOfArgs;
     private MaterializedFrame parentFrame;
+    private final ProcedureDispatchNode dispatchNode = ProcedureDispatchNodeGen.create();
 
     public SchemeFunction(CallTarget callTarget, Integer expectedNumberOfArgs) {
         this.callTarget = callTarget;
@@ -37,9 +40,6 @@ public class SchemeFunction {
         return expectedNumberOfArgs;
     }
 
-    public static SchemeFunction createBuiltinFunction(SchemeExpression schemeExpression, Integer expectedNumberOfArgs) {
-        var rootNode = new ProcedureRootNode(null, new FrameDescriptor(), List.of(schemeExpression));
 
-        return new SchemeFunction(rootNode.getCallTarget(), expectedNumberOfArgs);
-    }
+
 }

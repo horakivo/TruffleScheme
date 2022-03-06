@@ -1,11 +1,20 @@
 package com.ihorak.truffle.type;
 
+import com.oracle.truffle.api.dsl.Cached;
+import com.oracle.truffle.api.interop.InteropLibrary;
+import com.oracle.truffle.api.interop.InvalidArrayIndexException;
+import com.oracle.truffle.api.interop.TruffleObject;
+import com.oracle.truffle.api.library.ExportLibrary;
+import com.oracle.truffle.api.library.ExportMessage;
+import com.oracle.truffle.api.profiles.BranchProfile;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-public class SchemeCell implements Iterable<Object> {
+@ExportLibrary(InteropLibrary.class)
+public class SchemeCell implements Iterable<Object>, TruffleObject {
 
     public static SchemeCell EMPTY_LIST = new SchemeCell(null, null);
 
@@ -157,5 +166,31 @@ public class SchemeCell implements Iterable<Object> {
         }
 
         return currentList.car;
+    }
+
+
+    @ExportMessage
+    boolean hasArrayElements() {
+        return true;
+    }
+
+    @ExportMessage
+    boolean isArrayElementReadable(long index) {
+        return index >= 0 && index < size();
+    }
+
+
+    @ExportMessage
+    long getArraySize() {
+        return size();
+    }
+
+    @ExportMessage
+    Object readArrayElement(long index, @Cached BranchProfile error) throws InvalidArrayIndexException {
+        if (!isArrayElementReadable(index)) {
+            error.enter();
+            throw InvalidArrayIndexException.create(index);
+        }
+        return get((int) index);
     }
 }

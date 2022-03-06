@@ -1,9 +1,5 @@
 package com.ihorak.truffle.builtin.arithmetic;
 
-import com.ihorak.truffle.GlobalEnvironment;
-import com.ihorak.truffle.exceptions.SchemeException;
-import com.ihorak.truffle.parser.Reader;
-import org.antlr.v4.runtime.CharStreams;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
 import org.junit.Before;

@@ -1,14 +1,9 @@
 package com.ihorak.truffle.builtin.arithmetic;
 
-import com.ihorak.truffle.GlobalEnvironment;
 import org.graalvm.polyglot.Context;
-import com.ihorak.truffle.parser.Reader;
-import com.oracle.truffle.api.Truffle;
-import org.antlr.v4.runtime.CharStreams;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.math.BigInteger;
 
 import static org.junit.Assert.assertEquals;
 
