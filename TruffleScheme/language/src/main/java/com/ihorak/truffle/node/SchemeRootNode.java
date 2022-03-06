@@ -18,8 +18,8 @@ public class SchemeRootNode extends RootNode {
         this.schemeExpressions = schemeExpressions.toArray(SchemeExpression[]::new);
     }
 
-    @ExplodeLoop
     @Override
+    @ExplodeLoop
     public Object execute(VirtualFrame frame) {
         for (int i = 0; i < schemeExpressions.length - 1; i++) {
             schemeExpressions[i].executeGeneric(frame);

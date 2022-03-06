@@ -11,6 +11,7 @@ import com.oracle.truffle.api.CompilerAsserts;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.nodes.UnexpectedResultException;
+import com.oracle.truffle.api.profiles.BranchProfile;
 
 import java.util.List;
 
@@ -25,6 +26,8 @@ public class ProcedureCallExprNode extends SchemeExpression {
     @SuppressWarnings("FieldMayBeFinal")
     @Child
     private ProcedureDispatchNode dispatchNode;
+    //TODO WTF
+    //private final BranchProfile profile = BranchProfile.create();
 
     public ProcedureCallExprNode(SchemeExpression functionNode, List<SchemeExpression> arguments) {
         this.functionNode = functionNode;
@@ -37,11 +40,11 @@ public class ProcedureCallExprNode extends SchemeExpression {
         SchemeFunction function = getFunction(virtualFrame);
         Object[] arguments = getProcedureArguments(function, virtualFrame);
 
-        if (function.getExpectedNumberOfArgs() != null && function.getExpectedNumberOfArgs() != this.arguments.length) {
-            throw new SchemeException("Procedure was called with wrong number of arguments." +
-                    " \n Expected: " + function.getExpectedNumberOfArgs() +
-                    " \n Given: " + this.arguments.length);
-        }
+//        if (function.getExpectedNumberOfArgs() != null && function.getExpectedNumberOfArgs() != this.arguments.length) {
+//            throw new SchemeException("Procedure was called with wrong number of arguments." +
+//                    " \n Expected: " + function.getExpectedNumberOfArgs() +
+//                    " \n Given: " + this.arguments.length);
+//        }
 
         return call(function.getCallTarget(), arguments, virtualFrame);
     }
@@ -74,8 +77,10 @@ public class ProcedureCallExprNode extends SchemeExpression {
     private Object[] getProcedureArguments(SchemeFunction function, VirtualFrame parentFrame) {
         Object[] arguments = new Object[this.arguments.length + 1];
         if (function.getParentFrame() == null) {
-//            throw new SchemeException("User defined procedures should always have parent enviroment!");
-            arguments[0] = parentFrame;
+            //TODO WTF
+           // profile.enter();
+            throw new SchemeException("User defined procedures should always have parent enviroment!");
+            //arguments[0] = parentFrame;
 
         } else {
             arguments[0] = function.getParentFrame();

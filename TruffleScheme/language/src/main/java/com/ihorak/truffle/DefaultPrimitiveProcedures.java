@@ -8,10 +8,7 @@ import com.ihorak.truffle.node.exprs.arithmetic.ReduceMinusExprRuntimeNodeGen;
 import com.ihorak.truffle.node.exprs.arithmetic.ReduceMultiplyExprRuntimeNodeGen;
 import com.ihorak.truffle.node.exprs.arithmetic.ReducePlusExprRuntimeNodeGen;
 import com.ihorak.truffle.node.exprs.builtin.EvalExprNodeGen;
-import com.ihorak.truffle.node.exprs.builtin.arithmetic.DivideExprNodeGen;
-import com.ihorak.truffle.node.exprs.builtin.arithmetic.MinusExprNodeGen;
-import com.ihorak.truffle.node.exprs.builtin.arithmetic.MultiplyExprNodeGen;
-import com.ihorak.truffle.node.exprs.builtin.arithmetic.PlusExprNodeGen;
+import com.ihorak.truffle.node.exprs.builtin.arithmetic.*;
 import com.ihorak.truffle.node.special_form.lambda.WriteBuiltinProcedureExprNode;
 import com.ihorak.truffle.node.special_form.lambda.WriteBuiltinProcedureExprNodeGen;
 import com.ihorak.truffle.type.SchemeFunction;
@@ -45,7 +42,7 @@ public class DefaultPrimitiveProcedures {
 
 
     private static Map<SchemeSymbol, SchemeFunction> getAllPrimitiveProcedures() {
-        var plusExpr = ReducePlusExprRuntimeNodeGen.create(PlusExprNodeGen.create());
+        var plusExpr = PlusTestNodeGen.create(new ReadProcedureArgExprNode(0), new ReadProcedureArgExprNode(1));
         SchemeFunction plusFunction = createBuiltinFunction(plusExpr, null);
         var minusExpr = ReduceMinusExprRuntimeNodeGen.create(MinusExprNodeGen.create());
         SchemeFunction minusFunction = createBuiltinFunction(minusExpr, null);
