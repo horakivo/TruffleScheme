@@ -7,9 +7,11 @@ import com.ihorak.truffle.context.Context;
 import com.ihorak.truffle.parser.ListToExpressionConverter;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeSymbol;
+import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.VirtualFrame;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class QuasiquoteExprNode extends SchemeExpression {
@@ -117,7 +119,7 @@ public class QuasiquoteExprNode extends SchemeExpression {
 
     private Context createRuntimeContext() {
         //TODO
-        var context = new Context(null);
+        var context = new Context(null, new HashMap<>(), FrameDescriptor.newBuilder());
         context.setMode(Mode.RUN_TIME);
 
         return context;

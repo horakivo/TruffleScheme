@@ -1,5 +1,6 @@
 package com.ihorak.truffle.type;
 
+import com.ihorak.truffle.node.ProcedureRootNode;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.SchemeRootNode;
 import com.oracle.truffle.api.CallTarget;
@@ -37,7 +38,7 @@ public class SchemeFunction {
     }
 
     public static SchemeFunction createBuiltinFunction(SchemeExpression schemeExpression, Integer expectedNumberOfArgs) {
-        var rootNode = new SchemeRootNode(null, new FrameDescriptor(), List.of(schemeExpression));
+        var rootNode = new ProcedureRootNode(null, new FrameDescriptor(), List.of(schemeExpression));
 
         return new SchemeFunction(rootNode.getCallTarget(), expectedNumberOfArgs);
     }

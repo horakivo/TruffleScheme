@@ -21,11 +21,10 @@ public class SchemeRootNode extends RootNode {
     @ExplodeLoop
     @Override
     public Object execute(VirtualFrame frame) {
-        Object result = null;
-        for (SchemeExpression schemeExpression : schemeExpressions) {
-            result = schemeExpression.executeGeneric(frame);
+        for (int i = 0; i < schemeExpressions.length - 1; i++) {
+            schemeExpressions[i].executeGeneric(frame);
         }
-        //we are returning the result of the last expression
-        return result;
+        //return last element
+        return schemeExpressions[schemeExpressions.length - 1].executeGeneric(frame);
     }
 }

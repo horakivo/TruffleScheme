@@ -17,20 +17,22 @@ public class Context {
     private final LexicalScope lexicalScope;
     private Mode mode = Mode.PARSER;
     private final FrameDescriptor.Builder frameDescriptorBuilder;
-    private final Map<SchemeSymbol, Integer> map = new HashMap<>();
+    private final Map<SchemeSymbol, Integer> map;
 
     public Context(Context parent, LexicalScope lexicalScope, SchemeTruffleLanguage language) {
         this.lexicalScope = lexicalScope;
         this.language = language;
         this.parent = parent;
         this.frameDescriptorBuilder = FrameDescriptor.newBuilder();
+        map = new HashMap<>();
     }
 
-    public Context(SchemeTruffleLanguage language) {
+    public Context(SchemeTruffleLanguage language, Map<SchemeSymbol, Integer> map, FrameDescriptor.Builder frameDescriptorBuilder) {
         this.lexicalScope = LexicalScope.GLOBAL;
+        this.map = map;
         this.language = language;
         this.parent = null;
-        this.frameDescriptorBuilder = FrameDescriptor.newBuilder();
+        this.frameDescriptorBuilder = frameDescriptorBuilder;
     }
 
     @Nullable

@@ -1,6 +1,8 @@
 package com.ihorak.truffle.node.exprs.builtin.arithmetic;
 
 import com.ihorak.truffle.exceptions.SchemeException;
+import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.exprs.builtin.BinaryOperationNode;
 import com.ihorak.truffle.node.exprs.builtin.BinaryReducibleOperation;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Fallback;
@@ -10,6 +12,9 @@ import com.oracle.truffle.api.nodes.ExplodeLoop;
 
 
 public abstract class ReduceDivideExprNode extends BinaryReducibleOperation {
+    public ReduceDivideExprNode(SchemeExpression[] arguments, BinaryOperationNode operation) {
+        super(arguments, operation);
+    }
 
 //
 //    @Specialization(guards = "getArguments().length == 2")
@@ -31,12 +36,10 @@ public abstract class ReduceDivideExprNode extends BinaryReducibleOperation {
 //    }
 
     @ExplodeLoop
-    @Specialization(guards = "getArguments().length == cachedLength", limit = "2")
+    @Specialization(guards = "arguments.length == cachedLength", limit = "2")
     protected Object divideAnyNumberOfArguments(
             VirtualFrame frame,
-            @Cached("getArguments().length") int cachedLength) {
-        var operation = getOperation();
-        var arguments = getArguments();
+            @Cached("arguments.length") int cachedLength) {
         var result = arguments[0].executeGeneric(frame);
 
         for (int i = 1; i < cachedLength; i++) {

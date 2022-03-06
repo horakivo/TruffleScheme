@@ -4,6 +4,7 @@ import com.ihorak.truffle.context.Context;
 import com.ihorak.truffle.context.LexicalScope;
 import com.ihorak.truffle.context.Mode;
 import com.ihorak.truffle.exceptions.ParserException;
+import com.ihorak.truffle.node.ProcedureRootNode;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.SchemeRootNode;
 import com.ihorak.truffle.node.exprs.ReadProcedureArgExprNode;
@@ -127,7 +128,7 @@ public class SpecialFormConverter {
         allLambdaExpressions.addAll(paramExprs);
         allLambdaExpressions.addAll(bodyExprs);
         var frameDescriptor = lambdaContext.getFrameDescriptor();
-        var rootNode = new SchemeRootNode(context.getLanguage(), frameDescriptor, allLambdaExpressions);
+        var rootNode = new ProcedureRootNode(context.getLanguage(), frameDescriptor, allLambdaExpressions);
         return new LambdaExprNode(new SchemeFunction(rootNode.getCallTarget(), paramExprs.size()));
     }
 
@@ -140,20 +141,6 @@ public class SpecialFormConverter {
         bodyExprs.get(bodyExprs.size() - 1).setTailRecursiveAsTrue();
 
         return bodyExprs;
-    }
-
-    /*
-     * This method just add the variables to the descriptor, so we can during parse time find the symbol and get their
-     * lexical scope depth.
-     *
-     * */
-    private static void addLocalVariablesToContext(SchemeCell parameters, Context context) {
-        if (context.getMode() == Mode.RUN_TIME) return;
-
-        for (int i = 0; i < parameters.size(); i++) {
-            var currentSymbol = (SchemeSymbol) parameters.get(i);
-            context.addLocalSymbol(currentSymbol);
-        }
     }
 
     private static List<SchemeExpression> createLocalVariablesForLambda(SchemeCell parameters, Context context) {

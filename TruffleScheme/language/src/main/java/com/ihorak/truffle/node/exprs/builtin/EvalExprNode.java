@@ -10,7 +10,10 @@ import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.NodeField;
 import com.oracle.truffle.api.dsl.Specialization;
+import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.VirtualFrame;
+
+import java.util.HashMap;
 
 @NodeChild(value = "value")
 public abstract class EvalExprNode extends SchemeExpression {
@@ -43,8 +46,8 @@ public abstract class EvalExprNode extends SchemeExpression {
     //TODO in the future maybe add Mode directly to constructor, right now I would be big effort to change
     //TODO all the tests if I am not sure if this impl will stay
     private Context createRuntimeContext() {
-        //TOOD
-        var context = new Context(null);
+        //TODO
+        var context = new Context(null,  new HashMap<>(), FrameDescriptor.newBuilder());
         context.setMode(Mode.RUN_TIME);
 
         return context;

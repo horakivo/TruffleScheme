@@ -1,6 +1,8 @@
 package com.ihorak.truffle.node.exprs.builtin.arithmetic;
 
 import com.ihorak.truffle.exceptions.SchemeException;
+import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.exprs.builtin.BinaryOperationNode;
 import com.ihorak.truffle.node.exprs.builtin.BinaryReducibleOperation;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Fallback;
@@ -10,6 +12,10 @@ import com.oracle.truffle.api.nodes.ExplodeLoop;
 
 
 public abstract class ReducePlusExprNode extends BinaryReducibleOperation {
+
+    public ReducePlusExprNode(SchemeExpression[] arguments, BinaryOperationNode operation) {
+        super(arguments, operation);
+    }
 //    @ExplodeLoop
 //    @Specialization(guards = "getArguments().length == cachedLength", limit = "2", rewriteOn = {UnexpectedResultException.class, ClassCastException.class})
 //    protected long addAnyNumberOfLongs(
@@ -50,15 +56,12 @@ public abstract class ReducePlusExprNode extends BinaryReducibleOperation {
 //    }
 
     @ExplodeLoop
-    @Specialization(guards = "getArguments().length == cachedLength", limit = "2")
+    @Specialization(guards = "arguments.length == cachedLength", limit = "2")
     protected Object addAnyNumberOfLongs(
             VirtualFrame frame,
-            @Cached("getArguments().length") int cachedLength) {
+            @Cached("arguments.length") int cachedLength) {
 
         Object result = 0L;
-        var operation = getOperation();
-        var arguments = getArguments();
-
         for (int i = 0; i < cachedLength; i++) {
             result = operation.execute(result, arguments[i].executeGeneric(frame));
         }

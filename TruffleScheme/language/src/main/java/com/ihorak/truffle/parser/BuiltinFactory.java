@@ -36,6 +36,9 @@ public class BuiltinFactory {
 
     public static SchemeExpression createMinusBuiltin(List<SchemeExpression> arguments) {
         if (arguments.size() > 0) {
+            if (arguments.size() == 2) {
+                return MinusTestNodeGen.create(arguments.get(0), arguments.get(1));
+            }
             if (arguments.size() == 1) {
                 return NegateNumberExprNodeGen.create(arguments.get(0));
             }
@@ -46,11 +49,25 @@ public class BuiltinFactory {
     }
 
     public static SchemeExpression createPlusBuiltin(List<SchemeExpression> arguments) {
-        if (arguments.size() > 0) {
-            return ReducePlusExprNodeGen.create(arguments.toArray(new SchemeExpression[0]), PlusExprNodeGen.create());
+        if (arguments.size() == 0) return new LongLiteralNode(0);
+        if (arguments.size() == 1) return PlusTestNodeGen.create(new LongLiteralNode(0), arguments.get(0));
+        return createPlusTree(arguments);
+//        if (arguments.size() > 0) {
+//            if (arguments.size() == 2) {
+//                return PlusTestNodeGen.create(arguments.get(0), arguments.get(1));
+//            }
+//
+//            return ReducePlusExprNodeGen.create(arguments.toArray(new SchemeExpression[0]), PlusExprNodeGen.create());
+//        } else {
+//            return new LongLiteralNode(0L);
+//        }
+    }
+
+    public static SchemeExpression createPlusTree(List<SchemeExpression> arguments) {
+        if (arguments.size() > 2) {
+            return PlusTestNodeGen.create(arguments.remove(0), createPlusTree(arguments));
         } else {
-            //number of arguments == 0 (return neutral element)
-            return new LongLiteralNode(0);
+            return PlusTestNodeGen.create(arguments.get(0), arguments.get(1));
         }
     }
 
@@ -128,6 +145,9 @@ public class BuiltinFactory {
 
     public static SchemeExpression createLessThenOrEqual(List<SchemeExpression> arguments) {
         if (arguments.size() > 0) {
+            if (arguments.size() == 2) {
+                return LessThenEqualTestNodeGen.create(arguments.get(0), arguments.get(1));
+            }
             if (arguments.size() == 1) {
                 return new BooleanLiteralNode(true);
             } else {
@@ -150,6 +170,9 @@ public class BuiltinFactory {
 
     public static SchemeExpression createLessThen(List<SchemeExpression> arguments) {
         if (arguments.size() > 0) {
+            if (arguments.size() == 2) {
+                return LessThenEqualTestNodeGen.create(arguments.get(0), arguments.get(1));
+            }
             if (arguments.size() == 1) {
                 return new BooleanLiteralNode(true);
             } else {

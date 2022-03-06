@@ -5,13 +5,20 @@ import com.ihorak.truffle.node.exprs.ReadProcedureArgExprNode;
 import com.ihorak.truffle.node.exprs.arithmetic.*;
 import com.ihorak.truffle.node.exprs.builtin.EvalExprNodeGen;
 import com.ihorak.truffle.node.exprs.builtin.arithmetic.*;
+import com.ihorak.truffle.node.special_form.lambda.WriteBuiltinProcedureExprNode;
+import com.ihorak.truffle.node.special_form.lambda.WriteBuiltinProcedureExprNodeGen;
+import com.ihorak.truffle.node.special_form.lambda.WriteLocalVariableExprNodeGen;
 import com.ihorak.truffle.type.SchemeFunction;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.frame.FrameDescriptor;
+import com.oracle.truffle.api.frame.FrameSlotKind;
 import com.oracle.truffle.api.frame.MaterializedFrame;
 import com.oracle.truffle.api.frame.VirtualFrame;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -33,7 +40,6 @@ public class GlobalEnvironment {
             frame.setAuxiliarySlot(index, builtinFunction.get(symbol));
         }
     }
-
 
     private VirtualFrame createGlobalVirtualFrame() {
         var globalFrameDescriptor = FrameDescriptor.newBuilder();
@@ -68,7 +74,6 @@ public class GlobalEnvironment {
                 new SchemeSymbol("/"), divideFunction
         );
     }
-
 
 
     public VirtualFrame getGlobalVirtualFrame() {
