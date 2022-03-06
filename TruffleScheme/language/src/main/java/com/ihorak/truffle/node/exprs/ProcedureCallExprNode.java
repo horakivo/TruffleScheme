@@ -76,16 +76,17 @@ public class ProcedureCallExprNode extends SchemeExpression {
     @ExplodeLoop
     private Object[] getProcedureArguments(SchemeFunction function, VirtualFrame parentFrame) {
         Object[] arguments = new Object[this.arguments.length + 1];
-        if (function.getParentFrame() == null) {
-            //TODO WTF
-           // profile.enter();
-            throw new SchemeException("User defined procedures should always have parent enviroment!");
-            //arguments[0] = parentFrame;
-
-        } else {
-            arguments[0] = function.getParentFrame();
-
-        }
+//        if (function.getParentFrame() == null) {
+//            //TODO WTF
+//           // profile.enter();
+//            throw new SchemeException("User defined procedures should always have parent enviroment!");
+//            //arguments[0] = parentFrame;
+//
+//        } else {
+//            arguments[0] = function.getParentFrame();
+//
+//        }
+        arguments[0] = function.getParentFrame();
 
         int index = 1;
         for (SchemeExpression expression : this.arguments) {

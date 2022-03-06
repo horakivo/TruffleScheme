@@ -24,61 +24,61 @@ import java.util.List;
 public class BuiltinFactory {
 
     public static SchemeExpression createDivideBuiltin(List<SchemeExpression> arguments) {
-        if (arguments.size() > 0) {
-            if (arguments.size() == 1) {
-                return DivideOneArgumentExprNodeGen.create(arguments.get(0));
-            } else {
-                return ReduceDivideExprNodeGen.create(arguments.toArray(new SchemeExpression[0]), DivideExprNodeGen.create());
-            }
+        if (arguments.size() == 0) throw new SchemeException("/: arity mismatch; Expected number of arguments does not match the given number\nexpected: at least 1\ngiven: 0");
+        if (arguments.size() == 1) return DivideOneArgumentExprNodeGen.create(arguments.get(0));
+        return reduceDivide(arguments);
+    }
+
+    private static SchemeExpression reduceDivide(List<SchemeExpression> arguments) {
+        if (arguments.size() > 2) {
+            var right = arguments.remove(arguments.size() - 1);
+            return DivideTestNodeGen.create(reduceDivide(arguments), right);
+        } else {
+            return DivideTestNodeGen.create(arguments.get(0), arguments.get(1));
         }
-        throw new SchemeException("/: arity mismatch; Expected number of arguments does not match the given number \n expected: at least 1 \n given: 0");
     }
 
     public static SchemeExpression createMinusBuiltin(List<SchemeExpression> arguments) {
-        if (arguments.size() > 0) {
-            if (arguments.size() == 2) {
-                return MinusTestNodeGen.create(arguments.get(0), arguments.get(1));
-            }
-            if (arguments.size() == 1) {
-                return NegateNumberExprNodeGen.create(arguments.get(0));
-            }
-            return ReduceMinusExprNodeGen.create(arguments.toArray(new SchemeExpression[0]), MinusExprNodeGen.create());
+        if (arguments.size() == 0) throw new SchemeException("-: arity mismatch; Expected number of arguments does not match the given number\nexpected: at least 1\ngiven: 0");
+        if (arguments.size() == 1) return NegateNumberExprNodeGen.create(arguments.get(0));
+        return reduceMinus(arguments);
+    }
+
+    private static SchemeExpression reduceMinus(List<SchemeExpression> arguments) {
+        if (arguments.size() > 2) {
+            var right = arguments.remove(arguments.size() - 1);
+            return MinusTestNodeGen.create(reduceMinus(arguments), right);
         } else {
-            throw new SchemeException("-: arity mismatch; Expected number of arguments does not match the given number \n expected: at least 1 \n given: 0");
+            return MinusTestNodeGen.create(arguments.get(0), arguments.get(1));
         }
     }
 
     public static SchemeExpression createPlusBuiltin(List<SchemeExpression> arguments) {
         if (arguments.size() == 0) return new LongLiteralNode(0);
-        if (arguments.size() == 1) return PlusTestNodeGen.create(new LongLiteralNode(0), arguments.get(0));
-        return createPlusTree(arguments);
-//        if (arguments.size() > 0) {
-//            if (arguments.size() == 2) {
-//                return PlusTestNodeGen.create(arguments.get(0), arguments.get(1));
-//            }
-//
-//            return ReducePlusExprNodeGen.create(arguments.toArray(new SchemeExpression[0]), PlusExprNodeGen.create());
-//        } else {
-//            return new LongLiteralNode(0L);
-//        }
+        if (arguments.size() == 1) return OneArgumentExprNodeGen.create(arguments.get(0));
+        return reducePlus(arguments);
     }
 
-    public static SchemeExpression createPlusTree(List<SchemeExpression> arguments) {
+    private static SchemeExpression reducePlus(List<SchemeExpression> arguments) {
         if (arguments.size() > 2) {
-            return PlusTestNodeGen.create(arguments.remove(0), createPlusTree(arguments));
+            return PlusTestNodeGen.create(arguments.remove(0), reducePlus(arguments));
         } else {
             return PlusTestNodeGen.create(arguments.get(0), arguments.get(1));
         }
     }
 
     public static SchemeExpression createMultipleBuiltin(List<SchemeExpression> arguments) {
-        if (arguments.size() > 0) {
-            return ReduceMultiplyExprNodeGen.create(arguments.toArray(new SchemeExpression[0]), MultiplyExprNodeGen.create());
-        } else {
-            //number of arguments == 0 (return neutral element)
-            return new LongLiteralNode(1);
-        }
+        if (arguments.size() == 0) return new LongLiteralNode(1);
+        if (arguments.size() == 1) return OneArgumentExprNodeGen.create(arguments.get(0));
+        return reduceMultiply(arguments);
+    }
 
+    private static SchemeExpression reduceMultiply(List<SchemeExpression> arguments) {
+        if (arguments.size() > 2) {
+            return MultiplyTestNodeGen.create(arguments.remove(0), reduceMultiply(arguments));
+        } else {
+            return MultiplyTestNodeGen.create(arguments.get(0), arguments.get(1));
+        }
     }
 
     public static SchemeExpression createEvalBuiltin(List<SchemeExpression> arguments, Context context) {

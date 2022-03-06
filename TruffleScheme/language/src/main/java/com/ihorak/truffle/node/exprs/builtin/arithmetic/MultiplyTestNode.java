@@ -8,20 +8,21 @@ import java.math.BigInteger;
 
 @NodeChild(value = "left")
 @NodeChild(value = "right")
-public abstract class MinusTestNode extends SchemeExpression {
+public abstract class MultiplyTestNode extends SchemeExpression {
 
     @Specialization(rewriteOn = ArithmeticException.class)
-    protected long subtractLongs(long left, long right) {
-        return Math.subtractExact(left, right);
+    public long multipleLongs(long left, long right) {
+        return Math.multiplyExact(left, right);
     }
 
-    @Specialization(replaces = "subtractLongs")
-    protected BigInteger subtractBigInts(BigInteger left, BigInteger right) {
-        return left.subtract(right);
+
+    @Specialization(replaces = "multipleLongs")
+    public BigInteger multiplyBigInts(BigInteger left, BigInteger right) {
+        return left.multiply(right);
     }
 
     @Override
     public String toString() {
-        return "-";
+        return "*";
     }
 }

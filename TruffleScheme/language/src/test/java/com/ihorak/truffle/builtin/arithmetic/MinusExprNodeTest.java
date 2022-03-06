@@ -38,9 +38,9 @@ public class MinusExprNodeTest {
 
         var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
-        assertEquals("-: arity mismatch; Expected number of arguments does not match the given number \n" +
-                " expected: at least 1 \n" +
-                " given: 0", msg);
+        assertEquals("-: arity mismatch; Expected number of arguments does not match the given number\n" +
+                "expected: at least 1\n" +
+                "given: 0", msg);
     }
 
     @Test

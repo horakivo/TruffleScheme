@@ -1,5 +1,8 @@
 package com.ihorak.truffle.parser.Util;
 
+import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.literals.DoubleLiteralNode;
+import com.ihorak.truffle.node.literals.LongLiteralNode;
 import com.ihorak.truffle.type.SchemeSymbol;
 
 public class BuiltinUtils {
