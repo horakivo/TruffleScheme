@@ -230,24 +230,24 @@ public class ProgramTest {
                 "(define fibonacci\n" +
                 "  (lambda (n)\n" +
                 "    (if (< n 2)\n" +
-                "        1\n" +
+                "        n\n" +
                 "        (+ (fibonacci (- n 1))\n" +
                 "           (fibonacci (- n 2))))))\n" +
                 "           \n" +
-                "(fibonacci 30)\n" +
-                "(fibonacci 30)\n" +
-                "(fibonacci 30)\n" +
-                "(fibonacci 30)\n" +
-                "(fibonacci 30)\n" +
-                "(fibonacci 30)\n" +
-                "(fibonacci 30)\n" +
-                "(fibonacci 30)\n" +
-                "(fibonacci 30)\n" +
-                "(fibonacci 30)\n" +
-                "(fibonacci 30)\n" +
+                "(fibonacci 32)\n" +
+                "(fibonacci 32)\n" +
+                "(fibonacci 32)\n" +
+                "(fibonacci 32)\n" +
+                "(fibonacci 32)\n" +
+                "(fibonacci 32)\n" +
+                "(fibonacci 32)\n" +
+                "(fibonacci 32)\n" +
+                "(fibonacci 32)\n" +
+                "(fibonacci 32)\n" +
+                "(fibonacci 32)\n" +
                 "(define start (current-milliseconds))\n" +
                 "\n" +
-                "(fibonacci 30)\n" +
+                "(fibonacci 32)\n" +
                 "\n" +
                 "(define end (current-milliseconds))" +
                 "(- end start)";

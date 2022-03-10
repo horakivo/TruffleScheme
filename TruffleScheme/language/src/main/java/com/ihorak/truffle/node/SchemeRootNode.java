@@ -9,9 +9,8 @@ import com.oracle.truffle.api.nodes.RootNode;
 import java.util.List;
 
 public class SchemeRootNode extends RootNode {
-    @SuppressWarnings("FieldMayBeFinal")
-    @Children
-    private SchemeExpression[] schemeExpressions;
+
+    @Children private final SchemeExpression[] schemeExpressions;
 
     public SchemeRootNode(SchemeTruffleLanguage language, FrameDescriptor frameDescriptor, List<SchemeExpression> schemeExpressions) {
         super(language, frameDescriptor);

@@ -10,9 +10,7 @@ import static com.ihorak.truffle.type.SchemeCell.EMPTY_LIST;
 
 public class ListExprNode extends SchemeExpression {
 
-    @SuppressWarnings("FieldMayBeFinal")
-    @Children
-    private SchemeExpression[] arguments;
+    @Children private final SchemeExpression[] arguments;
 
     public ListExprNode(List<SchemeExpression> arguments) {
         this.arguments = arguments.toArray(SchemeExpression[]::new);

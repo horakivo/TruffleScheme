@@ -7,6 +7,7 @@ import com.oracle.truffle.api.dsl.NodeField;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
+import com.oracle.truffle.api.profiles.ValueProfile;
 
 public abstract class ReducePlusExprRuntimeNode extends SchemeExpression {
 
@@ -16,10 +17,10 @@ public abstract class ReducePlusExprRuntimeNode extends SchemeExpression {
         this.plusOperation = plusOperation;
     }
 
-
     @ExplodeLoop
-    @Specialization(guards = "cachedLength == frame.getArguments().length")
-    protected Object addAnyNumberOfArgsRuntime(VirtualFrame frame, @Cached("frame.getArguments().length") int cachedLength) {
+    @Specialization(guards = "cachedLength == frame.getArguments().length", limit = "2")
+    protected Object addAnyNumberOfArgsRuntime(VirtualFrame frame,
+                                               @Cached("frame.getArguments().length") int cachedLength) {
         var arguments = frame.getArguments();
         Object result = 0L;
 

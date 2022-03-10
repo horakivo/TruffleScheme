@@ -9,21 +9,17 @@ public class LambdaExprNode extends SchemeExpression {
 
     private final SchemeFunction schemeFunction;
 
-//    @CompilerDirectives.CompilationFinal
-//    private boolean isScopeSet = false;
-
 
     public LambdaExprNode(SchemeFunction schemeFunction) {
         this.schemeFunction = schemeFunction;
     }
 
+    /**
+     * Parent cannot be saved only once, since the virtual frame is also containing arguments!
+     * It would cause that the arguments from the previous call will be applied!
+     * */
     @Override
     public SchemeFunction executeFunction(VirtualFrame virtualFrame) {
-//        if (!isScopeSet) {
-//            CompilerDirectives.transferToInterpreterAndInvalidate();
-//            schemeFunction.setParentFrame(virtualFrame.materialize());
-//            isScopeSet = true;
-//        }
         schemeFunction.setParentFrame(virtualFrame.materialize());
         return schemeFunction;
     }

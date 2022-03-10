@@ -13,9 +13,7 @@ public class LetExprNode extends SchemeExpression {
 
     private final FrameDescriptor frameDescriptor;
 
-    @SuppressWarnings("FieldMayBeFinal")
-    @Children
-    private SchemeExpression[] body;
+    @Children private final SchemeExpression[] body;
 
     public LetExprNode(List<SchemeExpression> body, FrameDescriptor frameDescriptor) {
         this.body = body.toArray(SchemeExpression[]::new);

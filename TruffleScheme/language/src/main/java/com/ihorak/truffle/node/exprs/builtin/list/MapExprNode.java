@@ -20,9 +20,7 @@ public class MapExprNode extends SchemeExpression {
     @SuppressWarnings("FieldMayBeFinal")
     @Child
     private SchemeExpression operation;
-    @SuppressWarnings("FieldMayBeFinal")
-    @Children
-    private SchemeExpression[] arguments;
+    @Children private final SchemeExpression[] arguments;
     @SuppressWarnings("FieldMayBeFinal")
     @Child
     private ProcedureDispatchNode dispatchNode = ProcedureDispatchNodeGen.create();

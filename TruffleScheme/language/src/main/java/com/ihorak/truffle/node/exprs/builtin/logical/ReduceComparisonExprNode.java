@@ -12,11 +12,12 @@ import java.util.List;
 
 public class ReduceComparisonExprNode extends SchemeExpression {
 
-    @Children
-    private SchemeExpression[] comparisonExpression;
+    @Children private final SchemeExpression[] comparisonExpression;
+    private final String name;
 
-    public ReduceComparisonExprNode(List<SchemeExpression> comparisonExpression) {
+    public ReduceComparisonExprNode(List<SchemeExpression> comparisonExpression, String name) {
         this.comparisonExpression = comparisonExpression.toArray(new SchemeExpression[0]);
+        this.name = name;
     }
 
     @Override
@@ -33,7 +34,7 @@ public class ReduceComparisonExprNode extends SchemeExpression {
                 throw new IllegalStateException("Parser mistake! This shouldn't happen!");
             } catch (UnsupportedSpecializationException exception) {
                 CompilerDirectives.transferToInterpreterAndInvalidate();
-                throw new SchemeException("<=: contract violation. Unsupported types! Left: " + exception.getSuppliedValues()[0] + " Right: " + exception.getSuppliedValues()[1]);
+                throw new SchemeException(name + ": contract violation. Unsupported types! Left: " + exception.getSuppliedValues()[0] + " Right: " + exception.getSuppliedValues()[1]);
             }
         }
 

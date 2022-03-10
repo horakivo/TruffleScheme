@@ -1,21 +1,25 @@
 (define fibonacci
   (lambda (n)
     (if (< n 2)
-        1
+        n
         (+ (fibonacci (- n 1))
            (fibonacci (- n 2))))))
            
-(fibonacci 30)
-(fibonacci 30)
-(fibonacci 30)
-(fibonacci 30)
-(fibonacci 30)
-(fibonacci 30)
-(fibonacci 30)
+(fibonacci 32)
+(fibonacci 32)
+(fibonacci 32)
+(fibonacci 32)
+(fibonacci 32)
+(fibonacci 32)
+(fibonacci 32)
+(fibonacci 32)
+(fibonacci 32)
+(fibonacci 32)
+(fibonacci 32)
 
 (define start (current-milliseconds))
 
-(fibonacci 30)
+(fibonacci 32)
 
 (define end (current-milliseconds))
 (- end start)

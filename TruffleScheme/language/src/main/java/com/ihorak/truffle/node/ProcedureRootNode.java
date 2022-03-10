@@ -10,9 +10,7 @@ import java.util.List;
 
 public class ProcedureRootNode extends RootNode {
 
-    @SuppressWarnings("FieldMayBeFinal")
-    @Children
-    private SchemeExpression[] expressions;
+    @Children private final SchemeExpression[] expressions;
 
     public ProcedureRootNode(TruffleLanguage<?> language, FrameDescriptor frameDescriptor, List<SchemeExpression> schemeExpressions) {
         super(language, frameDescriptor);

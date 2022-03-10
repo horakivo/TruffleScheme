@@ -6,6 +6,7 @@ import com.ihorak.truffle.node.exprs.builtin.BinaryOperationNode;
 import com.oracle.truffle.api.dsl.NodeField;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.nodes.ExplodeLoop;
 
 @NodeField(name = "minusOperation", type = BinaryOperationNode.class)
 public abstract class ReduceMinusExprRuntimeNode extends SchemeExpression {
@@ -27,6 +28,7 @@ public abstract class ReduceMinusExprRuntimeNode extends SchemeExpression {
         throw new SchemeException("-: contract violation;\nExpected: number?\nGiven: " + argument);
     }
 
+    @ExplodeLoop
     @Specialization
     protected Object subtractAnyNumberOfArgumentsRuntime(VirtualFrame frame) {
         var operation = getMinusOperation();

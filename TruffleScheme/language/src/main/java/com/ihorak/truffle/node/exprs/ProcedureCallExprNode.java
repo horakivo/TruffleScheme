@@ -18,14 +18,10 @@ import java.util.List;
 public class ProcedureCallExprNode extends SchemeExpression {
 
     @SuppressWarnings("FieldMayBeFinal")
-    @Child
-    private SchemeExpression functionNode;
+    @Child private SchemeExpression functionNode;
+    @Children private final SchemeExpression[] arguments;
     @SuppressWarnings("FieldMayBeFinal")
-    @Children
-    private SchemeExpression[] arguments;
-    @SuppressWarnings("FieldMayBeFinal")
-    @Child
-    private ProcedureDispatchNode dispatchNode;
+    @Child private ProcedureDispatchNode dispatchNode;
     //TODO WTF
     //private final BranchProfile profile = BranchProfile.create();
 
