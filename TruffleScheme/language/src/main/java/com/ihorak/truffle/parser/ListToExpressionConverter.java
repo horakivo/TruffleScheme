@@ -72,8 +72,11 @@ public class ListToExpressionConverter {
             }
             return ReadClosureVariableExprNodeGen.create(indexPair.getLexicalScopeDepth(), indexPair.getFrameIndex(), symbol);
         } else {
-            //the variable was not define yet, therefore it will be defined later in global env (can't be defined somewhere in local environment because then we would have parse it )
+            //the variable was not define yet, therefore it will be defined later in global env (can't be defined somewhere in local environment because then we would have parsed it)
+            //right now we don't know whether the expression will be found during parse time or will be added during runtime - we store variables and at the end of parsing we know whether variable is
             var index = context.addGlobalSymbol(symbol);
+            var globalVariable = ReadGlobalVariableExprNodeGen.create(symbol, index);
+            context.addGlobalVariableExpression(globalVariable);
             return ReadGlobalVariableExprNodeGen.create(symbol, index);
         }
     }

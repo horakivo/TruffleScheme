@@ -2,12 +2,16 @@ package com.ihorak.truffle.context;
 
 import com.ihorak.truffle.SchemeTruffleLanguage;
 import com.ihorak.truffle.exceptions.ParserException;
+import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.special_form.lambda.ReadGlobalVariableExprNode;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlotKind;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Context {
@@ -18,6 +22,7 @@ public class Context {
     private Mode mode = Mode.PARSER;
     private final FrameDescriptor.Builder frameDescriptorBuilder;
     private final Map<SchemeSymbol, Integer> map;
+    private final List<SchemeExpression> globalVariableExpressions = new ArrayList<>();
 
     public Context(Context parent, LexicalScope lexicalScope, SchemeTruffleLanguage language) {
         this.lexicalScope = lexicalScope;
@@ -99,6 +104,11 @@ public class Context {
         }
 
         return currentContext;
+    }
+
+    public void addGlobalVariableExpression(ReadGlobalVariableExprNode globalVariableExprNode) {
+        var globalContext = findGlobalContext();
+        globalContext.globalVariableExpressions.add(globalVariableExprNode);
     }
 
     public FrameDescriptor getFrameDescriptor() {

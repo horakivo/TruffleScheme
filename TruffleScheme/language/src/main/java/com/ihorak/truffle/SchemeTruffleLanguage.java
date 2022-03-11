@@ -3,6 +3,7 @@ package com.ihorak.truffle;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.SchemeRootNode;
 import com.ihorak.truffle.context.Context;
+import com.ihorak.truffle.node.special_form.lambda.SchemeLanguageContext;
 import com.ihorak.truffle.parser.Reader;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.TruffleLanguage;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @TruffleLanguage.Registration(id = "scm", name = "Scheme")
-public class SchemeTruffleLanguage extends TruffleLanguage<Void> {
+public class SchemeTruffleLanguage extends TruffleLanguage<SchemeLanguageContext> {
 
     @Override
     protected CallTarget parse(ParsingRequest request) throws Exception {
@@ -27,7 +28,7 @@ public class SchemeTruffleLanguage extends TruffleLanguage<Void> {
     }
 
     @Override
-    protected Void createContext(Env env) {
-        return null;
+    protected SchemeLanguageContext createContext(Env env) {
+        return new SchemeLanguageContext();
     }
 }
