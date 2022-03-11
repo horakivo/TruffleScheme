@@ -146,7 +146,8 @@ public class BuiltinFactory {
     public static SchemeExpression createLessThenOrEqual(List<SchemeExpression> arguments) {
         if (arguments.size() == 0) throw new SchemeException("<=: arity mismatch; Expected number of argument does not match the given number\nexpected: at least 1\ngiven: 0");
         if (arguments.size() == 1) return new BooleanLiteralNode(true);
-        return new ReduceComparisonExprNode(reduceLessThenOrEqual(arguments));
+        if (arguments.size() == 2) return LessThenEqualExprNodeGen.create(arguments.get(0), arguments.get(1));
+        return new ReduceComparisonExprNode(reduceLessThenOrEqual(arguments), "<=");
     }
 
     private static List<SchemeExpression> reduceLessThenOrEqual(List<SchemeExpression> arguments) {
@@ -160,7 +161,8 @@ public class BuiltinFactory {
     public static SchemeExpression createEqual(List<SchemeExpression> arguments) {
         if (arguments.size() == 0) throw new SchemeException("=: arity mismatch; Expected number of argument does not match the given number\nExpected: at least 1\nGiven: 0");
         if (arguments.size() == 1) return new BooleanLiteralNode(true);
-        return new ReduceComparisonExprNode(reduceEqual(arguments));
+        if (arguments.size() == 2) return EqualExprNodeGen.create(arguments.get(0), arguments.get(1));
+        return new ReduceComparisonExprNode(reduceEqual(arguments), "=");
     }
 
     private static List<SchemeExpression> reduceEqual(List<SchemeExpression> arguments) {
@@ -175,7 +177,7 @@ public class BuiltinFactory {
         if (arguments.size() == 0) throw new SchemeException("=: arity mismatch; Expected number of argument does not match the given number\nExpected: at least 1\nGiven: 0");
         if (arguments.size() == 1) return new BooleanLiteralNode(true);
         if (arguments.size() == 2) return LessThenExprNodeGen.create(arguments.get(0), arguments.get(1));
-        return new ReduceComparisonExprNode(reduceLessThen(arguments));
+        return new ReduceComparisonExprNode(reduceLessThen(arguments), "<");
     }
 
     private static List<SchemeExpression> reduceLessThen(List<SchemeExpression> arguments) {
