@@ -8,10 +8,12 @@ import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeFunction;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerAsserts;
+import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.nodes.UnexpectedResultException;
 import com.oracle.truffle.api.profiles.BranchProfile;
+import com.oracle.truffle.api.profiles.ConditionProfile;
 
 import java.util.List;
 
@@ -22,8 +24,11 @@ public class ProcedureCallExprNode extends SchemeExpression {
     @Children private final SchemeExpression[] arguments;
     @SuppressWarnings("FieldMayBeFinal")
     @Child private ProcedureDispatchNode dispatchNode;
-    //TODO WTF
-    //private final BranchProfile profile = BranchProfile.create();
+
+    private final ConditionProfile noParentConditionProfile = ConditionProfile.createBinaryProfile();
+    private final BranchProfile wrongNumberOfArgsProfile = BranchProfile.create();
+    private final BranchProfile noFunctionAsFirstArgumentProfile = BranchProfile.create();
+
 
     public ProcedureCallExprNode(SchemeExpression functionNode, List<SchemeExpression> arguments) {
         this.functionNode = functionNode;
@@ -36,17 +41,17 @@ public class ProcedureCallExprNode extends SchemeExpression {
         SchemeFunction function = getFunction(virtualFrame);
         Object[] arguments = getProcedureArguments(function, virtualFrame);
 
-//        if (function.getExpectedNumberOfArgs() != null && function.getExpectedNumberOfArgs() != this.arguments.length) {
-//            throw new SchemeException("Procedure was called with wrong number of arguments." +
-//                    " \n Expected: " + function.getExpectedNumberOfArgs() +
-//                    " \n Given: " + this.arguments.length);
-//        }
+        if (function.getExpectedNumberOfArgs() != null && function.getExpectedNumberOfArgs() != this.arguments.length) {
+            wrongNumberOfArgsProfile.enter();
+            throw new SchemeException("Procedure was called with wrong number of arguments." +
+                    " \n Expected: " + function.getExpectedNumberOfArgs() +
+                    " \n Given: " + this.arguments.length);
+        }
 
         return call(function.getCallTarget(), arguments, virtualFrame);
     }
 
     private Object call(CallTarget callTarget, Object[] arguments, VirtualFrame frame) {
-        CompilerAsserts.partialEvaluationConstant(this.isTailRecursive());
         if (this.isTailRecursive()) {
             throw new TailCallException(callTarget, arguments);
         } else {
@@ -65,6 +70,7 @@ public class ProcedureCallExprNode extends SchemeExpression {
         try {
             return functionNode.executeFunction(frame);
         } catch (UnexpectedResultException e) {
+            noFunctionAsFirstArgumentProfile.enter();
             throw new IllegalArgumentException("FunctionNode is not a function in ProcedureCallExprNode" + e);
         }
     }
@@ -72,17 +78,11 @@ public class ProcedureCallExprNode extends SchemeExpression {
     @ExplodeLoop
     private Object[] getProcedureArguments(SchemeFunction function, VirtualFrame parentFrame) {
         Object[] arguments = new Object[this.arguments.length + 1];
-//        if (function.getParentFrame() == null) {
-//            //TODO WTF
-//           // profile.enter();
-//            throw new SchemeException("User defined procedures should always have parent enviroment!");
-//            //arguments[0] = parentFrame;
-//
-//        } else {
-//            arguments[0] = function.getParentFrame();
-//
-//        }
-        arguments[0] = function.getParentFrame();
+        if (noParentConditionProfile.profile(function.getParentFrame() != null)) {
+            arguments[0] = function.getParentFrame();
+        } else {
+            arguments[0] = parentFrame;
+        }
 
         int index = 1;
         for (SchemeExpression expression : this.arguments) {
@@ -90,12 +90,6 @@ public class ProcedureCallExprNode extends SchemeExpression {
             index++;
         }
 
-        return arguments;
-    }
-
-    /*For testing purposes*/
-
-    public SchemeExpression[] getArguments() {
         return arguments;
     }
 }

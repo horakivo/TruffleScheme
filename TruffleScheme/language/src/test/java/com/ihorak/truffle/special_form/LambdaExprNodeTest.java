@@ -48,10 +48,6 @@ public class LambdaExprNodeTest {
 
         var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
         assertEquals(8L, result);
-        assertEquals(ProcedureCallExprNode.class, expr.getClass());
-        var procedureExprCall = (ProcedureCallExprNode) expr;
-        assertEquals(1, procedureExprCall.getArguments().length);
-        //assertEquals(1 ,procedureExprCall.getArguments()[0].);
     }
 
     @Test

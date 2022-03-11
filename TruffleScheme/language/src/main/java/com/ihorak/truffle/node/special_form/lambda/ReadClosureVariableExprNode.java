@@ -57,7 +57,6 @@ public abstract class ReadClosureVariableExprNode extends SchemeExpression {
         throw new SchemeException(symbol + ": undefined\ncannot reference an identifier before its definition. FrameSlotKind: " + findCorrectVirtualFrame(frame).getFrameDescriptor().getSlotKind(frameSlotIndex));
     }
 
-
     @NotNull
     private Object getParentEnvironment(VirtualFrame virtualFrame) {
         if (virtualFrame.getArguments().length == 0) {
@@ -81,11 +80,7 @@ public abstract class ReadClosureVariableExprNode extends SchemeExpression {
     private FrameDescriptor findCorrectFrameDescriptor(VirtualFrame frame) {
         if (this.frameDescriptor == null) {
             CompilerDirectives.transferToInterpreterAndInvalidate();
-            VirtualFrame currentFrame = frame;
-            for (int i = 0; i < lexicalScopeDepth; i++) {
-                currentFrame = (VirtualFrame) getParentEnvironment(currentFrame);
-            }
-            this.frameDescriptor = currentFrame.getFrameDescriptor();
+            this.frameDescriptor = findCorrectVirtualFrame(frame).getFrameDescriptor();
         }
 
         return frameDescriptor;

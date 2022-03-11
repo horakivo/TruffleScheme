@@ -3,8 +3,11 @@ package com.ihorak.truffle.node.special_form.lambda;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeSymbol;
+import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
+import com.oracle.truffle.api.frame.Frame;
+import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlotKind;
 import com.oracle.truffle.api.frame.VirtualFrame;
 
@@ -43,7 +46,6 @@ public abstract class ReadLocalVariableExprNode extends SchemeExpression {
     protected Object fallback(VirtualFrame frame) {
         throw new SchemeException(symbol + ": undefined\ncannot reference an identifier before its definition. FrameSlotKind: " + frame.getFrameDescriptor().getSlotKind(frameSlotIndex));
     }
-
 
     protected boolean isLong(VirtualFrame frame) {
         return frame.getFrameDescriptor().getSlotKind(frameSlotIndex) == FrameSlotKind.Long;
