@@ -116,7 +116,7 @@ public class SpecialFormConverter {
      *  --> (lambda (param1 .. paramN) expr1...exprN))
      * */
     private static LambdaExprNode convertLambda(SchemeCell lambdaList, Context context) {
-        Context lambdaContext = new Context(context, LexicalScope.LAMBDA, context.getLanguage());
+        Context lambdaContext = new Context(context, LexicalScope.LAMBDA, context.getLanguage(), context.getMode());
 
         var params = (SchemeCell) lambdaList.get(1);
         var expressions = (SchemeCell) ((SchemeCell) lambdaList.cdr).cdr;
@@ -181,7 +181,7 @@ public class SpecialFormConverter {
     }
 
     private static LetExprNode convertLet(SchemeCell letList, Context context) {
-        Context letContext = new Context(context, LexicalScope.LET, context.getLanguage());
+        Context letContext = new Context(context, LexicalScope.LET, context.getLanguage(), context.getMode());
         SchemeCell parameters = (SchemeCell) letList.get(1);
         SchemeCell body = (SchemeCell) ((SchemeCell) letList.cdr).cdr;
 

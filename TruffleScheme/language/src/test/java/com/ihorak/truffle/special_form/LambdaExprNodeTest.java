@@ -1,12 +1,6 @@
 package com.ihorak.truffle.special_form;
 
-import com.ihorak.truffle.GlobalEnvironment;
-import com.ihorak.truffle.node.exprs.ProcedureCallExprNode;
-import com.ihorak.truffle.parser.Reader;
-import com.ihorak.truffle.type.SchemeFunction;
 import com.ihorak.truffle.type.UndefinedValue;
-import com.oracle.truffle.api.Truffle;
-import org.antlr.v4.runtime.CharStreams;
 import org.graalvm.polyglot.Context;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +9,7 @@ import static org.junit.Assert.*;
 
 public class LambdaExprNodeTest {
 
-    private org.graalvm.polyglot.Context context;
+    private Context context;
 
     @Before
     public void setUp() {
@@ -171,6 +165,15 @@ public class LambdaExprNodeTest {
     @Test
     public void givenNestedLambdaWithDefine_whenExecuted_thenCorrectResultIsReturned() {
         var program = "((lambda (x) ((lambda (y) (define y 10) (+ x y)) 20)) 5)";
+
+        var result = context.eval("scm", program);
+
+        assertEquals(15L, result.asLong());
+    }
+
+    @Test
+    public void giveLambdaWithDefineOutside_whenExecuted_thenCorrectResultIsReturned() {
+        var program = "(define fun (lambda (x) (+ x y))) (define y 10) (fun 5)";
 
         var result = context.eval("scm", program);
 

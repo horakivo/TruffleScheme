@@ -24,11 +24,12 @@ public class Context {
     private final Map<SchemeSymbol, Integer> map;
     private final List<SchemeExpression> globalVariableExpressions = new ArrayList<>();
 
-    public Context(Context parent, LexicalScope lexicalScope, SchemeTruffleLanguage language) {
+    public Context(Context parent, LexicalScope lexicalScope, SchemeTruffleLanguage language, Mode mode) {
         this.lexicalScope = lexicalScope;
         this.language = language;
         this.parent = parent;
         this.frameDescriptorBuilder = FrameDescriptor.newBuilder();
+        this.mode = mode;
         map = new HashMap<>();
     }
 
