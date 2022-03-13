@@ -7,6 +7,7 @@ import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlotKind;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 
 import static com.ihorak.truffle.node.special_form.lambda.FrameUtil.findAuxiliaryValue;
 
@@ -15,7 +16,7 @@ public abstract class ReadGlobalVariableExprNode extends SchemeExpression {
 
     private final SchemeSymbol symbol;
     private final int frameSlotIndex;
-    @CompilerDirectives.CompilationFinal
+    @CompilationFinal
     private FrameDescriptor frameDescriptor;
 
     public ReadGlobalVariableExprNode(SchemeSymbol symbol, int frameSlotIndex) {

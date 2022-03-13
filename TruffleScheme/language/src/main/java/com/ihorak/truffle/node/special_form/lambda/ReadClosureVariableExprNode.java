@@ -12,6 +12,7 @@ import com.oracle.truffle.api.profiles.BranchProfile;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 import org.jetbrains.annotations.NotNull;
+import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 
 
 public abstract class ReadClosureVariableExprNode extends SchemeExpression {
@@ -20,7 +21,8 @@ public abstract class ReadClosureVariableExprNode extends SchemeExpression {
     private final int frameSlotIndex;
     private final SchemeSymbol symbol;
     private final BranchProfile parentNotFound = BranchProfile.create();
-    @CompilerDirectives.CompilationFinal private FrameDescriptor frameDescriptor;
+    @CompilationFinal
+    private FrameDescriptor frameDescriptor;
 
     public ReadClosureVariableExprNode(int lexicalScopeDepth, int frameSlotIndex, SchemeSymbol symbol) {
         this.lexicalScopeDepth = lexicalScopeDepth;

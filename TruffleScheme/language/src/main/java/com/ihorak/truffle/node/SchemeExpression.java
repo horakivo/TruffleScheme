@@ -1,15 +1,15 @@
 package com.ihorak.truffle.node;
 
 import com.ihorak.truffle.type.*;
-import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.UnexpectedResultException;
+import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 
 import java.math.BigInteger;
 
 public abstract class SchemeExpression extends SchemeNode {
 
-    @CompilerDirectives.CompilationFinal
+    @CompilationFinal
     private boolean isTailRecursive = false;
 
     /**

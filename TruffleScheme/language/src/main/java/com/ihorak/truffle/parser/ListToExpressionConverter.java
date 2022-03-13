@@ -2,12 +2,10 @@ package com.ihorak.truffle.parser;
 
 import com.ihorak.truffle.context.Context;
 import com.ihorak.truffle.context.Mode;
+import com.ihorak.truffle.context.Pair;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.literals.*;
-import com.ihorak.truffle.node.special_form.lambda.ReadClosureVariableExprNodeGen;
-import com.ihorak.truffle.node.special_form.lambda.ReadGlobalVariableExprNodeGen;
-import com.ihorak.truffle.node.special_form.lambda.ReadLocalVariableExprNode;
-import com.ihorak.truffle.node.special_form.lambda.ReadLocalVariableExprNodeGen;
+import com.ihorak.truffle.node.special_form.lambda.*;
 import com.ihorak.truffle.parser.Util.SpecialFormUtils;
 import com.ihorak.truffle.type.*;
 
@@ -53,33 +51,21 @@ public class ListToExpressionConverter {
     }
 
     private static SchemeExpression convert(SchemeSymbol symbol, Context context) {
-        if (context.getMode() == Mode.RUN_TIME) {
-            return handleSymbolInRuntime(symbol);
-        } else {
-            return handleSymbolInParseTime(symbol, context);
-        }
-    }
-
-    private static SchemeExpression handleSymbolInRuntime(SchemeSymbol symbol) {
-        return SymbolExprNodeGen.create(symbol);
-    }
-
-    private static SchemeExpression handleSymbolInParseTime(SchemeSymbol symbol, Context context) {
-        var indexPair = context.findSymbol(symbol);
+        var indexPair = context.findClosureSymbol(symbol);
         if (indexPair != null) {
-            if (indexPair.getLexicalScopeDepth() == 0) {
-                return ReadLocalVariableExprNodeGen.create(indexPair.getFrameIndex(), symbol);
-            }
-            return ReadClosureVariableExprNodeGen.create(indexPair.getLexicalScopeDepth(), indexPair.getFrameIndex(), symbol);
+            return createReadLocalVariable(indexPair, symbol);
         } else {
-            //the variable was not define yet, therefore it will be defined later in global env (can't be defined somewhere in local environment because then we would have parsed it)
-            //right now we don't know whether the expression will be found during parse time or will be added during runtime - we store variables and at the end of parsing we know whether variable is
-            var index = context.addGlobalSymbol(symbol);
-            var globalVariable = ReadGlobalVariableExprNodeGen.create(symbol, index);
-            context.addGlobalVariableExpression(globalVariable);
-            return ReadGlobalVariableExprNodeGen.create(symbol, index);
+            return ReadRuntimeGlobalVariableExprNodeGen.create(symbol);
         }
     }
+
+    private static SchemeExpression createReadLocalVariable(Pair indexPair, SchemeSymbol symbol) {
+        if (indexPair.getLexicalScopeDepth() == 0) {
+            return ReadLocalVariableExprNodeGen.create(indexPair.getFrameIndex(), symbol);
+        }
+        return ReadClosureVariableExprNodeGen.create(indexPair.getLexicalScopeDepth(), indexPair.getFrameIndex(), symbol);
+    }
+
 
     private static SchemeExpression convert(SchemeCell list, Context context) {
         var firstElement = list.car;

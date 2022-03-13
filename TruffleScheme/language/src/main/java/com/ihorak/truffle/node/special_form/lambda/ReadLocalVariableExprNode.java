@@ -22,22 +22,22 @@ public abstract class ReadLocalVariableExprNode extends SchemeExpression {
         this.symbol = symbol;
     }
 
-    @Specialization(guards = "isLong(frame)")
+    @Specialization(guards = "frame.isLong(frameSlotIndex)")
     protected long readLong(VirtualFrame frame) {
         return frame.getLong(frameSlotIndex);
     }
 
-    @Specialization(guards = "isBoolean(frame)")
+    @Specialization(guards = "frame.isBoolean(frameSlotIndex)")
     protected boolean readBoolean(VirtualFrame frame) {
         return frame.getBoolean(frameSlotIndex);
     }
 
-    @Specialization(guards = "isDouble(frame)")
+    @Specialization(guards = "frame.isDouble(frameSlotIndex)")
     protected double readDouble(VirtualFrame frame) {
         return frame.getDouble(frameSlotIndex);
     }
 
-    @Specialization(replaces = {"readLong", "readBoolean", "readDouble"}, guards = "isObject(frame)")
+    @Specialization(replaces = {"readLong", "readBoolean", "readDouble"}, guards = "frame.isObject(frameSlotIndex)")
     protected Object read(VirtualFrame frame) {
         return frame.getObject(frameSlotIndex);
     }
@@ -45,21 +45,5 @@ public abstract class ReadLocalVariableExprNode extends SchemeExpression {
     @Fallback
     protected Object fallback(VirtualFrame frame) {
         throw new SchemeException(symbol + ": undefined\ncannot reference an identifier before its definition. FrameSlotKind: " + frame.getFrameDescriptor().getSlotKind(frameSlotIndex));
-    }
-
-    protected boolean isLong(VirtualFrame frame) {
-        return frame.getFrameDescriptor().getSlotKind(frameSlotIndex) == FrameSlotKind.Long;
-    }
-
-    protected boolean isBoolean(VirtualFrame frame) {
-        return frame.getFrameDescriptor().getSlotKind(frameSlotIndex) == FrameSlotKind.Boolean;
-    }
-
-    protected boolean isDouble(VirtualFrame frame) {
-        return frame.getFrameDescriptor().getSlotKind(frameSlotIndex) == FrameSlotKind.Double;
-    }
-
-    protected boolean isObject(VirtualFrame frame) {
-        return frame.getFrameDescriptor().getSlotKind(frameSlotIndex) == FrameSlotKind.Object;
     }
 }

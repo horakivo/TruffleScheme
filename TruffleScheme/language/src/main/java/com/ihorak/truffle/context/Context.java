@@ -41,23 +41,24 @@ public class Context {
         this.frameDescriptorBuilder = frameDescriptorBuilder;
     }
 
+    /**
+     * Returns null when the symbol is not found in any local environment
+     * Therefore global variables are not returned, since those are not stored in VirtualFrames
+     *
+     * */
     @Nullable
-    public Pair findSymbol(SchemeSymbol symbol) {
-        if (mode == Mode.RUN_TIME) {
-            throw new ParserException("Parser: Values shouldn't be added during runtime! Parser mistake");
-        }
+    public Pair findClosureSymbol(SchemeSymbol symbol) {
         return findSymbol(this, symbol, 0);
     }
 
-    @Nullable
-    public Integer findLocalSymbol(SchemeSymbol symbol) {
-        if (mode == Mode.RUN_TIME) {
-            throw new ParserException("Parser: Values shouldn't be added during runtime! Parser mistake");
-        }
-        return map.get(symbol);
-    }
 
+
+    @Nullable
     private Pair findSymbol(Context context, SchemeSymbol symbol, int depth) {
+        if (context.getLexicalScope() == LexicalScope.GLOBAL) {
+            return null;
+        }
+
         Integer frameDescriptorIndex = context.map.get(symbol);
 
         if (frameDescriptorIndex == null) {
@@ -70,10 +71,12 @@ public class Context {
         return new Pair(frameDescriptorIndex, depth);
     }
 
+    @Nullable
+    public Integer findLocalSymbol(SchemeSymbol symbol) {
+        return map.get(symbol);
+    }
+
     public int addLocalSymbol(SchemeSymbol symbol) {
-        if (mode == Mode.RUN_TIME) {
-            throw new ParserException("Parser: Values shouldn't be added during runtime! Parser mistake");
-        }
         Integer frameDescriptorIndex = map.get(symbol);
         if (frameDescriptorIndex == null) {
             int index = frameDescriptorBuilder.addSlot(FrameSlotKind.Illegal, symbol, null);

@@ -11,6 +11,7 @@ import com.ihorak.truffle.node.exprs.ReadProcedureArgExprNode;
 import com.ihorak.truffle.node.special_form.*;
 import com.ihorak.truffle.node.special_form.lambda.LambdaExprNode;
 import com.ihorak.truffle.node.special_form.LetStarExprNode;
+import com.ihorak.truffle.node.special_form.lambda.WriteGlobalRuntimeVariableExprNodeGen;
 import com.ihorak.truffle.node.special_form.lambda.WriteLocalVariableExprNode;
 import com.ihorak.truffle.node.special_form.lambda.WriteLocalVariableExprNodeGen;
 import com.ihorak.truffle.type.SchemeCell;
@@ -83,22 +84,24 @@ public class SpecialFormConverter {
 
         if (potentialSymbol instanceof SchemeSymbol) {
             var symbol = (SchemeSymbol) potentialSymbol;
-            //If we eval the value here then if we use recursion (therefore use the name of the function somewhere)
-            //then we treat is as a global function is not necessary
-            //SchemeExpression valueToStore = ListToExpressionConverter.convert(defineList.get(2), context);
             var defineBody = defineList.get(2);
-            if (context.getMode() == Mode.RUN_TIME) {
-                return handleDefineInRuntime(symbol, defineBody, context);
-            } else {
-                return handleDefineInParseTime(symbol, defineBody, context);
+
+            if (context.getLexicalScope() == LexicalScope.GLOBAL) {
+                return createWriteGlobalVariable(context, symbol, defineBody);
             }
+
+            return createWriteLocalVariable(context, symbol, defineBody);
         } else {
             throw new ParserException("define: expected: Symbol \n given: " + potentialSymbol);
         }
     }
 
-    @NotNull
-    private static SchemeExpression handleDefineInParseTime(SchemeSymbol symbol, Object defineBody, Context context) {
+    private static SchemeExpression createWriteGlobalVariable(Context context, SchemeSymbol symbol, Object defineBody) {
+        SchemeExpression valueToStore = ListToExpressionConverter.convert(defineBody, context);
+        return WriteGlobalRuntimeVariableExprNodeGen.create(symbol, valueToStore);
+    }
+
+    private static SchemeExpression createWriteLocalVariable(Context context, SchemeSymbol symbol, Object defineBody) {
         var index = context.findLocalSymbol(symbol);
         if (index == null) {
             index = context.addLocalSymbol(symbol);
@@ -106,12 +109,7 @@ public class SpecialFormConverter {
         SchemeExpression valueToStore = ListToExpressionConverter.convert(defineBody, context);
         return WriteLocalVariableExprNodeGen.create(index, symbol, valueToStore);
     }
-
-    private static SchemeExpression handleDefineInRuntime(SchemeSymbol symbol, Object defineBody, Context context) {
-        SchemeExpression valueToStore = ListToExpressionConverter.convert(defineBody, context);
-        return DefineExprNodeGen.create(valueToStore, symbol);
-    }
-
+    
     /*
      *  --> (lambda (param1 .. paramN) expr1...exprN))
      * */
@@ -145,22 +143,13 @@ public class SpecialFormConverter {
 
     private static List<SchemeExpression> createLocalVariablesForLambda(SchemeCell parameters, Context context) {
         List<SchemeExpression> result = new ArrayList<>();
-        if (context.getMode() == Mode.RUN_TIME) {
-            for (int i = 0; i < parameters.size(); i++) {
-                var currentSymbol = (SchemeSymbol) parameters.get(i);
-                result.add(DefineExprNodeGen.create(new ReadProcedureArgExprNode(i), currentSymbol));
-            }
-        } else {
-            for (int i = 0; i < parameters.size(); i++) {
-                var currentSymbol = (SchemeSymbol) parameters.get(i);
-                int frameIndex = context.addLocalSymbol(currentSymbol);
-                var localVariableNode = WriteLocalVariableExprNodeGen.create(frameIndex, currentSymbol, new ReadProcedureArgExprNode(i));
-                result.add(localVariableNode);
-            }
-
+        for (int i = 0; i < parameters.size(); i++) {
+            var currentSymbol = (SchemeSymbol) parameters.get(i);
+            int frameIndex = context.addLocalSymbol(currentSymbol);
+            var localVariableNode = WriteLocalVariableExprNodeGen.create(frameIndex, currentSymbol, new ReadProcedureArgExprNode(i));
+            result.add(localVariableNode);
         }
         return result;
-
     }
 
 

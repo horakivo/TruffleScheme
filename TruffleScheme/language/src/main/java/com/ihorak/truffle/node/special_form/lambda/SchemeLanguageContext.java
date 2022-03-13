@@ -1,27 +1,48 @@
 package com.ihorak.truffle.node.special_form.lambda;
 
+import com.ihorak.truffle.SchemeTruffleLanguage;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.CompilerDirectives;
+import com.oracle.truffle.api.TruffleLanguage;
+import com.oracle.truffle.api.nodes.Node;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class SchemeLanguageContext {
 
-    private final Map<SchemeSymbol, Object> globalVariableStorage = new HashMap<>();
+    private final GlobalState globalState = new GlobalState();
+    private static final TruffleLanguage.ContextReference<SchemeLanguageContext> REFERENCE =
+            TruffleLanguage.ContextReference.create(SchemeTruffleLanguage.class);
 
-
-    public Object getVariable(SchemeSymbol symbol) {
-        var value = globalVariableStorage.get(symbol);
-        if (value == null) {
-            CompilerDirectives.transferToInterpreterAndInvalidate();
-            throw new SchemeException(symbol + ": undefined\ncannot reference an identifier before its definition");
-        }
-        return value;
+    public static SchemeLanguageContext get(Node node) {
+        return REFERENCE.get(node);
     }
 
-    public void storeVariable(SchemeSymbol symbol, Object valueToStore) {
-        globalVariableStorage.put(symbol, valueToStore);
+    public GlobalState getGlobalState() {
+        return globalState;
+    }
+
+
+    public static final class GlobalState {
+        private final Map<SchemeSymbol, Object> globalVariableStorage = new HashMap<>();
+
+        public Object getVariable(SchemeSymbol symbol) {
+            var value = globalVariableStorage.get(symbol);
+            if (value == null) {
+                CompilerDirectives.transferToInterpreterAndInvalidate();
+                throw new SchemeException(symbol + ": undefined\ncannot reference an identifier before its definition");
+            }
+            return value;
+        }
+
+        public void addVariable(SchemeSymbol symbol, Object valueToStore) {
+            if (globalVariableStorage.containsKey(symbol)) {
+                ReadRuntimeGlobalVariableExprNode.notRedefinedAssumption.invalidate();
+            }
+
+            globalVariableStorage.put(symbol, valueToStore);
+        }
     }
 }

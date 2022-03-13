@@ -2,6 +2,7 @@ package com.ihorak.truffle.node.special_form.lambda;
 
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeSymbol;
+import com.ihorak.truffle.type.UndefinedValue;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.Specialization;
@@ -19,25 +20,28 @@ public abstract class WriteLocalVariableExprNode extends SchemeExpression {
         this.symbol = symbol;
     }
 
-    @Specialization
-    protected Object writeLong(VirtualFrame frame, long value) {
+    @Specialization(guards = "isLongOrIllegal(frame)")
+    protected UndefinedValue writeLong(VirtualFrame frame, long value) {
+        /* No-on if already long */
         frame.getFrameDescriptor().setSlotKind(frameIndex, FrameSlotKind.Long);
         frame.setLong(frameIndex, value);
-        return null;
+        return UndefinedValue.SINGLETON;
     }
 
-    @Specialization
+    @Specialization(guards = "isBooleanOrIllegal(frame)")
     protected Object writeBoolean(VirtualFrame frame, boolean value) {
+        /* No-on if already boolean */
         frame.getFrameDescriptor().setSlotKind(frameIndex, FrameSlotKind.Boolean);
         frame.setBoolean(frameIndex, value);
-        return null;
+        return UndefinedValue.SINGLETON;
     }
 
-    @Specialization
+    @Specialization(guards = "isDoubleOrIllegal(frame)")
     protected Object writeDouble(VirtualFrame frame, double value) {
+        /* No-on if already double */
         frame.getFrameDescriptor().setSlotKind(frameIndex, FrameSlotKind.Double);
         frame.setDouble(frameIndex, value);
-        return null;
+        return UndefinedValue.SINGLETON;
     }
 
 
@@ -62,6 +66,22 @@ public abstract class WriteLocalVariableExprNode extends SchemeExpression {
          */
         frame.getFrameDescriptor().setSlotKind(frameIndex, FrameSlotKind.Object);
         frame.setObject(frameIndex, value);
-        return null;
+        return UndefinedValue.SINGLETON;
+    }
+
+
+    protected boolean isLongOrIllegal(VirtualFrame frame) {
+        final FrameSlotKind kind = frame.getFrameDescriptor().getSlotKind(frameIndex);
+        return kind == FrameSlotKind.Long || kind == FrameSlotKind.Illegal;
+    }
+
+    protected boolean isBooleanOrIllegal(VirtualFrame frame) {
+        final FrameSlotKind kind = frame.getFrameDescriptor().getSlotKind(frameIndex);
+        return kind == FrameSlotKind.Boolean || kind == FrameSlotKind.Illegal;
+    }
+
+    protected boolean isDoubleOrIllegal(VirtualFrame frame) {
+        final FrameSlotKind kind = frame.getFrameDescriptor().getSlotKind(frameIndex);
+        return kind == FrameSlotKind.Double || kind == FrameSlotKind.Illegal;
     }
 }

@@ -133,16 +133,14 @@ public class LambdaExprNodeTest {
 //    }
 
 
-    //TODO VYRESIT TENTO TEST
-//    @Test
-//    public void givenLambdaWithEvalAndQuote_whenExecuted_thenCorrectResultIsReturned() {
-//        var program = "((lambda (x) (eval '(define y 10)) (+ x y)) 5)";
-//        var expr = Reader.readExpr(CharStreams.fromString(program));
-//        GlobalEnvironment globalEnvironment = new GlobalEnvironment();
-//
-//        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
-//        assertEquals(15L, result);
-//    }
+    @Test
+    public void givenLambdaWithEvalAndQuote_whenExecuted_thenCorrectResultIsReturned() {
+        var program = "((lambda (x) (eval '(define y 10)) (+ x y)) 5)";
+
+        var result = context.eval("scm", program);
+
+        assertEquals(15L, result.asLong());
+    }
 
     @Test
     public void givenLambdaWithDefine_whenExecuted_thenCorrectResultIsReturned() {

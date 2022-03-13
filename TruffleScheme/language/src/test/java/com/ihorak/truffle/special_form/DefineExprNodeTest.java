@@ -1,29 +1,35 @@
 package com.ihorak.truffle.special_form;
 
-import com.ihorak.truffle.parser.Reader;
-import com.oracle.truffle.api.Truffle;
-import org.antlr.v4.runtime.CharStreams;
+import org.graalvm.polyglot.Context;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 public class DefineExprNodeTest {
 
-    @Test
-    public void givenAnyValue_whenDefineIsExecuted_thenCorrectValueShouldBeStored() {
-        var program = "(define x 5) x";
-        var rootNode = Reader.readProgram(CharStreams.fromString(program));
+    private Context context;
 
-        var result = Truffle.getRuntime().createDirectCallNode(rootNode.getCallTarget()).call();
-        assertEquals(5L, result);
+    @Before
+    public void setUp() {
+        context = Context.create();
     }
 
     @Test
-    public void gasda() {
-        var program = "(define foo (lambda (x) (+ x y))) (define y 10) (foo 5)";
-        var rootNode = Reader.readProgram(CharStreams.fromString(program));
+    public void givenAnyValue_whenDefineIsExecuted_thenCorrectValueShouldBeStored() {
+        var program = "(define x 5) x";
 
-        var result = Truffle.getRuntime().createDirectCallNode(rootNode.getCallTarget()).call();
-        assertEquals(15L, result);
+        var result = context.eval("scm", program);
+
+        assertEquals(5L, result.asLong());
+    }
+
+    @Test
+    public void givenDefinedValueOutsideFunction_whenExecuted_thenValueShouldBeFound() {
+        var program = "(define foo (lambda (x) (+ x y))) (define y 10) (foo 5)";
+
+        var result = context.eval("scm", program);
+
+        assertEquals(15L, result.asLong());
     }
 }
