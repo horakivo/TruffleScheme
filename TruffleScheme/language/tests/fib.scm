@@ -16,6 +16,10 @@
 (fibonacci 32)
 (fibonacci 32)
 (fibonacci 32)
+(fibonacci 32)
+(fibonacci 32)
+(fibonacci 32)
+(fibonacci 32)
 
 (define start (current-milliseconds))
 

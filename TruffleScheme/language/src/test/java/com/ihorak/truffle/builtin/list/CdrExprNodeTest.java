@@ -6,51 +6,60 @@ import com.ihorak.truffle.parser.Reader;
 import com.ihorak.truffle.type.SchemeCell;
 import com.oracle.truffle.api.dsl.UnsupportedSpecializationException;
 import org.antlr.v4.runtime.CharStreams;
+import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.PolyglotException;
+import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class CdrExprNodeTest {
+
+    private Context context;
+
+    @Before
+    public void setUp() {
+        context = Context.create();
+    }
 
     @Test
     public void givenList_whenCdr_thenReturnSecondElementOfList() {
         var program = "(cdr (list 1 2))";
-        var expr = Reader.readExpr(CharStreams.fromString(program));
-        GlobalEnvironment globalEnvironment = new GlobalEnvironment();
 
-        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
-        var expectedResult = new SchemeCell(2L, SchemeCell.EMPTY_LIST);
+        var result = context.eval("scm", program);
 
-        assertEquals(expectedResult, result);
-        assertEquals("(2)", result.toString());
+        assertTrue(result.hasArrayElements());
+        assertEquals(2L, result.getArrayElement(0).asLong());
     }
 
     @Test
     public void givenPair_whenCdr_thenReturnSecondElementOfPair() {
         var program = "(cdr (cons 1 2))";
-        var expr = Reader.readExpr(CharStreams.fromString(program));
-        GlobalEnvironment globalEnvironment = new GlobalEnvironment();
 
-        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
+        var result = context.eval("scm", program);
 
-        assertEquals(2L, result);
+        assertEquals(2L, result.asLong());
     }
 
-    @Test(expected = UnsupportedSpecializationException.class)
+    @Test
     public void givenNumber_whenCdr_thenUnsupportedSpecializationExceptionShouldBeThrown() {
         var program = "(cdr 1)";
-        var expr = Reader.readExpr(CharStreams.fromString(program));
-        GlobalEnvironment globalEnvironment = new GlobalEnvironment();
 
-        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+
+        assertEquals("cdr: contract violation\n" +
+                "expected: pair?\n" +
+                "given: 1", msg);
     }
 
-    @Test(expected = SchemeException.class)
+    @Test
     public void givenEmptyList_whenCdr_thenSchemeExceptionShouldBeThrown() {
         var program = "(cdr (list))";
-        var expr = Reader.readExpr(CharStreams.fromString(program));
-        GlobalEnvironment globalEnvironment = new GlobalEnvironment();
 
-        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+
+        assertEquals("cdr: contract violation \n" +
+                " expected: pair? \n" +
+                " given: ()", msg);
     }
 }

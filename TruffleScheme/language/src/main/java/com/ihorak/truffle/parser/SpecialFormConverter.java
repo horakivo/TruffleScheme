@@ -109,7 +109,7 @@ public class SpecialFormConverter {
         SchemeExpression valueToStore = ListToExpressionConverter.convert(defineBody, context);
         return WriteLocalVariableExprNodeGen.create(index, symbol, valueToStore);
     }
-    
+
     /*
      *  --> (lambda (param1 .. paramN) expr1...exprN))
      * */
