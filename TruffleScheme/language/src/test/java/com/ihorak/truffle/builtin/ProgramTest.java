@@ -1,11 +1,5 @@
 package com.ihorak.truffle.builtin;
 
-import com.ihorak.truffle.GlobalEnvironment;
-import com.ihorak.truffle.exceptions.SchemeException;
-import com.ihorak.truffle.node.special_form.lambda.WriteLocalVariableExprNode;
-import com.ihorak.truffle.parser.Reader;
-import com.oracle.truffle.api.Truffle;
-import org.antlr.v4.runtime.CharStreams;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
 import org.junit.Before;

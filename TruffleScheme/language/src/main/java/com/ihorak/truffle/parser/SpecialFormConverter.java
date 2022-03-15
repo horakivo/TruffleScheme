@@ -4,6 +4,7 @@ import com.ihorak.truffle.context.Context;
 import com.ihorak.truffle.context.LexicalScope;
 import com.ihorak.truffle.context.Mode;
 import com.ihorak.truffle.exceptions.ParserException;
+import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.ProcedureRootNode;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.SchemeRootNode;
@@ -157,7 +158,7 @@ public class SpecialFormConverter {
         if (quoteList.size() == 2) {
             return new QuoteExprNode(quoteList.get(1));
         } else {
-            throw new ParserException("quote: arity mismatch \n expected: 1 \n given: " + (quoteList.size() - 1));
+            throw new SchemeException("quote: arity mismatch\nexpected: 1\ngiven: " + (quoteList.size() - 1));
         }
     }
 
@@ -165,7 +166,7 @@ public class SpecialFormConverter {
         if (quasiquoteList.size() == 2) {
             return new QuasiquoteExprNode(quasiquoteList.get(1));
         } else {
-            throw new ParserException("quasiquote: arity mismatch \n expected: 1 \n given: " + (quasiquoteList.size() - 1));
+            throw new SchemeException("quasiquote: arity mismatch\nexpected: 1\ngiven: " + (quasiquoteList.size() - 1));
         }
     }
 

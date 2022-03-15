@@ -36,5 +36,4 @@ public abstract class ReadRuntimeGlobalVariableExprNode extends SchemeExpression
         var context = SchemeLanguageContext.get(this);
         return context.getGlobalState().getVariable(symbol);
     }
-
 }

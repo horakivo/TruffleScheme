@@ -1,8 +1,5 @@
 package com.ihorak.truffle.builtin.logical;
 
-import com.ihorak.truffle.GlobalEnvironment;
-import com.ihorak.truffle.parser.Reader;
-import org.antlr.v4.runtime.CharStreams;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
 import org.junit.Before;
@@ -35,41 +32,37 @@ public class LessThenOrEqualExprNodeTest {
     @Test
     public void givenOneArg_whenExecuted_thenShouldReturnTrue() {
         var program = "(<= 3)";
-        var expr = Reader.readExpr(CharStreams.fromString(program));
-        GlobalEnvironment globalEnvironment = new GlobalEnvironment();
-        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
 
-        assertTrue((boolean) result);
+        var result = context.eval("scm", program);
+
+        assertTrue(result.asBoolean());
     }
 
     @Test
     public void givenTwoArg_whenExecuted_thenShouldReturnTrue() {
         var program = "(<= 3 4)";
-        var expr = Reader.readExpr(CharStreams.fromString(program));
-        GlobalEnvironment globalEnvironment = new GlobalEnvironment();
-        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
 
-        assertTrue((boolean) result);
+        var result =  context.eval("scm", program);
+
+        assertTrue(result.asBoolean());
     }
 
     @Test
     public void givenArbitraryArg_whenExecuted_thenShouldReturnTrue() {
         var program = "(<= 3 4 5 6 7 8 9 10)";
-        var expr = Reader.readExpr(CharStreams.fromString(program));
-        GlobalEnvironment globalEnvironment = new GlobalEnvironment();
-        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
 
-        assertTrue((boolean) result);
+        var result =  context.eval("scm", program);
+
+        assertTrue(result.asBoolean());
     }
 
     @Test
     public void givenArbitraryArg_whenExecuted_thenShouldReturnFalse() {
         var program = "(<= 3 4 6 5 7 8 9 10)";
-        var expr = Reader.readExpr(CharStreams.fromString(program));
-        GlobalEnvironment globalEnvironment = new GlobalEnvironment();
-        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
 
-        assertFalse((boolean) result);
+        var result = context.eval("scm", program);
+
+        assertFalse(result.asBoolean());
     }
 
     @Test

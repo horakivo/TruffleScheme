@@ -3,6 +3,7 @@ package com.ihorak.truffle.node.exprs.builtin.list;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeCell;
+import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.Specialization;
 
@@ -16,6 +17,12 @@ public abstract class LengthExprNode extends SchemeExpression {
         } else {
             throw new SchemeException("length: contract violation \n expected: list? \n given: " + list);
         }
+    }
+
+
+    @Fallback
+    protected void fallback(Object object) {
+        throw new SchemeException("length: contract violation\nexpected: list?\ngiven: " + object);
     }
 
 

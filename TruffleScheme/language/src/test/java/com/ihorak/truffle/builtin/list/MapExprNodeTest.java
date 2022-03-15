@@ -1,12 +1,22 @@
 package com.ihorak.truffle.builtin.list;
 
-import com.ihorak.truffle.GlobalEnvironment;
 import com.ihorak.truffle.exceptions.SchemeException;
-import com.ihorak.truffle.parser.Reader;
-import org.antlr.v4.runtime.CharStreams;
+import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.PolyglotException;
+import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+
 public class MapExprNodeTest {
+
+    private Context context;
+
+    @Before
+    public void setUp() {
+        context = Context.create();
+    }
 
 //    @Test
 //    public void giveListAndMinus_whenMap_thenShouldListWithNegativeNumbers() {
@@ -42,12 +52,15 @@ public class MapExprNodeTest {
 //        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
 //    }
 
-    @Test(expected = SchemeException.class)
+    @Test
     public void givenProcedureWithDifferentNumberOfArgs_whenMap_thenShouldThrowException() {
         var program = "(map (lambda (x) (- x)) (list 1 2 3) (list 4 5 6) (list 7 8 9))";
-        var expr = Reader.readExpr(CharStreams.fromString(program));
-        GlobalEnvironment globalEnvironment = new GlobalEnvironment();
 
-        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+
+        assertEquals("map: argument mismatch; \n" +
+                " the given procedure's expected number of arguments does not match the given number of lists \n" +
+                " expected: 1\n" +
+                " given: 3", msg);
     }
 }

@@ -1,9 +1,16 @@
 package com.ihorak.truffle.type;
 
 
+import com.oracle.truffle.api.CompilerDirectives;
+import com.oracle.truffle.api.interop.InteropLibrary;
+import com.oracle.truffle.api.interop.TruffleObject;
+import com.oracle.truffle.api.library.ExportLibrary;
+import com.oracle.truffle.api.library.ExportMessage;
+
 import java.util.Objects;
 
-public class SchemeSymbol {
+@ExportLibrary(InteropLibrary.class)
+public class SchemeSymbol implements TruffleObject {
 
     private final String value;
 
@@ -32,4 +39,18 @@ public class SchemeSymbol {
     public int hashCode() {
         return Objects.hash(value);
     }
+
+    @ExportMessage
+    @SuppressWarnings("static-method")
+    boolean isString() {
+        return true;
+    }
+
+    @ExportMessage
+    String asString() {
+        return value;
+    }
+
+
+
 }

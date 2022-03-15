@@ -4,36 +4,48 @@ import com.ihorak.truffle.GlobalEnvironment;
 import com.ihorak.truffle.parser.Reader;
 import com.ihorak.truffle.type.SchemeCell;
 import org.antlr.v4.runtime.CharStreams;
+import org.graalvm.polyglot.Context;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ConsExprNodeTest {
+
+
+    private Context context;
+
+    @Before
+    public void setUp() {
+        context = Context.create();
+    }
 
     @Test
     public void givenRandomNumbers_whenCons_thenReturnSchemeCell() {
         var program = "(cons 1 2)";
-        var expr = Reader.readExpr(CharStreams.fromString(program));
-        GlobalEnvironment globalEnvironment = new GlobalEnvironment();
 
-        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
-        var expectedResult = new SchemeCell(1L, 2L);
+        var result = context.eval("scm", program);
 
-        assertEquals(expectedResult, result);
-        assertEquals("(1 . 2)", result.toString());
+        assertTrue(result.hasArrayElements());
+        assertEquals(1L, result.getArrayElement(0).asLong());
+        var test = result.getArrayElement(1);
+        assertEquals(2L, result.getArrayElement(1).asLong());
     }
 
     @Test
     public void givenComplexStructure_whenCons_thenReturnCorrectValue() {
         var program = "(cons (cons 1 2) (cons 3 4))";
-        var expr = Reader.readExpr(CharStreams.fromString(program));
-        GlobalEnvironment globalEnvironment = new GlobalEnvironment();
 
-        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
-        var expectedResult = new SchemeCell(new SchemeCell(1L, 2L), new SchemeCell(3L, 4L));
 
-        assertEquals(expectedResult, result);
-        assertEquals("((1 . 2) . (3 . 4))", result.toString());
+        var result =  context.eval("scm", program);
+
+        assertTrue(result.hasArrayElements());
+        assertTrue(result.getArrayElement(0).hasArrayElements());
+        assertEquals(1L, result.getArrayElement(0).getArrayElement(0).asLong());
+        assertEquals(2L, result.getArrayElement(0).getArrayElement(1).asLong());
+        assertEquals(3L, result.getArrayElement(1).getArrayElement(0).asLong());
+        assertEquals(4L, result.getArrayElement(1).getArrayElement(1).asLong());
     }
 
     @Test

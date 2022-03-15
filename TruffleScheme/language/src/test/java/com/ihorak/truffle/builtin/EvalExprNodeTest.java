@@ -1,11 +1,6 @@
 package com.ihorak.truffle.builtin;
 
-import com.ihorak.truffle.GlobalEnvironment;
-import com.ihorak.truffle.exceptions.SchemeException;
-import com.ihorak.truffle.parser.Reader;
-import com.ihorak.truffle.type.SchemeFunction;
 import com.ihorak.truffle.type.UndefinedValue;
-import org.antlr.v4.runtime.CharStreams;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
 import org.junit.Before;
