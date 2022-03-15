@@ -1,11 +1,5 @@
 package com.ihorak.truffle.special_form;
 
-import com.ihorak.truffle.GlobalEnvironment;
-import com.ihorak.truffle.exceptions.ParserException;
-import com.ihorak.truffle.parser.Reader;
-import com.ihorak.truffle.type.SchemeCell;
-import com.ihorak.truffle.type.SchemeSymbol;
-import org.antlr.v4.runtime.CharStreams;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
 import org.junit.Before;

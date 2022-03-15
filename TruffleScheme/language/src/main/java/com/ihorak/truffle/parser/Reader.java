@@ -20,32 +20,9 @@ import java.util.List;
 public class Reader {
 
 
-    public static SchemeExpression readExpr(CharStream charStream) {
-        var program = parseProgram(charStream);
-        var globalContext = new Context(null, new HashMap<>(), FrameDescriptor.newBuilder());
-        return ListToExpressionConverter.convert(program.getInternalRepresentations().get(0), globalContext);
-    }
 
-    public static SchemeExpression readRuntimeExpr(CharStream charStream) {
-        var program = parseProgram(charStream);
-        var globalContext = new Context(null, new HashMap<>(), FrameDescriptor.newBuilder());
-        globalContext.setMode(Mode.RUN_TIME);
-        return ListToExpressionConverter.convert(program.getInternalRepresentations().get(0), globalContext);
-    }
 
-    public static ProcedureRootNode readProgram(CharStream charStream) {
-
-        var program = parseProgram(charStream);
-        var globalContext = new Context(null, new HashMap<>(), FrameDescriptor.newBuilder());
-        List<SchemeExpression> expressionList = new ArrayList<>();
-        for (Object obj : program.getInternalRepresentations()) {
-            expressionList.add(ListToExpressionConverter.convert(obj, globalContext));
-        }
-
-        return new ProcedureRootNode(null, globalContext.getFrameDescriptor(), expressionList);
-    }
-
-    public static List<SchemeExpression> readProgram2(CharStream charStream, Context globalContext) {
+    public static List<SchemeExpression> parseProgram(CharStream charStream, Context globalContext) {
 
         var program = parseProgram(charStream);
         List<SchemeExpression> expressionList = new ArrayList<>();
