@@ -20,7 +20,7 @@ public abstract class WriteGlobalRuntimeVariableExprNode extends SchemeExpressio
         var context = SchemeLanguageContext.get(this);
         context.getGlobalState().addVariable(symbol, valueToStore);
 
-        return UndefinedValue.SINGLETON ;
+        return UndefinedValue.SINGLETON;
     }
 
 }

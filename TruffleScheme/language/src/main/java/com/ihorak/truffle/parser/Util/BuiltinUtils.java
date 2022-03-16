@@ -9,7 +9,7 @@ public class BuiltinUtils {
 
     public static boolean isBuiltinProcedure(SchemeSymbol expr) {
         switch (expr.getValue()) {
-            case "+":
+//            case "+":
             case "-":
             case "/":
             case "*":

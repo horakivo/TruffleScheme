@@ -11,6 +11,7 @@ import com.ihorak.truffle.node.exprs.builtin.EvalExprNodeGen;
 import com.ihorak.truffle.node.exprs.builtin.arithmetic.*;
 import com.ihorak.truffle.node.special_form.lambda.WriteBuiltinProcedureExprNode;
 import com.ihorak.truffle.node.special_form.lambda.WriteBuiltinProcedureExprNodeGen;
+import com.ihorak.truffle.node.special_form.lambda.WriteGlobalRuntimeVariableExprNode;
 import com.ihorak.truffle.type.SchemeFunction;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.frame.FrameDescriptor;
@@ -32,9 +33,7 @@ public class DefaultPrimitiveProcedures {
         var builtinFunctionsMap = getAllPrimitiveProcedures();
 
         for (SchemeSymbol symbol : builtinFunctionsMap.keySet()) {
-            int frameIndex = frameDescriptorBuilder.addSlot(FrameSlotKind.Object, symbol, null);
-            map.put(symbol, frameIndex);
-            writeBuiltinProcedureExprNodes.add(WriteBuiltinProcedureExprNodeGen.create(builtinFunctionsMap.get(symbol), frameIndex, symbol));
+            writeBuiltinProcedureExprNodes.add(WriteBuiltinProcedureExprNodeGen.create(builtinFunctionsMap.get(symbol), symbol));
         }
 
         return new DefaultPrimitiveProceduresContainer(map, frameDescriptorBuilder, writeBuiltinProcedureExprNodes);

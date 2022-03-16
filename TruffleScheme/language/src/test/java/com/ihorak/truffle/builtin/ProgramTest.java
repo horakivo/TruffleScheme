@@ -189,6 +189,7 @@ public class ProgramTest {
                 "(- end start)";
 
         var test = context.eval("scm", program);
+        System.out.println(test);
     }
 
     @Test
