@@ -14,9 +14,6 @@ import java.util.List;
 
 public class MapExprNode extends SchemeExpression {
 
-    //TODO BIG TODO HERE! GET MORE INFO ABOUT @EXPLODE LOOP HERE!
-    //TODO BIG TODO HERE! ZJISTIT JESTLI V IMPLEMENTACI MUZU POUZIVAT LISTS nebo jen ARRAYS! I recall that only arrays but not sure
-
     @SuppressWarnings("FieldMayBeFinal")
     @Child
     private SchemeExpression operation;

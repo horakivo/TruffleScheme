@@ -240,4 +240,11 @@ public class ProgramTest {
 
         var test = context.eval("scm", program);
     }
+
+    @Test
+    public void test15() {
+        var program = "(define fun (lambda (x y) (+ x y))) (fun 1 2) (fun 2 3) (fun 3 4)";
+
+        var test = context.eval("scm", program);
+    }
 }

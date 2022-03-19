@@ -139,7 +139,7 @@ public class BuiltinFactory {
             return new MapExprNode(arguments.remove(0), arguments);
         } else {
             // -1 because first argument should be the function
-            throw new SchemeException("map: arity mismatch; Expected number of argument does not match the given number \n expected: 1 \n given: " + (arguments.size() - 1));
+            throw new SchemeException("map: arity mismatch; Expected number of argument does not match the given number \n expected: at least 2 \n given: " + (arguments.size()));
         }
     }
 

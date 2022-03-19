@@ -1,5 +1,6 @@
 package com.ihorak.truffle;
 
+import org.graalvm.polyglot.Context;
 import com.ihorak.truffle.parser.Reader;
 import org.antlr.v4.runtime.CharStreams;
 
@@ -9,6 +10,12 @@ import java.io.InputStreamReader;
 
 class Main {
     public static void main(String[] args) {
+
+        Context context = Context.create();
+
+        var test = context.eval("scm", "5");
+        System.out.println(test);
+
 
 //        var reader = new BufferedReader(new InputStreamReader(System.in));
 //        GlobalEnvironment globalEnvironment = new GlobalEnvironment();

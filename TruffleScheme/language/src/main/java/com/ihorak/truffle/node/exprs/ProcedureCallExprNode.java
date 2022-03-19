@@ -50,18 +50,19 @@ public class ProcedureCallExprNode extends SchemeExpression {
     }
 
     private Object call(CallTarget callTarget, Object[] arguments, VirtualFrame frame) {
-        if (this.isTailRecursive()) {
-            throw new TailCallException(callTarget, arguments);
-        } else {
-            while (true) {
-                try {
-                    return dispatchNode.executeDispatch(callTarget, arguments);
-                } catch (TailCallException tailCallException) {
-                    callTarget = tailCallException.getCallTarget();
-                    arguments = tailCallException.getArguments();
-                }
-            }
-        }
+        return dispatchNode.executeDispatch(callTarget, arguments);
+//        if (this.isTailRecursive()) {
+//            throw new TailCallException(callTarget, arguments);
+//        } else {
+//            while (true) {
+//                try {
+//                    return dispatchNode.executeDispatch(callTarget, arguments);
+//                } catch (TailCallException tailCallException) {
+//                    callTarget = tailCallException.getCallTarget();
+//                    arguments = tailCallException.getArguments();
+//                }
+//            }
+//        }
     }
 
     private SchemeFunction getFunction(VirtualFrame frame) {
@@ -69,7 +70,7 @@ public class ProcedureCallExprNode extends SchemeExpression {
             return functionNode.executeFunction(frame);
         } catch (UnexpectedResultException e) {
             noFunctionAsFirstArgumentProfile.enter();
-            throw new IllegalArgumentException("FunctionNode is not a function in ProcedureCallExprNode" + e);
+            throw new SchemeException("FunctionNode is not a function in ProcedureCallExprNode" + e);
         }
     }
 
@@ -79,7 +80,7 @@ public class ProcedureCallExprNode extends SchemeExpression {
         if (noParentConditionProfile.profile(function.getParentFrame() != null)) {
             arguments[0] = function.getParentFrame();
         } else {
-            arguments[0] = parentFrame;
+            arguments[0] = parentFrame.materialize();
         }
 
         int index = 1;

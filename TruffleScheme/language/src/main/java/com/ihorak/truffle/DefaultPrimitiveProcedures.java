@@ -41,7 +41,8 @@ public class DefaultPrimitiveProcedures {
 
 
     private static Map<SchemeSymbol, SchemeFunction> getAllPrimitiveProcedures() {
-        var plusExpr = PlusTestNodeGen.create(new ReadProcedureArgExprNode(0), new ReadProcedureArgExprNode(1));
+//        var plusExpr = PlusTestNodeGen.create(new ReadProcedureArgExprNode(0), new ReadProcedureArgExprNode(1));
+        var plusExpr = ReducePlusExprRuntimeNodeGen.create(PlusExprNodeGen.create());
         SchemeFunction plusFunction = createBuiltinFunction(plusExpr, null);
         var minusExpr = ReduceMinusExprRuntimeNodeGen.create(MinusExprNodeGen.create());
         SchemeFunction minusFunction = createBuiltinFunction(minusExpr, null);
