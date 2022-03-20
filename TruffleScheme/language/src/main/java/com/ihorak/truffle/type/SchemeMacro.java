@@ -9,4 +9,8 @@ public class SchemeMacro {
     public SchemeMacro(SchemeFunction transformationProcedure) {
         this.transformationProcedure = transformationProcedure;
     }
+
+    public SchemeFunction getTransformationProcedure() {
+        return transformationProcedure;
+    }
 }

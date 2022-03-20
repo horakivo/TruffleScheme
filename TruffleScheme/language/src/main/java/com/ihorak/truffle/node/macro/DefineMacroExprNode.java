@@ -11,23 +11,13 @@ import com.oracle.truffle.api.nodes.UnexpectedResultException;
 public class DefineMacroExprNode extends SchemeExpression {
 
     private final SchemeSymbol name;
-    @Child
-    private SchemeExpression transformationProcedure;
+    @Child private SchemeExpression transformationProcedure;
 
     public DefineMacroExprNode(SchemeSymbol name, SchemeExpression transformationProcedure) {
         this.name = name;
         this.transformationProcedure = transformationProcedure;
     }
 
-    /**
-     * Check what different compiler returns if I tried to eval special form
-     *
-     * I will need special scheme type (something similar to SchemeFunction) which will store the transformation
-     * the call target
-     *
-     * */
-
-    //TODO pridat SchemeMarco do SchemeExpression
     @Override
     public Object executeGeneric(VirtualFrame virtualFrame) {
         try {

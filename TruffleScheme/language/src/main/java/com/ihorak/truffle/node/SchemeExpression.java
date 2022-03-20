@@ -42,6 +42,10 @@ public abstract class SchemeExpression extends SchemeNode {
         return SchemeTypesGen.expectBigInteger(executeGeneric(virtualFrame));
     }
 
+    public SchemeMacro executeMacro(VirtualFrame virtualFrame) throws UnexpectedResultException {
+        return SchemeTypesGen.expectSchemeMacro(executeGeneric(virtualFrame));
+    }
+
     public void setTailRecursiveAsTrue() {
         this.isTailRecursive = true;
     }

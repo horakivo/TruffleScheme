@@ -36,7 +36,7 @@ public class ProcedureCallExprNode extends SchemeExpression {
 
     @Override
     public Object executeGeneric(VirtualFrame virtualFrame) {
-        SchemeFunction function = getFunction(virtualFrame);
+        SchemeFunction function = getProcedure(virtualFrame);
         Object[] arguments = getProcedureArguments(function, virtualFrame);
 
         if (function.getExpectedNumberOfArgs() != null && function.getExpectedNumberOfArgs() != this.arguments.length) {
@@ -65,12 +65,12 @@ public class ProcedureCallExprNode extends SchemeExpression {
 //        }
     }
 
-    private SchemeFunction getFunction(VirtualFrame frame) {
+    private SchemeFunction getProcedure(VirtualFrame frame) {
         try {
             return functionNode.executeFunction(frame);
         } catch (UnexpectedResultException e) {
             noFunctionAsFirstArgumentProfile.enter();
-            throw new SchemeException("FunctionNode is not a function in ProcedureCallExprNode" + e);
+            throw new SchemeException("application: not a procedure;\nexpected a procedure that can be applied to arguments\ngiven: " + e.getResult());
         }
     }
 

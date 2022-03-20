@@ -19,7 +19,7 @@ public class DefineMacroExprNodeTest {
 
     @Test
     public void givenDefineMacro_whenEvaluated_thenSchemeMacroShouldBeReturned() {
-        var program = "(define-macro macro (lambda (test first) `(if ,test ,first #f))) (test #t 5)";
+        var program = "(define-macro macro (lambda (test first) `(if ,test ,first #f))) (macro #f 5)";
 
         var result = context.eval("scm", program);
 
