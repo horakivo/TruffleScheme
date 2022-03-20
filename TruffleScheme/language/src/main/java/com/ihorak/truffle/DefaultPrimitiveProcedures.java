@@ -25,9 +25,7 @@ import java.util.Map;
 public class DefaultPrimitiveProcedures {
 
 
-    public static DefaultPrimitiveProceduresContainer generate() {
-        Map<SchemeSymbol, Integer> map = new HashMap<>();
-        var frameDescriptorBuilder = FrameDescriptor.newBuilder();
+    public static List<WriteBuiltinProcedureExprNode> generate() {
         List<WriteBuiltinProcedureExprNode> writeBuiltinProcedureExprNodes = new ArrayList<>();
 
         var builtinFunctionsMap = getAllPrimitiveProcedures();
@@ -36,7 +34,7 @@ public class DefaultPrimitiveProcedures {
             writeBuiltinProcedureExprNodes.add(WriteBuiltinProcedureExprNodeGen.create(builtinFunctionsMap.get(symbol), symbol));
         }
 
-        return new DefaultPrimitiveProceduresContainer(map, frameDescriptorBuilder, writeBuiltinProcedureExprNodes);
+        return writeBuiltinProcedureExprNodes;
     }
 
 
@@ -66,29 +64,5 @@ public class DefaultPrimitiveProcedures {
         var rootNode = new ProcedureRootNode(null, new FrameDescriptor(), List.of(schemeExpression));
 
         return new SchemeFunction(rootNode.getCallTarget(), expectedNumberOfArgs);
-    }
-
-    public static final class DefaultPrimitiveProceduresContainer {
-        private final Map<SchemeSymbol, Integer> map;
-        private final FrameDescriptor.Builder frameDescriptorBuilder;
-        private final List<WriteBuiltinProcedureExprNode> writeExpressions;
-
-        public DefaultPrimitiveProceduresContainer(Map<SchemeSymbol, Integer> map, FrameDescriptor.Builder frameDescriptorBuilder, List<WriteBuiltinProcedureExprNode> writeExpressions) {
-            this.map = map;
-            this.frameDescriptorBuilder = frameDescriptorBuilder;
-            this.writeExpressions = writeExpressions;
-        }
-
-        public Map<SchemeSymbol, Integer> getMap() {
-            return map;
-        }
-
-        public FrameDescriptor.Builder getFrameDescriptorBuilder() {
-            return frameDescriptorBuilder;
-        }
-
-        public List<WriteBuiltinProcedureExprNode> getWriteExpressions() {
-            return writeExpressions;
-        }
     }
 }

@@ -75,6 +75,15 @@ public class EvalExprNodeTest {
         assertEquals(3L, result.asLong());
     }
 
+    @Test
+    public void test1() {
+        var program = "((lambda () (eval '(define x 22)) x))";
+
+        var result =  context.eval("scm", program);
+
+        assertEquals(22L, result.asLong());
+    }
+
 
 //    @Test
 //    public void givenLambdaExpr_whenExecuted_thenEvalShouldBeFoundInGlobalEnvAndExecutedCorrectly() {

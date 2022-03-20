@@ -17,9 +17,11 @@ import java.util.List;
 public class QuasiquoteExprNode extends SchemeExpression {
 
     private final Object datum;
+    private final Context parsingContext;
 
-    public QuasiquoteExprNode(Object datum) {
+    public QuasiquoteExprNode(Object datum, Context parsingContext) {
         this.datum = datum;
+        this.parsingContext = parsingContext;
     }
 
     @Override
@@ -95,7 +97,7 @@ public class QuasiquoteExprNode extends SchemeExpression {
             if (valueToBeEvaluated instanceof SchemeCell && isDefineExpression((SchemeCell) valueToBeEvaluated)) {
                 throw new SchemeException("define: not allowed in an expression context in: " + valueToBeEvaluated);
             }
-            return ListToExpressionConverter.convert(valueToBeEvaluated, createRuntimeContext()).executeGeneric(frame);
+            return ListToExpressionConverter.convert(valueToBeEvaluated, parsingContext).executeGeneric(frame);
         }
         throw new SchemeException("unquote: expects exactly one expression");
     }
@@ -115,13 +117,5 @@ public class QuasiquoteExprNode extends SchemeExpression {
         } else {
             throw new SchemeException("unquote-splicing: expects exactly one expression");
         }
-    }
-
-    private Context createRuntimeContext() {
-        //TODO
-        var context = new Context(null, new HashMap<>(), FrameDescriptor.newBuilder());
-        context.setMode(Mode.RUN_TIME);
-
-        return context;
     }
 }

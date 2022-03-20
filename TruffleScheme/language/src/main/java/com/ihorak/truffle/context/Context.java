@@ -16,29 +16,24 @@ import java.util.Map;
 
 public class Context {
 
-    private Context parent;
+    private final Context parent;
     private final SchemeTruffleLanguage language;
     private final LexicalScope lexicalScope;
     private Mode mode = Mode.PARSER;
-    private final FrameDescriptor.Builder frameDescriptorBuilder;
-    private final Map<SchemeSymbol, Integer> map;
-    private final List<SchemeExpression> globalVariableExpressions = new ArrayList<>();
+    private final FrameDescriptor.Builder frameDescriptorBuilder = FrameDescriptor.newBuilder();
+    private final Map<SchemeSymbol, Integer> map = new HashMap<>();
 
     public Context(Context parent, LexicalScope lexicalScope, SchemeTruffleLanguage language, Mode mode) {
         this.lexicalScope = lexicalScope;
         this.language = language;
         this.parent = parent;
-        this.frameDescriptorBuilder = FrameDescriptor.newBuilder();
         this.mode = mode;
-        map = new HashMap<>();
     }
 
-    public Context(SchemeTruffleLanguage language, Map<SchemeSymbol, Integer> map, FrameDescriptor.Builder frameDescriptorBuilder) {
+    public Context(SchemeTruffleLanguage language) {
         this.lexicalScope = LexicalScope.GLOBAL;
-        this.map = map;
         this.language = language;
         this.parent = null;
-        this.frameDescriptorBuilder = frameDescriptorBuilder;
     }
 
     /**
@@ -50,7 +45,6 @@ public class Context {
     public Pair findClosureSymbol(SchemeSymbol symbol) {
         return findSymbol(this, symbol, 0);
     }
-
 
 
     @Nullable
@@ -84,35 +78,6 @@ public class Context {
             return index;
         }
         return frameDescriptorIndex;
-    }
-
-    public int addGlobalSymbol(SchemeSymbol symbol) {
-        if (mode == Mode.RUN_TIME) {
-            throw new ParserException("Parser: Values shouldn't be added during runtime! Parser mistake");
-        }
-
-        var globalContext = findGlobalContext();
-        var frameDescriptorIndex = globalContext.map.get(symbol);
-        if (frameDescriptorIndex == null) {
-            var index = globalContext.frameDescriptorBuilder.addSlot(FrameSlotKind.Illegal, symbol, null);
-            globalContext.map.put(symbol, index);
-            return index;
-        }
-        return frameDescriptorIndex;
-    }
-
-    private Context findGlobalContext() {
-        var currentContext = this;
-        while (currentContext.parent != null) {
-            currentContext = currentContext.parent;
-        }
-
-        return currentContext;
-    }
-
-    public void addGlobalVariableExpression(ReadGlobalVariableExprNode globalVariableExprNode) {
-        var globalContext = findGlobalContext();
-        globalContext.globalVariableExpressions.add(globalVariableExprNode);
     }
 
     public FrameDescriptor getFrameDescriptor() {

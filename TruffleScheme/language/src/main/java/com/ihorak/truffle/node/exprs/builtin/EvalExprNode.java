@@ -47,7 +47,7 @@ public abstract class EvalExprNode extends SchemeExpression {
     //TODO all the tests if I am not sure if this impl will stay
     private Context createRuntimeContext() {
         //TODO
-        var context = new Context(null,  new HashMap<>(), FrameDescriptor.newBuilder());
+        var context = new Context(null);
         context.setMode(Mode.RUN_TIME);
 
         return context;

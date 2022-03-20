@@ -164,7 +164,7 @@ public class SpecialFormConverter {
 
     private static QuasiquoteExprNode convertQuasiquote(SchemeCell quasiquoteList, Context context) {
         if (quasiquoteList.size() == 2) {
-            return new QuasiquoteExprNode(quasiquoteList.get(1));
+            return new QuasiquoteExprNode(quasiquoteList.get(1), context);
         } else {
             throw new SchemeException("quasiquote: arity mismatch\nexpected: 1\ngiven: " + (quasiquoteList.size() - 1));
         }

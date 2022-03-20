@@ -88,6 +88,19 @@ public class QuasiquoteExprNodeTest {
     }
 
     @Test
+    public void test() {
+        var program = "((lambda (x) `(if ,x #t #f)) 5)";
+
+        var result = context.eval("scm", program);
+
+        assertTrue(result.hasArrayElements());
+        assertEquals("if", result.getArrayElement(0).asString());
+        assertEquals(5L, result.getArrayElement(1).asLong());
+        assertTrue(result.getArrayElement(2).asBoolean());
+        assertFalse(result.getArrayElement(3).asBoolean());
+    }
+
+    @Test
     public void givenWrongNumberOfArgs_whenQuasiquoteIsExecuted_thenThrowParserException() {
         var program = "(quasiquote abc x)";
 
@@ -124,6 +137,7 @@ public class QuasiquoteExprNodeTest {
 
         assertEquals("unquote: expects exactly one expression", msg);
     }
+
 
     @Test
     public void givenSimpleNestedUnquote_whenExecuted_thenShouldThrowException() {
