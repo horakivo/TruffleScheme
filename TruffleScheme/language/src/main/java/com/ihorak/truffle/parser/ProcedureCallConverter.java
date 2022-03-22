@@ -2,7 +2,7 @@ package com.ihorak.truffle.parser;
 
 import com.ihorak.truffle.context.Context;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.exprs.ProcedureCallExprNode;
+import com.ihorak.truffle.node.exprs.CallableExprNodeGen;
 import com.ihorak.truffle.parser.Util.BuiltinUtils;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeSymbol;
@@ -24,7 +24,8 @@ public class ProcedureCallConverter {
             var symbol = (SchemeSymbol) operand;
             return BuiltinConverter.createBuiltin(symbol, arguments, context);
         } else {
-            return new ProcedureCallExprNode(ListToExpressionConverter.convert(operand, context), arguments);
+            var callable = ListToExpressionConverter.convert(operand, context);
+            return CallableExprNodeGen.create(arguments, context, callable);
         }
     }
 
