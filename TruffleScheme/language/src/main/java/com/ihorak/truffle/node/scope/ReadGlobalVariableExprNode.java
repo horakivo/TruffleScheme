@@ -1,6 +1,7 @@
-package com.ihorak.truffle.node.special_form.lambda;
+package com.ihorak.truffle.node.scope;
 
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.SchemeLanguageContext;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.Assumption;
 import com.oracle.truffle.api.CompilerDirectives;
@@ -8,14 +9,14 @@ import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 
-public abstract class ReadRuntimeGlobalVariableExprNode extends SchemeExpression {
+public abstract class ReadGlobalVariableExprNode extends SchemeExpression {
 
     private final SchemeSymbol symbol;
     @CompilationFinal
     private Object cache;
     public static final Assumption notRedefinedAssumption = Truffle.getRuntime().createAssumption();
 
-    public ReadRuntimeGlobalVariableExprNode(SchemeSymbol symbol) {
+    public ReadGlobalVariableExprNode(SchemeSymbol symbol) {
         this.symbol = symbol;
     }
 

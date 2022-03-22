@@ -5,8 +5,8 @@ import com.ihorak.truffle.convertor.context.LexicalScope;
 import com.ihorak.truffle.exceptions.ParserException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.macro.DefineMacroExprNode;
-import com.ihorak.truffle.node.special_form.lambda.WriteGlobalRuntimeVariableExprNodeGen;
-import com.ihorak.truffle.node.special_form.lambda.WriteLocalVariableExprNodeGen;
+import com.ihorak.truffle.node.scope.WriteGlobalVariableExprNodeGen;
+import com.ihorak.truffle.node.scope.WriteLocalVariableExprNodeGen;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeSymbol;
 
@@ -17,7 +17,7 @@ public class MacroConverter {
             var macro = getMacro(macroList, context);
 
             if (context.getLexicalScope() == LexicalScope.GLOBAL) {
-                return WriteGlobalRuntimeVariableExprNodeGen.create(macro.getName(), macro);
+                return WriteGlobalVariableExprNodeGen.create(macro.getName(), macro);
             } else {
                 return createWriteLocalVariable(context, macro);
             }

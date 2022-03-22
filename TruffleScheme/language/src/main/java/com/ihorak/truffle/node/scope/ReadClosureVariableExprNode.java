@@ -1,4 +1,4 @@
-package com.ihorak.truffle.node.special_form.lambda;
+package com.ihorak.truffle.node.scope;
 
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;

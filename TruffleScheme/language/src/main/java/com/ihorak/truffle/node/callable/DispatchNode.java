@@ -1,12 +1,13 @@
-package com.ihorak.truffle.node;
+package com.ihorak.truffle.node.callable;
 
+import com.ihorak.truffle.node.SchemeNode;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.nodes.DirectCallNode;
 import com.oracle.truffle.api.nodes.IndirectCallNode;
 
-public abstract class ProcedureDispatchNode extends SchemeNode {
+public abstract class DispatchNode extends SchemeNode {
 
     public abstract Object executeDispatch(CallTarget callTarget, Object[] arguments);
 

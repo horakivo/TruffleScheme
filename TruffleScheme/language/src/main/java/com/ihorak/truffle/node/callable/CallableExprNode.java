@@ -1,11 +1,11 @@
-package com.ihorak.truffle.node.exprs;
+package com.ihorak.truffle.node.callable;
 
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.exceptions.SchemeException;
-import com.ihorak.truffle.node.ProcedureDispatchNode;
-import com.ihorak.truffle.node.ProcedureDispatchNodeGen;
+import com.ihorak.truffle.node.callable.DispatchNode;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.convertor.ListToExpressionConverter;
+import com.ihorak.truffle.node.callable.DispatchNodeGen;
 import com.ihorak.truffle.type.SchemeFunction;
 import com.ihorak.truffle.type.SchemeMacro;
 import com.oracle.truffle.api.CallTarget;
@@ -24,7 +24,7 @@ public abstract class CallableExprNode extends SchemeExpression {
 
     @Children private final SchemeExpression[] arguments;
     @SuppressWarnings("FieldMayBeFinal")
-    @Child private ProcedureDispatchNode dispatchNode;
+    @Child private DispatchNode dispatchNode;
     private final ParsingContext parsingContext;
 
 
@@ -35,7 +35,7 @@ public abstract class CallableExprNode extends SchemeExpression {
 
     public CallableExprNode(List<SchemeExpression> arguments, ParsingContext context) {
         this.arguments = arguments.toArray(SchemeExpression[]::new);
-        this.dispatchNode = ProcedureDispatchNodeGen.create();
+        this.dispatchNode = DispatchNodeGen.create();
         this.parsingContext = context;
     }
 

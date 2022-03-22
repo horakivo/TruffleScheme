@@ -1,12 +1,11 @@
-package com.ihorak.truffle.node.special_form.lambda;
+package com.ihorak.truffle.node.scope;
 
+import com.ihorak.truffle.SchemeLanguageContext;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeFunction;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.ihorak.truffle.type.UndefinedValue;
 import com.oracle.truffle.api.dsl.Specialization;
-import com.oracle.truffle.api.frame.FrameSlotKind;
-import com.oracle.truffle.api.frame.VirtualFrame;
 
 public abstract class WriteBuiltinProcedureExprNode extends SchemeExpression {
 

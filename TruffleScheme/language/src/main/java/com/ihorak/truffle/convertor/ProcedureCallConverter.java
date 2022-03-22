@@ -2,7 +2,7 @@ package com.ihorak.truffle.convertor;
 
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.exprs.CallableExprNodeGen;
+import com.ihorak.truffle.node.callable.CallableExprNodeGen;
 import com.ihorak.truffle.parser.Util.BuiltinUtils;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeSymbol;

@@ -1,9 +1,9 @@
 package com.ihorak.truffle.node.exprs.builtin.list;
 
 import com.ihorak.truffle.exceptions.SchemeException;
-import com.ihorak.truffle.node.ProcedureDispatchNode;
-import com.ihorak.truffle.node.ProcedureDispatchNodeGen;
+import com.ihorak.truffle.node.callable.DispatchNode;
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.callable.DispatchNodeGen;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeFunction;
 import com.oracle.truffle.api.frame.VirtualFrame;
@@ -20,7 +20,7 @@ public class MapExprNode extends SchemeExpression {
     @Children private final SchemeExpression[] arguments;
     @SuppressWarnings("FieldMayBeFinal")
     @Child
-    private ProcedureDispatchNode dispatchNode = ProcedureDispatchNodeGen.create();
+    private DispatchNode dispatchNode = DispatchNodeGen.create();
 
     public MapExprNode(SchemeExpression operation, List<SchemeExpression> arguments) {
         this.operation = operation;

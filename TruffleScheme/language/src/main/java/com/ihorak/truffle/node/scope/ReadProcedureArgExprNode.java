@@ -1,4 +1,4 @@
-package com.ihorak.truffle.node.exprs;
+package com.ihorak.truffle.node.scope;
 
 import com.ihorak.truffle.node.SchemeExpression;
 import com.oracle.truffle.api.frame.VirtualFrame;

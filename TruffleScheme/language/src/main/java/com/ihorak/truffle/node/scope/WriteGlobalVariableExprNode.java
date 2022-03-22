@@ -1,5 +1,6 @@
-package com.ihorak.truffle.node.special_form.lambda;
+package com.ihorak.truffle.node.scope;
 
+import com.ihorak.truffle.SchemeLanguageContext;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.ihorak.truffle.type.UndefinedValue;
@@ -7,11 +8,11 @@ import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.Specialization;
 
 @NodeChild(value = "valueToStore")
-public abstract class WriteGlobalRuntimeVariableExprNode extends SchemeExpression {
+public abstract class WriteGlobalVariableExprNode extends SchemeExpression {
 
     private final SchemeSymbol symbol;
 
-    public WriteGlobalRuntimeVariableExprNode(SchemeSymbol symbol) {
+    public WriteGlobalVariableExprNode(SchemeSymbol symbol) {
         this.symbol = symbol;
     }
 

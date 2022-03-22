@@ -1,7 +1,7 @@
-package com.ihorak.truffle.node.special_form.lambda;
+package com.ihorak.truffle;
 
-import com.ihorak.truffle.SchemeTruffleLanguage;
 import com.ihorak.truffle.exceptions.SchemeException;
+import com.ihorak.truffle.node.scope.ReadGlobalVariableExprNode;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.TruffleLanguage;
@@ -39,7 +39,7 @@ public class SchemeLanguageContext {
 
         public void addVariable(SchemeSymbol symbol, Object valueToStore) {
             if (globalVariableStorage.containsKey(symbol)) {
-                ReadRuntimeGlobalVariableExprNode.notRedefinedAssumption.invalidate();
+                ReadGlobalVariableExprNode.notRedefinedAssumption.invalidate();
             }
 
             globalVariableStorage.put(symbol, valueToStore);

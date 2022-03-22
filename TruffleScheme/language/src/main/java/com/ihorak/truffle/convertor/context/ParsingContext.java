@@ -14,9 +14,10 @@ public class ParsingContext {
     private final ParsingContext parent;
     private final SchemeTruffleLanguage language;
     private final LexicalScope lexicalScope;
-    private Mode mode = Mode.PARSER;
     private final FrameDescriptor.Builder frameDescriptorBuilder = FrameDescriptor.newBuilder();
     private final Map<SchemeSymbol, Integer> map = new HashMap<>();
+    private Mode mode = Mode.PARSER;
+
 
     public ParsingContext(ParsingContext parent, LexicalScope lexicalScope, SchemeTruffleLanguage language, Mode mode) {
         this.lexicalScope = lexicalScope;

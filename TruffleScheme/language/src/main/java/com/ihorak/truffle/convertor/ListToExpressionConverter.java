@@ -4,7 +4,9 @@ import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.context.FrameIndexResult;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.literals.*;
-import com.ihorak.truffle.node.special_form.lambda.*;
+import com.ihorak.truffle.node.scope.ReadClosureVariableExprNodeGen;
+import com.ihorak.truffle.node.scope.ReadGlobalVariableExprNodeGen;
+import com.ihorak.truffle.node.scope.ReadLocalVariableExprNodeGen;
 import com.ihorak.truffle.parser.Util.SpecialFormUtils;
 import com.ihorak.truffle.type.*;
 
@@ -54,7 +56,7 @@ public class ListToExpressionConverter {
         if (indexPair != null) {
             return createReadLocalVariable(indexPair, symbol);
         } else {
-            return ReadRuntimeGlobalVariableExprNodeGen.create(symbol);
+            return ReadGlobalVariableExprNodeGen.create(symbol);
         }
     }
 

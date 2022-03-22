@@ -3,7 +3,6 @@ package com.ihorak.truffle;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.SchemeRootNode;
-import com.ihorak.truffle.node.special_form.lambda.SchemeLanguageContext;
 import com.ihorak.truffle.convertor.Convertor;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.TruffleLanguage;

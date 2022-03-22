@@ -4,15 +4,15 @@ import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.context.LexicalScope;
 import com.ihorak.truffle.exceptions.ParserException;
 import com.ihorak.truffle.exceptions.SchemeException;
-import com.ihorak.truffle.node.ProcedureRootNode;
+import com.ihorak.truffle.node.callable.ProcedureRootNode;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.exprs.ReadProcedureArgExprNode;
+import com.ihorak.truffle.node.scope.ReadProcedureArgExprNode;
+import com.ihorak.truffle.node.scope.WriteGlobalVariableExprNodeGen;
+import com.ihorak.truffle.node.scope.WriteLocalVariableExprNodeGen;
 import com.ihorak.truffle.node.special_form.*;
-import com.ihorak.truffle.node.special_form.lambda.LambdaExprNode;
+import com.ihorak.truffle.node.special_form.LambdaExprNode;
 import com.ihorak.truffle.node.special_form.LetStarExprNode;
-import com.ihorak.truffle.node.special_form.lambda.WriteGlobalRuntimeVariableExprNodeGen;
-import com.ihorak.truffle.node.special_form.lambda.WriteLocalVariableExprNode;
-import com.ihorak.truffle.node.special_form.lambda.WriteLocalVariableExprNodeGen;
+import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeFunction;
 import com.ihorak.truffle.type.SchemeSymbol;
@@ -95,7 +95,7 @@ public class SpecialFormConverter {
 
     private static SchemeExpression createWriteGlobalVariable(ParsingContext context, SchemeSymbol symbol, Object defineBody) {
         SchemeExpression valueToStore = ListToExpressionConverter.convert(defineBody, context);
-        return WriteGlobalRuntimeVariableExprNodeGen.create(symbol, valueToStore);
+        return WriteGlobalVariableExprNodeGen.create(symbol, valueToStore);
     }
 
     private static SchemeExpression createWriteLocalVariable(ParsingContext context, SchemeSymbol symbol, Object defineBody) {
