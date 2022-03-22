@@ -1,11 +1,11 @@
 package com.ihorak.truffle.node.exprs;
 
-import com.ihorak.truffle.context.Context;
+import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.ProcedureDispatchNode;
 import com.ihorak.truffle.node.ProcedureDispatchNodeGen;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.parser.ListToExpressionConverter;
+import com.ihorak.truffle.convertor.ListToExpressionConverter;
 import com.ihorak.truffle.type.SchemeFunction;
 import com.ihorak.truffle.type.SchemeMacro;
 import com.oracle.truffle.api.CallTarget;
@@ -25,7 +25,7 @@ public abstract class CallableExprNode extends SchemeExpression {
     @Children private final SchemeExpression[] arguments;
     @SuppressWarnings("FieldMayBeFinal")
     @Child private ProcedureDispatchNode dispatchNode;
-    private final Context parsingContext;
+    private final ParsingContext parsingContext;
 
 
     private final ConditionProfile noParentConditionProfile = ConditionProfile.createBinaryProfile();
@@ -33,7 +33,7 @@ public abstract class CallableExprNode extends SchemeExpression {
     private final BranchProfile macroNoParentProfile = BranchProfile.create();
 
 
-    public CallableExprNode(List<SchemeExpression> arguments, Context context) {
+    public CallableExprNode(List<SchemeExpression> arguments, ParsingContext context) {
         this.arguments = arguments.toArray(SchemeExpression[]::new);
         this.dispatchNode = ProcedureDispatchNodeGen.create();
         this.parsingContext = context;

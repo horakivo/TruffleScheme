@@ -1,25 +1,22 @@
 package com.ihorak.truffle.node.special_form;
 
 import com.ihorak.truffle.exceptions.SchemeException;
-import com.ihorak.truffle.context.Mode;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.context.Context;
-import com.ihorak.truffle.parser.ListToExpressionConverter;
+import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.convertor.ListToExpressionConverter;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeSymbol;
-import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.VirtualFrame;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class QuasiquoteExprNode extends SchemeExpression {
 
     private final Object datum;
-    private final Context parsingContext;
+    private final ParsingContext parsingContext;
 
-    public QuasiquoteExprNode(Object datum, Context parsingContext) {
+    public QuasiquoteExprNode(Object datum, ParsingContext parsingContext) {
         this.datum = datum;
         this.parsingContext = parsingContext;
     }

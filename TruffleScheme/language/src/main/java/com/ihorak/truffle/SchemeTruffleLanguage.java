@@ -1,10 +1,10 @@
 package com.ihorak.truffle;
 
+import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.SchemeRootNode;
-import com.ihorak.truffle.context.Context;
 import com.ihorak.truffle.node.special_form.lambda.SchemeLanguageContext;
-import com.ihorak.truffle.parser.Reader;
+import com.ihorak.truffle.convertor.Convertor;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.nodes.Node;
@@ -26,8 +26,8 @@ public class SchemeTruffleLanguage extends TruffleLanguage<SchemeLanguageContext
     @Override
     protected CallTarget parse(ParsingRequest request) throws Exception {
         var defaultPrimitiveProcedures = DefaultPrimitiveProcedures.generate();
-        var globalContext = new Context(this);
-        var programExpressions = Reader.parseProgram(CharStreams.fromReader(request.getSource().getReader()), globalContext);
+        var globalContext = new ParsingContext(this);
+        var programExpressions = Convertor.convertToSchemeExpressions(CharStreams.fromReader(request.getSource().getReader()), globalContext);
         List<SchemeExpression> allExpressions = new ArrayList<>();
         allExpressions.addAll(defaultPrimitiveProcedures);
         allExpressions.addAll(programExpressions);

@@ -1,6 +1,6 @@
-package com.ihorak.truffle.parser;
+package com.ihorak.truffle.convertor;
 
-import com.ihorak.truffle.context.Context;
+import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeSymbol;
 
@@ -12,7 +12,7 @@ public class BuiltinConverter {
      *
      * --> (operand expr1...exprN)
      * */
-    public static SchemeExpression createBuiltin(SchemeSymbol operand, List<SchemeExpression> convertedArguments, Context context) {
+    public static SchemeExpression createBuiltin(SchemeSymbol operand, List<SchemeExpression> convertedArguments, ParsingContext context) {
 
         switch (operand.getValue()) {
             case "+":

@@ -1,11 +1,11 @@
-package com.ihorak.truffle.context;
+package com.ihorak.truffle.convertor.context;
 
-public class Pair {
+public class FrameIndexResult {
 
     private final int frameIndex;
     private final int lexicalScopeDepth;
 
-    public Pair(int frameIndex, int lexicalScopeDepth) {
+    public FrameIndexResult(int frameIndex, int lexicalScopeDepth) {
         this.frameIndex = frameIndex;
         this.lexicalScopeDepth = lexicalScopeDepth;
     }

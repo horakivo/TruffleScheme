@@ -1,6 +1,6 @@
-package com.ihorak.truffle.parser;
+package com.ihorak.truffle.convertor;
 
-import com.ihorak.truffle.context.Context;
+import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.exprs.CallableExprNodeGen;
 import com.ihorak.truffle.parser.Util.BuiltinUtils;
@@ -16,7 +16,7 @@ public class ProcedureCallConverter {
      *  --> (operand argExpr1 ... argExprN)
      * */
     //here it can be either procedure or builtin
-    public static SchemeExpression convertListToProcedureCall(SchemeCell procedureList, Context context) {
+    public static SchemeExpression convertListToProcedureCall(SchemeCell procedureList, ParsingContext context) {
         var operand = procedureList.car;
         List<SchemeExpression> arguments = getProcedureArguments((SchemeCell) procedureList.cdr, context);
 
@@ -29,7 +29,7 @@ public class ProcedureCallConverter {
         }
     }
 
-    private static List<SchemeExpression> getProcedureArguments(SchemeCell argumentList, Context context) {
+    private static List<SchemeExpression> getProcedureArguments(SchemeCell argumentList, ParsingContext context) {
         List<SchemeExpression> result = new ArrayList<>();
 
         for (Object obj : argumentList) {

@@ -1,7 +1,7 @@
-package com.ihorak.truffle.parser;
+package com.ihorak.truffle.convertor;
 
-import com.ihorak.truffle.context.Context;
-import com.ihorak.truffle.context.LexicalScope;
+import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.convertor.context.LexicalScope;
 import com.ihorak.truffle.exceptions.ParserException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.macro.DefineMacroExprNode;
@@ -12,7 +12,7 @@ import com.ihorak.truffle.type.SchemeSymbol;
 
 public class MacroConverter {
 
-    public static SchemeExpression convertMarco(SchemeCell macroList, Context context) {
+    public static SchemeExpression convertMarco(SchemeCell macroList, ParsingContext context) {
         if (macroList.size() == 3) {
             var macro = getMacro(macroList, context);
 
@@ -26,7 +26,7 @@ public class MacroConverter {
         }
     }
 
-    private static SchemeExpression createWriteLocalVariable(Context context, DefineMacroExprNode macro) {
+    private static SchemeExpression createWriteLocalVariable(ParsingContext context, DefineMacroExprNode macro) {
         var index = context.findLocalSymbol(macro.getName());
         if (index == null) {
             index = context.addLocalSymbol(macro.getName());
@@ -34,7 +34,7 @@ public class MacroConverter {
         return WriteLocalVariableExprNodeGen.create(index, macro.getName(), macro);
     }
 
-    private static DefineMacroExprNode getMacro(SchemeCell macroList, Context context) {
+    private static DefineMacroExprNode getMacro(SchemeCell macroList, ParsingContext context) {
         var potentialName = macroList.get(1);
         if (potentialName instanceof SchemeSymbol) {
             var name = (SchemeSymbol) potentialName;

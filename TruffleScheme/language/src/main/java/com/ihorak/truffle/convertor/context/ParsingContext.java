@@ -1,4 +1,4 @@
-package com.ihorak.truffle.context;
+package com.ihorak.truffle.convertor.context;
 
 import com.ihorak.truffle.SchemeTruffleLanguage;
 import com.ihorak.truffle.type.SchemeSymbol;
@@ -9,23 +9,23 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Context {
+public class ParsingContext {
 
-    private final Context parent;
+    private final ParsingContext parent;
     private final SchemeTruffleLanguage language;
     private final LexicalScope lexicalScope;
     private Mode mode = Mode.PARSER;
     private final FrameDescriptor.Builder frameDescriptorBuilder = FrameDescriptor.newBuilder();
     private final Map<SchemeSymbol, Integer> map = new HashMap<>();
 
-    public Context(Context parent, LexicalScope lexicalScope, SchemeTruffleLanguage language, Mode mode) {
+    public ParsingContext(ParsingContext parent, LexicalScope lexicalScope, SchemeTruffleLanguage language, Mode mode) {
         this.lexicalScope = lexicalScope;
         this.language = language;
         this.parent = parent;
         this.mode = mode;
     }
 
-    public Context(SchemeTruffleLanguage language) {
+    public ParsingContext(SchemeTruffleLanguage language) {
         this.lexicalScope = LexicalScope.GLOBAL;
         this.language = language;
         this.parent = null;
@@ -37,13 +37,13 @@ public class Context {
      *
      * */
     @Nullable
-    public Pair findClosureSymbol(SchemeSymbol symbol) {
+    public FrameIndexResult findClosureSymbol(SchemeSymbol symbol) {
         return findSymbol(this, symbol, 0);
     }
 
 
     @Nullable
-    private Pair findSymbol(Context context, SchemeSymbol symbol, int depth) {
+    private FrameIndexResult findSymbol(ParsingContext context, SchemeSymbol symbol, int depth) {
         if (context.getLexicalScope() == LexicalScope.GLOBAL) {
             return null;
         }
@@ -57,7 +57,7 @@ public class Context {
             return findSymbol(context.parent, symbol, depth + 1);
         }
 
-        return new Pair(frameDescriptorIndex, depth);
+        return new FrameIndexResult(frameDescriptorIndex, depth);
     }
 
     @Nullable

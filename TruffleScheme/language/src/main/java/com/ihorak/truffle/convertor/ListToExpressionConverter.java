@@ -1,8 +1,7 @@
-package com.ihorak.truffle.parser;
+package com.ihorak.truffle.convertor;
 
-import com.ihorak.truffle.context.Context;
-import com.ihorak.truffle.context.Mode;
-import com.ihorak.truffle.context.Pair;
+import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.convertor.context.FrameIndexResult;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.literals.*;
 import com.ihorak.truffle.node.special_form.lambda.*;
@@ -14,7 +13,7 @@ import java.math.BigInteger;
 public class ListToExpressionConverter {
 
 
-    public static SchemeExpression convert(Object obj, Context context) {
+    public static SchemeExpression convert(Object obj, ParsingContext context) {
         if (obj instanceof Long) {
             return convert((long) obj);
         } else if (obj instanceof SchemeSymbol) {
@@ -50,7 +49,7 @@ public class ListToExpressionConverter {
         return new BooleanLiteralNode(schemeBoolean);
     }
 
-    private static SchemeExpression convert(SchemeSymbol symbol, Context context) {
+    private static SchemeExpression convert(SchemeSymbol symbol, ParsingContext context) {
         var indexPair = context.findClosureSymbol(symbol);
         if (indexPair != null) {
             return createReadLocalVariable(indexPair, symbol);
@@ -59,15 +58,15 @@ public class ListToExpressionConverter {
         }
     }
 
-    private static SchemeExpression createReadLocalVariable(Pair indexPair, SchemeSymbol symbol) {
-        if (indexPair.getLexicalScopeDepth() == 0) {
-            return ReadLocalVariableExprNodeGen.create(indexPair.getFrameIndex(), symbol);
+    private static SchemeExpression createReadLocalVariable(FrameIndexResult indexFrameIndexResult, SchemeSymbol symbol) {
+        if (indexFrameIndexResult.getLexicalScopeDepth() == 0) {
+            return ReadLocalVariableExprNodeGen.create(indexFrameIndexResult.getFrameIndex(), symbol);
         }
-        return ReadClosureVariableExprNodeGen.create(indexPair.getLexicalScopeDepth(), indexPair.getFrameIndex(), symbol);
+        return ReadClosureVariableExprNodeGen.create(indexFrameIndexResult.getLexicalScopeDepth(), indexFrameIndexResult.getFrameIndex(), symbol);
     }
 
 
-    private static SchemeExpression convert(SchemeCell list, Context context) {
+    private static SchemeExpression convert(SchemeCell list, ParsingContext context) {
         var firstElement = list.car;
 
         if (isSpecialForm(firstElement)) {

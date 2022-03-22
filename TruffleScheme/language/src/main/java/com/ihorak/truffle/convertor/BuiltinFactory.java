@@ -1,7 +1,7 @@
-package com.ihorak.truffle.parser;
+package com.ihorak.truffle.convertor;
 
 import com.ihorak.truffle.exceptions.SchemeException;
-import com.ihorak.truffle.context.Context;
+import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.exprs.ReduceExprNode;
 import com.ihorak.truffle.node.exprs.builtin.CurrentMillisecondsExprNodeGen;
@@ -81,7 +81,7 @@ public class BuiltinFactory {
         }
     }
 
-    public static SchemeExpression createEvalBuiltin(List<SchemeExpression> arguments, Context context) {
+    public static SchemeExpression createEvalBuiltin(List<SchemeExpression> arguments, ParsingContext context) {
         if (arguments.size() == 1) {
             return EvalExprNodeGen.create(arguments.get(0));
         } else {
@@ -129,7 +129,6 @@ public class BuiltinFactory {
         if (arguments.size() > 0) {
             return new ReduceExprNode(AppendExprNodeGen.create(), arguments, SchemeCell.EMPTY_LIST);
         } else {
-            //returning empty list
             return new ListExprNode(new ArrayList<>());
         }
     }
@@ -138,7 +137,6 @@ public class BuiltinFactory {
         if (arguments.size() > 1) {
             return new MapExprNode(arguments.remove(0), arguments);
         } else {
-            // -1 because first argument should be the function
             throw new SchemeException("map: arity mismatch; Expected number of argument does not match the given number \n expected: at least 2 \n given: " + (arguments.size()));
         }
     }

@@ -1,8 +1,6 @@
 package com.ihorak.truffle.builtin.list;
 
-import com.ihorak.truffle.parser.Reader;
 import com.ihorak.truffle.type.SchemeCell;
-import org.antlr.v4.runtime.CharStreams;
 import org.graalvm.polyglot.Context;
 import org.junit.Before;
 import org.junit.Test;

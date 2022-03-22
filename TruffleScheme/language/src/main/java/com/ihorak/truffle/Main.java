@@ -1,12 +1,6 @@
 package com.ihorak.truffle;
 
 import org.graalvm.polyglot.Context;
-import com.ihorak.truffle.parser.Reader;
-import org.antlr.v4.runtime.CharStreams;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 
 class Main {
     public static void main(String[] args) {

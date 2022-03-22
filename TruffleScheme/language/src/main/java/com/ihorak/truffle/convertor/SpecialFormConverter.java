@@ -1,13 +1,11 @@
-package com.ihorak.truffle.parser;
+package com.ihorak.truffle.convertor;
 
-import com.ihorak.truffle.context.Context;
-import com.ihorak.truffle.context.LexicalScope;
-import com.ihorak.truffle.context.Mode;
+import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.convertor.context.LexicalScope;
 import com.ihorak.truffle.exceptions.ParserException;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.ProcedureRootNode;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.SchemeRootNode;
 import com.ihorak.truffle.node.exprs.ReadProcedureArgExprNode;
 import com.ihorak.truffle.node.special_form.*;
 import com.ihorak.truffle.node.special_form.lambda.LambdaExprNode;
@@ -18,15 +16,13 @@ import com.ihorak.truffle.node.special_form.lambda.WriteLocalVariableExprNodeGen
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeFunction;
 import com.ihorak.truffle.type.SchemeSymbol;
-import com.oracle.truffle.api.frame.FrameDescriptor;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SpecialFormConverter {
 
-    public static SchemeExpression convertListToSpecialForm(SchemeCell specialFormList, Context context) {
+    public static SchemeExpression convertListToSpecialForm(SchemeCell specialFormList, ParsingContext context) {
         var operationSymbol = (SchemeSymbol) specialFormList.car;
         switch (operationSymbol.getValue()) {
             case "if":
@@ -56,7 +52,7 @@ public class SpecialFormConverter {
      *
      * --> (if TEST thenExpr elseExpr?)
      * */
-    private static IfExprNode convertIf(SchemeCell ifList, Context context) {
+    private static IfExprNode convertIf(SchemeCell ifList, ParsingContext context) {
         //1st element is the symbol 'if'
 
         var test = ifList.get(1); // 2nd element
@@ -80,7 +76,7 @@ public class SpecialFormConverter {
      *
      * -->  (define variable expr)
      * */
-    private static SchemeExpression convertDefine(SchemeCell defineList, Context context) {
+    private static SchemeExpression convertDefine(SchemeCell defineList, ParsingContext context) {
         var potentialSymbol = defineList.get(1);
 
         if (potentialSymbol instanceof SchemeSymbol) {
@@ -97,12 +93,12 @@ public class SpecialFormConverter {
         }
     }
 
-    private static SchemeExpression createWriteGlobalVariable(Context context, SchemeSymbol symbol, Object defineBody) {
+    private static SchemeExpression createWriteGlobalVariable(ParsingContext context, SchemeSymbol symbol, Object defineBody) {
         SchemeExpression valueToStore = ListToExpressionConverter.convert(defineBody, context);
         return WriteGlobalRuntimeVariableExprNodeGen.create(symbol, valueToStore);
     }
 
-    private static SchemeExpression createWriteLocalVariable(Context context, SchemeSymbol symbol, Object defineBody) {
+    private static SchemeExpression createWriteLocalVariable(ParsingContext context, SchemeSymbol symbol, Object defineBody) {
         var index = context.findLocalSymbol(symbol);
         if (index == null) {
             index = context.addLocalSymbol(symbol);
@@ -114,8 +110,8 @@ public class SpecialFormConverter {
     /*
      *  --> (lambda (param1 .. paramN) expr1...exprN))
      * */
-    private static LambdaExprNode convertLambda(SchemeCell lambdaList, Context context) {
-        Context lambdaContext = new Context(context, LexicalScope.LAMBDA, context.getLanguage(), context.getMode());
+    private static LambdaExprNode convertLambda(SchemeCell lambdaList, ParsingContext context) {
+        ParsingContext lambdaContext = new ParsingContext(context, LexicalScope.LAMBDA, context.getLanguage(), context.getMode());
 
         var params = (SchemeCell) lambdaList.get(1);
         var expressions = (SchemeCell) ((SchemeCell) lambdaList.cdr).cdr;
@@ -131,7 +127,7 @@ public class SpecialFormConverter {
         return new LambdaExprNode(new SchemeFunction(rootNode.getCallTarget(), paramExprs.size()));
     }
 
-    private static List<SchemeExpression> createLambdaBody(SchemeCell expressions, Context lambdaContext) {
+    private static List<SchemeExpression> createLambdaBody(SchemeCell expressions, ParsingContext lambdaContext) {
         List<SchemeExpression> bodyExprs = new ArrayList<>();
         for (Object obj : expressions) {
             bodyExprs.add(ListToExpressionConverter.convert(obj, lambdaContext));
@@ -142,7 +138,7 @@ public class SpecialFormConverter {
         return bodyExprs;
     }
 
-    private static List<SchemeExpression> createLocalVariablesForLambda(SchemeCell parameters, Context context) {
+    private static List<SchemeExpression> createLocalVariablesForLambda(SchemeCell parameters, ParsingContext context) {
         List<SchemeExpression> result = new ArrayList<>();
         for (int i = 0; i < parameters.size(); i++) {
             var currentSymbol = (SchemeSymbol) parameters.get(i);
@@ -154,7 +150,7 @@ public class SpecialFormConverter {
     }
 
 
-    private static QuoteExprNode convertQuote(SchemeCell quoteList, Context context) {
+    private static QuoteExprNode convertQuote(SchemeCell quoteList, ParsingContext context) {
         if (quoteList.size() == 2) {
             return new QuoteExprNode(quoteList.get(1));
         } else {
@@ -162,7 +158,7 @@ public class SpecialFormConverter {
         }
     }
 
-    private static QuasiquoteExprNode convertQuasiquote(SchemeCell quasiquoteList, Context context) {
+    private static QuasiquoteExprNode convertQuasiquote(SchemeCell quasiquoteList, ParsingContext context) {
         if (quasiquoteList.size() == 2) {
             return new QuasiquoteExprNode(quasiquoteList.get(1), context);
         } else {
@@ -170,8 +166,8 @@ public class SpecialFormConverter {
         }
     }
 
-    private static LetExprNode convertLet(SchemeCell letList, Context context) {
-        Context letContext = new Context(context, LexicalScope.LET, context.getLanguage(), context.getMode());
+    private static LetExprNode convertLet(SchemeCell letList, ParsingContext context) {
+        ParsingContext letContext = new ParsingContext(context, LexicalScope.LET, context.getLanguage(), context.getMode());
         SchemeCell parameters = (SchemeCell) letList.get(1);
         SchemeCell body = (SchemeCell) ((SchemeCell) letList.cdr).cdr;
 
@@ -187,12 +183,12 @@ public class SpecialFormConverter {
 
     }
 
-    private static LetStarExprNode convertLetStar(SchemeCell letStarList, Context context) {
+    private static LetStarExprNode convertLetStar(SchemeCell letStarList, ParsingContext context) {
         return null;
     }
 
 
-    private static List<WriteLocalVariableExprNode> createLocalVariablesForLet(SchemeCell parametersList, Context context) {
+    private static List<WriteLocalVariableExprNode> createLocalVariablesForLet(SchemeCell parametersList, ParsingContext context) {
         List<WriteLocalVariableExprNode> result = new ArrayList<>();
         for (Object obj : parametersList) {
             if (obj instanceof SchemeCell) {
