@@ -7,7 +7,7 @@ import com.ihorak.truffle.node.exprs.ReduceExprNode;
 import com.ihorak.truffle.node.exprs.builtin.CurrentMillisecondsExprNodeGen;
 import com.ihorak.truffle.node.exprs.builtin.DisplayExprNodeGen;
 import com.ihorak.truffle.node.exprs.builtin.EvalExprNodeGen;
-import com.ihorak.truffle.node.exprs.builtin.NewlineExprNodeGen;
+import com.ihorak.truffle.node.exprs.builtin.NewlineExprNode;
 import com.ihorak.truffle.node.exprs.builtin.arithmetic.*;
 import com.ihorak.truffle.node.exprs.builtin.list.*;
 import com.ihorak.truffle.node.exprs.builtin.logical.EqualExprNodeGen;
@@ -204,7 +204,7 @@ public class BuiltinFactory {
 
     public static SchemeExpression createNewlineBuiltin(List<SchemeExpression> arguments) {
         if (arguments.size() == 0) {
-            return NewlineExprNodeGen.create();
+            return new NewlineExprNode();
         }
         throw new SchemeException("newline: arity mismatch; Expected number of arguments does not match the given number\nExpected: 0\nGiven: " + arguments.size());
     }

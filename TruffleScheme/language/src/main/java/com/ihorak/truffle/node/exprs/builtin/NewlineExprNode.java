@@ -1,15 +1,15 @@
 package com.ihorak.truffle.node.exprs.builtin;
 
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.type.UndefinedValue;
 import com.oracle.truffle.api.dsl.Specialization;
+import com.oracle.truffle.api.frame.VirtualFrame;
 
-public abstract class NewlineExprNode extends SchemeExpression {
+public class NewlineExprNode extends SchemeExpression {
 
-
-    //TODO zde vratit undefined
-    @Specialization
-    protected Object newline() {
+    @Override
+    public Object executeGeneric(VirtualFrame virtualFrame) {
         System.out.println();
-        return null;
+        return UndefinedValue.SINGLETON;
     }
 }

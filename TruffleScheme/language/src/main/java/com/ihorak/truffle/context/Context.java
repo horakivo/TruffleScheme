@@ -1,17 +1,12 @@
 package com.ihorak.truffle.context;
 
 import com.ihorak.truffle.SchemeTruffleLanguage;
-import com.ihorak.truffle.exceptions.ParserException;
-import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.special_form.lambda.ReadGlobalVariableExprNode;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlotKind;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Context {
