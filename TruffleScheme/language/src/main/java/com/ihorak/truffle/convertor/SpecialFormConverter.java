@@ -6,6 +6,9 @@ import com.ihorak.truffle.exceptions.ParserException;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.callable.ProcedureRootNode;
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.exprs.builtin.arithmetic.OneArgumentExprNodeGen;
+import com.ihorak.truffle.node.literals.BooleanLiteralNode;
+import com.ihorak.truffle.node.literals.LongLiteralNode;
 import com.ihorak.truffle.node.scope.ReadProcedureArgExprNode;
 import com.ihorak.truffle.node.scope.WriteGlobalVariableExprNodeGen;
 import com.ihorak.truffle.node.scope.WriteLocalVariableExprNodeGen;
@@ -39,6 +42,10 @@ public class SpecialFormConverter {
                 return convertLet(specialFormList, context);
             case "let*":
                 return convertLetStar(specialFormList, context);
+            case "and":
+                return convertAnd(specialFormList, context);
+            case "or":
+                return convertOr(specialFormList, context);
             default:
                 throw new IllegalArgumentException("Unknown special form");
 
@@ -207,4 +214,45 @@ public class SpecialFormConverter {
         }
         return result;
     }
+
+
+    private static SchemeExpression convertAnd(SchemeCell andList, ParsingContext context) {
+        var schemeExprs = convertSchemeCellToSchemeExpressions((SchemeCell) andList.cdr, context);
+        if (schemeExprs.size() == 0) return new BooleanLiteralNode(true);
+        if (schemeExprs.size() == 1) return OneArgumentExprNodeGen.create(schemeExprs.get(0));
+        return reduceAnd(schemeExprs);
+    }
+
+    private static AndExprNode reduceAnd(List<SchemeExpression> arguments) {
+        if (arguments.size() > 2) {
+            return new AndExprNode(arguments.remove(0), reduceAnd(arguments));
+        } else {
+            return new AndExprNode(arguments.get(0), arguments.get(1));
+        }
+    }
+
+    private static SchemeExpression convertOr(SchemeCell orList, ParsingContext context) {
+        var schemeExprs = convertSchemeCellToSchemeExpressions((SchemeCell) orList.cdr, context);
+        if (schemeExprs.size() == 0) return new BooleanLiteralNode(false);
+        if (schemeExprs.size() == 1) return OneArgumentExprNodeGen.create(schemeExprs.get(0));
+        return reduceOr(schemeExprs);
+    }
+
+    private static OrExprNode reduceOr(List<SchemeExpression> arguments) {
+        if (arguments.size() > 2) {
+            return new OrExprNode(arguments.remove(0), reduceOr(arguments));
+        } else {
+            return new OrExprNode(arguments.get(0), arguments.get(1));
+        }
+    }
+
+    private static List<SchemeExpression> convertSchemeCellToSchemeExpressions(SchemeCell schemeCell, ParsingContext context) {
+        List<SchemeExpression> result = new ArrayList<>();
+        for (Object obj : schemeCell) {
+            result.add(ListToExpressionConverter.convert(obj, context));
+        }
+
+        return result;
+    }
+
 }

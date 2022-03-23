@@ -178,6 +178,15 @@ public class LambdaExprNodeTest {
         assertEquals(15L, result.asLong());
     }
 
+    @Test
+    public void aaa() {
+        var program = "(lambda (x . y) (+ x))";
+
+        var result = context.eval("scm", program);
+
+        assertEquals(15L, result.asLong());
+    }
+
 //    @Test
 //    public void fast_test_4() throws IOException, RecognitionException {
 //        var program = "(lambda (x) )";
