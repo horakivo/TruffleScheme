@@ -7,7 +7,7 @@ import com.ihorak.truffle.node.literals.*;
 import com.ihorak.truffle.node.scope.ReadClosureVariableExprNodeGen;
 import com.ihorak.truffle.node.scope.ReadGlobalVariableExprNodeGen;
 import com.ihorak.truffle.node.scope.ReadLocalVariableExprNodeGen;
-import com.ihorak.truffle.parser.Util.SpecialFormUtils;
+import com.ihorak.truffle.convertor.util.SpecialFormUtils;
 import com.ihorak.truffle.type.*;
 
 import java.math.BigInteger;

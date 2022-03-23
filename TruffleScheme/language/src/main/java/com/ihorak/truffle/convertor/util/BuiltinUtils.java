@@ -1,4 +1,4 @@
-package com.ihorak.truffle.parser.Util;
+package com.ihorak.truffle.convertor.util;
 
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.literals.DoubleLiteralNode;
