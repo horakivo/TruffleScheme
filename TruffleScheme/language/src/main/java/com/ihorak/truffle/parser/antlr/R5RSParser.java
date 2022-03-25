@@ -19,14 +19,14 @@ public class R5RSParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, NUMBER=7, FLOAT=8, STRING=9, 
-		BOOLEAN=10, SYMBOL=11, WS=12, COMMENT=13;
+		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, T__6=7, NUMBER=8, FLOAT=9, 
+		STRING=10, BOOLEAN=11, SYMBOL=12, WS=13, COMMENT=14;
 	public static final int
-		RULE_prog = 0, RULE_form = 1, RULE_list = 2, RULE_quote = 3, RULE_quasiquote = 4, 
-		RULE_unquote = 5, RULE_unquote_splicing = 6, RULE_literal = 7;
+		RULE_prog = 0, RULE_form = 1, RULE_list = 2, RULE_pair = 3, RULE_quote = 4, 
+		RULE_quasiquote = 5, RULE_unquote = 6, RULE_unquote_splicing = 7, RULE_literal = 8;
 	private static String[] makeRuleNames() {
 		return new String[] {
-			"prog", "form", "list", "quote", "quasiquote", "unquote", "unquote_splicing", 
+			"prog", "form", "list", "pair", "quote", "quasiquote", "unquote", "unquote_splicing", 
 			"literal"
 		};
 	}
@@ -34,13 +34,13 @@ public class R5RSParser extends Parser {
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "'('", "')'", "'''", "'`'", "','", "',@'"
+			null, "'('", "')'", "'.'", "'''", "'`'", "','", "',@'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, null, null, null, null, null, null, "NUMBER", "FLOAT", "STRING", 
+			null, null, null, null, null, null, null, null, "NUMBER", "FLOAT", "STRING", 
 			"BOOLEAN", "SYMBOL", "WS", "COMMENT"
 		};
 	}
@@ -138,21 +138,21 @@ public class R5RSParser extends Parser {
 			_localctx = new ProgramContext(_localctx);
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(19);
+			setState(21);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__2) | (1L << T__3) | (1L << T__4) | (1L << T__5) | (1L << NUMBER) | (1L << FLOAT) | (1L << STRING) | (1L << BOOLEAN) | (1L << SYMBOL))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__3) | (1L << T__4) | (1L << T__5) | (1L << T__6) | (1L << NUMBER) | (1L << FLOAT) | (1L << STRING) | (1L << BOOLEAN) | (1L << SYMBOL))) != 0)) {
 				{
 				{
-				setState(16);
+				setState(18);
 				form();
 				}
 				}
-				setState(21);
+				setState(23);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(22);
+			setState(24);
 			match(EOF);
 			}
 		}
@@ -186,6 +186,9 @@ public class R5RSParser extends Parser {
 		public Unquote_splicingContext unquote_splicing() {
 			return getRuleContext(Unquote_splicingContext.class,0);
 		}
+		public PairContext pair() {
+			return getRuleContext(PairContext.class,0);
+		}
 		public FormContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -209,57 +212,58 @@ public class R5RSParser extends Parser {
 		FormContext _localctx = new FormContext(_ctx, getState());
 		enterRule(_localctx, 2, RULE_form);
 		try {
-			setState(30);
+			setState(33);
 			_errHandler.sync(this);
-			switch (_input.LA(1)) {
-			case NUMBER:
-			case FLOAT:
-			case STRING:
-			case BOOLEAN:
-			case SYMBOL:
+			switch ( getInterpreter().adaptivePredict(_input,1,_ctx) ) {
+			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(24);
+				setState(26);
 				literal();
 				}
 				break;
-			case T__0:
+			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(25);
+				setState(27);
 				list();
 				}
 				break;
-			case T__2:
+			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(26);
+				setState(28);
 				quote();
 				}
 				break;
-			case T__3:
+			case 4:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(27);
+				setState(29);
 				quasiquote();
 				}
 				break;
-			case T__4:
+			case 5:
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(28);
+				setState(30);
 				unquote();
 				}
 				break;
-			case T__5:
+			case 6:
 				enterOuterAlt(_localctx, 6);
 				{
-				setState(29);
+				setState(31);
 				unquote_splicing();
 				}
 				break;
-			default:
-				throw new NoViableAltException(this);
+			case 7:
+				enterOuterAlt(_localctx, 7);
+				{
+				setState(32);
+				pair();
+				}
+				break;
 			}
 		}
 		catch (RecognitionException re) {
@@ -306,23 +310,91 @@ public class R5RSParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(32);
+			setState(35);
 			match(T__0);
-			setState(36);
+			setState(39);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__2) | (1L << T__3) | (1L << T__4) | (1L << T__5) | (1L << NUMBER) | (1L << FLOAT) | (1L << STRING) | (1L << BOOLEAN) | (1L << SYMBOL))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__3) | (1L << T__4) | (1L << T__5) | (1L << T__6) | (1L << NUMBER) | (1L << FLOAT) | (1L << STRING) | (1L << BOOLEAN) | (1L << SYMBOL))) != 0)) {
 				{
 				{
-				setState(33);
+				setState(36);
 				form();
 				}
 				}
-				setState(38);
+				setState(41);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(39);
+			setState(42);
+			match(T__1);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class PairContext extends ParserRuleContext {
+		public List<FormContext> form() {
+			return getRuleContexts(FormContext.class);
+		}
+		public FormContext form(int i) {
+			return getRuleContext(FormContext.class,i);
+		}
+		public PairContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_pair; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof R5RSListener ) ((R5RSListener)listener).enterPair(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof R5RSListener ) ((R5RSListener)listener).exitPair(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof R5RSVisitor ) return ((R5RSVisitor<? extends T>)visitor).visitPair(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final PairContext pair() throws RecognitionException {
+		PairContext _localctx = new PairContext(_ctx, getState());
+		enterRule(_localctx, 6, RULE_pair);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(44);
+			match(T__0);
+			setState(46); 
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			do {
+				{
+				{
+				setState(45);
+				form();
+				}
+				}
+				setState(48); 
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__3) | (1L << T__4) | (1L << T__5) | (1L << T__6) | (1L << NUMBER) | (1L << FLOAT) | (1L << STRING) | (1L << BOOLEAN) | (1L << SYMBOL))) != 0) );
+			setState(50);
+			match(T__2);
+			setState(51);
+			form();
+			setState(52);
 			match(T__1);
 			}
 		}
@@ -362,13 +434,13 @@ public class R5RSParser extends Parser {
 
 	public final QuoteContext quote() throws RecognitionException {
 		QuoteContext _localctx = new QuoteContext(_ctx, getState());
-		enterRule(_localctx, 6, RULE_quote);
+		enterRule(_localctx, 8, RULE_quote);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(41);
-			match(T__2);
-			setState(42);
+			setState(54);
+			match(T__3);
+			setState(55);
 			form();
 			}
 		}
@@ -408,13 +480,13 @@ public class R5RSParser extends Parser {
 
 	public final QuasiquoteContext quasiquote() throws RecognitionException {
 		QuasiquoteContext _localctx = new QuasiquoteContext(_ctx, getState());
-		enterRule(_localctx, 8, RULE_quasiquote);
+		enterRule(_localctx, 10, RULE_quasiquote);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(44);
-			match(T__3);
-			setState(45);
+			setState(57);
+			match(T__4);
+			setState(58);
 			form();
 			}
 		}
@@ -454,13 +526,13 @@ public class R5RSParser extends Parser {
 
 	public final UnquoteContext unquote() throws RecognitionException {
 		UnquoteContext _localctx = new UnquoteContext(_ctx, getState());
-		enterRule(_localctx, 10, RULE_unquote);
+		enterRule(_localctx, 12, RULE_unquote);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(47);
-			match(T__4);
-			setState(48);
+			setState(60);
+			match(T__5);
+			setState(61);
 			form();
 			}
 		}
@@ -500,13 +572,13 @@ public class R5RSParser extends Parser {
 
 	public final Unquote_splicingContext unquote_splicing() throws RecognitionException {
 		Unquote_splicingContext _localctx = new Unquote_splicingContext(_ctx, getState());
-		enterRule(_localctx, 12, RULE_unquote_splicing);
+		enterRule(_localctx, 14, RULE_unquote_splicing);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(50);
-			match(T__5);
-			setState(51);
+			setState(63);
+			match(T__6);
+			setState(64);
 			form();
 			}
 		}
@@ -620,16 +692,16 @@ public class R5RSParser extends Parser {
 
 	public final LiteralContext literal() throws RecognitionException {
 		LiteralContext _localctx = new LiteralContext(_ctx, getState());
-		enterRule(_localctx, 14, RULE_literal);
+		enterRule(_localctx, 16, RULE_literal);
 		try {
-			setState(58);
+			setState(71);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case NUMBER:
 				_localctx = new NumberContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(53);
+				setState(66);
 				match(NUMBER);
 				}
 				break;
@@ -637,7 +709,7 @@ public class R5RSParser extends Parser {
 				_localctx = new FloatContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(54);
+				setState(67);
 				match(FLOAT);
 				}
 				break;
@@ -645,7 +717,7 @@ public class R5RSParser extends Parser {
 				_localctx = new BooleanContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(55);
+				setState(68);
 				match(BOOLEAN);
 				}
 				break;
@@ -653,7 +725,7 @@ public class R5RSParser extends Parser {
 				_localctx = new StringContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(56);
+				setState(69);
 				match(STRING);
 				}
 				break;
@@ -661,7 +733,7 @@ public class R5RSParser extends Parser {
 				_localctx = new SymbolContext(_localctx);
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(57);
+				setState(70);
 				match(SYMBOL);
 				}
 				break;
@@ -681,22 +753,25 @@ public class R5RSParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\17?\4\2\t\2\4\3\t"+
-		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\3\2\7\2\24\n\2\f\2"+
-		"\16\2\27\13\2\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\3\5\3!\n\3\3\4\3\4\7\4%\n"+
-		"\4\f\4\16\4(\13\4\3\4\3\4\3\5\3\5\3\5\3\6\3\6\3\6\3\7\3\7\3\7\3\b\3\b"+
-		"\3\b\3\t\3\t\3\t\3\t\3\t\5\t=\n\t\3\t\2\2\n\2\4\6\b\n\f\16\20\2\2\2A\2"+
-		"\25\3\2\2\2\4 \3\2\2\2\6\"\3\2\2\2\b+\3\2\2\2\n.\3\2\2\2\f\61\3\2\2\2"+
-		"\16\64\3\2\2\2\20<\3\2\2\2\22\24\5\4\3\2\23\22\3\2\2\2\24\27\3\2\2\2\25"+
-		"\23\3\2\2\2\25\26\3\2\2\2\26\30\3\2\2\2\27\25\3\2\2\2\30\31\7\2\2\3\31"+
-		"\3\3\2\2\2\32!\5\20\t\2\33!\5\6\4\2\34!\5\b\5\2\35!\5\n\6\2\36!\5\f\7"+
-		"\2\37!\5\16\b\2 \32\3\2\2\2 \33\3\2\2\2 \34\3\2\2\2 \35\3\2\2\2 \36\3"+
-		"\2\2\2 \37\3\2\2\2!\5\3\2\2\2\"&\7\3\2\2#%\5\4\3\2$#\3\2\2\2%(\3\2\2\2"+
-		"&$\3\2\2\2&\'\3\2\2\2\')\3\2\2\2(&\3\2\2\2)*\7\4\2\2*\7\3\2\2\2+,\7\5"+
-		"\2\2,-\5\4\3\2-\t\3\2\2\2./\7\6\2\2/\60\5\4\3\2\60\13\3\2\2\2\61\62\7"+
-		"\7\2\2\62\63\5\4\3\2\63\r\3\2\2\2\64\65\7\b\2\2\65\66\5\4\3\2\66\17\3"+
-		"\2\2\2\67=\7\t\2\28=\7\n\2\29=\7\f\2\2:=\7\13\2\2;=\7\r\2\2<\67\3\2\2"+
-		"\2<8\3\2\2\2<9\3\2\2\2<:\3\2\2\2<;\3\2\2\2=\21\3\2\2\2\6\25 &<";
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\20L\4\2\t\2\4\3\t"+
+		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\3\2\7\2\26"+
+		"\n\2\f\2\16\2\31\13\2\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\3\3\3\5\3$\n\3\3\4"+
+		"\3\4\7\4(\n\4\f\4\16\4+\13\4\3\4\3\4\3\5\3\5\6\5\61\n\5\r\5\16\5\62\3"+
+		"\5\3\5\3\5\3\5\3\6\3\6\3\6\3\7\3\7\3\7\3\b\3\b\3\b\3\t\3\t\3\t\3\n\3\n"+
+		"\3\n\3\n\3\n\5\nJ\n\n\3\n\2\2\13\2\4\6\b\n\f\16\20\22\2\2\2O\2\27\3\2"+
+		"\2\2\4#\3\2\2\2\6%\3\2\2\2\b.\3\2\2\2\n8\3\2\2\2\f;\3\2\2\2\16>\3\2\2"+
+		"\2\20A\3\2\2\2\22I\3\2\2\2\24\26\5\4\3\2\25\24\3\2\2\2\26\31\3\2\2\2\27"+
+		"\25\3\2\2\2\27\30\3\2\2\2\30\32\3\2\2\2\31\27\3\2\2\2\32\33\7\2\2\3\33"+
+		"\3\3\2\2\2\34$\5\22\n\2\35$\5\6\4\2\36$\5\n\6\2\37$\5\f\7\2 $\5\16\b\2"+
+		"!$\5\20\t\2\"$\5\b\5\2#\34\3\2\2\2#\35\3\2\2\2#\36\3\2\2\2#\37\3\2\2\2"+
+		"# \3\2\2\2#!\3\2\2\2#\"\3\2\2\2$\5\3\2\2\2%)\7\3\2\2&(\5\4\3\2\'&\3\2"+
+		"\2\2(+\3\2\2\2)\'\3\2\2\2)*\3\2\2\2*,\3\2\2\2+)\3\2\2\2,-\7\4\2\2-\7\3"+
+		"\2\2\2.\60\7\3\2\2/\61\5\4\3\2\60/\3\2\2\2\61\62\3\2\2\2\62\60\3\2\2\2"+
+		"\62\63\3\2\2\2\63\64\3\2\2\2\64\65\7\5\2\2\65\66\5\4\3\2\66\67\7\4\2\2"+
+		"\67\t\3\2\2\289\7\6\2\29:\5\4\3\2:\13\3\2\2\2;<\7\7\2\2<=\5\4\3\2=\r\3"+
+		"\2\2\2>?\7\b\2\2?@\5\4\3\2@\17\3\2\2\2AB\7\t\2\2BC\5\4\3\2C\21\3\2\2\2"+
+		"DJ\7\n\2\2EJ\7\13\2\2FJ\7\r\2\2GJ\7\f\2\2HJ\7\16\2\2ID\3\2\2\2IE\3\2\2"+
+		"\2IF\3\2\2\2IG\3\2\2\2IH\3\2\2\2J\23\3\2\2\2\7\27#)\62I";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

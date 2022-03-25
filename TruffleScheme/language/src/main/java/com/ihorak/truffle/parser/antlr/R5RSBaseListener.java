@@ -54,6 +54,18 @@ public class R5RSBaseListener implements R5RSListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterPair(R5RSParser.PairContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPair(R5RSParser.PairContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterQuote(R5RSParser.QuoteContext ctx) { }
 	/**
 	 * {@inheritDoc}

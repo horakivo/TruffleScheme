@@ -1,8 +1,15 @@
-package com.ihorak.truffle.parser.antlr;
+package com.ihorak.truffle.parser.parser;
 
+import com.ihorak.truffle.exceptions.SchemeException;
+import com.ihorak.truffle.node.literals.DoubleLiteralNode;
+import com.ihorak.truffle.parser.antlr.R5RSBaseVisitor;
+import com.ihorak.truffle.parser.antlr.R5RSParser;
 import com.ihorak.truffle.type.*;
+import org.antlr.v4.runtime.tree.*;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AntlrToInternalRepresentation extends R5RSBaseVisitor<Object> {
 
@@ -86,5 +93,33 @@ public class AntlrToInternalRepresentation extends R5RSBaseVisitor<Object> {
         result = result.cons(visit(ctx.getChild(1)), result);
         result = result.cons(new SchemeSymbol("unquote-splicing"), result);
         return result;
+    }
+
+    @Override
+    public Object visitPair(R5RSParser.PairContext ctx) {
+        List<Object> arguments = cleanPairContext(ctx);
+        var test = createPair(arguments);
+        return test;
+    }
+
+    private List<Object> cleanPairContext(R5RSParser.PairContext ctx) {
+        List<Object> arguments = new ArrayList<>();
+        for (int i = 0; i < ctx.getChildCount(); i++) {
+            var child = ctx.getChild(i);
+            if (child instanceof TerminalNode) {
+                continue;
+            }
+            arguments.add(visit(child));
+        }
+
+        return arguments;
+    }
+
+    private SchemePair createPair(List<Object> arguments) {
+        if (arguments.size() > 2) {
+            return new SchemePair(arguments.remove(0), createPair(arguments));
+        } else {
+            return new SchemePair(arguments.get(0), arguments.get(1));
+        }
     }
 }

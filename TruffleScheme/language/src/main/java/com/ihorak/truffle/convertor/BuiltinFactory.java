@@ -53,6 +53,10 @@ public class BuiltinFactory {
         }
     }
 
+    // (define fun (lambda (x y) (+ x y))
+    // +
+    // (define plus +) (plus 1 2) plus
+    // (map + foo (list 2 3) (list 5 7)) --> (list (+ 2 5) (3 7))
     public static SchemeExpression createPlusBuiltin(List<SchemeExpression> arguments) {
         if (arguments.size() == 0) return new LongLiteralNode(0);
         if (arguments.size() == 1) return OneArgumentExprNodeGen.create(arguments.get(0));

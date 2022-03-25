@@ -1,4 +1,4 @@
-package com.ihorak.truffle.parser.antlr.model;
+package com.ihorak.truffle.parser.model;
 
 import java.util.List;
 

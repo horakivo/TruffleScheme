@@ -1,6 +1,8 @@
-package com.ihorak.truffle.parser.antlr;
+package com.ihorak.truffle.parser.parser;
 
-import com.ihorak.truffle.parser.antlr.model.Program;
+import com.ihorak.truffle.parser.antlr.R5RSBaseVisitor;
+import com.ihorak.truffle.parser.antlr.R5RSParser;
+import com.ihorak.truffle.parser.model.Program;
 
 import java.util.ArrayList;
 import java.util.List;

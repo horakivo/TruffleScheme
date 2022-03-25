@@ -32,6 +32,12 @@ public interface R5RSVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitList(R5RSParser.ListContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link R5RSParser#pair}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPair(R5RSParser.PairContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link R5RSParser#quote}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

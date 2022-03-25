@@ -40,6 +40,13 @@ public class R5RSBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements R
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitPair(R5RSParser.PairContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitQuote(R5RSParser.QuoteContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}

@@ -17,9 +17,13 @@ form
     | quasiquote
     | unquote
     | unquote_splicing
+    | pair
     ;
 
 list: '(' form* ')'
+    ;
+
+pair: '(' form+ '.' form ')'
     ;
 
 quote
@@ -37,7 +41,6 @@ unquote
 unquote_splicing
     : ',@' form
     ;
-
 
 literal
     : NUMBER                    # Number

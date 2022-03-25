@@ -42,6 +42,16 @@ public interface R5RSListener extends ParseTreeListener {
 	 */
 	void exitList(R5RSParser.ListContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link R5RSParser#pair}.
+	 * @param ctx the parse tree
+	 */
+	void enterPair(R5RSParser.PairContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link R5RSParser#pair}.
+	 * @param ctx the parse tree
+	 */
+	void exitPair(R5RSParser.PairContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link R5RSParser#quote}.
 	 * @param ctx the parse tree
 	 */

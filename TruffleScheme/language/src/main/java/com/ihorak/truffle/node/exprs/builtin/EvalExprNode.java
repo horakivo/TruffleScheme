@@ -2,10 +2,12 @@ package com.ihorak.truffle.node.exprs.builtin;
 
 import com.ihorak.truffle.convertor.context.Mode;
 import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.convertor.ListToExpressionConverter;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeFunction;
+import com.ihorak.truffle.type.SchemePair;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.Specialization;
@@ -37,6 +39,11 @@ public abstract class EvalExprNode extends SchemeExpression {
     @Specialization
     public Object evalList(VirtualFrame frame, SchemeCell schemeCell) {
         return ListToExpressionConverter.convert(schemeCell, createRuntimeContext()).executeGeneric(frame);
+    }
+
+    @Specialization
+    public Object evalPair(SchemePair pair) {
+        throw new SchemeException("eval: cannot evaluate pair");
     }
 
     //TODO in the future maybe add Mode directly to constructor, right now I would be big effort to change
