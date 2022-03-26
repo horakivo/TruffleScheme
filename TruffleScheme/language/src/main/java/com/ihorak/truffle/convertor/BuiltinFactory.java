@@ -24,7 +24,7 @@ import java.util.List;
 public class BuiltinFactory {
 
     public static SchemeExpression createDivideBuiltin(List<SchemeExpression> arguments) {
-        if (arguments.size() == 0) throw new SchemeException("/: arity mismatch; Expected number of arguments does not match the given number\nexpected: at least 1\ngiven: 0");
+        if (arguments.size() == 0) throw new SchemeException("/: arity mismatch; Expected number of arguments does not match the given number\nexpected: at least 1\ngiven: 0", null);
         if (arguments.size() == 1) return DivideOneArgumentExprNodeGen.create(arguments.get(0));
         return reduceDivide(arguments);
     }
@@ -39,7 +39,7 @@ public class BuiltinFactory {
     }
 
     public static SchemeExpression createMinusBuiltin(List<SchemeExpression> arguments) {
-        if (arguments.size() == 0) throw new SchemeException("-: arity mismatch; Expected number of arguments does not match the given number\nexpected: at least 1\ngiven: 0");
+        if (arguments.size() == 0) throw new SchemeException("-: arity mismatch; Expected number of arguments does not match the given number\nexpected: at least 1\ngiven: 0", null);
         if (arguments.size() == 1) return NegateNumberExprNodeGen.create(arguments.get(0));
         return reduceMinus(arguments);
     }
@@ -89,7 +89,7 @@ public class BuiltinFactory {
         if (arguments.size() == 1) {
             return EvalExprNodeGen.create(arguments.get(0));
         } else {
-            throw new SchemeException("eval: arity mismatch; Expected number of arguments does not match the given number \n expected: 1 \n given: " + arguments.size());
+            throw new SchemeException("eval: arity mismatch; Expected number of arguments does not match the given number \n expected: 1 \n given: " + arguments.size(), null);
         }
     }
 
@@ -101,7 +101,7 @@ public class BuiltinFactory {
         if (arguments.size() == 2) {
             return ConsExprNodeGen.create(arguments.get(0), arguments.get(1));
         } else {
-            throw new SchemeException("cons: arity mismatch; Expected number of arguments does not match the given number \n expected: 2 \n given: " + arguments.size());
+            throw new SchemeException("cons: arity mismatch; Expected number of arguments does not match the given number \n expected: 2 \n given: " + arguments.size(), null);
         }
     }
 
@@ -109,7 +109,7 @@ public class BuiltinFactory {
         if (arguments.size() == 1) {
             return CdrExprNodeGen.create(arguments.get(0));
         } else {
-            throw new SchemeException("cdr: arity mismatch; Expected number of arguments does not match the given number \n expected: 1 \n given: " + arguments.size());
+            throw new SchemeException("cdr: arity mismatch; Expected number of arguments does not match the given number \n expected: 1 \n given: " + arguments.size(), null);
         }
     }
 
@@ -117,7 +117,7 @@ public class BuiltinFactory {
         if (arguments.size() == 1) {
             return CarExprNodeGen.create(arguments.get(0));
         } else {
-            throw new SchemeException("car: arity mismatch; Expected number of arguments does not match the given number \n expected: 1 \n given: " + arguments.size());
+            throw new SchemeException("car: arity mismatch; Expected number of arguments does not match the given number \n expected: 1 \n given: " + arguments.size(), null);
         }
     }
 
@@ -125,7 +125,7 @@ public class BuiltinFactory {
         if (arguments.size() == 1) {
             return LengthExprNodeGen.create(arguments.get(0));
         } else {
-            throw new SchemeException("length: arity mismatch; Expected number of arguments does not match the given number \n expected: 1 \n given: " + arguments.size());
+            throw new SchemeException("length: arity mismatch; Expected number of arguments does not match the given number \n expected: 1 \n given: " + arguments.size(), null);
         }
     }
 
@@ -141,12 +141,12 @@ public class BuiltinFactory {
         if (arguments.size() > 1) {
             return new MapExprNode(arguments.remove(0), arguments);
         } else {
-            throw new SchemeException("map: arity mismatch; Expected number of argument does not match the given number \n expected: at least 2 \n given: " + (arguments.size()));
+            throw new SchemeException("map: arity mismatch; Expected number of argument does not match the given number \n expected: at least 2 \n given: " + (arguments.size()), null);
         }
     }
 
     public static SchemeExpression createLessThenOrEqual(List<SchemeExpression> arguments) {
-        if (arguments.size() == 0) throw new SchemeException("<=: arity mismatch; Expected number of argument does not match the given number\nexpected: at least 1\ngiven: 0");
+        if (arguments.size() == 0) throw new SchemeException("<=: arity mismatch; Expected number of argument does not match the given number\nexpected: at least 1\ngiven: 0", null);
         if (arguments.size() == 1) return new BooleanLiteralNode(true);
         if (arguments.size() == 2) return LessThenEqualExprNodeGen.create(arguments.get(0), arguments.get(1));
         return new ReduceComparisonExprNode(reduceLessThenOrEqual(arguments), "<=");
@@ -161,7 +161,7 @@ public class BuiltinFactory {
     }
 
     public static SchemeExpression createEqual(List<SchemeExpression> arguments) {
-        if (arguments.size() == 0) throw new SchemeException("=: arity mismatch; Expected number of argument does not match the given number\nExpected: at least 1\nGiven: 0");
+        if (arguments.size() == 0) throw new SchemeException("=: arity mismatch; Expected number of argument does not match the given number\nExpected: at least 1\nGiven: 0", null);
         if (arguments.size() == 1) return new BooleanLiteralNode(true);
         if (arguments.size() == 2) return EqualExprNodeGen.create(arguments.get(0), arguments.get(1));
         return new ReduceComparisonExprNode(reduceEqual(arguments), "=");
@@ -176,7 +176,7 @@ public class BuiltinFactory {
     }
 
     public static SchemeExpression createLessThen(List<SchemeExpression> arguments) {
-        if (arguments.size() == 0) throw new SchemeException("=: arity mismatch; Expected number of argument does not match the given number\nExpected: at least 1\nGiven: 0");
+        if (arguments.size() == 0) throw new SchemeException("=: arity mismatch; Expected number of argument does not match the given number\nExpected: at least 1\nGiven: 0", null);
         if (arguments.size() == 1) return new BooleanLiteralNode(true);
         if (arguments.size() == 2) return LessThenExprNodeGen.create(arguments.get(0), arguments.get(1));
         return new ReduceComparisonExprNode(reduceLessThen(arguments), "<");
@@ -194,20 +194,20 @@ public class BuiltinFactory {
         if (arguments.size() == 0) {
             return CurrentMillisecondsExprNodeGen.create();
         }
-        throw new SchemeException("current-milliseconds: arity mismatch; Expected number of arguments does not match the given number\nExpected: 0\nGiven: " + arguments.size());
+        throw new SchemeException("current-milliseconds: arity mismatch; Expected number of arguments does not match the given number\nExpected: 0\nGiven: " + arguments.size(), null);
     }
 
     public static SchemeExpression createDisplayBuiltin(List<SchemeExpression> arguments) {
         if (arguments.size() == 1) {
             return DisplayExprNodeGen.create(arguments.get(0));
         }
-        throw new SchemeException("display: arity mismatch; Expected number of arguments does not match the given number\nExpected: 1\nGiven: " + arguments.size());
+        throw new SchemeException("display: arity mismatch; Expected number of arguments does not match the given number\nExpected: 1\nGiven: " + arguments.size(), null);
     }
 
     public static SchemeExpression createNewlineBuiltin(List<SchemeExpression> arguments) {
         if (arguments.size() == 0) {
             return new NewlineExprNode();
         }
-        throw new SchemeException("newline: arity mismatch; Expected number of arguments does not match the given number\nExpected: 0\nGiven: " + arguments.size());
+        throw new SchemeException("newline: arity mismatch; Expected number of arguments does not match the given number\nExpected: 0\nGiven: " + arguments.size(), null);
     }
 }

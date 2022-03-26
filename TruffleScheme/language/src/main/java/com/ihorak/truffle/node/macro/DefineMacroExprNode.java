@@ -25,7 +25,7 @@ public class DefineMacroExprNode extends SchemeExpression {
             return new SchemeMacro(transformationProc);
         } catch (UnexpectedResultException e) {
             CompilerDirectives.transferToInterpreterAndInvalidate();
-            throw new SchemeException("define-macro:\nexpected: procedure\ngiven: " + e.getResult());
+            throw new SchemeException("define-macro:\nexpected: procedure\ngiven: " + e.getResult(), this);
         }
 
     }

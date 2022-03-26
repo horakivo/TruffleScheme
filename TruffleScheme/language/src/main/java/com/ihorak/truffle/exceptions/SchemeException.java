@@ -2,14 +2,12 @@ package com.ihorak.truffle.exceptions;
 
 import com.oracle.truffle.api.exception.AbstractTruffleException;
 import com.oracle.truffle.api.nodes.Node;
+import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 
 public class SchemeException extends AbstractTruffleException {
 
-    public SchemeException(String message) {
-        this(null, message);
-    }
-
-    public SchemeException(Node location, String message) {
+    @TruffleBoundary
+    public SchemeException(String message, Node location) {
         super(message, location);
     }
 }

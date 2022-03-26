@@ -15,14 +15,14 @@ public abstract class LengthExprNode extends SchemeExpression {
         if (list.isList()) {
             return list.size();
         } else {
-            throw new SchemeException("length: contract violation \n expected: list? \n given: " + list);
+            throw new SchemeException("length: contract violation \n expected: list? \n given: " + list, this);
         }
     }
 
 
     @Fallback
     protected void fallback(Object object) {
-        throw new SchemeException("length: contract violation\nexpected: list?\ngiven: " + object);
+        throw new SchemeException("length: contract violation\nexpected: list?\ngiven: " + object, this);
     }
 
 

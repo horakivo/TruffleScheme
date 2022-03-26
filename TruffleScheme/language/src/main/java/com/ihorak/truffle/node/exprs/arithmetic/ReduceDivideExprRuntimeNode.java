@@ -14,7 +14,7 @@ public abstract class ReduceDivideExprRuntimeNode extends SchemeExpression {
 
     @Specialization(guards = "frame.getArguments().length == 1")
     protected Object noRuntimeArguments(VirtualFrame frame) {
-        throw new SchemeException("/: arity mismatch; Expected number of arguments does not match the given number \n expected: at least 1 \n given: 0");
+        throw new SchemeException("/: arity mismatch; Expected number of arguments does not match the given number \n expected: at least 1 \n given: 0", this);
     }
 
     @Specialization(guards = "frame.getArguments().length == 2")
@@ -24,7 +24,7 @@ public abstract class ReduceDivideExprRuntimeNode extends SchemeExpression {
             return 1 / ((Long) argument).doubleValue();
         }
 
-        throw new SchemeException("/: contract violation;\nExpected: number?\nGiven: " + argument);
+        throw new SchemeException("/: contract violation;\nExpected: number?\nGiven: " + argument, this);
     }
 
     @Specialization

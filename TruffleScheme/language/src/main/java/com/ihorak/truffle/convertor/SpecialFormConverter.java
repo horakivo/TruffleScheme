@@ -20,7 +20,6 @@ import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeFunction;
 import com.ihorak.truffle.type.SchemePair;
 import com.ihorak.truffle.type.SchemeSymbol;
-import org.w3c.dom.xpath.XPathResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -185,7 +184,7 @@ public class SpecialFormConverter {
         if (quoteList.size() == 2) {
             return new QuoteExprNode(quoteList.get(1));
         } else {
-            throw new SchemeException("quote: arity mismatch\nexpected: 1\ngiven: " + (quoteList.size() - 1));
+            throw new SchemeException("quote: arity mismatch\nexpected: 1\ngiven: " + (quoteList.size() - 1), null);
         }
     }
 
@@ -193,7 +192,7 @@ public class SpecialFormConverter {
         if (quasiquoteList.size() == 2) {
             return new QuasiquoteExprNode(quasiquoteList.get(1), context);
         } else {
-            throw new SchemeException("quasiquote: arity mismatch\nexpected: 1\ngiven: " + (quasiquoteList.size() - 1));
+            throw new SchemeException("quasiquote: arity mismatch\nexpected: 1\ngiven: " + (quasiquoteList.size() - 1), null);
         }
     }
 

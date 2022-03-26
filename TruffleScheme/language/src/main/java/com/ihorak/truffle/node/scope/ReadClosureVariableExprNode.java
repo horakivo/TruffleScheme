@@ -56,7 +56,7 @@ public abstract class ReadClosureVariableExprNode extends SchemeExpression {
 
     @Fallback
     protected void fallback(VirtualFrame frame) {
-        throw new SchemeException(symbol + ": undefined\ncannot reference an identifier before its definition. FrameSlotKind: " + findCorrectVirtualFrame(frame).getFrameDescriptor().getSlotKind(frameSlotIndex));
+        throw new SchemeException(symbol + ": undefined\ncannot reference an identifier before its definition. FrameSlotKind: " + findCorrectVirtualFrame(frame).getFrameDescriptor().getSlotKind(frameSlotIndex), this);
     }
 
     @NotNull

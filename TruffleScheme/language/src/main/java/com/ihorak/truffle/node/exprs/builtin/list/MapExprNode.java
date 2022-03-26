@@ -58,7 +58,7 @@ public class MapExprNode extends SchemeExpression {
         try {
             return operation.executeFunction(virtualFrame);
         } catch (UnexpectedResultException e) {
-            throw new SchemeException("map: contract violation \n expected: procedure? \n given: " + e.getResult());
+            throw new SchemeException("map: contract violation \n expected: procedure? \n given: " + e.getResult(), this);
         }
     }
 
@@ -69,7 +69,7 @@ public class MapExprNode extends SchemeExpression {
             try {
                 argsAsLists.add(expr.executeList(virtualFrame));
             } catch (UnexpectedResultException e) {
-                throw new SchemeException("map: contract violation \n expected: lists? \n given: " + e.getResult());
+                throw new SchemeException("map: contract violation \n expected: lists? \n given: " + e.getResult(), this);
             }
         }
         return argsAsLists;
@@ -80,18 +80,18 @@ public class MapExprNode extends SchemeExpression {
             var expectedSize = lists.get(0).size();
             for (int i = 1; i < lists.size(); i++) {
                 if (lists.get(i).size() != expectedSize) {
-                    throw new SchemeException("map: all lists must have same size \n first list length: " + expectedSize + "\n other list length: " + lists.get(i).size());
+                    throw new SchemeException("map: all lists must have same size \n first list length: " + expectedSize + "\n other list length: " + lists.get(i).size(), this);
                 }
             }
             return true;
         } else {
-            throw new SchemeException("map: arity mismatch \n expected at least 1 argument \n given: 0");
+            throw new SchemeException("map: arity mismatch \n expected at least 1 argument \n given: 0", this);
         }
     }
 
     private boolean isNumberOfListsSameAsNumberOfArgs(SchemeFunction function, List<SchemeCell> lists) {
         if (function.getExpectedNumberOfArgs() != null && function.getExpectedNumberOfArgs() != lists.size()) {
-            throw new SchemeException("map: argument mismatch; \n the given procedure's expected number of arguments does not match the given number of lists \n expected: " + function.getExpectedNumberOfArgs() + "\n given: " + lists.size());
+            throw new SchemeException("map: argument mismatch; \n the given procedure's expected number of arguments does not match the given number of lists \n expected: " + function.getExpectedNumberOfArgs() + "\n given: " + lists.size(), this);
         }
         return true;
     }

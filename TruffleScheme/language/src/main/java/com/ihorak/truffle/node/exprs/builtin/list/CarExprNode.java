@@ -16,12 +16,12 @@ public abstract class CarExprNode extends SchemeExpression {
         if (list != SchemeCell.EMPTY_LIST) {
             return list.car;
         } else {
-            throw new SchemeException("car: contract violation\nexpected: pair?\ngiven: ()");
+            throw new SchemeException("car: contract violation\nexpected: pair?\ngiven: ()", this);
         }
     }
 
     @Fallback
     protected Object fallback(Object object) {
-        throw new SchemeException("car: contract violation\n expected: pair?\n given: " + object);
+        throw new SchemeException("car: contract violation\n expected: pair?\n given: " + object, this);
     }
 }

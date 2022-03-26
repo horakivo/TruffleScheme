@@ -2,17 +2,17 @@ package com.ihorak.truffle.node.scope;
 
 import com.ihorak.truffle.SchemeLanguageContext;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.type.SchemeFunction;
+import com.ihorak.truffle.type.PrimitiveProcedure;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.ihorak.truffle.type.UndefinedValue;
 import com.oracle.truffle.api.dsl.Specialization;
 
-public abstract class WriteBuiltinProcedureExprNode extends SchemeExpression {
+public abstract class WritePrimitiveProcedureExprNode extends SchemeExpression {
 
-    private final SchemeFunction procedure;
+    private final PrimitiveProcedure procedure;
     private final SchemeSymbol symbol;
 
-    public WriteBuiltinProcedureExprNode(SchemeFunction procedure, SchemeSymbol symbol) {
+    public WritePrimitiveProcedureExprNode(PrimitiveProcedure procedure, SchemeSymbol symbol) {
         this.procedure = procedure;
         this.symbol = symbol;
     }

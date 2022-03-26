@@ -6,6 +6,7 @@ import com.ihorak.truffle.node.callable.DispatchNode;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.convertor.ListToExpressionConverter;
 import com.ihorak.truffle.node.callable.DispatchNodeGen;
+import com.ihorak.truffle.type.PrimitiveProcedure;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeFunction;
 import com.ihorak.truffle.type.SchemeMacro;
@@ -31,9 +32,10 @@ public abstract class CallableExprNode extends SchemeExpression {
     private final ParsingContext parsingContext;
 
 
-    private final ConditionProfile noParentConditionProfile = ConditionProfile.createBinaryProfile();
-    private final BranchProfile wrongNumberOfArgsProfile = BranchProfile.create();
-    private final BranchProfile macroNoParentProfile = BranchProfile.create();
+    private final BranchProfile macroWrongNumberOfArgsProfile = BranchProfile.create();
+    private final BranchProfile userProcedureWrongNumberOfArgsProfile = BranchProfile.create();
+    private final BranchProfile primitiveProcedureWrongNumberOfArgsProfile = BranchProfile.create();
+    private final ConditionProfile conditionProfile = ConditionProfile.createBinaryProfile();
 
 
     public CallableExprNode(List<SchemeExpression> arguments, ParsingContext context) {
@@ -43,15 +45,44 @@ public abstract class CallableExprNode extends SchemeExpression {
     }
 
     @Specialization
+    protected Object doUserDefinedProcedure(VirtualFrame frame, SchemeFunction function) {
+        var arguments = getProcedureArguments(function, frame);
+
+        if (this.arguments.length < function.getExpectedNumberOfArgs()) {
+            userProcedureWrongNumberOfArgsProfile.enter();
+            throw new SchemeException("User defined procedure was called with wrong number of arguments." +
+                    " \n Expected: " + function.getExpectedNumberOfArgs() +
+                    " \n Given: " + this.arguments.length, this);
+        }
+
+        return call(function.getCallTarget(), arguments, frame);
+    }
+
+    @Specialization
+    protected Object doPrimitiveProcedure(VirtualFrame frame, PrimitiveProcedure primitiveProcedure) {
+        var arguments = getPrimitiveProcedureArgs(frame);
+
+        var expectedNumberOfArgs = primitiveProcedure.getNumberOfArgs();
+        if (expectedNumberOfArgs != null && expectedNumberOfArgs != this.arguments.length) {
+            primitiveProcedureWrongNumberOfArgsProfile.enter();
+            throw new SchemeException("Primitive procedure was called with wrong number of arguments." +
+                    " \n Expected: " + expectedNumberOfArgs +
+                    " \n Given: " + this.arguments.length, this);
+        }
+
+        return call(primitiveProcedure.getCallTarget(), arguments, frame);
+    }
+
+    @Specialization
     protected Object doMacro(VirtualFrame frame, SchemeMacro macro) {
         var transformationProcedure = macro.getTransformationProcedure();
-        var macroArguments = getMarcoArguments(transformationProcedure, frame);
+        var macroArguments = getProcedureOrMacroArgsNoOptional(transformationProcedure, frame);
 
-        if (transformationProcedure.getExpectedNumberOfArgs() != null && transformationProcedure.getExpectedNumberOfArgs() != this.arguments.length) {
-            wrongNumberOfArgsProfile.enter();
+        if (transformationProcedure.getExpectedNumberOfArgs() != this.arguments.length) {
+            macroWrongNumberOfArgsProfile.enter();
             throw new SchemeException("Procedure was called with wrong number of arguments." +
                     " \n Expected: " + transformationProcedure.getExpectedNumberOfArgs() +
-                    " \n Given: " + this.arguments.length);
+                    " \n Given: " + this.arguments.length, this);
         }
 
         var transformedData = applyTransformationProcedure(macro.getTransformationProcedure(), macroArguments);
@@ -59,43 +90,28 @@ public abstract class CallableExprNode extends SchemeExpression {
         return ListToExpressionConverter.convert(transformedData, parsingContext).executeGeneric(frame);
     }
 
-    @Specialization
-    protected Object doProcedure(VirtualFrame frame, SchemeFunction function) {
-        var arguments = getProcedureArguments(function, frame);
-
-        if (function.getExpectedNumberOfArgs() != null && this.arguments.length < function.getExpectedNumberOfArgs()) {
-            wrongNumberOfArgsProfile.enter();
-            throw new SchemeException("Procedure was called with wrong number of arguments." +
-                    " \n Expected: " + function.getExpectedNumberOfArgs() +
-                    " \n Given: " + this.arguments.length);
-        }
-
-        return call(function.getCallTarget(), arguments, frame);
-    }
-
     @Fallback
     protected Object fallback(Object object) {
-        throw new SchemeException("application: not a procedure or macro;\nexpected: macro or procedure that can be applied to arguments\ngiven: " + object);
+        throw new SchemeException("application: not a procedure or macro;\nexpected: macro or procedure that can be applied to arguments\ngiven: " + object, this);
     }
 
     private Object[] getProcedureArguments(SchemeFunction function, VirtualFrame parentFrame) {
-        if (function.isOptionalArgs()) {
+        if (conditionProfile.profile(function.isOptionalArgs())) {
             return getProcedureArgsWithOptional(function, parentFrame);
         } else {
-            return getProcedureArgsNoOptional(function, parentFrame);
+            return getProcedureOrMacroArgsNoOptional(function, parentFrame);
         }
     }
 
     @ExplodeLoop
     private Object[] getProcedureArgsWithOptional(SchemeFunction function, VirtualFrame parentFrame) {
         // + 2 because first one is parent frame and second is the optional list
-        Object[] newArguments = new Object[function.getExpectedNumberOfArgs() + 2];
-        //TODO maybe check here if it is not null
-        newArguments[0] = function.getParentFrame();
+        Object[] args = new Object[function.getExpectedNumberOfArgs() + 2];
+        args[0] = function.getParentFrame();
 
         int index = 1;
         for (int i = 0; i < function.getExpectedNumberOfArgs(); i++) {
-            newArguments[index] = arguments[i].executeGeneric(parentFrame);
+            args[index] = arguments[i].executeGeneric(parentFrame);
             index++;
         }
 
@@ -103,45 +119,38 @@ public abstract class CallableExprNode extends SchemeExpression {
         for (int i = arguments.length - 1; i >= function.getExpectedNumberOfArgs(); i--) {
             list = list.cons(arguments[i].executeGeneric(parentFrame), list);
         }
-        newArguments[index] = list;
+        args[index] = list;
 
-        return newArguments;
+        return args;
     }
 
     @ExplodeLoop
-    private Object[] getProcedureArgsNoOptional(SchemeFunction function, VirtualFrame parentFrame) {
-        Object[] arguments = new Object[this.arguments.length + 1];
-        if (noParentConditionProfile.profile(function.getParentFrame() != null)) {
-            arguments[0] = function.getParentFrame();
-        } else {
-            arguments[0] = parentFrame.materialize();
-        }
+    private Object[] getProcedureOrMacroArgsNoOptional(SchemeFunction function, VirtualFrame parentFrame) {
+        Object[] args = new Object[arguments.length + 1];
+        args[0] = function.getParentFrame();
 
         int index = 1;
-        for (SchemeExpression expression : this.arguments) {
-            arguments[index] = expression.executeGeneric(parentFrame);
+        for (SchemeExpression expression : arguments) {
+            args[index] = expression.executeGeneric(parentFrame);
             index++;
         }
 
-        return arguments;
+        return args;
     }
 
     @ExplodeLoop
-    private Object[] getMarcoArguments(SchemeFunction function, VirtualFrame parentFrame) {
-        Object[] arguments = new Object[this.arguments.length + 1];
-        if (function.getParentFrame() == null) {
-            macroNoParentProfile.enter();
-            throw new SchemeException("macro: no parent in lambda! Interpreter mistake!");
-        }
-        arguments[0] = function.getParentFrame();
+    private Object[] getPrimitiveProcedureArgs(VirtualFrame frame) {
+        Object[] args = new Object[arguments.length + 1];
+        args[0] = frame.materialize();
 
         int index = 1;
         for (SchemeExpression expression : this.arguments) {
-            arguments[index] = expression.executeGeneric(parentFrame);
+            args[index] = expression.executeGeneric(frame);
             index++;
         }
 
-        return arguments;
+        return args;
+
     }
 
     private Object applyTransformationProcedure(SchemeFunction transformationProcedure, Object[] arguments) {

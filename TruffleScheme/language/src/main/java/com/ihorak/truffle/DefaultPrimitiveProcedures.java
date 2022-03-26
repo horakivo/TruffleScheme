@@ -9,9 +9,9 @@ import com.ihorak.truffle.node.exprs.arithmetic.ReduceMultiplyExprRuntimeNodeGen
 import com.ihorak.truffle.node.exprs.arithmetic.ReducePlusExprRuntimeNodeGen;
 import com.ihorak.truffle.node.exprs.builtin.EvalExprNodeGen;
 import com.ihorak.truffle.node.exprs.builtin.arithmetic.*;
-import com.ihorak.truffle.node.scope.WriteBuiltinProcedureExprNode;
-import com.ihorak.truffle.node.scope.WriteBuiltinProcedureExprNodeGen;
-import com.ihorak.truffle.type.SchemeFunction;
+import com.ihorak.truffle.node.scope.WritePrimitiveProcedureExprNode;
+import com.ihorak.truffle.node.scope.WritePrimitiveProcedureExprNodeGen;
+import com.ihorak.truffle.type.PrimitiveProcedure;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 
@@ -22,30 +22,30 @@ import java.util.Map;
 public class DefaultPrimitiveProcedures {
 
 
-    public static List<WriteBuiltinProcedureExprNode> generate() {
-        List<WriteBuiltinProcedureExprNode> writeBuiltinProcedureExprNodes = new ArrayList<>();
+    public static List<WritePrimitiveProcedureExprNode> generate(SchemeTruffleLanguage language) {
+        List<WritePrimitiveProcedureExprNode> result = new ArrayList<>();
 
-        var builtinFunctionsMap = getAllPrimitiveProcedures();
+        var builtinFunctionsMap = getAllPrimitiveProcedures(language);
 
         for (SchemeSymbol symbol : builtinFunctionsMap.keySet()) {
-            writeBuiltinProcedureExprNodes.add(WriteBuiltinProcedureExprNodeGen.create(builtinFunctionsMap.get(symbol), symbol));
+            result.add(WritePrimitiveProcedureExprNodeGen.create(builtinFunctionsMap.get(symbol), symbol));
         }
 
-        return writeBuiltinProcedureExprNodes;
+        return result;
     }
 
-    private static Map<SchemeSymbol, SchemeFunction> getAllPrimitiveProcedures() {
+    private static Map<SchemeSymbol, PrimitiveProcedure> getAllPrimitiveProcedures(SchemeTruffleLanguage language) {
 //        var plusExpr = PlusTestNodeGen.create(new ReadProcedureArgExprNode(0), new ReadProcedureArgExprNode(1));
         var plusExpr = ReducePlusExprRuntimeNodeGen.create(PlusExprNodeGen.create());
-        SchemeFunction plusFunction = createBuiltinFunction(plusExpr, null);
+        var plusFunction = createPrimitiveProcedure(plusExpr, null, language);
         var minusExpr = ReduceMinusExprRuntimeNodeGen.create(MinusExprNodeGen.create());
-        SchemeFunction minusFunction = createBuiltinFunction(minusExpr, null);
+        var minusFunction = createPrimitiveProcedure(minusExpr, null, language);
         var multiplyExpr = ReduceMultiplyExprRuntimeNodeGen.create(MultiplyExprNodeGen.create());
-        SchemeFunction multiplyFunction = createBuiltinFunction(multiplyExpr, null);
+        var multiplyFunction = createPrimitiveProcedure(multiplyExpr, null, language);
         var divideExpr = ReduceDivideExprRuntimeNodeGen.create(DivideExprNodeGen.create());
-        SchemeFunction divideFunction = createBuiltinFunction(divideExpr, null);
-        SchemeExpression evalExpr = EvalExprNodeGen.create(new ReadProcedureArgExprNode(0));
-        SchemeFunction evalFunction = createBuiltinFunction(evalExpr, 1);
+        var divideFunction = createPrimitiveProcedure(divideExpr, null, language);
+        var evalExpr = EvalExprNodeGen.create(new ReadProcedureArgExprNode(0));
+        var evalFunction = createPrimitiveProcedure(evalExpr, 1, language);
 
 
         return Map.of(
@@ -56,9 +56,9 @@ public class DefaultPrimitiveProcedures {
         );
     }
 
-    public static SchemeFunction createBuiltinFunction(SchemeExpression schemeExpression, Integer expectedNumberOfArgs) {
-        var rootNode = new ProcedureRootNode(null, new FrameDescriptor(), List.of(schemeExpression));
+    public static PrimitiveProcedure createPrimitiveProcedure(SchemeExpression schemeExpression, Integer expectedNumberOfArgs, SchemeTruffleLanguage language) {
+        var rootNode = new ProcedureRootNode(language, new FrameDescriptor(), List.of(schemeExpression));
 
-        return new SchemeFunction(rootNode.getCallTarget(), expectedNumberOfArgs, false);
+        return new PrimitiveProcedure(rootNode.getCallTarget(), expectedNumberOfArgs);
     }
 }

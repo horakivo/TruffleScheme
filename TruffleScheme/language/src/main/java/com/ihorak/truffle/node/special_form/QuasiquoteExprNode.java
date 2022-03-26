@@ -28,7 +28,7 @@ public class QuasiquoteExprNode extends SchemeExpression {
         } else if (datum instanceof SchemeCell) {
             return convertList((SchemeCell) datum, false, virtualFrame);
         }
-        throw new SchemeException("Unsupported data type. Type: " + datum);
+        throw new SchemeException("Unsupported data type. Type: " + datum, this);
     }
 
     private Object convertList(SchemeCell schemeCell, boolean isUnquoteOrUnquoteSplicingContext, VirtualFrame virtualFrame) {
@@ -88,15 +88,15 @@ public class QuasiquoteExprNode extends SchemeExpression {
     private Object handleUnquote(SchemeCell unquoteList, boolean isUnquoteOrUnquoteSplicingContext, VirtualFrame frame) {
         if (unquoteList.size() == 2) {
             if (isUnquoteOrUnquoteSplicingContext) {
-                throw new SchemeException("unquote or unquote-splicing: not in quasiquote in: " + unquoteList);
+                throw new SchemeException("unquote or unquote-splicing: not in quasiquote in: " + unquoteList, this);
             }
             var valueToBeEvaluated = unquoteList.get(1);
             if (valueToBeEvaluated instanceof SchemeCell && isDefineExpression((SchemeCell) valueToBeEvaluated)) {
-                throw new SchemeException("define: not allowed in an expression context in: " + valueToBeEvaluated);
+                throw new SchemeException("define: not allowed in an expression context in: " + valueToBeEvaluated, this);
             }
             return ListToExpressionConverter.convert(valueToBeEvaluated, parsingContext).executeGeneric(frame);
         }
-        throw new SchemeException("unquote: expects exactly one expression");
+        throw new SchemeException("unquote: expects exactly one expression", this);
     }
 
     private List<Object> handleUnquoteSplicing(SchemeCell unquoteSplicingList, boolean isUnquoteOrUnquoteSplicingContext, VirtualFrame frame) {
@@ -110,9 +110,9 @@ public class QuasiquoteExprNode extends SchemeExpression {
                 }
                 return result;
             }
-            throw new SchemeException("unquote-splicing: contract violation \n expected: list? \n given: " + evaluated);
+            throw new SchemeException("unquote-splicing: contract violation \n expected: list? \n given: " + evaluated, this);
         } else {
-            throw new SchemeException("unquote-splicing: expects exactly one expression");
+            throw new SchemeException("unquote-splicing: expects exactly one expression", this);
         }
     }
 }

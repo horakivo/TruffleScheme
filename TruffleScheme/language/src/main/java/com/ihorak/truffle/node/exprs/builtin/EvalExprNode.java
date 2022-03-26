@@ -43,7 +43,7 @@ public abstract class EvalExprNode extends SchemeExpression {
 
     @Specialization
     public Object evalPair(SchemePair pair) {
-        throw new SchemeException("eval: cannot evaluate pair");
+        throw new SchemeException("eval: cannot evaluate pair", this);
     }
 
     //TODO in the future maybe add Mode directly to constructor, right now I would be big effort to change

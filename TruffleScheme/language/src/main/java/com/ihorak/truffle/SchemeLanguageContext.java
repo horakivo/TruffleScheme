@@ -32,7 +32,7 @@ public class SchemeLanguageContext {
             var value = globalVariableStorage.get(symbol);
             if (value == null) {
                 CompilerDirectives.transferToInterpreterAndInvalidate();
-                throw new SchemeException(symbol + ": undefined\ncannot reference an identifier before its definition");
+                throw new SchemeException(symbol + ": undefined\ncannot reference an identifier before its definition", null);
             }
             return value;
         }

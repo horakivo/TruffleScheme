@@ -19,13 +19,13 @@ import java.math.BigInteger;
 public class SchemeFunction implements TruffleObject {
 
     private final CallTarget callTarget;
-    private final Integer expectedNumberOfArgs;
+    private final int expectedNumberOfArgs;
     private final boolean optionalArgs;
     private MaterializedFrame parentFrame;
     //Because of the Interop library
     private final DispatchNode dispatchNode = DispatchNodeGen.create();
 
-    public SchemeFunction(CallTarget callTarget, Integer expectedNumberOfArgs, final boolean hasOptionalArgs) {
+    public SchemeFunction(CallTarget callTarget, int expectedNumberOfArgs, final boolean hasOptionalArgs) {
         this.callTarget = callTarget;
         if (hasOptionalArgs) {
             this.expectedNumberOfArgs = expectedNumberOfArgs - 1;
@@ -57,7 +57,6 @@ public class SchemeFunction implements TruffleObject {
 
     //----------------InteropLibrary messages–----------------------
 
-
     @ExportMessage
     boolean hasLanguage() {
         return true;
@@ -83,7 +82,7 @@ public class SchemeFunction implements TruffleObject {
         for (Object argument : arguments) {
             if (!isSchemeValue(argument)) {
                 CompilerDirectives.transferToInterpreterAndInvalidate();
-                throw new SchemeException("'" + argument + "' is not an EasyScript value");
+                throw new SchemeException("'" + argument + "' is not an EasyScript value", null);
             }
         }
         return this.dispatchNode.executeDispatch(this.callTarget, arguments);
