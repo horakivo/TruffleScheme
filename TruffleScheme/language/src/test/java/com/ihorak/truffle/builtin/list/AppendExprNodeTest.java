@@ -17,18 +17,13 @@ public class AppendExprNodeTest {
     }
 
     @Test
-    public void givenTwoList_whenAppend_thenShouldReturnMergedLists() {
-        var program = "(append (list 1 2) (list 3 4))";
+    public void givenNoArgs_whenAppend_thenShouldReturnEmptyList() {
+        var program = "(append)";
 
         var result = context.eval("scm", program);
 
-
         assertTrue(result.hasArrayElements());
-        assertEquals(4L, result.getArraySize());
-        assertEquals(1L, result.getArrayElement(0).asLong());
-        assertEquals(2L, result.getArrayElement(1).asLong());
-        assertEquals(3L, result.getArrayElement(2).asLong());
-        assertEquals(4L, result.getArrayElement(3).asLong());
+        assertEquals(0L, result.getArraySize());
     }
 
     @Test
@@ -44,13 +39,18 @@ public class AppendExprNodeTest {
     }
 
     @Test
-    public void givenNoArgs_whenAppend_thenShouldReturnEmptyList() {
-        var program = "(append)";
+    public void givenTwoList_whenAppend_thenShouldReturnMergedLists() {
+        var program = "(append (list 1 2) (list 3 4))";
 
         var result = context.eval("scm", program);
 
+
         assertTrue(result.hasArrayElements());
-        assertEquals(0L, result.getArraySize());
+        assertEquals(4L, result.getArraySize());
+        assertEquals(1L, result.getArrayElement(0).asLong());
+        assertEquals(2L, result.getArrayElement(1).asLong());
+        assertEquals(3L, result.getArrayElement(2).asLong());
+        assertEquals(4L, result.getArrayElement(3).asLong());
     }
 
     @Test
@@ -77,6 +77,9 @@ public class AppendExprNodeTest {
 
         var msg = assertThrows(PolyglotException.class, () ->  context.eval("scm", program)).getMessage();
 
-        assertEquals("append: contract violation\nexpecting all arguments lists", msg);
+        assertEquals("append: contract violation\n" +
+                "expecting all arguments lists\n" +
+                "given left: (1 2)\n" +
+                "given right: (3 . 4)", msg);
     }
 }

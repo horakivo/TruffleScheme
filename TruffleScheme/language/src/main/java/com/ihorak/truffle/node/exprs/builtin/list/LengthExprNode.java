@@ -12,11 +12,7 @@ public abstract class LengthExprNode extends SchemeExpression {
 
     @Specialization
     public long doLength(SchemeCell list) {
-        if (list.isList()) {
-            return list.size();
-        } else {
-            throw new SchemeException("length: contract violation \n expected: list? \n given: " + list, this);
-        }
+        return list.size();
     }
 
 

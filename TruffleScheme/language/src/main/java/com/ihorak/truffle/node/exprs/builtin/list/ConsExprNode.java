@@ -7,14 +7,18 @@ import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.Specialization;
 
 
-//TODO when to use DSL or when just normal class
-//TODO pokud druhy prvek je list, tak nevytvaret Pair ale list
 @NodeChild(value = "car")
 @NodeChild(value = "cdr")
 public abstract class ConsExprNode extends SchemeExpression {
 
+
     @Specialization
-    public SchemePair doCons(Object car, Object cdr) {
+    protected SchemeCell doSchemeList(Object car, SchemeCell list) {
+        return list.cons(car, list);
+    }
+
+    @Specialization
+    public SchemePair doSchemePair(Object car, Object cdr) {
         return new SchemePair(car, cdr);
     }
 }

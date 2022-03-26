@@ -19,10 +19,10 @@ public class SchemeCell implements Iterable<Object>, TruffleObject {
     public static SchemeCell EMPTY_LIST = new SchemeCell(null, null);
 
     public Object car;
-    public Object cdr;
+    public SchemeCell cdr;
 
 
-    public SchemeCell(Object car, Object cdr) {
+    public SchemeCell(Object car, SchemeCell cdr) {
         this.car = car;
         this.cdr = cdr;
     }
@@ -31,60 +31,29 @@ public class SchemeCell implements Iterable<Object>, TruffleObject {
         return this == EMPTY_LIST;
     }
 
-    public SchemeCell cons(Object car, Object cdr) {
+    public SchemeCell cons(Object car, SchemeCell cdr) {
         return new SchemeCell(car, cdr);
     }
 
-    public boolean isList() {
-        if (this == EMPTY_LIST) {
-            return true;
-        }
-
-        if (cdr instanceof SchemeCell) {
-            return ((SchemeCell) cdr).isList();
-        }
-
-        return false;
-    }
 
     public int size() {
-        if (isList()) {
-            if (isEmpty()) {
-                return 0;
-            }
 
-            int length = 1;
-            SchemeCell schemeList = (SchemeCell) this.cdr;
-            while (!schemeList.isEmpty()) {
-                length++;
-                schemeList = (SchemeCell) schemeList.cdr;
-            }
-
-            return length;
-        } else {
-            //is pair therefore always return 2
-            return 2;
+        if (isEmpty()) {
+            return 0;
         }
+
+        int length = 1;
+        SchemeCell schemeList = this.cdr;
+        while (!schemeList.isEmpty()) {
+            length++;
+            schemeList = schemeList.cdr;
+        }
+
+        return length;
     }
 
     @Override
     public String toString() {
-        if (this.isList()) {
-            return toStringList();
-        } else {
-            return toStringPair();
-        }
-    }
-
-    private String toStringPair() {
-        return '(' +
-                car.toString() +
-                " . " +
-                cdr.toString() +
-                ')';
-    }
-
-    private String toStringList() {
         if (isEmpty()) {
             return "()";
         }
@@ -97,7 +66,7 @@ public class SchemeCell implements Iterable<Object>, TruffleObject {
         while (!currentList.isEmpty()) {
             sb.append(currentList.car);
             sb.append(" ");
-            currentList = (SchemeCell) currentList.cdr;
+            currentList = currentList.cdr;
         }
 
         sb.deleteCharAt(sb.length() - 1);
@@ -110,8 +79,8 @@ public class SchemeCell implements Iterable<Object>, TruffleObject {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SchemeCell objects = (SchemeCell) o;
-        return Objects.equals(car, objects.car) && Objects.equals(cdr, objects.cdr);
+        SchemeCell that = (SchemeCell) o;
+        return Objects.equals(car, that.car) && Objects.equals(cdr, that.cdr);
     }
 
     @Override
@@ -119,41 +88,25 @@ public class SchemeCell implements Iterable<Object>, TruffleObject {
         return Objects.hash(car, cdr);
     }
 
-    //TODO is there any solution which will unify the iteration over this?
     @Override
     public Iterator<Object> iterator() {
-        if (isList()) {
-            return new Iterator<>() {
-                private SchemeCell cell = SchemeCell.this;
+        return new Iterator<>() {
+            private SchemeCell cell = SchemeCell.this;
 
-                @Override
-                public boolean hasNext() {
-                    return cell != EMPTY_LIST;
-                }
+            @Override
+            public boolean hasNext() {
+                return cell != EMPTY_LIST;
+            }
 
-                @Override
-                public Object next() {
-                    Object toReturn = cell.car;
-                    cell = (SchemeCell) cell.cdr;
-                    return toReturn;
-                }
-            };
-        } else {
-            return convertToArrayList().iterator();
-        }
+            @Override
+            public Object next() {
+                Object toReturn = cell.car;
+                cell = cell.cdr;
+                return toReturn;
+            }
+        };
     }
 
-    public List<Object> convertToArrayList() {
-        List<Object> result = new ArrayList<>();
-
-        for (Object obj : this) {
-            result.add(obj);
-        }
-
-        return result;
-    }
-
-    //TODO just for list for now
     public Object get(int index) {
         int size = size();
         if (index >= size) {
@@ -162,7 +115,7 @@ public class SchemeCell implements Iterable<Object>, TruffleObject {
 
         SchemeCell currentList = this;
         for (int i = 0; i < index; i++) {
-            currentList = (SchemeCell) currentList.cdr;
+            currentList = currentList.cdr;
         }
 
         return currentList.car;

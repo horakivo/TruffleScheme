@@ -18,7 +18,7 @@ public class ProcedureCallConverter {
     //here it can be either procedure or builtin
     public static SchemeExpression convertListToProcedureCall(SchemeCell procedureList, ParsingContext context) {
         var operand = procedureList.car;
-        List<SchemeExpression> arguments = getProcedureArguments((SchemeCell) procedureList.cdr, context);
+        List<SchemeExpression> arguments = getProcedureArguments(procedureList.cdr, context);
 
         if (operand instanceof SchemeSymbol && BuiltinUtils.isBuiltinProcedure((SchemeSymbol) operand)) {
             var symbol = (SchemeSymbol) operand;

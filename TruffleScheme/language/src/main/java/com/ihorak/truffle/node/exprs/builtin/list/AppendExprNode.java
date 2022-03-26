@@ -1,30 +1,37 @@
 package com.ihorak.truffle.node.exprs.builtin.list;
 
 import com.ihorak.truffle.exceptions.SchemeException;
+import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.exprs.builtin.BinaryOperationNode;
 import com.ihorak.truffle.type.SchemeCell;
+import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.Specialization;
 
 import java.util.List;
 
-public abstract class AppendExprNode extends BinaryOperationNode {
+@NodeChild(value = "left")
+@NodeChild(value = "right")
+public abstract class AppendExprNode extends SchemeExpression {
 
-    //TODO mozna check na list uz pri parse time? Musim zjistit jak to bude fungovat potom co budu vse reprezentovat jako SchemeCell -> tedt program jako really data
+
     @Specialization
-    public SchemeCell doAppend(SchemeCell leftList, SchemeCell rightList) {
-        if (leftList.isList() && rightList.isList()) {
-            SchemeCell result = SchemeCell.EMPTY_LIST;
+    protected SchemeCell doAppend(SchemeCell left, SchemeCell right) {
+        SchemeCell result = SchemeCell.EMPTY_LIST;
 
-            List<Object> merged = leftList.convertToArrayList();
-            merged.addAll(rightList.convertToArrayList());
-
-            for (int i = merged.size(); i-- > 0; ) {
-                result = result.cons(merged.get(i), result);
-            }
-
-            return result;
-        } else {
-            throw new SchemeException("append: contract violation\nexpecting all arguments lists", this);
+        for (int i = right.size() - 1; i >= 0; i--) {
+            result = result.cons(right.get(i), result);
         }
+
+        for (int i = left.size() - 1; i >= 0; i--) {
+            result = result.cons(left.get(i), result);
+        }
+
+        return result;
+    }
+
+
+    @Specialization
+    protected Object fallback(Object left, Object right) {
+        throw new SchemeException("append: contract violation\nexpecting all arguments lists\ngiven left: " + left + "\ngiven right: " + right, this);
     }
 }

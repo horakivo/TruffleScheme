@@ -16,6 +16,10 @@ public class ListExprNode extends SchemeExpression {
         this.arguments = arguments.toArray(SchemeExpression[]::new);
     }
 
+    public ListExprNode() {
+        this.arguments = new SchemeExpression[0];
+    }
+
     @Override
     public SchemeCell executeList(VirtualFrame virtualFrame) {
         return createList(virtualFrame);

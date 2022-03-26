@@ -122,7 +122,7 @@ public class SpecialFormConverter {
         ParsingContext lambdaContext = new ParsingContext(context, LexicalScope.LAMBDA, context.getLanguage(), context.getMode());
 
         var params = lambdaList.get(1);
-        var expressions = (SchemeCell) ((SchemeCell) lambdaList.cdr).cdr;
+        var expressions = lambdaList.cdr.cdr;
 
         List<SchemeExpression> paramExprs = createLocalVariablesForLambda(params, lambdaContext);
         List<SchemeExpression> bodyExprs = createLambdaBody(expressions, lambdaContext);
@@ -199,7 +199,7 @@ public class SpecialFormConverter {
     private static LetExprNode convertLet(SchemeCell letList, ParsingContext context) {
         ParsingContext letContext = new ParsingContext(context, LexicalScope.LET, context.getLanguage(), context.getMode());
         SchemeCell parameters = (SchemeCell) letList.get(1);
-        SchemeCell body = (SchemeCell) ((SchemeCell) letList.cdr).cdr;
+        SchemeCell body = letList.cdr.cdr;
 
         List<SchemeExpression> letExpressions = new ArrayList<>(createLocalVariablesForLet(parameters, letContext));
 
@@ -240,7 +240,7 @@ public class SpecialFormConverter {
 
 
     private static SchemeExpression convertAnd(SchemeCell andList, ParsingContext context) {
-        var schemeExprs = convertSchemeCellToSchemeExpressions((SchemeCell) andList.cdr, context);
+        var schemeExprs = convertSchemeCellToSchemeExpressions(andList.cdr, context);
         if (schemeExprs.size() == 0) return new BooleanLiteralNode(true);
         if (schemeExprs.size() == 1) return OneArgumentExprNodeGen.create(schemeExprs.get(0));
         return reduceAnd(schemeExprs);
@@ -255,7 +255,7 @@ public class SpecialFormConverter {
     }
 
     private static SchemeExpression convertOr(SchemeCell orList, ParsingContext context) {
-        var schemeExprs = convertSchemeCellToSchemeExpressions((SchemeCell) orList.cdr, context);
+        var schemeExprs = convertSchemeCellToSchemeExpressions(orList.cdr, context);
         if (schemeExprs.size() == 0) return new BooleanLiteralNode(false);
         if (schemeExprs.size() == 1) return OneArgumentExprNodeGen.create(schemeExprs.get(0));
         return reduceOr(schemeExprs);
