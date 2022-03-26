@@ -18,7 +18,9 @@ import com.ihorak.truffle.node.special_form.LetStarExprNode;
 import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeFunction;
+import com.ihorak.truffle.type.SchemePair;
 import com.ihorak.truffle.type.SchemeSymbol;
+import org.w3c.dom.xpath.XPathResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,7 +122,7 @@ public class SpecialFormConverter {
     private static LambdaExprNode convertLambda(SchemeCell lambdaList, ParsingContext context) {
         ParsingContext lambdaContext = new ParsingContext(context, LexicalScope.LAMBDA, context.getLanguage(), context.getMode());
 
-        var params = (SchemeCell) lambdaList.get(1);
+        var params = lambdaList.get(1);
         var expressions = (SchemeCell) ((SchemeCell) lambdaList.cdr).cdr;
 
         List<SchemeExpression> paramExprs = createLocalVariablesForLambda(params, lambdaContext);
@@ -131,7 +133,9 @@ public class SpecialFormConverter {
         allLambdaExpressions.addAll(bodyExprs);
         var frameDescriptor = lambdaContext.getFrameDescriptor();
         var rootNode = new ProcedureRootNode(context.getLanguage(), frameDescriptor, allLambdaExpressions);
-        return new LambdaExprNode(new SchemeFunction(rootNode.getCallTarget(), paramExprs.size()));
+        var hasOptionalArgs = params instanceof SchemePair;
+        var function = new SchemeFunction(rootNode.getCallTarget(), paramExprs.size(), hasOptionalArgs);
+        return new LambdaExprNode(function);
     }
 
     private static List<SchemeExpression> createLambdaBody(SchemeCell expressions, ParsingContext lambdaContext) {
@@ -145,15 +149,35 @@ public class SpecialFormConverter {
         return bodyExprs;
     }
 
-    private static List<SchemeExpression> createLocalVariablesForLambda(SchemeCell parameters, ParsingContext context) {
+    private static List<SchemeExpression> createLocalVariablesForLambda(Object parameters, ParsingContext context) {
         List<SchemeExpression> result = new ArrayList<>();
-        for (int i = 0; i < parameters.size(); i++) {
-            var currentSymbol = (SchemeSymbol) parameters.get(i);
-            int frameIndex = context.addLocalSymbol(currentSymbol);
-            var localVariableNode = WriteLocalVariableExprNodeGen.create(frameIndex, currentSymbol, new ReadProcedureArgExprNode(i));
-            result.add(localVariableNode);
+        if (parameters instanceof SchemeCell) {
+            var params = (SchemeCell) parameters;
+            for (int i = 0; i < params.size(); i++) {
+                var writeLocalVariable = createWriteLocalVariableExprNode(params.get(i), context, i);
+                result.add(writeLocalVariable);
+            }
+        } else if (parameters instanceof SchemePair) {
+            int index = 0;
+            var params = (SchemePair) parameters;
+            while (params.getSecond() instanceof SchemePair) {
+                var writeLocalVariable = createWriteLocalVariableExprNode(params.getFirst(), context, index);
+                result.add(writeLocalVariable);
+                index++;
+                params = (SchemePair) params.getSecond();
+            }
+            result.add(createWriteLocalVariableExprNode(params.getFirst(), context, index));
+            index++;
+            result.add(createWriteLocalVariableExprNode(params.getSecond(), context, index));
         }
+
         return result;
+    }
+
+    private static WriteLocalVariableExprNode createWriteLocalVariableExprNode(Object symbol, ParsingContext context, int index) {
+        var currentSymbol = (SchemeSymbol) symbol;
+        int frameIndex = context.addLocalSymbol(currentSymbol);
+        return WriteLocalVariableExprNodeGen.create(frameIndex, currentSymbol, new ReadProcedureArgExprNode(index));
     }
 
 

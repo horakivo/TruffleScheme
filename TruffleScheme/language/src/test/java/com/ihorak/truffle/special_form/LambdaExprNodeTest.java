@@ -179,6 +179,51 @@ public class LambdaExprNodeTest {
     }
 
     @Test
+    public void giveLambdaWithOptionalNumberOfArgs_whenExecuted_thenCorrectResultIsReturned() {
+        var program = "((lambda (x y . rest) (list x y rest)) 1 2)";
+
+        var result = context.eval("scm", program);
+
+        assertTrue(result.hasArrayElements());
+        assertEquals(3L, result.getArraySize());
+        assertEquals(1L, result.getArrayElement(0).asLong());
+        assertEquals(2L, result.getArrayElement(1).asLong());
+        assertTrue(result.getArrayElement(2).hasArrayElements());
+        assertEquals(0L, result.getArrayElement(2).getArraySize());
+    }
+
+    @Test
+    public void giveLambdaWithOptionalNumberOfArgs2_whenExecuted_thenCorrectResultIsReturned() {
+        var program = "((lambda (x y . rest) (list x y rest)) 1 2 3)";
+
+        var result = context.eval("scm", program);
+
+        assertTrue(result.hasArrayElements());
+        assertEquals(3L, result.getArraySize());
+        assertEquals(1L, result.getArrayElement(0).asLong());
+        assertEquals(2L, result.getArrayElement(1).asLong());
+        assertTrue(result.getArrayElement(2).hasArrayElements());
+        assertEquals(1L, result.getArrayElement(2).getArraySize());
+        assertEquals(3L, result.getArrayElement(2).getArrayElement(0).asLong());
+    }
+
+    @Test
+    public void giveLambdaWithOptionalNumberOfArgs3_whenExecuted_thenCorrectResultIsReturned() {
+        var program = "((lambda (x y . rest) (list x y rest)) 1 2 3 4)";
+
+        var result = context.eval("scm", program);
+
+        assertTrue(result.hasArrayElements());
+        assertEquals(3L, result.getArraySize());
+        assertEquals(1L, result.getArrayElement(0).asLong());
+        assertEquals(2L, result.getArrayElement(1).asLong());
+        assertTrue(result.getArrayElement(2).hasArrayElements());
+        assertEquals(2L, result.getArrayElement(2).getArraySize());
+        assertEquals(3L, result.getArrayElement(2).getArrayElement(0).asLong());
+        assertEquals(4L, result.getArrayElement(2).getArrayElement(1).asLong());
+    }
+
+    @Test
     public void aaa() {
         var program = "(lambda (x . y) (+ x))";
 

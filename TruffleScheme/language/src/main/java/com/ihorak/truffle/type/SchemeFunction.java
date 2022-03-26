@@ -20,12 +20,19 @@ public class SchemeFunction implements TruffleObject {
 
     private final CallTarget callTarget;
     private final Integer expectedNumberOfArgs;
+    private final boolean optionalArgs;
     private MaterializedFrame parentFrame;
+    //Because of the Interop library
     private final DispatchNode dispatchNode = DispatchNodeGen.create();
 
-    public SchemeFunction(CallTarget callTarget, Integer expectedNumberOfArgs) {
+    public SchemeFunction(CallTarget callTarget, Integer expectedNumberOfArgs, final boolean hasOptionalArgs) {
         this.callTarget = callTarget;
-        this.expectedNumberOfArgs = expectedNumberOfArgs;
+        if (hasOptionalArgs) {
+            this.expectedNumberOfArgs = expectedNumberOfArgs - 1;
+        } else {
+            this.expectedNumberOfArgs = expectedNumberOfArgs;
+        }
+        this.optionalArgs = hasOptionalArgs;
     }
 
     public void setParentFrame(MaterializedFrame parentFrame) {
@@ -42,6 +49,10 @@ public class SchemeFunction implements TruffleObject {
 
     public Integer getExpectedNumberOfArgs() {
         return expectedNumberOfArgs;
+    }
+
+    public boolean isOptionalArgs() {
+        return optionalArgs;
     }
 
     //----------------InteropLibrary messages–----------------------

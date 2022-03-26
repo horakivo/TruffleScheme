@@ -98,8 +98,7 @@ public class AntlrToInternalRepresentation extends R5RSBaseVisitor<Object> {
     @Override
     public Object visitPair(R5RSParser.PairContext ctx) {
         List<Object> arguments = cleanPairContext(ctx);
-        var test = createPair(arguments);
-        return test;
+        return createPair(arguments);
     }
 
     private List<Object> cleanPairContext(R5RSParser.PairContext ctx) {

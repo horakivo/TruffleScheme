@@ -12,6 +12,9 @@ import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
 import com.oracle.truffle.api.profiles.BranchProfile;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Iterator;
 
 @ExportLibrary(InteropLibrary.class)
 public class SchemePair implements TruffleObject {
@@ -80,7 +83,6 @@ public class SchemePair implements TruffleObject {
     Object getMembers(@SuppressWarnings("unused") boolean includeInternal) {
         return new FieldNames(new String[]{"first", "second"});
     }
-
 
     @ExportLibrary(InteropLibrary.class)
     static class FieldNames implements TruffleObject {

@@ -6,6 +6,7 @@ import com.ihorak.truffle.node.callable.DispatchNode;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.convertor.ListToExpressionConverter;
 import com.ihorak.truffle.node.callable.DispatchNodeGen;
+import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeFunction;
 import com.ihorak.truffle.type.SchemeMacro;
 import com.oracle.truffle.api.CallTarget;
@@ -22,9 +23,11 @@ import java.util.List;
 @NodeChild(value = "callable")
 public abstract class CallableExprNode extends SchemeExpression {
 
-    @Children private final SchemeExpression[] arguments;
+    @Children
+    private final SchemeExpression[] arguments;
     @SuppressWarnings("FieldMayBeFinal")
-    @Child private DispatchNode dispatchNode;
+    @Child
+    private DispatchNode dispatchNode;
     private final ParsingContext parsingContext;
 
 
@@ -60,7 +63,7 @@ public abstract class CallableExprNode extends SchemeExpression {
     protected Object doProcedure(VirtualFrame frame, SchemeFunction function) {
         var arguments = getProcedureArguments(function, frame);
 
-        if (function.getExpectedNumberOfArgs() != null && function.getExpectedNumberOfArgs() != this.arguments.length) {
+        if (function.getExpectedNumberOfArgs() != null && this.arguments.length < function.getExpectedNumberOfArgs()) {
             wrongNumberOfArgsProfile.enter();
             throw new SchemeException("Procedure was called with wrong number of arguments." +
                     " \n Expected: " + function.getExpectedNumberOfArgs() +
@@ -75,8 +78,38 @@ public abstract class CallableExprNode extends SchemeExpression {
         throw new SchemeException("application: not a procedure or macro;\nexpected: macro or procedure that can be applied to arguments\ngiven: " + object);
     }
 
-    @ExplodeLoop
     private Object[] getProcedureArguments(SchemeFunction function, VirtualFrame parentFrame) {
+        if (function.isOptionalArgs()) {
+            return getProcedureArgsWithOptional(function, parentFrame);
+        } else {
+            return getProcedureArgsNoOptional(function, parentFrame);
+        }
+    }
+
+    @ExplodeLoop
+    private Object[] getProcedureArgsWithOptional(SchemeFunction function, VirtualFrame parentFrame) {
+        // + 2 because first one is parent frame and second is the optional list
+        Object[] newArguments = new Object[function.getExpectedNumberOfArgs() + 2];
+        //TODO maybe check here if it is not null
+        newArguments[0] = function.getParentFrame();
+
+        int index = 1;
+        for (int i = 0; i < function.getExpectedNumberOfArgs(); i++) {
+            newArguments[index] = arguments[i].executeGeneric(parentFrame);
+            index++;
+        }
+
+        SchemeCell list = SchemeCell.EMPTY_LIST;
+        for (int i = arguments.length - 1; i >= function.getExpectedNumberOfArgs(); i--) {
+            list = list.cons(arguments[i].executeGeneric(parentFrame), list);
+        }
+        newArguments[index] = list;
+
+        return newArguments;
+    }
+
+    @ExplodeLoop
+    private Object[] getProcedureArgsNoOptional(SchemeFunction function, VirtualFrame parentFrame) {
         Object[] arguments = new Object[this.arguments.length + 1];
         if (noParentConditionProfile.profile(function.getParentFrame() != null)) {
             arguments[0] = function.getParentFrame();

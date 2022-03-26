@@ -59,6 +59,6 @@ public class DefaultPrimitiveProcedures {
     public static SchemeFunction createBuiltinFunction(SchemeExpression schemeExpression, Integer expectedNumberOfArgs) {
         var rootNode = new ProcedureRootNode(null, new FrameDescriptor(), List.of(schemeExpression));
 
-        return new SchemeFunction(rootNode.getCallTarget(), expectedNumberOfArgs);
+        return new SchemeFunction(rootNode.getCallTarget(), expectedNumberOfArgs, false);
     }
 }
