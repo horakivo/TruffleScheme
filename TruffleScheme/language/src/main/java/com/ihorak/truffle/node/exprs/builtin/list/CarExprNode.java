@@ -3,25 +3,34 @@ package com.ihorak.truffle.node.exprs.builtin.list;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeCell;
+import com.ihorak.truffle.type.SchemePair;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.Specialization;
+import com.oracle.truffle.api.profiles.BranchProfile;
 
-@NodeChild(value = "list")
+@NodeChild(value = "value")
 public abstract class CarExprNode extends SchemeExpression {
 
+    private final BranchProfile emptyListProfile = BranchProfile.create();
+
     @Specialization
-    public Object doCar(SchemeCell list) {
-        if (list != SchemeCell.EMPTY_LIST) {
-            return list.car;
-        } else {
-            throw new SchemeException("car: contract violation\nexpected: pair?\ngiven: ()", this);
+    protected Object doPairCar(SchemePair pair) {
+        return pair.getFirst();
+    }
+
+    @Specialization
+    protected Object doSchemeList(SchemeCell list) {
+        if (list == SchemeCell.EMPTY_LIST) {
+            emptyListProfile.enter();
+            throw new SchemeException("car: contract violation\nexpected: pair? or list?\ngiven: " + list, this);
         }
+        return list.car;
     }
 
     @Fallback
     protected Object fallback(Object object) {
-        throw new SchemeException("car: contract violation\n expected: pair?\n given: " + object, this);
+        throw new SchemeException("car: contract violation\nexpected: pair? or list?\ngiven: " + object, this);
     }
 }

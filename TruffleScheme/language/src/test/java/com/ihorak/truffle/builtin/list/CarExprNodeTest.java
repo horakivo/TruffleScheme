@@ -54,7 +54,9 @@ public class CarExprNodeTest {
 
         var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
-        assertEquals("car: contract violation\n expected: pair?\n given: 1", msg);
+        assertEquals("car: contract violation\n" +
+                "expected: pair? or list?\n" +
+                "given: 1", msg);
     }
 
     @Test
@@ -63,6 +65,8 @@ public class CarExprNodeTest {
 
         var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
-        assertEquals("car: contract violation\nexpected: pair?\ngiven: ()", msg);
+        assertEquals("car: contract violation\n" +
+                "expected: pair? or list?\n" +
+                "given: ()", msg);
     }
 }

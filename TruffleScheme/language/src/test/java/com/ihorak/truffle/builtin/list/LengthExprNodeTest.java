@@ -27,13 +27,15 @@ public class LengthExprNodeTest {
         assertEquals(2L, result.asLong());
     }
 
-    @Test(expected = SchemeException.class)
+    @Test
     public void givenPair_whenLength_thenExceptionShouldBeThrown() {
         var program = "(length (cons 1 2))";
 
-        var result = context.eval("scm", program);
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
-        assertEquals(2L, result.asLong());
+        assertEquals("length: contract violation\n" +
+                "expected: list?\n" +
+                "given: (1 . 2)", msg);
     }
 
     @Test

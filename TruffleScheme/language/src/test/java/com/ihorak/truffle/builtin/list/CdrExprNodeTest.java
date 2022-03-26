@@ -42,7 +42,7 @@ public class CdrExprNodeTest {
         var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
         assertEquals("cdr: contract violation\n" +
-                "expected: pair?\n" +
+                "expected: pair? or list?\n" +
                 "given: 1", msg);
     }
 
@@ -52,8 +52,19 @@ public class CdrExprNodeTest {
 
         var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
-        assertEquals("cdr: contract violation \n" +
-                " expected: pair? \n" +
-                " given: ()", msg);
+        assertEquals("cdr: contract violation\n" +
+                "expected: pair? or list?\n" +
+                "given: ()", msg);
+    }
+
+    @Test
+    public void givenWrongType_whenCdr_thenSchemeExceptionShouldBeThrown() {
+        var program = "(cdr (lambda (x) (+ x)))";
+
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+
+        assertEquals("cdr: contract violation\n" +
+                "expected: pair? or list?\n" +
+                "given: #<user_procedure>", msg);
     }
 }

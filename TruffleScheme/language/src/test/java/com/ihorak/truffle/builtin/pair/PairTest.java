@@ -17,21 +17,7 @@ public class PairTest {
     }
 
     @Test
-    public void normal() {
-        var program = "(cons 1 2)";
-
-        var result = context.eval("scm", program);
-
-        assertTrue(result.hasMembers());
-        assertTrue(result.hasMember("first"));
-        assertTrue(result.hasMember("second"));
-        assertEquals(1L, result.getMember("first").asLong());
-        assertEquals(2L, result.getMember("second").asLong());
-        assertEquals("(1 . 2)", result.toString());
-    }
-
-    @Test
-    public void normal2() {
+    public void givenValidPair_whenQuoted_thenCorrectResultIsReturned() {
         var program = "'(1 2 3 . 2)";
 
         var result = context.eval("scm", program);
@@ -42,19 +28,6 @@ public class PairTest {
         assertEquals(3L, result.getMember("second").getMember("second").getMember("first").asLong());
         assertEquals(2L, result.getMember("second").getMember("second").getMember("second").asLong());
         assertEquals("(1 . (2 . (3 . 2)))", result.toString());
-    }
-
-    @Test
-    public void normal1() {
-        var program = "(eval '(1 . 2))";
-
-        var result = context.eval("scm", program);
-
-        assertTrue(result.hasMembers());
-        assertTrue(result.hasMember("first"));
-        assertTrue(result.hasMember("second"));
-        assertEquals(1L, result.getMember("first").asLong());
-        assertEquals(2L, result.getMember("second").asLong());
     }
 
     @Test

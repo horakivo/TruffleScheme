@@ -55,6 +55,11 @@ public class SchemeFunction implements TruffleObject {
         return optionalArgs;
     }
 
+    @Override
+    public String toString() {
+        return "#<user_procedure>";
+    }
+
     //----------------InteropLibrary messages–----------------------
 
     @ExportMessage

@@ -39,7 +39,7 @@ public class EvalExprNodeTest {
     public void givenEvalWithWrongNumberOfArguments_whenExecuted_EvalShouldThrowException() {
         var program = "(eval 1 2)";
 
-        var msg  = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
         assertEquals("eval: arity mismatch; Expected number of arguments does not match the given number \n" +
                 " expected: 1 \n" +
@@ -50,7 +50,7 @@ public class EvalExprNodeTest {
     public void givenLambdaExpr_whenEvaluated_thenSchemeFunctionShouldBeReturned() {
         var program = "(eval (lambda () (+ 1 2)))";
 
-        var result =  context.eval("scm", program);
+        var result = context.eval("scm", program);
 
         assertTrue(result.canExecute());
         assertEquals(3L, result.execute(UndefinedValue.SINGLETON).asLong());
@@ -70,16 +70,25 @@ public class EvalExprNodeTest {
     public void givenQuoteExprList_whenEvaluated_thenListShouldBeEvaluatedCorrectly() {
         var program = "(eval '(+ 1 2))";
 
-        var result =  context.eval("scm", program);
+        var result = context.eval("scm", program);
 
         assertEquals(3L, result.asLong());
     }
 
     @Test
-    public void test1() {
+    public void givenPair_whenEvaluated_thenExceptionShouldBeThrown() {
+        var program = "(eval '(1 . 2))";
+
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+
+        assertEquals("eval: cannot evaluate pair", msg);
+    }
+
+    @Test
+    public void givenEvalExprInLambda_whenExecuted_thenDefinedValueIsStillFound() {
         var program = "((lambda () (eval '(define x 22)) x))";
 
-        var result =  context.eval("scm", program);
+        var result = context.eval("scm", program);
 
         assertEquals(22L, result.asLong());
     }

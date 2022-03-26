@@ -15,7 +15,6 @@ public abstract class LengthExprNode extends SchemeExpression {
         return list.size();
     }
 
-
     @Fallback
     protected void fallback(Object object) {
         throw new SchemeException("length: contract violation\nexpected: list?\ngiven: " + object, this);
