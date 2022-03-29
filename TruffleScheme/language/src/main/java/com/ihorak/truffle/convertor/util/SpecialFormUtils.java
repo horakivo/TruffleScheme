@@ -12,6 +12,7 @@ public class SpecialFormUtils {
             case "quote":
             case "quasiquote":
             case "let":
+            case "let*":
             case "and":
             case "or":
                 return true;

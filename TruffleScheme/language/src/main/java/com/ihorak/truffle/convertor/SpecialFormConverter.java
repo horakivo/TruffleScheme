@@ -201,6 +201,7 @@ public class SpecialFormConverter {
         SchemeCell parameters = (SchemeCell) letList.get(1);
         SchemeCell body = letList.cdr.cdr;
 
+        List<SchemeExpression> paramValues = getParamsValuesForLet(parameters, context);
         List<SchemeExpression> letExpressions = new ArrayList<>(createLocalVariablesForLet(parameters, letContext));
 
         for (Object obj : body) {
@@ -209,17 +210,30 @@ public class SpecialFormConverter {
 
         var frameDescriptor = letContext.getFrameDescriptor();
 
-        return new LetExprNode(letExpressions, frameDescriptor);
+        return new LetExprNode(letExpressions, paramValues, frameDescriptor);
 
     }
 
-    private static LetStarExprNode convertLetStar(SchemeCell letStarList, ParsingContext context) {
-        return null;
+    private static SchemeExpression convertLetStar(SchemeCell letStarList, ParsingContext context) {
+        ParsingContext letContext = new ParsingContext(context, LexicalScope.LET, context.getLanguage(), context.getMode());
+        SchemeCell parameters = (SchemeCell) letStarList.get(1);
+        SchemeCell body = letStarList.cdr.cdr;
+
+        List<SchemeExpression> letExpressions = new ArrayList<>(createLocalVariablesForLetStar(parameters, letContext));
+
+        for (Object obj : body) {
+            letExpressions.add(ListToExpressionConverter.convert(obj, letContext));
+        }
+
+        var frameDescriptor = letContext.getFrameDescriptor();
+
+        return new LetStarExprNode(letExpressions, frameDescriptor);
     }
 
 
     private static List<WriteLocalVariableExprNode> createLocalVariablesForLet(SchemeCell parametersList, ParsingContext context) {
-        List<WriteLocalVariableExprNode> result = new ArrayList<>();
+        List<WriteLocalVariableExprNode> writeParams = new ArrayList<>();
+        int index = 0;
         for (Object obj : parametersList) {
             if (obj instanceof SchemeCell) {
                 var currentList = (SchemeCell) obj;
@@ -227,13 +241,51 @@ public class SpecialFormConverter {
                 if (symbolExpected instanceof SchemeSymbol) {
                     var symbol = (SchemeSymbol) symbolExpected;
                     int frameIndex = context.addLocalSymbol(symbol);
+                    var valueToStore = new ReadProcedureArgExprNode(index);
+                    var localVariableNode = WriteLocalVariableExprNodeGen.create(frameIndex, symbol, valueToStore);
+                    writeParams.add(localVariableNode);
+                    index++;
+                    continue;
+                }
+            }
+            throw new SchemeException("Parser error in LET: contract violation \n expected: (let ((id val-expr) ...) body ...+)", null);
+        }
+        return writeParams;
+    }
+
+    private static List<SchemeExpression> getParamsValuesForLet(SchemeCell parametersList, ParsingContext context) {
+        List<SchemeExpression> result = new ArrayList<>();
+        for (Object obj : parametersList) {
+            var currentList = (SchemeCell) obj;
+            if (currentList.size() != 2) {
+                throw new SchemeException("let: bad syntax (not an identifier and expression for a binding)", null);
+            }
+            result.add(ListToExpressionConverter.convert(currentList.get(1), context ));
+        }
+
+        return result;
+    }
+
+
+    private static List<WriteLocalVariableExprNode> createLocalVariablesForLetStar(SchemeCell parametersList, ParsingContext context) {
+        List<WriteLocalVariableExprNode> result = new ArrayList<>();
+        for (Object obj : parametersList) {
+            if (obj instanceof SchemeCell) {
+                var currentList = (SchemeCell) obj;
+                if (currentList.size() != 2) {
+                    throw new SchemeException("let: bad syntax (not an identifier and expression for a binding)", null);
+                }
+                var symbolExpected = currentList.car;
+                if (symbolExpected instanceof SchemeSymbol) {
                     var valueToStore = ListToExpressionConverter.convert(currentList.get(1), context);
+                    var symbol = (SchemeSymbol) symbolExpected;
+                    int frameIndex = context.addLocalSymbol(symbol);
                     var localVariableNode = WriteLocalVariableExprNodeGen.create(frameIndex, symbol, valueToStore);
                     result.add(localVariableNode);
                     continue;
                 }
             }
-            throw new ParserException("Parser error int LET: contract violation \n expected: (let ((id val-expr) ...) body ...+)");
+            throw new SchemeException("Parser error in LET: contract violation \n expected: (let ((id val-expr) ...) body ...+)", null);
         }
         return result;
     }

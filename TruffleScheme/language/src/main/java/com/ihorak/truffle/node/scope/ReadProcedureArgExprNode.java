@@ -13,7 +13,6 @@ public class ReadProcedureArgExprNode extends SchemeExpression {
 
     @Override
     public Object executeGeneric(VirtualFrame virtualFrame) {
-        //TODO offset by one because first one is global env?
         return virtualFrame.getArguments()[index + 1];
     }
 }
