@@ -3,7 +3,6 @@ package com.ihorak.truffle.convertor;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.exprs.ReduceExprNode;
 import com.ihorak.truffle.node.exprs.builtin.CurrentMillisecondsExprNodeGen;
 import com.ihorak.truffle.node.exprs.builtin.DisplayExprNodeGen;
 import com.ihorak.truffle.node.exprs.builtin.EvalExprNodeGen;
@@ -16,7 +15,6 @@ import com.ihorak.truffle.node.exprs.builtin.logical.LessThenExprNodeGen;
 import com.ihorak.truffle.node.exprs.builtin.logical.ReduceComparisonExprNode;
 import com.ihorak.truffle.node.literals.BooleanLiteralNode;
 import com.ihorak.truffle.node.literals.LongLiteralNode;
-import com.ihorak.truffle.type.SchemeCell;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -171,7 +169,7 @@ public class BuiltinFactory {
 
     public static SchemeExpression createEqual(List<SchemeExpression> arguments) {
         if (arguments.size() == 0)
-            throw new SchemeException("=: arity mismatch; Expected number of argument does not match the given number\nExpected: at least 1\nGiven: 0", null);
+            throw new SchemeException("=: arity mismatch; Expected number of argument does not match the given number\nexpected: at least 1\ngiven: 0", null);
         if (arguments.size() == 1) return new BooleanLiteralNode(true);
         if (arguments.size() == 2) return EqualExprNodeGen.create(arguments.get(0), arguments.get(1));
         return new ReduceComparisonExprNode(reduceEqual(arguments), "=");
@@ -187,11 +185,18 @@ public class BuiltinFactory {
 
     public static SchemeExpression createLessThen(List<SchemeExpression> arguments) {
         if (arguments.size() == 0)
-            throw new SchemeException("=: arity mismatch; Expected number of argument does not match the given number\nExpected: at least 1\nGiven: 0", null);
+            throw new SchemeException("<: arity mismatch; Expected number of argument does not match the given number\nexpected: at least 1\ngiven: 0", null);
         if (arguments.size() == 1) return new BooleanLiteralNode(true);
         if (arguments.size() == 2) return LessThenExprNodeGen.create(arguments.get(0), arguments.get(1));
         return new ReduceComparisonExprNode(reduceLessThen(arguments), "<");
     }
+
+//    public static SchemeExpression createMoreThen(List<SchemeExpression> arguments) {
+//        if (arguments.size() == 0)
+//            throw new SchemeException(">: arity mismatch; Expected number of argument does not match the given number\nExpected: at least 1\nGiven: 0", null);
+//        if (arguments.size() == 1) return new BooleanLiteralNode(true);
+//        if (arguments.size() == 2)
+//    }
 
     private static List<SchemeExpression> reduceLessThen(List<SchemeExpression> arguments) {
         List<SchemeExpression> result = new ArrayList<>();

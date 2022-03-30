@@ -21,12 +21,12 @@ public class BuiltinUtils {
             case "length":
             case "append":
             case "map":
-            case "<=":
             case "current-milliseconds":
             case "display":
             case "newline":
             case "=":
             case "<":
+            case "<=":
                 return true;
             default:
                 return false;

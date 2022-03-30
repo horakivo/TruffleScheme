@@ -32,9 +32,6 @@ public class ReduceComparisonExprNode extends SchemeExpression {
             } catch (UnexpectedResultException e) {
                 CompilerDirectives.transferToInterpreterAndInvalidate();
                 throw new IllegalStateException("Parser mistake! This shouldn't happen!");
-            } catch (UnsupportedSpecializationException exception) {
-                CompilerDirectives.transferToInterpreterAndInvalidate();
-                throw new SchemeException(name + ": contract violation. Unsupported types! Left: " + exception.getSuppliedValues()[0] + " Right: " + exception.getSuppliedValues()[1], this);
             }
         }
 

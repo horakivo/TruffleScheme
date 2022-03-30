@@ -1,6 +1,8 @@
 package com.ihorak.truffle.node.exprs.builtin.logical;
 
+import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
+import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.Specialization;
 
@@ -18,5 +20,10 @@ public abstract class EqualExprNode extends SchemeExpression {
     @Specialization
     protected boolean equalBigInts(BigInteger left, BigInteger right) {
         return left.compareTo(right) == 0;
+    }
+
+    @Fallback
+    protected Object fallback(Object left, Object right) {
+        throw new SchemeException("=: contract violation\nexpected: real?\ngiven left: " + left + "\ngiven right: " + right, this);
     }
 }
