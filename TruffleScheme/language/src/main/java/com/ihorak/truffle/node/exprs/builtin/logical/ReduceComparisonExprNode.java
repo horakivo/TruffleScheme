@@ -13,11 +13,9 @@ import java.util.List;
 public class ReduceComparisonExprNode extends SchemeExpression {
 
     @Children private final SchemeExpression[] comparisonExpression;
-    private final String name;
 
-    public ReduceComparisonExprNode(List<SchemeExpression> comparisonExpression, String name) {
+    public ReduceComparisonExprNode(List<SchemeExpression> comparisonExpression) {
         this.comparisonExpression = comparisonExpression.toArray(new SchemeExpression[0]);
-        this.name = name;
     }
 
     @Override
