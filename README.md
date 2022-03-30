@@ -1,12 +1,11 @@
 # TruffleScheme
 Scheme (R5RS) implementation on Truffle framework.
 
-##
-Supported
+##Supported
 - +, -, *, /
 - pairs and lists
 - car, cdr, cons, length, list, map*
-- >, >=, <, <=, = 
+- \>, >=, <, <=, = 
 - and, or
 - lambda, define
 - let, let*
