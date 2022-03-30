@@ -205,6 +205,24 @@ public class BuiltinFactory {
         return result;
     }
 
+    public static SchemeExpression createMoreThenEqual(List<SchemeExpression> arguments) {
+        if (arguments.size() == 0)
+            throw new SchemeException(">=: arity mismatch; Expected number of argument does not match the given number\nexpected: at least 1\ngiven: 0", null);
+        if (arguments.size() == 1) return new BooleanLiteralNode(true);
+        if (arguments.size() == 2) return MoreThenEqualExprNodeGen.create(arguments.get(0), arguments.get(1));
+        return new ReduceComparisonExprNode(reduceMoreThenEqual(arguments));
+    }
+
+    private static List<SchemeExpression> reduceMoreThenEqual(List<SchemeExpression> arguments) {
+        List<SchemeExpression> result = new ArrayList<>();
+
+        for (int i = 0; i < arguments.size() - 1; i++) {
+            result.add(MoreThenEqualExprNodeGen.create(arguments.get(i), arguments.get(i + 1)));
+        }
+        return result;
+    }
+
+
     private static List<SchemeExpression> reduceLessThen(List<SchemeExpression> arguments) {
         List<SchemeExpression> result = new ArrayList<>();
         for (int i = 0; i < arguments.size() - 1; i++) {
