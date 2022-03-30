@@ -1,5 +1,6 @@
 package com.ihorak.truffle.node.special_form;
 
+import com.ihorak.truffle.node.ConditionUtil;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.profiles.ConditionProfile;
@@ -37,11 +38,6 @@ public class AndExprNode extends SchemeExpression {
     }
 
     private boolean isEvaluateRight(Object obj) {
-        return convertObjectToBoolean(obj);
-    }
-
-
-    private boolean convertObjectToBoolean(Object obj) {
-        return !(obj instanceof Boolean) || (boolean) obj;
+        return ConditionUtil.convertObjectToBoolean(obj);
     }
 }

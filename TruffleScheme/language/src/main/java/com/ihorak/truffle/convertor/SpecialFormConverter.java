@@ -9,6 +9,7 @@ import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.exprs.builtin.arithmetic.OneArgumentExprNodeGen;
 import com.ihorak.truffle.node.literals.BooleanLiteralNode;
 import com.ihorak.truffle.node.literals.LongLiteralNode;
+import com.ihorak.truffle.node.literals.UndefinedLiteralNode;
 import com.ihorak.truffle.node.scope.ReadProcedureArgExprNode;
 import com.ihorak.truffle.node.scope.WriteGlobalVariableExprNodeGen;
 import com.ihorak.truffle.node.scope.WriteLocalVariableExprNodeGen;
@@ -16,10 +17,7 @@ import com.ihorak.truffle.node.special_form.*;
 import com.ihorak.truffle.node.special_form.LambdaExprNode;
 import com.ihorak.truffle.node.special_form.LetStarExprNode;
 import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
-import com.ihorak.truffle.type.SchemeCell;
-import com.ihorak.truffle.type.SchemeFunction;
-import com.ihorak.truffle.type.SchemePair;
-import com.ihorak.truffle.type.SchemeSymbol;
+import com.ihorak.truffle.type.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +45,8 @@ public class SpecialFormConverter {
                 return convertAnd(specialFormList, context);
             case "or":
                 return convertOr(specialFormList, context);
+            case "cond":
+                return convertCond(specialFormList, context);
             default:
                 throw new IllegalArgumentException("Unknown special form");
 
@@ -260,7 +260,7 @@ public class SpecialFormConverter {
             if (currentList.size() != 2) {
                 throw new SchemeException("let: bad syntax (not an identifier and expression for a binding)", null);
             }
-            result.add(ListToExpressionConverter.convert(currentList.get(1), context ));
+            result.add(ListToExpressionConverter.convert(currentList.get(1), context));
         }
 
         return result;
@@ -312,6 +312,60 @@ public class SpecialFormConverter {
         if (schemeExprs.size() == 1) return OneArgumentExprNodeGen.create(schemeExprs.get(0));
         return reduceOr(schemeExprs);
     }
+
+    private static SchemeExpression convertCond(SchemeCell condList, ParsingContext context) {
+        var conditions = condList.cdr;
+        if (conditions.size() == 0) return new UndefinedLiteralNode();
+        if (conditions.size() == 1) {
+            if (conditions.car instanceof SchemeCell) {
+                var condition = (SchemeCell) conditions.car;
+                var conditionExpr = ListToExpressionConverter.convert(condition.get(0), context);
+                var thenExpr = ListToExpressionConverter.convert(condition.get(1), context);
+                return new IfExprNode(conditionExpr, thenExpr, null);
+            } else {
+                throw new SchemeException("cond: bad syntax\nexpected: list?\ngiven: " + conditions.car, null);
+            }
+        }
+
+        return reduceCond(conditions, context);
+    }
+
+    private static IfExprNode reduceCond(SchemeCell conditionsList, ParsingContext context) {
+        if (conditionsList.size() > 2) {
+            if (!(conditionsList.car instanceof SchemeCell))
+                throw new SchemeException("cond: bad syntax\nexpected: list?\ngiven: " + conditionsList.car, null);
+            var firstConditionList = (SchemeCell) conditionsList.car;
+            var conditionExpr = ListToExpressionConverter.convert(firstConditionList.get(0), context);
+            var thenExpr = ListToExpressionConverter.convert(firstConditionList.get(1), context);
+            return new IfExprNode(conditionExpr, thenExpr, reduceCond(conditionsList.cdr, context));
+
+        } else {
+            return convertCondWithTwoConditions(conditionsList, context);
+        }
+    }
+
+    private static IfExprNode convertCondWithTwoConditions(SchemeCell conditionsList, ParsingContext context) {
+        if (!(conditionsList.car instanceof SchemeCell))
+            throw new SchemeException("cond: bad syntax\nexpected: list?\ngiven: " + conditionsList.car, null);
+        if (!(conditionsList.get(1) instanceof SchemeCell))
+            throw new SchemeException("cond: bad syntax\nexpected: list?\ngiven: " + conditionsList.get(1), null);
+
+        var firstConditionList = (SchemeCell) conditionsList.car;
+        var secondConditionList = (SchemeCell) conditionsList.get(1);
+
+        var firstConditionExpr = ListToExpressionConverter.convert(firstConditionList.get(0), context);
+        var firstThenExpr = ListToExpressionConverter.convert(firstConditionList.get(1), context);
+
+        if (secondConditionList.get(0).equals(new SchemeSymbol("else"))) {
+            var elseExpr = ListToExpressionConverter.convert(secondConditionList.get(1), context);
+            return new IfExprNode(firstConditionExpr, firstThenExpr, elseExpr);
+        } else {
+            var secondConditionExpr = ListToExpressionConverter.convert(secondConditionList.get(0), context);
+            var secondThenExpr = ListToExpressionConverter.convert(secondConditionList.get(1), context);
+            return new IfExprNode(firstConditionExpr, firstThenExpr, new IfExprNode(secondConditionExpr, secondThenExpr, null));
+        }
+    }
+
 
     private static OrExprNode reduceOr(List<SchemeExpression> arguments) {
         if (arguments.size() > 2) {

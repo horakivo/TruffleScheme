@@ -15,6 +15,7 @@ public class SpecialFormUtils {
             case "let*":
             case "and":
             case "or":
+            case "cond":
                 return true;
             default:
                 return false;

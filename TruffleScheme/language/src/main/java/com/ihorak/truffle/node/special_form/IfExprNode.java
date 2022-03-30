@@ -1,5 +1,6 @@
 package com.ihorak.truffle.node.special_form;
 
+import com.ihorak.truffle.node.ConditionUtil;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.UndefinedValue;
 import com.oracle.truffle.api.frame.VirtualFrame;
@@ -20,21 +21,16 @@ public class IfExprNode extends SchemeExpression {
     }
 
     @Override
-    public Object executeGeneric(VirtualFrame virtualFrame) {
-        if (conditionProfile.profile(evaluateCondition(virtualFrame))) {
-            return thenExpr.executeGeneric(virtualFrame);
+    public Object executeGeneric(VirtualFrame frame) {
+        var conditionResult = conditionNode.executeGeneric(frame);
+        if (conditionProfile.profile(ConditionUtil.convertObjectToBoolean(conditionResult))) {
+            return thenExpr.executeGeneric(frame);
         } else {
             if (elseExpr != null) {
-                return elseExpr.executeGeneric(virtualFrame);
+                return elseExpr.executeGeneric(frame);
             }
             return UndefinedValue.SINGLETON;
         }
-    }
-
-
-    private boolean evaluateCondition(VirtualFrame virtualFrame) {
-        Object result = conditionNode.executeGeneric(virtualFrame);
-        return !(result instanceof Boolean) || (boolean) result;
     }
 
     @Override

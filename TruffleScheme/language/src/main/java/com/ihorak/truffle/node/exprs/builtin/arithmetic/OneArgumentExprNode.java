@@ -1,6 +1,7 @@
 package com.ihorak.truffle.node.exprs.builtin.arithmetic;
 
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.type.UndefinedValue;
 import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.Specialization;
 
@@ -17,6 +18,11 @@ public abstract class OneArgumentExprNode extends SchemeExpression {
     @Specialization
     protected BigInteger doBigInt(BigInteger value) {
         return value;
+    }
+
+    @Specialization
+    protected UndefinedValue doUndefined(UndefinedValue undefinedValue) {
+        return undefinedValue;
     }
 
     @Specialization

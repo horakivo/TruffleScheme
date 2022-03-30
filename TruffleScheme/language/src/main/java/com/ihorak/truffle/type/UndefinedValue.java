@@ -17,7 +17,7 @@ public class UndefinedValue implements TruffleObject {
 
     @Override
     public String toString() {
-        return "Undefined value";
+        return "undefined";
     }
 
 
@@ -41,7 +41,7 @@ public class UndefinedValue implements TruffleObject {
 
     @ExportMessage
     Object toDisplayString(@SuppressWarnings("unused") boolean allowSideEffects) {
-        return "Undefined value";
+        return "undefined";
     }
 
 }
