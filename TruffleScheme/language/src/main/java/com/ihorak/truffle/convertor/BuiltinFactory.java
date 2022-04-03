@@ -12,6 +12,7 @@ import com.ihorak.truffle.node.exprs.builtin.list.*;
 import com.ihorak.truffle.node.exprs.builtin.logical.*;
 import com.ihorak.truffle.node.exprs.shared.CarExprNodeFactory;
 import com.ihorak.truffle.node.exprs.shared.ConsExprNodeFactory;
+import com.ihorak.truffle.node.exprs.shared.LengthExprNodeFactory;
 import com.ihorak.truffle.node.literals.BooleanLiteralNode;
 import com.ihorak.truffle.node.literals.LongLiteralNode;
 
@@ -124,7 +125,7 @@ public class BuiltinFactory {
 
     public static SchemeExpression createLengthBuiltin(List<SchemeExpression> arguments) {
         if (arguments.size() == 1) {
-            return LengthExprNodeGen.create(arguments.get(0));
+            return LengthExprNodeFactory.create(arguments.toArray(SchemeExpression[]::new));
         } else {
             throw new SchemeException("length: arity mismatch; Expected number of arguments does not match the given number \n expected: 1 \n given: " + arguments.size(), null);
         }

@@ -4,9 +4,13 @@ import com.ihorak.truffle.node.callable.ProcedureRootNode;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.exprs.BuiltinExpression;
 import com.ihorak.truffle.node.exprs.PrimitiveProcedureRootNode;
+import com.ihorak.truffle.node.exprs.ReadProceduresArgsExprNode;
+import com.ihorak.truffle.node.exprs.ReadProceduresArgsExprNodeGen;
 import com.ihorak.truffle.node.exprs.arithmetic.*;
+import com.ihorak.truffle.node.exprs.primitive_procedure.ListPrimitiveProcedureNodeFactory;
 import com.ihorak.truffle.node.exprs.shared.CarExprNodeFactory;
 import com.ihorak.truffle.node.exprs.shared.ConsExprNodeFactory;
+import com.ihorak.truffle.node.exprs.shared.LengthExprNodeFactory;
 import com.ihorak.truffle.node.scope.ReadProcedureArgExprNode;
 import com.ihorak.truffle.node.exprs.builtin.EvalExprNodeGen;
 import com.ihorak.truffle.node.exprs.builtin.arithmetic.*;
@@ -37,6 +41,8 @@ public class PrimitiveProcedureGenerator {
         var evalFunction = createPrimitiveProcedure(evalExpr, 1, language);
         var carPrimitiveProcedure = createPrimitiveProcedure(CarExprNodeFactory.getInstance(), language, "car");
         var consPrimitiveProcedure = createPrimitiveProcedure(ConsExprNodeFactory.getInstance(), language, "cons");
+        var lengthPrimitiveProcedure = createPrimitiveProcedure(LengthExprNodeFactory.getInstance(), language, "length");
+        var listPrimitiveProcedure = createArbitraryPrimitiveProcedure(ListPrimitiveProcedureNodeFactory.getInstance(), language, "list");
 
 
         return new HashMap<>(Map.of(
@@ -46,7 +52,9 @@ public class PrimitiveProcedureGenerator {
                 new SchemeSymbol("/"), divideFunction,
                 new SchemeSymbol("eval"), evalFunction,
                 new SchemeSymbol("car"), carPrimitiveProcedure,
-                new SchemeSymbol("cons"), consPrimitiveProcedure
+                new SchemeSymbol("cons"), consPrimitiveProcedure,
+                new SchemeSymbol("length"), lengthPrimitiveProcedure,
+                new SchemeSymbol("list"), listPrimitiveProcedure
         ));
     }
 
@@ -56,7 +64,7 @@ public class PrimitiveProcedureGenerator {
         return new PrimitiveProcedure(rootNode.getCallTarget(), expectedNumberOfArgs, "not impl yet");
     }
 
-    public static PrimitiveProcedure createPrimitiveProcedure(NodeFactory<? extends BuiltinExpression> factory, SchemeTruffleLanguage language, String name) {
+    public static PrimitiveProcedure createPrimitiveProcedure(NodeFactory<? extends SchemeExpression> factory, SchemeTruffleLanguage language, String name) {
         var expectedNumberOfArgs = factory.getExecutionSignature().size();
         ReadProcedureArgExprNode[] arguments =
                 IntStream
@@ -68,7 +76,13 @@ public class PrimitiveProcedureGenerator {
         var rootNode = new PrimitiveProcedureRootNode(language, expression);
 
         return new PrimitiveProcedure(rootNode.getCallTarget(), expectedNumberOfArgs, name);
+    }
 
+    public static PrimitiveProcedure createArbitraryPrimitiveProcedure(NodeFactory<? extends SchemeExpression> factory, SchemeTruffleLanguage language, String name) {
 
+        var expression = factory.createNode(ReadProceduresArgsExprNodeGen.create());
+        var rootNode = new PrimitiveProcedureRootNode(language, expression);
+
+        return new PrimitiveProcedure(rootNode.getCallTarget(), null, name);
     }
 }

@@ -4,6 +4,7 @@ import com.ihorak.truffle.type.SchemeSymbol;
 
 public class BuiltinUtils {
 
+    //For testing purpose only!
     public static boolean isBuiltinEnabled = true;
 
     public static boolean isBuiltinProcedure(SchemeSymbol expr) {

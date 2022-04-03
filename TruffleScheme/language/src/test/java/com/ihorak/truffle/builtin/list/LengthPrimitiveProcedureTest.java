@@ -1,16 +1,24 @@
 package com.ihorak.truffle.builtin.list;
 
+import com.ihorak.truffle.convertor.util.BuiltinUtils;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
-public class LengthExprNodeTest {
+public class LengthPrimitiveProcedureTest {
 
     private Context context;
+
+    @BeforeClass
+    public static void before() {
+        BuiltinUtils.isBuiltinEnabled = false;
+    }
 
     @Before
     public void setUp() {
@@ -48,4 +56,8 @@ public class LengthExprNodeTest {
                 "given: 5", msg);
     }
 
+    @AfterClass
+    public static void after() {
+        BuiltinUtils.isBuiltinEnabled = true;
+    }
 }
