@@ -1,16 +1,12 @@
-package com.ihorak.truffle.node.exprs.builtin.list;
+package com.ihorak.truffle.node.exprs.shared;
 
-import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.exprs.BuiltinExpression;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemePair;
-import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.Specialization;
 
 
-@NodeChild(value = "car")
-@NodeChild(value = "cdr")
-public abstract class ConsExprNode extends SchemeExpression {
-
+public abstract class ConsExprNode extends BuiltinExpression {
 
     @Specialization
     protected SchemeCell doSchemeList(Object car, SchemeCell list) {

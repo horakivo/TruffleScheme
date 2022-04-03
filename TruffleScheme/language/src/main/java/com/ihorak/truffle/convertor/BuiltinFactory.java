@@ -10,6 +10,8 @@ import com.ihorak.truffle.node.exprs.builtin.NewlineExprNode;
 import com.ihorak.truffle.node.exprs.builtin.arithmetic.*;
 import com.ihorak.truffle.node.exprs.builtin.list.*;
 import com.ihorak.truffle.node.exprs.builtin.logical.*;
+import com.ihorak.truffle.node.exprs.shared.CarExprNodeFactory;
+import com.ihorak.truffle.node.exprs.shared.ConsExprNodeFactory;
 import com.ihorak.truffle.node.literals.BooleanLiteralNode;
 import com.ihorak.truffle.node.literals.LongLiteralNode;
 
@@ -95,10 +97,11 @@ public class BuiltinFactory {
     }
 
     public static SchemeExpression createConsBuiltin(List<SchemeExpression> arguments) {
-        if (arguments.size() == 2) {
-            return ConsExprNodeGen.create(arguments.get(0), arguments.get(1));
+        int expectedSize = ConsExprNodeFactory.getInstance().getExecutionSignature().size();
+        if (arguments.size() == expectedSize) {
+            return ConsExprNodeFactory.create(arguments.toArray(SchemeExpression[]::new));
         } else {
-            throw new SchemeException("cons: arity mismatch; Expected number of arguments does not match the given number\nexpected: 2\ngiven: " + arguments.size(), null);
+            throw new SchemeException("cons: arity mismatch; Expected number of arguments does not match the given number\nexpected: " + expectedSize + "\ngiven: " + arguments.size(), null);
         }
     }
 
@@ -113,7 +116,7 @@ public class BuiltinFactory {
     public static SchemeExpression createCarBuiltin(List<SchemeExpression> arguments) {
         int expectedSize = CarExprNodeFactory.getInstance().getExecutionSignature().size();
         if (arguments.size() == expectedSize) {
-            return CarExprNodeFactory.create(arguments.get(0));
+            return CarExprNodeFactory.create(arguments.toArray(SchemeExpression[]::new));
         } else {
             throw new SchemeException("car: arity mismatch; Expected number of arguments does not match the given number \n expected: " + expectedSize + "\n given: " + arguments.size(), null);
         }

@@ -1,21 +1,29 @@
 package com.ihorak.truffle.builtin.list;
 
+import com.ihorak.truffle.convertor.util.BuiltinUtils;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-public class CarExprNodeTest {
+public class CarPrimitiveProcedureTest {
 
     private Context context;
+
+    @BeforeClass
+    public static void before() {
+        BuiltinUtils.isBuiltinEnabled = false;
+    }
 
     @Before
     public void setUp() {
         context = Context.create();
     }
-
 
     @Test
     public void givenList_whenCar_thenReturnFirstElementOfList() {
@@ -79,5 +87,10 @@ public class CarExprNodeTest {
         assertEquals("car: contract violation\n" +
                 "expected: pair? or list?\n" +
                 "given: ()", msg);
+    }
+
+    @AfterClass
+    public static void after() {
+        BuiltinUtils.isBuiltinEnabled = true;
     }
 }

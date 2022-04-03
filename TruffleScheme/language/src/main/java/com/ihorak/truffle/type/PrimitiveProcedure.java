@@ -21,12 +21,14 @@ public class PrimitiveProcedure implements TruffleObject {
 
     private final CallTarget callTarget;
     private final Integer numberOfArgs;
+    private final String name;
     //Because of the Interop library
     private final DispatchNode dispatchNode = DispatchNodeGen.create();
 
-    public PrimitiveProcedure(CallTarget callTarget, Integer numberOfArgs) {
+    public PrimitiveProcedure(CallTarget callTarget, Integer numberOfArgs, String name) {
         this.callTarget = callTarget;
         this.numberOfArgs = numberOfArgs;
+        this.name = name;
     }
 
     public CallTarget getCallTarget() {
@@ -35,6 +37,10 @@ public class PrimitiveProcedure implements TruffleObject {
 
     public Integer getNumberOfArgs() {
         return numberOfArgs;
+    }
+
+    public String getName() {
+        return name;
     }
 
     //----------------InteropLibrary messages–----------------------
