@@ -7,12 +7,16 @@ import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.nodes.Node;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class SchemeLanguageContext {
 
-    private final GlobalState globalState = new GlobalState();
+    private final GlobalState globalState;
+
+    public SchemeLanguageContext(SchemeTruffleLanguage language) {
+        globalState = new GlobalState(language);
+    }
+
     private static final TruffleLanguage.ContextReference<SchemeLanguageContext> REFERENCE =
             TruffleLanguage.ContextReference.create(SchemeTruffleLanguage.class);
 
@@ -26,7 +30,11 @@ public class SchemeLanguageContext {
 
 
     public static final class GlobalState {
-        private final Map<SchemeSymbol, Object> globalVariableStorage = new HashMap<>();
+        private final Map<SchemeSymbol, Object> globalVariableStorage;
+
+        public GlobalState(SchemeTruffleLanguage language) {
+            this.globalVariableStorage = PrimitiveProcedureGenerator.generate(language);
+        }
 
         public Object getVariable(SchemeSymbol symbol) {
             var value = globalVariableStorage.get(symbol);

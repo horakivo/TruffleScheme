@@ -2,39 +2,23 @@ package com.ihorak.truffle;
 
 import com.ihorak.truffle.node.callable.ProcedureRootNode;
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.exprs.arithmetic.*;
+import com.ihorak.truffle.node.exprs.builtin.list.CarExprNodeFactory;
 import com.ihorak.truffle.node.scope.ReadProcedureArgExprNode;
-import com.ihorak.truffle.node.exprs.arithmetic.ReduceDivideExprRuntimeNodeGen;
-import com.ihorak.truffle.node.exprs.arithmetic.ReduceMinusExprRuntimeNodeGen;
-import com.ihorak.truffle.node.exprs.arithmetic.ReduceMultiplyExprRuntimeNodeGen;
-import com.ihorak.truffle.node.exprs.arithmetic.ReducePlusExprRuntimeNodeGen;
 import com.ihorak.truffle.node.exprs.builtin.EvalExprNodeGen;
 import com.ihorak.truffle.node.exprs.builtin.arithmetic.*;
-import com.ihorak.truffle.node.scope.WritePrimitiveProcedureExprNode;
-import com.ihorak.truffle.node.scope.WritePrimitiveProcedureExprNodeGen;
 import com.ihorak.truffle.type.PrimitiveProcedure;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DefaultPrimitiveProcedures {
+public class PrimitiveProcedureGenerator {
 
-
-    public static List<WritePrimitiveProcedureExprNode> generate(SchemeTruffleLanguage language) {
-        List<WritePrimitiveProcedureExprNode> result = new ArrayList<>();
-
-        var builtinFunctionsMap = getAllPrimitiveProcedures(language);
-
-        for (SchemeSymbol symbol : builtinFunctionsMap.keySet()) {
-            result.add(WritePrimitiveProcedureExprNodeGen.create(builtinFunctionsMap.get(symbol), symbol));
-        }
-
-        return result;
-    }
-
-    private static Map<SchemeSymbol, PrimitiveProcedure> getAllPrimitiveProcedures(SchemeTruffleLanguage language) {
+    
+    public static Map<SchemeSymbol, Object> generate(SchemeTruffleLanguage language) {
 //        var plusExpr = PlusTestNodeGen.create(new ReadProcedureArgExprNode(0), new ReadProcedureArgExprNode(1));
         var plusExpr = ReducePlusExprRuntimeNodeGen.create(PlusExprNodeGen.create());
         var plusFunction = createPrimitiveProcedure(plusExpr, null, language);
@@ -46,14 +30,18 @@ public class DefaultPrimitiveProcedures {
         var divideFunction = createPrimitiveProcedure(divideExpr, null, language);
         var evalExpr = EvalExprNodeGen.create(new ReadProcedureArgExprNode(0));
         var evalFunction = createPrimitiveProcedure(evalExpr, 1, language);
+        var carExpr = CarExprNodeFactory.create(new ReadProcedureArgExprNode(0));
+        var carPrimitiveProcedure = createPrimitiveProcedure(carExpr, 1, language);
 
 
-        return Map.of(
+        return new HashMap<>(Map.of(
                 new SchemeSymbol("+"), plusFunction,
                 new SchemeSymbol("-"), minusFunction,
                 new SchemeSymbol("*"), multiplyFunction,
-                new SchemeSymbol("/"), divideFunction
-        );
+                new SchemeSymbol("/"), divideFunction,
+                new SchemeSymbol("eval"), evalFunction,
+                new SchemeSymbol("car"), carPrimitiveProcedure
+        ));
     }
 
     public static PrimitiveProcedure createPrimitiveProcedure(SchemeExpression schemeExpression, Integer expectedNumberOfArgs, SchemeTruffleLanguage language) {

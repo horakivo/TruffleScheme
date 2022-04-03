@@ -111,10 +111,11 @@ public class BuiltinFactory {
     }
 
     public static SchemeExpression createCarBuiltin(List<SchemeExpression> arguments) {
-        if (arguments.size() == 1) {
-            return CarExprNodeGen.create(arguments.get(0));
+        int expectedSize = CarExprNodeFactory.getInstance().getExecutionSignature().size();
+        if (arguments.size() == expectedSize) {
+            return CarExprNodeFactory.create(arguments.get(0));
         } else {
-            throw new SchemeException("car: arity mismatch; Expected number of arguments does not match the given number \n expected: 1 \n given: " + arguments.size(), null);
+            throw new SchemeException("car: arity mismatch; Expected number of arguments does not match the given number \n expected: " + expectedSize + "\n given: " + arguments.size(), null);
         }
     }
 

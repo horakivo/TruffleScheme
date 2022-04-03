@@ -24,18 +24,14 @@ public class SchemeTruffleLanguage extends TruffleLanguage<SchemeLanguageContext
 
     @Override
     protected CallTarget parse(ParsingRequest request) throws Exception {
-        var defaultPrimitiveProcedures = DefaultPrimitiveProcedures.generate(this);
         var globalContext = new ParsingContext(this);
         var programExpressions = Convertor.convertToSchemeExpressions(CharStreams.fromReader(request.getSource().getReader()), globalContext);
-        List<SchemeExpression> allExpressions = new ArrayList<>();
-        allExpressions.addAll(defaultPrimitiveProcedures);
-        allExpressions.addAll(programExpressions);
-        var rootNode = new SchemeRootNode(this, globalContext.getFrameDescriptor(), allExpressions);
+        var rootNode = new SchemeRootNode(this, globalContext.getFrameDescriptor(), programExpressions);
         return rootNode.getCallTarget();
     }
 
     @Override
     protected SchemeLanguageContext createContext(Env env) {
-        return new SchemeLanguageContext();
+        return new SchemeLanguageContext(this);
     }
 }
