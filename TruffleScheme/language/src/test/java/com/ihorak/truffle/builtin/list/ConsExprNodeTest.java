@@ -68,6 +68,16 @@ public class ConsExprNodeTest {
     }
 
     @Test
+    public void givenFirstPairAndThenList_whenConsed_thenStillReturnsList() {
+        var program = "(define fun (lambda (x y) (cons x y))) (fun 1 2) (fun (cons 1 2) (list))";
+
+
+        var result = context.eval("scm", program);
+
+        assertEquals("((1 . 2))", result.toString());
+    }
+
+    @Test
     public void givenLastElementList_whenCons_thenResultList() {
         var program = "(cons (cons 1 2) (list 1 2))";
 

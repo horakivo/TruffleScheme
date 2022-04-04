@@ -62,9 +62,9 @@ public class CarPrimitiveProcedureTest {
         var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
         assertEquals("" +
-                "car: arity mismatch; Expected number of arguments does not match the given number \n" +
-                " expected: 1\n" +
-                " given: 2", msg);
+                "car: arity mismatch; Expected number of arguments does not match the given number\n" +
+                "expected: 1\n" +
+                "given: 2", msg);
     }
 
     @Test

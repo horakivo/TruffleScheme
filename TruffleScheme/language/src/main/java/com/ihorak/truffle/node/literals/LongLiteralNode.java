@@ -36,6 +36,10 @@ public class LongLiteralNode extends SchemeExpression {
         return Objects.hash(value);
     }
 
+    public long getValue() {
+        return value;
+    }
+
     @Override
     public String toString() {
         return String.valueOf(value);

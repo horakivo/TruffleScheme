@@ -8,6 +8,7 @@ import com.ihorak.truffle.node.exprs.ReadProceduresArgsExprNode;
 import com.ihorak.truffle.node.exprs.ReadProceduresArgsExprNodeGen;
 import com.ihorak.truffle.node.exprs.arithmetic.*;
 import com.ihorak.truffle.node.exprs.primitive_procedure.ListPrimitiveProcedureNodeFactory;
+import com.ihorak.truffle.node.exprs.primitive_procedure.PlusPrimitiveProcedureNodeFactory;
 import com.ihorak.truffle.node.exprs.shared.CarExprNodeFactory;
 import com.ihorak.truffle.node.exprs.shared.ConsExprNodeFactory;
 import com.ihorak.truffle.node.exprs.shared.LengthExprNodeFactory;
@@ -28,9 +29,7 @@ public class PrimitiveProcedureGenerator {
 
 
     public static Map<SchemeSymbol, Object> generate(SchemeTruffleLanguage language) {
-//        var plusExpr = PlusTestNodeGen.create(new ReadProcedureArgExprNode(0), new ReadProcedureArgExprNode(1));
-        var plusExpr = ReducePlusExprRuntimeNodeGen.create(PlusExprNodeGen.create());
-        var plusFunction = createPrimitiveProcedure(plusExpr, null, language);
+        var plusPrimitiveProcedure = createArbitraryPrimitiveProcedure(PlusPrimitiveProcedureNodeFactory.getInstance(), language, "+");
         var minusExpr = ReduceMinusExprRuntimeNodeGen.create(MinusExprNodeGen.create());
         var minusFunction = createPrimitiveProcedure(minusExpr, null, language);
         var multiplyExpr = ReduceMultiplyExprRuntimeNodeGen.create(MultiplyExprNodeGen.create());
@@ -46,7 +45,7 @@ public class PrimitiveProcedureGenerator {
 
 
         return new HashMap<>(Map.of(
-                new SchemeSymbol("+"), plusFunction,
+                new SchemeSymbol("+"), plusPrimitiveProcedure,
                 new SchemeSymbol("-"), minusFunction,
                 new SchemeSymbol("*"), multiplyFunction,
                 new SchemeSymbol("/"), divideFunction,

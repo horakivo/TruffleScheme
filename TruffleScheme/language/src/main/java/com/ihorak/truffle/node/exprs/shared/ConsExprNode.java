@@ -8,13 +8,18 @@ import com.oracle.truffle.api.dsl.Specialization;
 
 public abstract class ConsExprNode extends BuiltinExpression {
 
+
     @Specialization
     protected SchemeCell doSchemeList(Object car, SchemeCell list) {
         return list.cons(car, list);
     }
 
-    @Specialization
+    @Specialization(guards = "!isSchemeCell(cdr)")
     public SchemePair doSchemePair(Object car, Object cdr) {
         return new SchemePair(car, cdr);
+    }
+
+    public boolean isSchemeCell(Object cdr) {
+        return cdr instanceof SchemeCell;
     }
 }

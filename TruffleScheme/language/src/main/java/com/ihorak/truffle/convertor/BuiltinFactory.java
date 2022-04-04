@@ -3,10 +3,7 @@ package com.ihorak.truffle.convertor;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.exprs.builtin.CurrentMillisecondsExprNodeGen;
-import com.ihorak.truffle.node.exprs.builtin.DisplayExprNodeGen;
-import com.ihorak.truffle.node.exprs.builtin.EvalExprNodeGen;
-import com.ihorak.truffle.node.exprs.builtin.NewlineExprNode;
+import com.ihorak.truffle.node.exprs.builtin.*;
 import com.ihorak.truffle.node.exprs.builtin.arithmetic.*;
 import com.ihorak.truffle.node.exprs.builtin.list.*;
 import com.ihorak.truffle.node.exprs.builtin.logical.*;
@@ -65,9 +62,9 @@ public class BuiltinFactory {
 
     private static SchemeExpression reducePlus(List<SchemeExpression> arguments) {
         if (arguments.size() > 2) {
-            return PlusTestNodeGen.create(arguments.remove(0), reducePlus(arguments));
+            return PlusExprNodeGen.create(arguments.remove(0), reducePlus(arguments));
         } else {
-            return PlusTestNodeGen.create(arguments.get(0), arguments.get(1));
+            return PlusExprNodeGen.create(arguments.get(0), arguments.get(1));
         }
     }
 
@@ -119,7 +116,7 @@ public class BuiltinFactory {
         if (arguments.size() == expectedSize) {
             return CarExprNodeFactory.create(arguments.toArray(SchemeExpression[]::new));
         } else {
-            throw new SchemeException("car: arity mismatch; Expected number of arguments does not match the given number \n expected: " + expectedSize + "\n given: " + arguments.size(), null);
+            throw new SchemeException("car: arity mismatch; Expected number of arguments does not match the given number\nexpected: " + expectedSize + "\ngiven: " + arguments.size(), null);
         }
     }
 
@@ -255,5 +252,10 @@ public class BuiltinFactory {
             return new NewlineExprNode();
         }
         throw new SchemeException("newline: arity mismatch; Expected number of arguments does not match the given number\nExpected: 0\nGiven: " + arguments.size(), null);
+    }
+
+    public static SchemeExpression createLoop(List<SchemeExpression> arguments) {
+        var number = (LongLiteralNode) arguments.get(0);
+        return new LoopExprNode(number.getValue(), arguments.get(1));
     }
 }

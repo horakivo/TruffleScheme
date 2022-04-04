@@ -1,20 +1,27 @@
 package com.ihorak.truffle.builtin.arithmetic;
 
+import com.ihorak.truffle.convertor.util.BuiltinUtils;
 import org.graalvm.polyglot.Context;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
-
 
 import static org.junit.Assert.assertEquals;
 
+public class PlusPrimitiveProcedureTest {
 
-public class PlusExprNodeTest {
 
     private Context context;
 
     @Before
     public void setUp() {
         context = Context.create();
+    }
+
+    @BeforeClass
+    public static void before() {
+        BuiltinUtils.isBuiltinEnabled = false;
     }
 
     @Test
@@ -49,11 +56,13 @@ public class PlusExprNodeTest {
         var program = "(+ 12.3 5.3 1.1)";
 
 
-        var result =  context.eval("scm", program);
+        var result = context.eval("scm", program);
 
         assertEquals(12.3D + 5.3 + 1.1, result.asDouble(), 0);
     }
 
+
+//TODO
 //    @Test
 //    public void givenBigNumber_whenAddThem_thenOverflowShouldOccurAndBigIntShouldBeReturned() {
 //        var program = "(+ 1 2 " + Long.MAX_VALUE + ")";
@@ -63,7 +72,7 @@ public class PlusExprNodeTest {
 //
 //        assertEquals(new BigInteger(String.valueOf(Long.MAX_VALUE)).add(new BigInteger("3")), result);
 //    }
-//
+
 //    @Test
 //    public void givenNumbersBiggerThenLong_whenAddThem_thenBigIntShouldBeReturned() {
 //        var program = "(+ 1 2 " + BigInteger.TWO.add(BigInteger.valueOf(Long.MAX_VALUE)) + ")";
@@ -73,4 +82,9 @@ public class PlusExprNodeTest {
 //        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
 //        assertEquals(BigInteger.valueOf(Long.MAX_VALUE).add(new BigInteger("5")), result);
 //    }
+
+    @AfterClass
+    public static void after() {
+        BuiltinUtils.isBuiltinEnabled = true;
+    }
 }

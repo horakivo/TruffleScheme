@@ -66,9 +66,9 @@ public abstract class CallableExprNode extends SchemeExpression {
         var expectedNumberOfArgs = primitiveProcedure.getNumberOfArgs();
         if (expectedNumberOfArgs != null && expectedNumberOfArgs != this.arguments.length) {
             primitiveProcedureWrongNumberOfArgsProfile.enter();
-            throw new SchemeException("Primitive procedure was called with wrong number of arguments." +
-                    " \n Expected: " + expectedNumberOfArgs +
-                    " \n Given: " + this.arguments.length, this);
+            throw new SchemeException(primitiveProcedure.getName() + ": arity mismatch; Expected number of arguments does not match the given number" +
+                    "\nexpected: " + expectedNumberOfArgs + "" +
+                    "\ngiven: " + this.arguments.length, this);
         }
 
         return call(primitiveProcedure.getCallTarget(), arguments, frame);
@@ -159,19 +159,19 @@ public abstract class CallableExprNode extends SchemeExpression {
     }
 
     private Object call(CallTarget callTarget, Object[] arguments, VirtualFrame frame) {
-        //return dispatchNode.executeDispatch(callTarget, arguments);
-        if (this.isTailRecursive()) {
-            throw new TailCallException(callTarget, arguments);
-        } else {
-            while (true) {
-                try {
-                    return dispatchNode.executeDispatch(callTarget, arguments);
-                } catch (TailCallException tailCallException) {
-                    callTarget = tailCallException.getCallTarget();
-                    arguments = tailCallException.getArguments();
-                }
-            }
-        }
+        return dispatchNode.executeDispatch(callTarget, arguments);
+//        if (this.isTailRecursive()) {
+//            throw new TailCallException(callTarget, arguments);
+//        } else {
+//            while (true) {
+//                try {
+//                    return dispatchNode.executeDispatch(callTarget, arguments);
+//                } catch (TailCallException tailCallException) {
+//                    callTarget = tailCallException.getCallTarget();
+//                    arguments = tailCallException.getArguments();
+//                }
+//            }
+//        }
     }
 
 

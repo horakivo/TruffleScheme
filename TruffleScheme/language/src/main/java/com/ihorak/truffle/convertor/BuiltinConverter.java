@@ -55,6 +55,8 @@ public class BuiltinConverter {
                 return BuiltinFactory.createMoreThen(convertedArguments);
             case ">=":
                 return BuiltinFactory.createMoreThenEqual(convertedArguments);
+            case "loop":
+                return BuiltinFactory.createLoop(convertedArguments);
             default:
                 throw new RuntimeException("Unable to convert builtin procedure from list to AST. Builtin: " + operand);
         }

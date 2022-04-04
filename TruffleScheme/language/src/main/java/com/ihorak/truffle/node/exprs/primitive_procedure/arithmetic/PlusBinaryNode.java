@@ -1,20 +1,19 @@
-package com.ihorak.truffle.node.exprs.builtin.arithmetic;
+package com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic;
 
-import com.ihorak.truffle.node.SchemeExpression;
-import com.oracle.truffle.api.dsl.NodeChild;
+import com.ihorak.truffle.node.exprs.builtin.BinaryOperationNode;
 import com.oracle.truffle.api.dsl.Specialization;
+import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 
 import java.math.BigInteger;
 
-@NodeChild(value = "left")
-@NodeChild(value = "right")
-public abstract class PlusTestNode extends SchemeExpression {
+public abstract class PlusBinaryNode extends BinaryOperationNode {
 
     @Specialization(rewriteOn = ArithmeticException.class)
     protected long addLongs(long left, long right) {
         return Math.addExact(left, right);
     }
 
+    @TruffleBoundary
     @Specialization(replaces = "addLongs")
     protected BigInteger addBigInts(BigInteger left, BigInteger right) {
         return left.add(right);
