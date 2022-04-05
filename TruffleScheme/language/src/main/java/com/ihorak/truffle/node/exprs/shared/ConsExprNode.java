@@ -8,7 +8,6 @@ import com.oracle.truffle.api.dsl.Specialization;
 
 public abstract class ConsExprNode extends BuiltinExpression {
 
-
     @Specialization
     protected SchemeCell doSchemeList(Object car, SchemeCell list) {
         return list.cons(car, list);

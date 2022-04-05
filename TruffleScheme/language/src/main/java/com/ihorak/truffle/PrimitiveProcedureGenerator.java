@@ -10,6 +10,7 @@ import com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic.MinusPrimiti
 import com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic.MultiplyPrimitiveProcedureNodeFactory;
 import com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic.PlusPrimitiveProcedureNodeFactory;
 import com.ihorak.truffle.node.exprs.shared.CarExprNodeFactory;
+import com.ihorak.truffle.node.exprs.shared.CdrExprNodeFactory;
 import com.ihorak.truffle.node.exprs.shared.ConsExprNodeFactory;
 import com.ihorak.truffle.node.exprs.shared.LengthExprNodeFactory;
 import com.ihorak.truffle.node.scope.ReadProcedureArgExprNode;
@@ -32,12 +33,17 @@ public class PrimitiveProcedureGenerator {
         var minusPrimitiveProcedure = createArbitraryPrimitiveProcedure(MinusPrimitiveProcedureNodeFactory.getInstance(), language, "-");
         var multiplyPrimitiveProcedure = createArbitraryPrimitiveProcedure(MultiplyPrimitiveProcedureNodeFactory.getInstance(), language, "*");
         var dividePrimaryProcedure = createArbitraryPrimitiveProcedure(DividePrimitiveProcedureNodeFactory.getInstance(), language, "/");
+        var listPrimitiveProcedure = createArbitraryPrimitiveProcedure(ListPrimitiveProcedureNodeFactory.getInstance(), language, "list");
+
+
         var evalExpr = EvalExprNodeGen.create(new ReadProcedureArgExprNode(0));
-        var evalFunction = createPrimitiveProcedure(evalExpr, 1, language);
+        var evalProcedure = createPrimitiveProcedure(evalExpr, 1, language);
+
+
         var carPrimitiveProcedure = createPrimitiveProcedure(CarExprNodeFactory.getInstance(), language, "car");
         var consPrimitiveProcedure = createPrimitiveProcedure(ConsExprNodeFactory.getInstance(), language, "cons");
         var lengthPrimitiveProcedure = createPrimitiveProcedure(LengthExprNodeFactory.getInstance(), language, "length");
-        var listPrimitiveProcedure = createArbitraryPrimitiveProcedure(ListPrimitiveProcedureNodeFactory.getInstance(), language, "list");
+        var cdrPrimitiveProcedure = createPrimitiveProcedure(CdrExprNodeFactory.getInstance(), language, "cdr");
 
 
         return new HashMap<>(Map.of(
@@ -45,11 +51,12 @@ public class PrimitiveProcedureGenerator {
                 new SchemeSymbol("-"), minusPrimitiveProcedure,
                 new SchemeSymbol("*"), multiplyPrimitiveProcedure,
                 new SchemeSymbol("/"), dividePrimaryProcedure,
-                new SchemeSymbol("eval"), evalFunction,
+                new SchemeSymbol("eval"), evalProcedure,
                 new SchemeSymbol("car"), carPrimitiveProcedure,
                 new SchemeSymbol("cons"), consPrimitiveProcedure,
                 new SchemeSymbol("length"), lengthPrimitiveProcedure,
-                new SchemeSymbol("list"), listPrimitiveProcedure
+                new SchemeSymbol("list"), listPrimitiveProcedure,
+                new SchemeSymbol("cdr"), cdrPrimitiveProcedure
         ));
     }
 

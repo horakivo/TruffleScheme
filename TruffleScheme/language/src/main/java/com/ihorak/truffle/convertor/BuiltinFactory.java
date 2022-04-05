@@ -8,6 +8,7 @@ import com.ihorak.truffle.node.exprs.builtin.arithmetic.*;
 import com.ihorak.truffle.node.exprs.builtin.list.*;
 import com.ihorak.truffle.node.exprs.builtin.logical.*;
 import com.ihorak.truffle.node.exprs.shared.CarExprNodeFactory;
+import com.ihorak.truffle.node.exprs.shared.CdrExprNodeFactory;
 import com.ihorak.truffle.node.exprs.shared.ConsExprNodeFactory;
 import com.ihorak.truffle.node.exprs.shared.LengthExprNodeFactory;
 import com.ihorak.truffle.node.literals.BooleanLiteralNode;
@@ -28,9 +29,9 @@ public class BuiltinFactory {
     private static SchemeExpression reduceDivide(List<SchemeExpression> arguments) {
         if (arguments.size() > 2) {
             var right = arguments.remove(arguments.size() - 1);
-            return DivideExprNodeGen.create(reduceDivide(arguments), right);
+            return new DivideExprNode(reduceDivide(arguments), right);
         } else {
-            return DivideExprNodeGen.create(arguments.get(0), arguments.get(1));
+            return new DivideExprNode(arguments.get(0), arguments.get(1));
         }
     }
 
@@ -44,9 +45,9 @@ public class BuiltinFactory {
     private static SchemeExpression reduceMinus(List<SchemeExpression> arguments) {
         if (arguments.size() > 2) {
             var right = arguments.remove(arguments.size() - 1);
-            return MinusExprNodeGen.create(reduceMinus(arguments), right);
+            return new MinusExprNode(reduceMinus(arguments), right);
         } else {
-            return MinusExprNodeGen.create(arguments.get(0), arguments.get(1));
+            return new MinusExprNode(arguments.get(0), arguments.get(1));
         }
     }
 
@@ -58,9 +59,9 @@ public class BuiltinFactory {
 
     private static SchemeExpression reducePlus(List<SchemeExpression> arguments) {
         if (arguments.size() > 2) {
-            return PlusExprNodeGen.create(arguments.remove(0), reducePlus(arguments));
+            return new PlusExprNode(arguments.remove(0), reducePlus(arguments));
         } else {
-            return PlusExprNodeGen.create(arguments.get(0), arguments.get(1));
+            return new PlusExprNode(arguments.get(0), arguments.get(1));
         }
     }
 
@@ -72,9 +73,9 @@ public class BuiltinFactory {
 
     private static SchemeExpression reduceMultiply(List<SchemeExpression> arguments) {
         if (arguments.size() > 2) {
-            return MultiplyTestNodeGen.create(arguments.remove(0), reduceMultiply(arguments));
+            return new MultiplyExprNode(arguments.remove(0), reduceMultiply(arguments));
         } else {
-            return MultiplyTestNodeGen.create(arguments.get(0), arguments.get(1));
+            return new MultiplyExprNode(arguments.get(0), arguments.get(1));
         }
     }
 
@@ -100,8 +101,9 @@ public class BuiltinFactory {
     }
 
     public static SchemeExpression createCdrBuiltin(List<SchemeExpression> arguments) {
-        if (arguments.size() == 1) {
-            return CdrExprNodeGen.create(arguments.get(0));
+        int expectedSize = CdrExprNodeFactory.getInstance().getExecutionSignature().size();
+        if (arguments.size() == expectedSize) {
+            return CdrExprNodeFactory.create(arguments.toArray(SchemeExpression[]::new));
         } else {
             throw new SchemeException("cdr: arity mismatch; Expected number of arguments does not match the given number \n expected: 1 \n given: " + arguments.size(), null);
         }

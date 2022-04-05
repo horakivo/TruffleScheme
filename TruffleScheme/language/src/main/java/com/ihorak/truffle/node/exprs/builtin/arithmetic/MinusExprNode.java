@@ -1,34 +1,25 @@
 package com.ihorak.truffle.node.exprs.builtin.arithmetic;
 
 import com.ihorak.truffle.node.SchemeExpression;
-import com.oracle.truffle.api.dsl.NodeChild;
-import com.oracle.truffle.api.dsl.Specialization;
-import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
+import com.ihorak.truffle.node.exprs.builtin.BinaryOperationNode;
+import com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic.MinusBinaryNodeGen;
+import com.oracle.truffle.api.frame.VirtualFrame;
 
-import java.math.BigInteger;
 
-@NodeChild(value = "left")
-@NodeChild(value = "right")
-public abstract class MinusExprNode extends SchemeExpression {
 
-    @Specialization(rewriteOn = ArithmeticException.class)
-    protected long doLongs(long left, long right) {
-        return Math.subtractExact(left, right);
-    }
+public class MinusExprNode extends SchemeExpression {
 
-    @TruffleBoundary
-    @Specialization(replaces = "doLongs")
-    protected BigInteger doBigInts(BigInteger left, BigInteger right) {
-        return left.subtract(right);
-    }
+    @Child private SchemeExpression left;
+    @Child private SchemeExpression right;
+    @Child private BinaryOperationNode subtractOperation = MinusBinaryNodeGen.create();
 
-    @Specialization
-    protected double doDoubles(double left, double right) {
-        return left - right;
+    public MinusExprNode(SchemeExpression left, SchemeExpression right) {
+        this.left = left;
+        this.right = right;
     }
 
     @Override
-    public String toString() {
-        return "-";
+    public Object executeGeneric(VirtualFrame frame) {
+        return subtractOperation.execute(left.executeGeneric(frame), right.executeGeneric(frame));
     }
 }
