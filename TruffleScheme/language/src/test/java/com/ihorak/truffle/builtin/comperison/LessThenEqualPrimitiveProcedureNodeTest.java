@@ -1,13 +1,16 @@
-package com.ihorak.truffle.builtin.logical;
+package com.ihorak.truffle.builtin.comperison;
 
+import com.ihorak.truffle.convertor.util.BuiltinUtils;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class MoreThenEqualExprNodeTest {
+public class LessThenEqualPrimitiveProcedureNodeTest {
 
     private Context context;
 
@@ -16,21 +19,25 @@ public class MoreThenEqualExprNodeTest {
         context = Context.create();
     }
 
+    @BeforeClass
+    public static void before() {
+        BuiltinUtils.isBuiltinEnabled = false;
+    }
 
     @Test
     public void givenNoArgs_whenExecuted_thenExceptionShouldBeThrown() {
-        var program = "(>=)";
+        var program = "(<=)";
 
         var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
-        assertEquals(">=: arity mismatch; Expected number of argument does not match the given number\n" +
+        assertEquals("<=: arity mismatch; Expected number of argument does not match the given number\n" +
                 "expected: at least 1\n" +
                 "given: 0", msg);
     }
 
     @Test
     public void givenOneArg_whenExecuted_thenShouldReturnTrue() {
-        var program = "(>= 3)";
+        var program = "(<= 3)";
 
         var result = context.eval("scm", program);
 
@@ -39,34 +46,34 @@ public class MoreThenEqualExprNodeTest {
 
     @Test
     public void givenTwoArg_whenExecuted_thenShouldReturnTrue() {
-        var program = "(>= 4 3)";
+        var program = "(<= 3 4)";
 
-        var result =  context.eval("scm", program);
+        var result = context.eval("scm", program);
 
         assertTrue(result.asBoolean());
     }
 
     @Test
     public void givenArbitraryArg_whenExecuted_thenShouldReturnTrue() {
-        var program = "(>= 10 9 8 7 7 6 5 4 3 3)";
+        var program = "(<= 3 4 5 6 7 8 9 10)";
 
-        var result =  context.eval("scm", program);
+        var result = context.eval("scm", program);
 
         assertTrue(result.asBoolean());
     }
 
     @Test
     public void givenArbitraryArgWithSameNumbers_whenExecuted_thenShouldReturnTrue() {
-        var program = "(>= 3 3 3 3 3 3)";
+        var program = "(<= 3 3 3 3 3 3)";
 
-        var result =  context.eval("scm", program);
+        var result = context.eval("scm", program);
 
         assertTrue(result.asBoolean());
     }
 
     @Test
     public void givenArbitraryArg_whenExecuted_thenShouldReturnFalse() {
-        var program = "(>= 10 9 8 6 7 5 4 3)";
+        var program = "(<= 3 4 6 5 7 8 9 10)";
 
         var result = context.eval("scm", program);
 
@@ -75,14 +82,20 @@ public class MoreThenEqualExprNodeTest {
 
     @Test
     public void givenWrongArgumentType_whenExecuted_shouldThrowException() {
-        var program = "(>= 3 4 'b 5 7 8 9 10)";
+        var program = "(<= 3 4 'b 5 7 8 9 10)";
 
         var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
         assertEquals("" +
-                ">=: contract violation\n" +
+                "<=: contract violation\n" +
                 "expected: real?\n" +
                 "given left: 4\n" +
                 "given right: 'b", msg);
+    }
+
+
+    @AfterClass
+    public static void after() {
+        BuiltinUtils.isBuiltinEnabled = true;
     }
 }

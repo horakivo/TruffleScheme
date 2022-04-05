@@ -6,7 +6,7 @@ import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 
-public abstract class ReadProceduresArgsExprNode extends SchemeExpression {
+public abstract class ReadProcedureArgsExprNode extends SchemeExpression {
 
     @ExplodeLoop
     @Specialization(guards = "cachedLength == frame.getArguments().length", limit = "5")

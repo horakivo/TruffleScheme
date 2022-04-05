@@ -152,14 +152,14 @@ public class BuiltinFactory {
         if (arguments.size() == 0)
             throw new SchemeException("<=: arity mismatch; Expected number of argument does not match the given number\nexpected: at least 1\ngiven: 0", null);
         if (arguments.size() == 1) return new BooleanLiteralNode(true);
-        if (arguments.size() == 2) return LessThenEqualExprNodeGen.create(arguments.get(0), arguments.get(1));
+        if (arguments.size() == 2) return new LessThenEqualExprNode(arguments.get(0), arguments.get(1));
         return new ReduceComparisonExprNode(reduceLessThenOrEqual(arguments));
     }
 
     private static List<SchemeExpression> reduceLessThenOrEqual(List<SchemeExpression> arguments) {
         List<SchemeExpression> result = new ArrayList<>();
         for (int i = 0; i < arguments.size() - 1; i++) {
-            result.add(LessThenEqualExprNodeGen.create(arguments.get(i), arguments.get(i + 1)));
+            result.add(new LessThenEqualExprNode(arguments.get(i), arguments.get(i + 1)));
         }
         return result;
     }
@@ -168,14 +168,14 @@ public class BuiltinFactory {
         if (arguments.size() == 0)
             throw new SchemeException("=: arity mismatch; Expected number of argument does not match the given number\nexpected: at least 1\ngiven: 0", null);
         if (arguments.size() == 1) return new BooleanLiteralNode(true);
-        if (arguments.size() == 2) return EqualExprNodeGen.create(arguments.get(0), arguments.get(1));
+        if (arguments.size() == 2) return new EqualExprNode(arguments.get(0), arguments.get(1));
         return new ReduceComparisonExprNode(reduceEqual(arguments));
     }
 
     private static List<SchemeExpression> reduceEqual(List<SchemeExpression> arguments) {
         List<SchemeExpression> result = new ArrayList<>();
         for (int i = 0; i < arguments.size() - 1; i++) {
-            result.add(EqualExprNodeGen.create(arguments.get(i), arguments.get(i + 1)));
+            result.add(new EqualExprNode(arguments.get(i), arguments.get(i + 1)));
         }
         return result;
     }
@@ -184,7 +184,7 @@ public class BuiltinFactory {
         if (arguments.size() == 0)
             throw new SchemeException("<: arity mismatch; Expected number of argument does not match the given number\nexpected: at least 1\ngiven: 0", null);
         if (arguments.size() == 1) return new BooleanLiteralNode(true);
-        if (arguments.size() == 2) return LessThenExprNodeGen.create(arguments.get(0), arguments.get(1));
+        if (arguments.size() == 2) return new LessThenExprNode(arguments.get(0), arguments.get(1));
         return new ReduceComparisonExprNode(reduceLessThen(arguments));
     }
 
@@ -192,7 +192,7 @@ public class BuiltinFactory {
         if (arguments.size() == 0)
             throw new SchemeException(">: arity mismatch; Expected number of argument does not match the given number\nexpected: at least 1\ngiven: 0", null);
         if (arguments.size() == 1) return new BooleanLiteralNode(true);
-        if (arguments.size() == 2) return MoreThenExprNodeGen.create(arguments.get(0), arguments.get(1));
+        if (arguments.size() == 2) return new MoreThenExprNode(arguments.get(0), arguments.get(1));
         return new ReduceComparisonExprNode(reduceMoreThen(arguments));
     }
 
@@ -200,7 +200,7 @@ public class BuiltinFactory {
         List<SchemeExpression> result = new ArrayList<>();
 
         for (int i = 0; i < arguments.size() - 1; i++) {
-            result.add(MoreThenExprNodeGen.create(arguments.get(i), arguments.get(i + 1)));
+            result.add(new MoreThenExprNode(arguments.get(i), arguments.get(i + 1)));
         }
         return result;
     }
@@ -209,7 +209,7 @@ public class BuiltinFactory {
         if (arguments.size() == 0)
             throw new SchemeException(">=: arity mismatch; Expected number of argument does not match the given number\nexpected: at least 1\ngiven: 0", null);
         if (arguments.size() == 1) return new BooleanLiteralNode(true);
-        if (arguments.size() == 2) return MoreThenEqualExprNodeGen.create(arguments.get(0), arguments.get(1));
+        if (arguments.size() == 2) return new MoreThenEqualExprNode(arguments.get(0), arguments.get(1));
         return new ReduceComparisonExprNode(reduceMoreThenEqual(arguments));
     }
 
@@ -217,16 +217,15 @@ public class BuiltinFactory {
         List<SchemeExpression> result = new ArrayList<>();
 
         for (int i = 0; i < arguments.size() - 1; i++) {
-            result.add(MoreThenEqualExprNodeGen.create(arguments.get(i), arguments.get(i + 1)));
+            result.add(new MoreThenEqualExprNode(arguments.get(i), arguments.get(i + 1)));
         }
         return result;
     }
 
-
     private static List<SchemeExpression> reduceLessThen(List<SchemeExpression> arguments) {
         List<SchemeExpression> result = new ArrayList<>();
         for (int i = 0; i < arguments.size() - 1; i++) {
-            result.add(LessThenExprNodeGen.create(arguments.get(i), arguments.get(i + 1)));
+            result.add(new LessThenExprNode(arguments.get(i), arguments.get(i + 1)));
         }
         return result;
     }

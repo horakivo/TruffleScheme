@@ -1,34 +1,28 @@
 package com.ihorak.truffle.node.exprs.builtin.logical;
 
-import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.oracle.truffle.api.dsl.Fallback;
-import com.oracle.truffle.api.dsl.NodeChild;
-import com.oracle.truffle.api.dsl.Specialization;
+import com.ihorak.truffle.node.exprs.core.BinaryOperationNode;
+import com.ihorak.truffle.node.exprs.core.comperison.MoreThenBinaryNodeGen;
+import com.oracle.truffle.api.frame.VirtualFrame;
 
-import java.math.BigInteger;
+public class MoreThenExprNode extends SchemeExpression {
 
-@NodeChild(value = "left")
-@NodeChild(value = "right")
-public abstract class MoreThenExprNode extends SchemeExpression {
+    @Child private SchemeExpression left;
+    @Child private SchemeExpression right;
+    @Child private BinaryOperationNode moreThenOperation = MoreThenBinaryNodeGen.create();
 
-    @Specialization
-    protected boolean moreThenLongs(long left, long right) {
-        return left > right;
+    public MoreThenExprNode(SchemeExpression left, SchemeExpression right) {
+        this.left = left;
+        this.right = right;
     }
 
-    /*
-     * 0: if the value of this BigInteger is equal to that of the BigInteger object passed as a parameter.
-     * 1: if the value of this BigInteger is greater than that of the BigInteger object passed as a parameter.
-     * -1: if the value of this BigInteger is less than that of the BigInteger object passed as a parameter/
-     */
-    @Specialization
-    protected boolean moreThenBigInts(BigInteger left, BigInteger right) {
-        return left.compareTo(right) > 0;
+    @Override
+    public boolean executeBoolean(VirtualFrame frame) {
+        return moreThenOperation.executeBoolean(left.executeGeneric(frame), right.executeGeneric(frame));
     }
 
-    @Fallback
-    protected Object fallback(Object left, Object right) {
-        throw new SchemeException(">: contract violation\nexpected: real?\ngiven left: " + left + "\ngiven right: " + right, this);
+    @Override
+    public Object executeGeneric(VirtualFrame frame) {
+        return executeBoolean(frame);
     }
 }

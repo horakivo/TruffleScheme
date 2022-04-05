@@ -1,6 +1,6 @@
-package com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic;
+package com.ihorak.truffle.node.exprs.core.arithmetic;
 
-import com.ihorak.truffle.node.exprs.builtin.BinaryOperationNode;
+import com.ihorak.truffle.node.exprs.core.BinaryOperationNode;
 import com.oracle.truffle.api.dsl.Specialization;
 
 public abstract class DivideBinaryNode extends BinaryOperationNode {

@@ -8,11 +8,6 @@ import static com.ihorak.truffle.type.SchemeCell.EMPTY_LIST;
 
 public abstract class ListPrimitiveProcedureNode extends ArbitraryBuiltinExpression {
 
-    @Specialization(guards = "arguments.length == 0")
-    protected SchemeCell createEmptyList(Object[] arguments) {
-        return SchemeCell.EMPTY_LIST;
-    }
-
     @Specialization
     protected SchemeCell createList(Object[] arguments) {
         SchemeCell list = EMPTY_LIST;

@@ -2,12 +2,10 @@ package com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic;
 
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.exprs.ArbitraryBuiltinExpression;
-import com.ihorak.truffle.node.exprs.builtin.BinaryOperationNode;
-import com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic.DivideBinaryNode;
-import com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic.DivideBinaryNodeGen;
+import com.ihorak.truffle.node.exprs.core.BinaryOperationNode;
+import com.ihorak.truffle.node.exprs.core.arithmetic.DivideBinaryNodeGen;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Specialization;
-import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 
 public abstract class DividePrimitiveProcedureNode extends ArbitraryBuiltinExpression {

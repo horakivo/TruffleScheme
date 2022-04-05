@@ -1,8 +1,8 @@
 package com.ihorak.truffle.node.exprs.builtin.arithmetic;
 
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.exprs.builtin.BinaryOperationNode;
-import com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic.MinusBinaryNodeGen;
+import com.ihorak.truffle.node.exprs.core.BinaryOperationNode;
+import com.ihorak.truffle.node.exprs.core.arithmetic.MinusBinaryNodeGen;
 import com.oracle.truffle.api.frame.VirtualFrame;
 
 
