@@ -1,4 +1,4 @@
-package com.ihorak.truffle.node.exprs.primitive_procedure;
+package com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic;
 
 import com.ihorak.truffle.node.exprs.ArbitraryBuiltinExpression;
 import com.ihorak.truffle.node.exprs.builtin.BinaryOperationNode;

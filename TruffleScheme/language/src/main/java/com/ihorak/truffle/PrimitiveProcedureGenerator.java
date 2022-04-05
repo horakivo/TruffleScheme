@@ -2,22 +2,18 @@ package com.ihorak.truffle;
 
 import com.ihorak.truffle.node.callable.ProcedureRootNode;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.exprs.BuiltinExpression;
 import com.ihorak.truffle.node.exprs.PrimitiveProcedureRootNode;
-import com.ihorak.truffle.node.exprs.ReadProceduresArgsExprNode;
 import com.ihorak.truffle.node.exprs.ReadProceduresArgsExprNodeGen;
-import com.ihorak.truffle.node.exprs.arithmetic.*;
-import com.ihorak.truffle.node.exprs.primitive_procedure.ListPrimitiveProcedureNodeFactory;
-import com.ihorak.truffle.node.exprs.primitive_procedure.MinusPrimitiveProcedureNodeFactory;
-import com.ihorak.truffle.node.exprs.primitive_procedure.MultiplyPrimitiveProcedureNodeFactory;
-import com.ihorak.truffle.node.exprs.primitive_procedure.PlusPrimitiveProcedureNodeFactory;
-import com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic.MinusBinaryNodeGen;
+import com.ihorak.truffle.node.exprs.primitive_procedure.*;
+import com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic.DividePrimitiveProcedureNodeFactory;
+import com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic.MinusPrimitiveProcedureNodeFactory;
+import com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic.MultiplyPrimitiveProcedureNodeFactory;
+import com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic.PlusPrimitiveProcedureNodeFactory;
 import com.ihorak.truffle.node.exprs.shared.CarExprNodeFactory;
 import com.ihorak.truffle.node.exprs.shared.ConsExprNodeFactory;
 import com.ihorak.truffle.node.exprs.shared.LengthExprNodeFactory;
 import com.ihorak.truffle.node.scope.ReadProcedureArgExprNode;
 import com.ihorak.truffle.node.exprs.builtin.EvalExprNodeGen;
-import com.ihorak.truffle.node.exprs.builtin.arithmetic.*;
 import com.ihorak.truffle.type.PrimitiveProcedure;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.dsl.NodeFactory;
@@ -35,8 +31,7 @@ public class PrimitiveProcedureGenerator {
         var plusPrimitiveProcedure = createArbitraryPrimitiveProcedure(PlusPrimitiveProcedureNodeFactory.getInstance(), language, "+");
         var minusPrimitiveProcedure = createArbitraryPrimitiveProcedure(MinusPrimitiveProcedureNodeFactory.getInstance(), language, "-");
         var multiplyPrimitiveProcedure = createArbitraryPrimitiveProcedure(MultiplyPrimitiveProcedureNodeFactory.getInstance(), language, "*");
-        var divideExpr = ReduceDivideExprRuntimeNodeGen.create(DivideExprNodeGen.create());
-        var divideFunction = createPrimitiveProcedure(divideExpr, null, language);
+        var dividePrimaryProcedure = createArbitraryPrimitiveProcedure(DividePrimitiveProcedureNodeFactory.getInstance(), language, "/");
         var evalExpr = EvalExprNodeGen.create(new ReadProcedureArgExprNode(0));
         var evalFunction = createPrimitiveProcedure(evalExpr, 1, language);
         var carPrimitiveProcedure = createPrimitiveProcedure(CarExprNodeFactory.getInstance(), language, "car");
@@ -49,7 +44,7 @@ public class PrimitiveProcedureGenerator {
                 new SchemeSymbol("+"), plusPrimitiveProcedure,
                 new SchemeSymbol("-"), minusPrimitiveProcedure,
                 new SchemeSymbol("*"), multiplyPrimitiveProcedure,
-                new SchemeSymbol("/"), divideFunction,
+                new SchemeSymbol("/"), dividePrimaryProcedure,
                 new SchemeSymbol("eval"), evalFunction,
                 new SchemeSymbol("car"), carPrimitiveProcedure,
                 new SchemeSymbol("cons"), consPrimitiveProcedure,

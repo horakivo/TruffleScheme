@@ -1,20 +1,28 @@
 package com.ihorak.truffle.builtin.arithmetic;
 
+import com.ihorak.truffle.convertor.util.BuiltinUtils;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
-public class DivideExprNodeTest {
+public class DividePrimitiveProcedureTest {
 
     private Context context;
 
     @Before
     public void setUp() {
         context = Context.create();
+    }
+
+    @BeforeClass
+    public static void before() {
+        BuiltinUtils.isBuiltinEnabled = false;
     }
 
     @Test
@@ -56,5 +64,10 @@ public class DivideExprNodeTest {
         var result = context.eval("scm", program);
 
         assertEquals(1 / 3D, result.asDouble(), 0);
+    }
+
+    @AfterClass
+    public static void after() {
+        BuiltinUtils.isBuiltinEnabled = true;
     }
 }

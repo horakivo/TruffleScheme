@@ -28,9 +28,9 @@ public class BuiltinFactory {
     private static SchemeExpression reduceDivide(List<SchemeExpression> arguments) {
         if (arguments.size() > 2) {
             var right = arguments.remove(arguments.size() - 1);
-            return DivideTestNodeGen.create(reduceDivide(arguments), right);
+            return DivideExprNodeGen.create(reduceDivide(arguments), right);
         } else {
-            return DivideTestNodeGen.create(arguments.get(0), arguments.get(1));
+            return DivideExprNodeGen.create(arguments.get(0), arguments.get(1));
         }
     }
 
@@ -50,10 +50,6 @@ public class BuiltinFactory {
         }
     }
 
-    // (define fun (lambda (x y) (+ x y))
-    // +
-    // (define plus +) (plus 1 2) plus
-    // (map + foo (list 2 3) (list 5 7)) --> (list (+ 2 5) (3 7))
     public static SchemeExpression createPlusBuiltin(List<SchemeExpression> arguments) {
         if (arguments.size() == 0) return new LongLiteralNode(0);
         if (arguments.size() == 1) return OneArgumentExprNodeGen.create(arguments.get(0));
