@@ -6,26 +6,26 @@ import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 
 import java.math.BigInteger;
 
-public abstract class PlusBinaryNode extends BinaryOperationNode {
+public abstract class MinusBinaryNode extends BinaryOperationNode {
 
     @Specialization(rewriteOn = ArithmeticException.class)
-    protected long addLongs(long left, long right) {
-        return Math.addExact(left, right);
+    protected long doLongs(long left, long right) {
+        return Math.subtractExact(left, right);
     }
 
     @TruffleBoundary
-    @Specialization(replaces = "addLongs")
-    protected BigInteger addBigInts(BigInteger left, BigInteger right) {
-        return left.add(right);
+    @Specialization(replaces = "doLongs")
+    protected BigInteger doBigInts(BigInteger left, BigInteger right) {
+        return left.subtract(right);
     }
 
     @Specialization
-    protected double addDoubles(double left, double right) {
-        return left + right;
+    protected double doDoubles(double left, double right) {
+        return left - right;
     }
 
     @Override
     public String toString() {
-        return "+";
+        return "-";
     }
 }

@@ -8,7 +8,10 @@ import com.ihorak.truffle.node.exprs.ReadProceduresArgsExprNode;
 import com.ihorak.truffle.node.exprs.ReadProceduresArgsExprNodeGen;
 import com.ihorak.truffle.node.exprs.arithmetic.*;
 import com.ihorak.truffle.node.exprs.primitive_procedure.ListPrimitiveProcedureNodeFactory;
+import com.ihorak.truffle.node.exprs.primitive_procedure.MinusPrimitiveProcedureNodeFactory;
+import com.ihorak.truffle.node.exprs.primitive_procedure.MultiplyPrimitiveProcedureNodeFactory;
 import com.ihorak.truffle.node.exprs.primitive_procedure.PlusPrimitiveProcedureNodeFactory;
+import com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic.MinusBinaryNodeGen;
 import com.ihorak.truffle.node.exprs.shared.CarExprNodeFactory;
 import com.ihorak.truffle.node.exprs.shared.ConsExprNodeFactory;
 import com.ihorak.truffle.node.exprs.shared.LengthExprNodeFactory;
@@ -30,10 +33,8 @@ public class PrimitiveProcedureGenerator {
 
     public static Map<SchemeSymbol, Object> generate(SchemeTruffleLanguage language) {
         var plusPrimitiveProcedure = createArbitraryPrimitiveProcedure(PlusPrimitiveProcedureNodeFactory.getInstance(), language, "+");
-        var minusExpr = ReduceMinusExprRuntimeNodeGen.create(MinusExprNodeGen.create());
-        var minusFunction = createPrimitiveProcedure(minusExpr, null, language);
-        var multiplyExpr = ReduceMultiplyExprRuntimeNodeGen.create(MultiplyExprNodeGen.create());
-        var multiplyFunction = createPrimitiveProcedure(multiplyExpr, null, language);
+        var minusPrimitiveProcedure = createArbitraryPrimitiveProcedure(MinusPrimitiveProcedureNodeFactory.getInstance(), language, "-");
+        var multiplyPrimitiveProcedure = createArbitraryPrimitiveProcedure(MultiplyPrimitiveProcedureNodeFactory.getInstance(), language, "*");
         var divideExpr = ReduceDivideExprRuntimeNodeGen.create(DivideExprNodeGen.create());
         var divideFunction = createPrimitiveProcedure(divideExpr, null, language);
         var evalExpr = EvalExprNodeGen.create(new ReadProcedureArgExprNode(0));
@@ -46,8 +47,8 @@ public class PrimitiveProcedureGenerator {
 
         return new HashMap<>(Map.of(
                 new SchemeSymbol("+"), plusPrimitiveProcedure,
-                new SchemeSymbol("-"), minusFunction,
-                new SchemeSymbol("*"), multiplyFunction,
+                new SchemeSymbol("-"), minusPrimitiveProcedure,
+                new SchemeSymbol("*"), multiplyPrimitiveProcedure,
                 new SchemeSymbol("/"), divideFunction,
                 new SchemeSymbol("eval"), evalFunction,
                 new SchemeSymbol("car"), carPrimitiveProcedure,

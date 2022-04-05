@@ -44,9 +44,9 @@ public class BuiltinFactory {
     private static SchemeExpression reduceMinus(List<SchemeExpression> arguments) {
         if (arguments.size() > 2) {
             var right = arguments.remove(arguments.size() - 1);
-            return MinusTestNodeGen.create(reduceMinus(arguments), right);
+            return MinusExprNodeGen.create(reduceMinus(arguments), right);
         } else {
-            return MinusTestNodeGen.create(arguments.get(0), arguments.get(1));
+            return MinusExprNodeGen.create(arguments.get(0), arguments.get(1));
         }
     }
 

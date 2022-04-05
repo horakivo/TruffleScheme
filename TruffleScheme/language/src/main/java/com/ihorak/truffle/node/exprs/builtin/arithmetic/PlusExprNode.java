@@ -26,4 +26,9 @@ public abstract class PlusExprNode extends SchemeExpression {
     protected double addDoubles(double left, double right) {
         return left + right;
     }
+
+    @Override
+    public String toString() {
+        return "+";
+    }
 }
