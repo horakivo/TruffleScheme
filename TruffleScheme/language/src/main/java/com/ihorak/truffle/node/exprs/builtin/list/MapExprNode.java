@@ -56,7 +56,7 @@ public class MapExprNode extends SchemeExpression {
 
     private UserDefinedProcedure getFunction(VirtualFrame virtualFrame) {
         try {
-            return operation.executeFunction(virtualFrame);
+            return operation.executeUserDefinedProcedure(virtualFrame);
         } catch (UnexpectedResultException e) {
             throw new SchemeException("map: contract violation \n expected: procedure? \n given: " + e.getResult(), this);
         }

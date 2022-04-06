@@ -17,22 +17,17 @@ import com.oracle.truffle.api.library.ExportLibrary;
  *
  * */
 @ExportLibrary(InteropLibrary.class)
-public class PrimitiveProcedure implements TruffleObject {
+public class PrimitiveProcedure extends AbstractProcedure implements TruffleObject {
 
-    private final CallTarget callTarget;
     private final Integer numberOfArgs;
     private final String name;
     //Because of the Interop library
     private final DispatchNode dispatchNode = DispatchNodeGen.create();
 
     public PrimitiveProcedure(CallTarget callTarget, Integer numberOfArgs, String name) {
-        this.callTarget = callTarget;
+        super(callTarget);
         this.numberOfArgs = numberOfArgs;
         this.name = name;
-    }
-
-    public CallTarget getCallTarget() {
-        return callTarget;
     }
 
     public Integer getNumberOfArgs() {

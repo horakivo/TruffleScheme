@@ -18,8 +18,8 @@ public abstract class SchemeExpression extends SchemeNode {
      */
     public abstract Object executeGeneric(VirtualFrame virtualFrame);
 
-    public UserDefinedProcedure executeFunction(VirtualFrame virtualFrame) throws UnexpectedResultException {
-        return SchemeTypesGen.expectSchemeFunction(executeGeneric(virtualFrame));
+    public UserDefinedProcedure executeUserDefinedProcedure(VirtualFrame virtualFrame) throws UnexpectedResultException {
+        return SchemeTypesGen.expectUserDefinedProcedure(executeGeneric(virtualFrame));
     }
 
     public boolean executeBoolean(VirtualFrame virtualFrame) throws UnexpectedResultException {

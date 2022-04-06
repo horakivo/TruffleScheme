@@ -21,7 +21,7 @@ public class DefineMacroExprNode extends SchemeExpression {
     @Override
     public Object executeGeneric(VirtualFrame virtualFrame) {
         try {
-            var transformationProc = transformationProcedure.executeFunction(virtualFrame);
+            var transformationProc = transformationProcedure.executeUserDefinedProcedure(virtualFrame);
             return new SchemeMacro(transformationProc);
         } catch (UnexpectedResultException e) {
             CompilerDirectives.transferToInterpreterAndInvalidate();

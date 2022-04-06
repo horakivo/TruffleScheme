@@ -16,9 +16,8 @@ import com.oracle.truffle.api.library.ExportMessage;
 import java.math.BigInteger;
 
 @ExportLibrary(InteropLibrary.class)
-public class UserDefinedProcedure implements TruffleObject {
+public class UserDefinedProcedure extends AbstractProcedure implements TruffleObject {
 
-    private final CallTarget callTarget;
     private final int expectedNumberOfArgs;
     private final boolean optionalArgs;
     private MaterializedFrame parentFrame;
@@ -26,7 +25,7 @@ public class UserDefinedProcedure implements TruffleObject {
     private final DispatchNode dispatchNode = DispatchNodeGen.create();
 
     public UserDefinedProcedure(CallTarget callTarget, int expectedNumberOfArgs, final boolean hasOptionalArgs) {
-        this.callTarget = callTarget;
+        super(callTarget);
         if (hasOptionalArgs) {
             this.expectedNumberOfArgs = expectedNumberOfArgs - 1;
         } else {
@@ -41,10 +40,6 @@ public class UserDefinedProcedure implements TruffleObject {
 
     public MaterializedFrame getParentFrame() {
         return parentFrame;
-    }
-
-    public CallTarget getCallTarget() {
-        return callTarget;
     }
 
     public Integer getExpectedNumberOfArgs() {
@@ -90,7 +85,7 @@ public class UserDefinedProcedure implements TruffleObject {
                 throw new SchemeException("'" + argument + "' is not an EasyScript value", null);
             }
         }
-        return this.dispatchNode.executeDispatch(this.callTarget, arguments);
+        return this.dispatchNode.executeDispatch(getCallTarget(), arguments);
     }
 
 
