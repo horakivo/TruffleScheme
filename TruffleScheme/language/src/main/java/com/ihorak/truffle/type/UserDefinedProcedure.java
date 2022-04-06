@@ -16,7 +16,7 @@ import com.oracle.truffle.api.library.ExportMessage;
 import java.math.BigInteger;
 
 @ExportLibrary(InteropLibrary.class)
-public class SchemeFunction implements TruffleObject {
+public class UserDefinedProcedure implements TruffleObject {
 
     private final CallTarget callTarget;
     private final int expectedNumberOfArgs;
@@ -25,7 +25,7 @@ public class SchemeFunction implements TruffleObject {
     //Because of the Interop library
     private final DispatchNode dispatchNode = DispatchNodeGen.create();
 
-    public SchemeFunction(CallTarget callTarget, int expectedNumberOfArgs, final boolean hasOptionalArgs) {
+    public UserDefinedProcedure(CallTarget callTarget, int expectedNumberOfArgs, final boolean hasOptionalArgs) {
         this.callTarget = callTarget;
         if (hasOptionalArgs) {
             this.expectedNumberOfArgs = expectedNumberOfArgs - 1;
@@ -95,7 +95,7 @@ public class SchemeFunction implements TruffleObject {
 
 
     private boolean isSchemeValue(Object argument) {
-        return argument instanceof Long || argument instanceof Double || argument instanceof BigInteger || argument instanceof SchemeCell || argument instanceof SchemeFunction || argument instanceof UndefinedValue;
+        return argument instanceof Long || argument instanceof Double || argument instanceof BigInteger || argument instanceof SchemeCell || argument instanceof UserDefinedProcedure || argument instanceof UndefinedValue;
 
     }
 

@@ -5,7 +5,7 @@ import com.ihorak.truffle.node.callable.DispatchNode;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.callable.DispatchNodeGen;
 import com.ihorak.truffle.type.SchemeCell;
-import com.ihorak.truffle.type.SchemeFunction;
+import com.ihorak.truffle.type.UserDefinedProcedure;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.UnexpectedResultException;
 
@@ -29,7 +29,7 @@ public class MapExprNode extends SchemeExpression {
 
     @Override
     public SchemeCell executeList(VirtualFrame virtualFrame) {
-        SchemeFunction function = getFunction(virtualFrame);
+        UserDefinedProcedure function = getFunction(virtualFrame);
         var argumentsAsLists = getArgumentsAsLists(virtualFrame);
         var result = SchemeCell.EMPTY_LIST;
 
@@ -54,7 +54,7 @@ public class MapExprNode extends SchemeExpression {
     }
 
 
-    private SchemeFunction getFunction(VirtualFrame virtualFrame) {
+    private UserDefinedProcedure getFunction(VirtualFrame virtualFrame) {
         try {
             return operation.executeFunction(virtualFrame);
         } catch (UnexpectedResultException e) {
@@ -89,7 +89,7 @@ public class MapExprNode extends SchemeExpression {
         }
     }
 
-    private boolean isNumberOfListsSameAsNumberOfArgs(SchemeFunction function, List<SchemeCell> lists) {
+    private boolean isNumberOfListsSameAsNumberOfArgs(UserDefinedProcedure function, List<SchemeCell> lists) {
         if (function.getExpectedNumberOfArgs() != null && function.getExpectedNumberOfArgs() != lists.size()) {
             throw new SchemeException("map: argument mismatch; \n the given procedure's expected number of arguments does not match the given number of lists \n expected: " + function.getExpectedNumberOfArgs() + "\n given: " + lists.size(), this);
         }

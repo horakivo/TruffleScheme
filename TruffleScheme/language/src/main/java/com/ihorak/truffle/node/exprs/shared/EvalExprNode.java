@@ -6,7 +6,7 @@ import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.convertor.ListToExpressionConverter;
 import com.ihorak.truffle.node.exprs.LimitedBuiltin;
 import com.ihorak.truffle.type.SchemeCell;
-import com.ihorak.truffle.type.SchemeFunction;
+import com.ihorak.truffle.type.UserDefinedProcedure;
 import com.ihorak.truffle.type.SchemePair;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.dsl.Specialization;
@@ -25,7 +25,7 @@ public abstract class EvalExprNode extends LimitedBuiltin {
     }
 
     @Specialization
-    public SchemeFunction evalFunction(SchemeFunction value) {
+    public UserDefinedProcedure evalFunction(UserDefinedProcedure value) {
         return value;
     }
 

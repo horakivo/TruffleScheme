@@ -1,16 +1,14 @@
 package com.ihorak.truffle.type;
 
-import com.oracle.truffle.api.CallTarget;
-
 public class SchemeMacro {
 
-    private final SchemeFunction transformationProcedure;
+    private final UserDefinedProcedure transformationProcedure;
 
-    public SchemeMacro(SchemeFunction transformationProcedure) {
+    public SchemeMacro(UserDefinedProcedure transformationProcedure) {
         this.transformationProcedure = transformationProcedure;
     }
 
-    public SchemeFunction getTransformationProcedure() {
+    public UserDefinedProcedure getTransformationProcedure() {
         return transformationProcedure;
     }
 }

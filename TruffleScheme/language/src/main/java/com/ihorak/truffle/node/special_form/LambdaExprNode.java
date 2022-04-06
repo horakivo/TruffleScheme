@@ -1,17 +1,16 @@
 package com.ihorak.truffle.node.special_form;
 
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.type.SchemeFunction;
-import com.oracle.truffle.api.CompilerDirectives;
+import com.ihorak.truffle.type.UserDefinedProcedure;
 import com.oracle.truffle.api.frame.VirtualFrame;
 
 public class LambdaExprNode extends SchemeExpression {
 
-    private final SchemeFunction schemeFunction;
+    private final UserDefinedProcedure userDefinedProcedure;
 
 
-    public LambdaExprNode(SchemeFunction schemeFunction) {
-        this.schemeFunction = schemeFunction;
+    public LambdaExprNode(UserDefinedProcedure userDefinedProcedure) {
+        this.userDefinedProcedure = userDefinedProcedure;
     }
 
     /**
@@ -19,9 +18,9 @@ public class LambdaExprNode extends SchemeExpression {
      * It would cause that the arguments from the previous call will be applied!
      * */
     @Override
-    public SchemeFunction executeFunction(VirtualFrame virtualFrame) {
-        schemeFunction.setParentFrame(virtualFrame.materialize());
-        return schemeFunction;
+    public UserDefinedProcedure executeFunction(VirtualFrame virtualFrame) {
+        userDefinedProcedure.setParentFrame(virtualFrame.materialize());
+        return userDefinedProcedure;
     }
 
     @Override

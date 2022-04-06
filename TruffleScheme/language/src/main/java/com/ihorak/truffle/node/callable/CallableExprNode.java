@@ -2,14 +2,12 @@ package com.ihorak.truffle.node.callable;
 
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.exceptions.SchemeException;
-import com.ihorak.truffle.exceptions.TailCallException;
-import com.ihorak.truffle.node.callable.DispatchNode;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.convertor.ListToExpressionConverter;
 import com.ihorak.truffle.node.callable.DispatchNodeGen;
 import com.ihorak.truffle.type.PrimitiveProcedure;
 import com.ihorak.truffle.type.SchemeCell;
-import com.ihorak.truffle.type.SchemeFunction;
+import com.ihorak.truffle.type.UserDefinedProcedure;
 import com.ihorak.truffle.type.SchemeMacro;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.dsl.Fallback;
@@ -46,7 +44,7 @@ public abstract class CallableExprNode extends SchemeExpression {
     }
 
     @Specialization
-    protected Object doUserDefinedProcedure(VirtualFrame frame, SchemeFunction function) {
+    protected Object doUserDefinedProcedure(VirtualFrame frame, UserDefinedProcedure function) {
         var arguments = getProcedureArguments(function, frame);
 
         if (this.arguments.length < function.getExpectedNumberOfArgs()) {
@@ -96,7 +94,7 @@ public abstract class CallableExprNode extends SchemeExpression {
         throw new SchemeException("application: not a procedure or macro;\nexpected: macro or procedure that can be applied to arguments\ngiven: " + object, this);
     }
 
-    private Object[] getProcedureArguments(SchemeFunction function, VirtualFrame parentFrame) {
+    private Object[] getProcedureArguments(UserDefinedProcedure function, VirtualFrame parentFrame) {
         if (conditionProfile.profile(function.isOptionalArgs())) {
             return getProcedureArgsWithOptional(function, parentFrame);
         } else {
@@ -105,7 +103,7 @@ public abstract class CallableExprNode extends SchemeExpression {
     }
 
     @ExplodeLoop
-    private Object[] getProcedureArgsWithOptional(SchemeFunction function, VirtualFrame parentFrame) {
+    private Object[] getProcedureArgsWithOptional(UserDefinedProcedure function, VirtualFrame parentFrame) {
         // + 2 because first one is parent frame and second is the optional list
         Object[] args = new Object[function.getExpectedNumberOfArgs() + 2];
         args[0] = function.getParentFrame();
@@ -126,7 +124,7 @@ public abstract class CallableExprNode extends SchemeExpression {
     }
 
     @ExplodeLoop
-    private Object[] getProcedureOrMacroArgsNoOptional(SchemeFunction function, VirtualFrame parentFrame) {
+    private Object[] getProcedureOrMacroArgsNoOptional(UserDefinedProcedure function, VirtualFrame parentFrame) {
         Object[] args = new Object[arguments.length + 1];
         args[0] = function.getParentFrame();
 
@@ -154,7 +152,7 @@ public abstract class CallableExprNode extends SchemeExpression {
 
     }
 
-    private Object applyTransformationProcedure(SchemeFunction transformationProcedure, Object[] arguments) {
+    private Object applyTransformationProcedure(UserDefinedProcedure transformationProcedure, Object[] arguments) {
         return dispatchNode.executeDispatch(transformationProcedure.getCallTarget(), arguments);
     }
 

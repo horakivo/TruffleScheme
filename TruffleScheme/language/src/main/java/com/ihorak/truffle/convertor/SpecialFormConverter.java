@@ -8,7 +8,6 @@ import com.ihorak.truffle.node.callable.ProcedureRootNode;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.exprs.builtin.arithmetic.OneArgumentExprNodeGen;
 import com.ihorak.truffle.node.literals.BooleanLiteralNode;
-import com.ihorak.truffle.node.literals.LongLiteralNode;
 import com.ihorak.truffle.node.literals.UndefinedLiteralNode;
 import com.ihorak.truffle.node.scope.ReadProcedureArgExprNode;
 import com.ihorak.truffle.node.scope.WriteGlobalVariableExprNodeGen;
@@ -133,7 +132,7 @@ public class SpecialFormConverter {
         var frameDescriptor = lambdaContext.getFrameDescriptor();
         var rootNode = new ProcedureRootNode(context.getLanguage(), frameDescriptor, allLambdaExpressions);
         var hasOptionalArgs = params instanceof SchemePair;
-        var function = new SchemeFunction(rootNode.getCallTarget(), paramExprs.size(), hasOptionalArgs);
+        var function = new UserDefinedProcedure(rootNode.getCallTarget(), paramExprs.size(), hasOptionalArgs);
         return new LambdaExprNode(function);
     }
 
