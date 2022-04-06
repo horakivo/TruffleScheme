@@ -1,12 +1,12 @@
 package com.ihorak.truffle.node.exprs.shared;
 
 import com.ihorak.truffle.exceptions.SchemeException;
-import com.ihorak.truffle.node.exprs.BuiltinExpression;
+import com.ihorak.truffle.node.exprs.LimitedBuiltin;
 import com.ihorak.truffle.type.SchemeCell;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
 
-public abstract class LengthExprNode extends BuiltinExpression {
+public abstract class LengthExprNode extends LimitedBuiltin {
 
     @Specialization
     public long doLength(SchemeCell list) {

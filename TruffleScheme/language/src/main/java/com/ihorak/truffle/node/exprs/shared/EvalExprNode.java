@@ -1,20 +1,18 @@
-package com.ihorak.truffle.node.exprs.builtin;
+package com.ihorak.truffle.node.exprs.shared;
 
 import com.ihorak.truffle.convertor.context.Mode;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.exceptions.SchemeException;
-import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.convertor.ListToExpressionConverter;
+import com.ihorak.truffle.node.exprs.LimitedBuiltin;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeFunction;
 import com.ihorak.truffle.type.SchemePair;
 import com.ihorak.truffle.type.SchemeSymbol;
-import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
 
-@NodeChild(value = "value")
-public abstract class EvalExprNode extends SchemeExpression {
+public abstract class EvalExprNode extends LimitedBuiltin {
 
     @Specialization
     public long evalLong(long value) {

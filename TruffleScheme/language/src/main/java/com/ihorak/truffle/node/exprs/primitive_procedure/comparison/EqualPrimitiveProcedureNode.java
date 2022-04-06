@@ -1,13 +1,13 @@
 package com.ihorak.truffle.node.exprs.primitive_procedure.comparison;
 
 import com.ihorak.truffle.exceptions.SchemeException;
-import com.ihorak.truffle.node.exprs.ArbitraryBuiltinExpression;
+import com.ihorak.truffle.node.exprs.BinaryReducibleBuiltin;
 import com.ihorak.truffle.node.exprs.core.BinaryOperationNode;
 import com.ihorak.truffle.node.exprs.core.comperison.EqualBinaryNodeGen;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 
-public abstract class EqualPrimitiveProcedureNode extends ArbitraryBuiltinExpression {
+public abstract class EqualPrimitiveProcedureNode extends BinaryReducibleBuiltin {
 
     @Child private BinaryOperationNode equalOperation = EqualBinaryNodeGen.create();
     @Child private ReduceComparisonPrimitiveProcedureNode reduce = ReduceComparisonPrimitiveProcedureNodeGen.create();

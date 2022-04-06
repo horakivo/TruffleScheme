@@ -13,8 +13,7 @@ public abstract class ReadProcedureArgsExprNode extends SchemeExpression {
     protected Object getProceduresArgumentsFast(VirtualFrame frame,
                                                   @Cached("frame.getArguments().length") int cachedLength) {
         var frameArguments = frame.getArguments();
-        var frameArgumentSize = frameArguments.length;
-        Object[] arguments = new Object[frameArgumentSize - 1];
+        Object[] arguments = new Object[cachedLength - 1];
 
         for (int i = 1; i < cachedLength; i++) {
             arguments[i - 1] = frameArguments[i];

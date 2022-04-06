@@ -1,24 +1,26 @@
-package com.ihorak.truffle.node.exprs.builtin.logical;
+package com.ihorak.truffle.node.exprs.builtin.comparison;
 
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.exprs.core.BinaryOperationNode;
-import com.ihorak.truffle.node.exprs.core.comperison.LessThenBinaryNodeGen;
+import com.ihorak.truffle.node.exprs.core.comperison.LessThenEqualBinaryNodeGen;
 import com.oracle.truffle.api.frame.VirtualFrame;
 
-public class LessThenExprNode extends SchemeExpression {
+
+
+public class LessThenEqualExprNode extends SchemeExpression {
 
     @Child private SchemeExpression left;
     @Child private SchemeExpression right;
-    @Child private BinaryOperationNode lessThenOperation = LessThenBinaryNodeGen.create();
+    @Child private BinaryOperationNode lessThenEqualOperation = LessThenEqualBinaryNodeGen.create();
 
-    public LessThenExprNode(SchemeExpression left, SchemeExpression right) {
+    public LessThenEqualExprNode(SchemeExpression left, SchemeExpression right) {
         this.left = left;
         this.right = right;
     }
 
     @Override
     public boolean executeBoolean(VirtualFrame frame) {
-        return lessThenOperation.executeBoolean(left.executeGeneric(frame), right.executeGeneric(frame));
+        return lessThenEqualOperation.executeBoolean(left.executeGeneric(frame), right.executeGeneric(frame));
     }
 
     @Override

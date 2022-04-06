@@ -1,21 +1,15 @@
 package com.ihorak.truffle;
 
-import com.ihorak.truffle.node.callable.ProcedureRootNode;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.exprs.PrimitiveProcedureRootNode;
-import com.ihorak.truffle.node.exprs.ReadProcedureArgsExprNodeGen;
-import com.ihorak.truffle.node.exprs.primitive_procedure.ListPrimitiveProcedureNodeFactory;
+import com.ihorak.truffle.node.callable.ProcedureRootNode;
+import com.ihorak.truffle.node.exprs.*;
 import com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic.DividePrimitiveProcedureNodeFactory;
 import com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic.MinusPrimitiveProcedureNodeFactory;
 import com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic.MultiplyPrimitiveProcedureNodeFactory;
 import com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic.PlusPrimitiveProcedureNodeFactory;
 import com.ihorak.truffle.node.exprs.primitive_procedure.comparison.*;
-import com.ihorak.truffle.node.exprs.shared.CarExprNodeFactory;
-import com.ihorak.truffle.node.exprs.shared.CdrExprNodeFactory;
-import com.ihorak.truffle.node.exprs.shared.ConsExprNodeFactory;
-import com.ihorak.truffle.node.exprs.shared.LengthExprNodeFactory;
+import com.ihorak.truffle.node.exprs.shared.*;
 import com.ihorak.truffle.node.scope.ReadProcedureArgExprNode;
-import com.ihorak.truffle.node.exprs.builtin.EvalExprNodeGen;
 import com.ihorak.truffle.type.PrimitiveProcedure;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.dsl.NodeFactory;
@@ -31,33 +25,31 @@ public class PrimitiveProcedureGenerator {
 
     public static Map<SchemeSymbol, Object> generate(SchemeTruffleLanguage language) {
         HashMap<SchemeSymbol, Object> result = new HashMap<>();
-        var plusPrimitiveProcedure = createArbitraryPrimitiveProcedure(PlusPrimitiveProcedureNodeFactory.getInstance(), language, "+");
-        var minusPrimitiveProcedure = createArbitraryPrimitiveProcedure(MinusPrimitiveProcedureNodeFactory.getInstance(), language, "-");
-        var multiplyPrimitiveProcedure = createArbitraryPrimitiveProcedure(MultiplyPrimitiveProcedureNodeFactory.getInstance(), language, "*");
-        var dividePrimaryProcedure = createArbitraryPrimitiveProcedure(DividePrimitiveProcedureNodeFactory.getInstance(), language, "/");
-        var listPrimitiveProcedure = createArbitraryPrimitiveProcedure(ListPrimitiveProcedureNodeFactory.getInstance(), language, "list");
+        var plusPrimitiveProcedure = createBinaryReduciblePrimitiveProcedure(PlusPrimitiveProcedureNodeFactory.getInstance(), language, "+");
+        var minusPrimitiveProcedure = createBinaryReduciblePrimitiveProcedure(MinusPrimitiveProcedureNodeFactory.getInstance(), language, "-");
+        var multiplyPrimitiveProcedure = createBinaryReduciblePrimitiveProcedure(MultiplyPrimitiveProcedureNodeFactory.getInstance(), language, "*");
+        var dividePrimaryProcedure = createBinaryReduciblePrimitiveProcedure(DividePrimitiveProcedureNodeFactory.getInstance(), language, "/");
 
-        var equalPrimitiveProcedure = createArbitraryPrimitiveProcedure(EqualPrimitiveProcedureNodeFactory.getInstance(), language, "=");
-        var moreThenPrimitiveProcedure = createArbitraryPrimitiveProcedure(MoreThenPrimitiveProcedureNodeFactory.getInstance(), language, ">");
-        var moreThenEqualPrimitiveProcedure = createArbitraryPrimitiveProcedure(MoreThenEqualPrimitiveProcedureNodeFactory.getInstance(), language, ">=");
-        var lessThenEqualPrimitiveProcedure = createArbitraryPrimitiveProcedure(LessThenEqualPrimitiveProcedureNodeFactory.getInstance(), language, "<=");
-        var lessThenPrimitiveProcedure = createArbitraryPrimitiveProcedure(LessThenPrimitiveProcedureNodeFactory.getInstance(), language, "<");
+        var listPrimitiveProcedure = createArbitraryPrimitiveProcedure(ListExprNodeFactory.getInstance(), language, "list");
 
-        var evalExpr = EvalExprNodeGen.create(new ReadProcedureArgExprNode(0));
-        var evalProcedure = createPrimitiveProcedure(evalExpr, 1, language);
+        var equalPrimitiveProcedure = createBinaryReduciblePrimitiveProcedure(EqualPrimitiveProcedureNodeFactory.getInstance(), language, "=");
+        var moreThenPrimitiveProcedure = createBinaryReduciblePrimitiveProcedure(MoreThenPrimitiveProcedureNodeFactory.getInstance(), language, ">");
+        var moreThenEqualPrimitiveProcedure = createBinaryReduciblePrimitiveProcedure(MoreThenEqualPrimitiveProcedureNodeFactory.getInstance(), language, ">=");
+        var lessThenEqualPrimitiveProcedure = createBinaryReduciblePrimitiveProcedure(LessThenEqualPrimitiveProcedureNodeFactory.getInstance(), language, "<=");
+        var lessThenPrimitiveProcedure = createBinaryReduciblePrimitiveProcedure(LessThenPrimitiveProcedureNodeFactory.getInstance(), language, "<");
 
-
-        var carPrimitiveProcedure = createPrimitiveProcedure(CarExprNodeFactory.getInstance(), language, "car");
-        var consPrimitiveProcedure = createPrimitiveProcedure(ConsExprNodeFactory.getInstance(), language, "cons");
-        var lengthPrimitiveProcedure = createPrimitiveProcedure(LengthExprNodeFactory.getInstance(), language, "length");
-        var cdrPrimitiveProcedure = createPrimitiveProcedure(CdrExprNodeFactory.getInstance(), language, "cdr");
+        var evalPrimitiveProcedure = createLimitedPrimitiveProcedure(EvalExprNodeFactory.getInstance(), language, "eval");
+        var carPrimitiveProcedure = createLimitedPrimitiveProcedure(CarExprNodeFactory.getInstance(), language, "car");
+        var consPrimitiveProcedure = createLimitedPrimitiveProcedure(ConsExprNodeFactory.getInstance(), language, "cons");
+        var lengthPrimitiveProcedure = createLimitedPrimitiveProcedure(LengthExprNodeFactory.getInstance(), language, "length");
+        var cdrPrimitiveProcedure = createLimitedPrimitiveProcedure(CdrExprNodeFactory.getInstance(), language, "cdr");
 
 
         result.put(new SchemeSymbol("+"), plusPrimitiveProcedure);
         result.put(new SchemeSymbol("-"), minusPrimitiveProcedure);
         result.put(new SchemeSymbol("*"), multiplyPrimitiveProcedure);
         result.put(new SchemeSymbol("/"), dividePrimaryProcedure);
-        result.put(new SchemeSymbol("eval"), evalProcedure);
+        result.put(new SchemeSymbol("eval"), evalPrimitiveProcedure);
         result.put(new SchemeSymbol("car"), carPrimitiveProcedure);
         result.put(new SchemeSymbol("cons"), consPrimitiveProcedure);
         result.put(new SchemeSymbol("length"), lengthPrimitiveProcedure);
@@ -72,13 +64,14 @@ public class PrimitiveProcedureGenerator {
         return result;
     }
 
-    public static PrimitiveProcedure createPrimitiveProcedure(SchemeExpression schemeExpression, Integer expectedNumberOfArgs, SchemeTruffleLanguage language) {
-        var rootNode = new ProcedureRootNode(language, new FrameDescriptor(), List.of(schemeExpression));
+    public static PrimitiveProcedure createArbitraryPrimitiveProcedure(NodeFactory<? extends ArbitraryBuiltin> factory, SchemeTruffleLanguage language, String name) {
+        var arbitraryBuiltinExpr = factory.createNode(ReadProcedureArgsExprNodeGen.create());
+        var rootNode = new PrimitiveProcedureRootNode(language, arbitraryBuiltinExpr);
 
-        return new PrimitiveProcedure(rootNode.getCallTarget(), expectedNumberOfArgs, "not impl yet");
+        return new PrimitiveProcedure(rootNode.getCallTarget(), null, name);
     }
 
-    public static PrimitiveProcedure createPrimitiveProcedure(NodeFactory<? extends SchemeExpression> factory, SchemeTruffleLanguage language, String name) {
+    public static PrimitiveProcedure createLimitedPrimitiveProcedure(NodeFactory<? extends LimitedBuiltin> factory, SchemeTruffleLanguage language, String name) {
         var expectedNumberOfArgs = factory.getExecutionSignature().size();
         ReadProcedureArgExprNode[] arguments =
                 IntStream
@@ -92,7 +85,7 @@ public class PrimitiveProcedureGenerator {
         return new PrimitiveProcedure(rootNode.getCallTarget(), expectedNumberOfArgs, name);
     }
 
-    public static PrimitiveProcedure createArbitraryPrimitiveProcedure(NodeFactory<? extends SchemeExpression> factory, SchemeTruffleLanguage language, String name) {
+    public static PrimitiveProcedure createBinaryReduciblePrimitiveProcedure(NodeFactory<? extends BinaryReducibleBuiltin> factory, SchemeTruffleLanguage language, String name) {
 
         var expression = factory.createNode(ReadProcedureArgsExprNodeGen.create());
         var rootNode = new PrimitiveProcedureRootNode(language, expression);

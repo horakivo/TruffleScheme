@@ -6,5 +6,5 @@ import com.oracle.truffle.api.dsl.NodeChild;
 
 @NodeChild(value = "arguments", type = ReadProcedureArgsExprNode.class)
 @GenerateNodeFactory
-public abstract class ArbitraryBuiltinExpression extends SchemeExpression {
+public abstract class BinaryReducibleBuiltin extends SchemeExpression {
 }

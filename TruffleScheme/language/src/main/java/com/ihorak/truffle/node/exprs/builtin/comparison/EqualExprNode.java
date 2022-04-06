@@ -1,16 +1,9 @@
-package com.ihorak.truffle.node.exprs.builtin.logical;
+package com.ihorak.truffle.node.exprs.builtin.comparison;
 
-import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.exprs.core.BinaryOperationNode;
 import com.ihorak.truffle.node.exprs.core.comperison.EqualBinaryNodeGen;
-import com.oracle.truffle.api.dsl.Fallback;
-import com.oracle.truffle.api.dsl.NodeChild;
-import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
-import com.oracle.truffle.api.nodes.UnexpectedResultException;
-
-import java.math.BigInteger;
 
 
 public class EqualExprNode extends SchemeExpression {

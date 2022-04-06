@@ -1,9 +1,7 @@
-package com.ihorak.truffle.node.exprs.builtin.logical;
+package com.ihorak.truffle.node.exprs.builtin.comparison;
 
-import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.oracle.truffle.api.CompilerDirectives;
-import com.oracle.truffle.api.dsl.UnsupportedSpecializationException;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.nodes.UnexpectedResultException;

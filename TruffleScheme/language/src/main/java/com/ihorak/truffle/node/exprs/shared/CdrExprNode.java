@@ -1,17 +1,14 @@
 package com.ihorak.truffle.node.exprs.shared;
 
 import com.ihorak.truffle.exceptions.SchemeException;
-import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.exprs.BuiltinExpression;
+import com.ihorak.truffle.node.exprs.LimitedBuiltin;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemePair;
-import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.dsl.Fallback;
-import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.profiles.BranchProfile;
 
-public abstract class CdrExprNode extends BuiltinExpression {
+public abstract class CdrExprNode extends LimitedBuiltin {
 
     private final BranchProfile emptyListProfile = BranchProfile.create();
 

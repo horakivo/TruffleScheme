@@ -1,20 +1,29 @@
 package com.ihorak.truffle.builtin;
 
+import com.ihorak.truffle.convertor.util.BuiltinUtils;
 import com.ihorak.truffle.type.UndefinedValue;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-public class EvalExprNodeTest {
+public class EvalPrimitiveProcedureNodeTest {
 
     private Context context;
 
     @Before
     public void setUp() {
         context = Context.create();
+    }
+
+    @BeforeClass
+    public static void before() {
+        BuiltinUtils.isBuiltinEnabled = false;
     }
 
     @Test
@@ -112,5 +121,10 @@ public class EvalExprNodeTest {
         assertEquals("eval: arity mismatch; Expected number of arguments does not match the given number\n" +
                 "expected: 1\n" +
                 "given: 2", msg);
+    }
+
+    @AfterClass
+    public static void after() {
+        BuiltinUtils.isBuiltinEnabled = true;
     }
 }

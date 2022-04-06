@@ -1,16 +1,14 @@
 package com.ihorak.truffle.convertor;
 
-import com.ihorak.truffle.exceptions.SchemeException;
+
 import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.exprs.builtin.*;
 import com.ihorak.truffle.node.exprs.builtin.arithmetic.*;
+import com.ihorak.truffle.node.exprs.builtin.comparison.*;
 import com.ihorak.truffle.node.exprs.builtin.list.*;
-import com.ihorak.truffle.node.exprs.builtin.logical.*;
-import com.ihorak.truffle.node.exprs.shared.CarExprNodeFactory;
-import com.ihorak.truffle.node.exprs.shared.CdrExprNodeFactory;
-import com.ihorak.truffle.node.exprs.shared.ConsExprNodeFactory;
-import com.ihorak.truffle.node.exprs.shared.LengthExprNodeFactory;
+import com.ihorak.truffle.node.exprs.shared.*;
 import com.ihorak.truffle.node.literals.BooleanLiteralNode;
 import com.ihorak.truffle.node.literals.LongLiteralNode;
 
@@ -80,15 +78,16 @@ public class BuiltinFactory {
     }
 
     public static SchemeExpression createEvalBuiltin(List<SchemeExpression> arguments, ParsingContext context) {
-        if (arguments.size() == 1) {
-            return EvalExprNodeGen.create(arguments.get(0));
+        int expectedSize = EvalExprNodeFactory.getInstance().getExecutionSignature().size();
+        if (arguments.size() == expectedSize) {
+            return EvalExprNodeFactory.create(arguments.toArray(SchemeExpression[]::new));
         } else {
-            throw new SchemeException("eval: arity mismatch; Expected number of arguments does not match the given number \n expected: 1 \n given: " + arguments.size(), null);
+            throw new SchemeException("eval: arity mismatch; Expected number of arguments does not match the given number\nexpected: " + expectedSize + "\ngiven: " + arguments.size(), null);
         }
     }
 
     public static SchemeExpression createListBuiltin(List<SchemeExpression> arguments) {
-        return new ListExprNode(arguments);
+        return ListExprNodeFactory.create(new ConvertSchemeExprsArgumentsNode(arguments.toArray(SchemeExpression[]::new)));
     }
 
     public static SchemeExpression createConsBuiltin(List<SchemeExpression> arguments) {
@@ -126,9 +125,10 @@ public class BuiltinFactory {
         }
     }
 
+    //TODO this is messy
     public static SchemeExpression createAppendBuiltin(List<SchemeExpression> arguments) {
-        if (arguments.size() == 0) return new ListExprNode();
-        if (arguments.size() == 1) return AppendExprNodeGen.create(arguments.get(0), new ListExprNode());
+        if (arguments.size() == 0) return ListExprNodeFactory.create(new ConvertSchemeExprsArgumentsNode(new SchemeExpression[] {}));
+        if (arguments.size() == 1) return AppendExprNodeGen.create(arguments.get(0), ListExprNodeFactory.create(new ConvertSchemeExprsArgumentsNode(new SchemeExpression[] {})));
         return reduceAppend(arguments);
     }
 

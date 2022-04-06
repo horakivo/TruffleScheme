@@ -1,13 +1,13 @@
 package com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic;
 
-import com.ihorak.truffle.node.exprs.ArbitraryBuiltinExpression;
+import com.ihorak.truffle.node.exprs.BinaryReducibleBuiltin;
 import com.ihorak.truffle.node.exprs.core.BinaryOperationNode;
 import com.ihorak.truffle.node.exprs.core.arithmetic.PlusBinaryNodeGen;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 
-public abstract class PlusPrimitiveProcedureNode extends ArbitraryBuiltinExpression {
+public abstract class PlusPrimitiveProcedureNode extends BinaryReducibleBuiltin {
 
     @SuppressWarnings("FieldMayBeFinal")
     @Child

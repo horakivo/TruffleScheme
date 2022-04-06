@@ -55,12 +55,10 @@ public class PlusPrimitiveProcedureTest {
     public void givenFloatingDecimalNumber_whenAddIsCalled_thenShouldReturnResult() {
         var program = "(+ 12.3 5.3 1.1)";
 
-
         var result = context.eval("scm", program);
 
         assertEquals(12.3D + 5.3 + 1.1, result.asDouble(), 0);
     }
-
 
 //TODO
 //    @Test

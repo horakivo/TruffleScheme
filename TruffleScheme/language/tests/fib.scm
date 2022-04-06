@@ -1,5 +1,6 @@
 (define fibonacci
   (lambda (n)
+  (list 1 2 3)
     (if (< n 2)
         n
         (+ (fibonacci (- n 1))

@@ -1,4 +1,4 @@
-package com.ihorak.truffle.node.exprs.builtin.logical;
+package com.ihorak.truffle.node.exprs.builtin.comparison;
 
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.exprs.core.BinaryOperationNode;
