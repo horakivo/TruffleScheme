@@ -42,7 +42,7 @@ public class UserDefinedProcedure extends AbstractProcedure implements TruffleOb
         return parentFrame;
     }
 
-    public Integer getExpectedNumberOfArgs() {
+    public int getExpectedNumberOfArgs() {
         return expectedNumberOfArgs;
     }
 

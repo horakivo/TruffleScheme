@@ -90,7 +90,7 @@ public class MapExprNode extends SchemeExpression {
     }
 
     private boolean isNumberOfListsSameAsNumberOfArgs(UserDefinedProcedure function, List<SchemeCell> lists) {
-        if (function.getExpectedNumberOfArgs() != null && function.getExpectedNumberOfArgs() != lists.size()) {
+        if (function.getExpectedNumberOfArgs() != lists.size()) {
             throw new SchemeException("map: argument mismatch; \n the given procedure's expected number of arguments does not match the given number of lists \n expected: " + function.getExpectedNumberOfArgs() + "\n given: " + lists.size(), this);
         }
         return true;

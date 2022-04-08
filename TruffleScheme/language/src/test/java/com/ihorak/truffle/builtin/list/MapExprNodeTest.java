@@ -6,8 +6,7 @@ import org.graalvm.polyglot.PolyglotException;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.*;
 
 public class MapExprNodeTest {
 
@@ -18,17 +17,18 @@ public class MapExprNodeTest {
         context = Context.create();
     }
 
-//    @Test
-//    public void giveListAndMinus_whenMap_thenShouldListWithNegativeNumbers() {
-//        var program = "(map - (list 1 2 3))";
-//        var expr = Reader.readExpr(CharStreams.fromString(program));
-//        GlobalEnvironment globalEnvironment = new GlobalEnvironment();
-//
-//        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
-//        var expectedResult = new SchemeCell(-1L, new SchemeCell(-2L, new SchemeCell(-3L, SchemeCell.EMPTY_LIST)));
-//
-//        assertEquals(expectedResult, result);
-//    }
+    @Test
+    public void giveListAndMinus_whenMap_thenShouldListWithNegativeNumbers() {
+        var program = "(map - (list 1 2 3))";
+
+        var result = context.eval("scm", program);
+
+        assertTrue(result.hasArrayElements());
+        assertEquals(3, result.getArraySize());
+        assertEquals(-1L, result.getArrayElement(0).asLong());
+        assertEquals(-2L, result.getArrayElement(1).asLong());
+        assertEquals(-3L, result.getArrayElement(1).asLong());
+    }
 
 //    @Test
 //    public void giveListsAndPlus_whenMap_thenShouldReturnAddedAllLists() {
@@ -41,7 +41,7 @@ public class MapExprNodeTest {
 //
 //        assertEquals(expectedResult, result);
 //    }
-
+//
 //    //TODO potentionally move to JUNIT 5 since its not nice to check error messages here
 //    @Test(expected = SchemeException.class)
 //    public void giveListsWithDifferentNumberOfArgs_whenMap_thenShouldThrowException() {
@@ -58,9 +58,8 @@ public class MapExprNodeTest {
 
         var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
-        assertEquals("map: argument mismatch; \n" +
-                " the given procedure's expected number of arguments does not match the given number of lists \n" +
-                " expected: 1\n" +
-                " given: 3", msg);
+        assertEquals("User defined procedure: arity mismatch; Expected number of arguments does not match the given number\n" +
+                "expected: 1\n" +
+                "given: 3", msg);
     }
 }

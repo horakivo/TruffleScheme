@@ -142,7 +142,7 @@ public class BuiltinFactory {
 
     public static SchemeExpression createMapBuiltin(List<SchemeExpression> arguments) {
         if (arguments.size() > 1) {
-            return new MapExprNode(arguments.remove(0), arguments);
+            return MapExprNode2Factory.create(new ConvertSchemeExprsArgumentsNode(arguments.toArray(SchemeExpression[]::new)));
         } else {
             throw new SchemeException("map: arity mismatch; Expected number of argument does not match the given number \n expected: at least 2 \n given: " + (arguments.size()), null);
         }
