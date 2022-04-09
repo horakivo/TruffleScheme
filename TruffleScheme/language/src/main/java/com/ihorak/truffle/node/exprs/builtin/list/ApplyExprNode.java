@@ -8,18 +8,19 @@ import com.ihorak.truffle.type.AbstractProcedure;
 import com.ihorak.truffle.type.PrimitiveProcedure;
 import com.ihorak.truffle.type.UserDefinedProcedure;
 import com.oracle.truffle.api.dsl.Specialization;
+import com.oracle.truffle.api.frame.MaterializedFrame;
 import com.oracle.truffle.api.profiles.BranchProfile;
 
 public abstract class ApplyExprNode extends SchemeNode {
 
-    public abstract Object execute(AbstractProcedure callable, Object[] arguments);
+    public abstract Object execute(MaterializedFrame frame, AbstractProcedure callable, Object[] arguments);
     @Child private DispatchNode dispatchNode = DispatchNodeGen.create();
 
     private final BranchProfile primitiveProcedureWrongNumberOfArgsProfile = BranchProfile.create();
     private final BranchProfile userDefinedProcedureWrongNumberOfArgsProfile = BranchProfile.create();
 
     @Specialization
-    protected Object doApplyOnPrimitiveProcedure(PrimitiveProcedure primitiveProcedure, Object[] arguments) {
+    protected Object doApplyOnPrimitiveProcedure(MaterializedFrame frame, PrimitiveProcedure primitiveProcedure, Object[] arguments) {
 
         var expectedNumberOfArgs = primitiveProcedure.getNumberOfArgs();
         if (expectedNumberOfArgs != null && expectedNumberOfArgs != arguments.length) {
@@ -28,11 +29,11 @@ public abstract class ApplyExprNode extends SchemeNode {
                     "\nexpected: " + expectedNumberOfArgs + "" +
                     "\ngiven: " + arguments.length, this);
         }
-        return dispatchNode.executeDispatch(primitiveProcedure.getCallTarget(), arguments);
+        return dispatchNode.executeDispatch(primitiveProcedure.getCallTarget(), createArgumentsForCall(arguments, frame));
     }
 
     @Specialization
-    protected Object doApplyOnPrimitiveProcedure(UserDefinedProcedure userDefinedProcedure, Object[] arguments) {
+    protected Object doApplyOnPrimitiveProcedure(MaterializedFrame frame, UserDefinedProcedure userDefinedProcedure, Object[] arguments) {
         var expectedNumberOfArgs = userDefinedProcedure.getExpectedNumberOfArgs();
         if (expectedNumberOfArgs != arguments.length) {
             userDefinedProcedureWrongNumberOfArgsProfile.enter();
@@ -40,6 +41,17 @@ public abstract class ApplyExprNode extends SchemeNode {
                     "\nexpected: " + expectedNumberOfArgs + "" +
                     "\ngiven: " + arguments.length, this);
         }
-        return dispatchNode.executeDispatch(userDefinedProcedure.getCallTarget(), arguments);
+        return dispatchNode.executeDispatch(userDefinedProcedure.getCallTarget(), createArgumentsForCall(arguments, userDefinedProcedure.getParentFrame().materialize()));
+    }
+
+    private Object[] createArgumentsForCall(Object[] arguments, MaterializedFrame frame) {
+        Object[] result = new Object[arguments.length + 1];
+        result[0] = frame;
+
+        for (int i = 0; i < arguments.length; i++) {
+            result[i + 1] = arguments[i];
+        }
+
+        return result;
     }
 }

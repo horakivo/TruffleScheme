@@ -5,7 +5,6 @@ import com.ihorak.truffle.node.exprs.ArbitraryBuiltin;
 import com.ihorak.truffle.type.AbstractProcedure;
 import com.ihorak.truffle.type.SchemeCell;
 import com.oracle.truffle.api.dsl.Specialization;
-import com.oracle.truffle.api.frame.MaterializedFrame;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.profiles.BranchProfile;
 
@@ -15,7 +14,7 @@ public abstract class MapExprNode2 extends ArbitraryBuiltin {
     private final BranchProfile notAllListsProfile = BranchProfile.create();
     @Child private ApplyExprNode apply = ApplyExprNodeGen.create();
 
-
+    //composition of inheritence
     @Specialization
     protected SchemeCell map(VirtualFrame frame, Object[] arguments) {
         final var callable = getCallableProcedure(arguments);
@@ -25,8 +24,8 @@ public abstract class MapExprNode2 extends ArbitraryBuiltin {
 
         var resultList = SchemeCell.EMPTY_LIST;
         for (int i = 0; i < numberOfCalls; i++) {
-            Object[] args = getArgumentsForGivenDispatch(i, lists, materializedParentFrame);
-            var result =  apply.execute(callable, args);
+            Object[] args = getArgumentsForGivenDispatch(i, lists);
+            var result = apply.execute(materializedParentFrame, callable, args);
             resultList = resultList.cons(result, resultList);
         }
 
@@ -34,12 +33,11 @@ public abstract class MapExprNode2 extends ArbitraryBuiltin {
     }
 
 
-    private Object[] getArgumentsForGivenDispatch(int dispatchIndex, SchemeCell[] arguments, MaterializedFrame parentFrame) {
-        Object[] result = new Object[arguments.length + 1];
-        result[0] = parentFrame;
+    private Object[] getArgumentsForGivenDispatch(int dispatchIndex, SchemeCell[] arguments) {
+        Object[] result = new Object[arguments.length];
 
         for (int i = 0; i < arguments.length; i++) {
-            result[i + 1] = arguments[i].get(dispatchIndex);
+            result[i] = arguments[i].get(dispatchIndex);
         }
 
         return result;
