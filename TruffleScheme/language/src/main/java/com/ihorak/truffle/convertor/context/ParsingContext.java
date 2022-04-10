@@ -1,7 +1,10 @@
 package com.ihorak.truffle.convertor.context;
 
 import com.ihorak.truffle.SchemeTruffleLanguage;
+import com.ihorak.truffle.node.special_form.LambdaExprNode;
+import com.ihorak.truffle.type.SchemeMacro;
 import com.ihorak.truffle.type.SchemeSymbol;
+import com.ihorak.truffle.type.UserDefinedProcedure;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlotKind;
 import org.jetbrains.annotations.Nullable;
@@ -10,6 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ParsingContext {
+
+    public static Map<SchemeSymbol, UserDefinedProcedure> macros = new HashMap<>();
 
     private final ParsingContext parent;
     private final SchemeTruffleLanguage language;

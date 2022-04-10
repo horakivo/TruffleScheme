@@ -7,10 +7,11 @@ import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.macro.DefineMacroExprNode;
 import com.ihorak.truffle.node.scope.WriteGlobalVariableExprNodeGen;
 import com.ihorak.truffle.node.scope.WriteLocalVariableExprNodeGen;
+import com.ihorak.truffle.node.special_form.LambdaExprNode;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeSymbol;
 
-public class MacroConverter {
+public class SchemeMacroConverter {
 
     public static SchemeExpression convertMarco(SchemeCell macroList, ParsingContext context) {
         if (macroList.size() == 3) {
@@ -39,7 +40,10 @@ public class MacroConverter {
         if (potentialName instanceof SchemeSymbol) {
             var name = (SchemeSymbol) potentialName;
             var transformationProcedureExpr = ListToExpressionConverter.convert(macroList.get(2), context);
-            return new DefineMacroExprNode(name, transformationProcedureExpr);
+            if (transformationProcedureExpr instanceof LambdaExprNode) {
+                return new DefineMacroExprNode(name, (LambdaExprNode) transformationProcedureExpr);
+            }
+            throw new ParserException("define-marco: contract violation\nExpected lambda expression\nGiven: " + transformationProcedureExpr);
         } else {
             throw new ParserException("define-marco: expected identifier for the macro name.\nGiven: " + potentialName);
         }

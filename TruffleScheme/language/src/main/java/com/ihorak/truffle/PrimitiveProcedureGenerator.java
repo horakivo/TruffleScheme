@@ -1,7 +1,5 @@
 package com.ihorak.truffle;
 
-import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.callable.ProcedureRootNode;
 import com.ihorak.truffle.node.exprs.*;
 import com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic.DividePrimitiveProcedureNodeFactory;
 import com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic.MinusPrimitiveProcedureNodeFactory;
@@ -13,10 +11,8 @@ import com.ihorak.truffle.node.scope.ReadProcedureArgExprNode;
 import com.ihorak.truffle.type.PrimitiveProcedure;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.dsl.NodeFactory;
-import com.oracle.truffle.api.frame.FrameDescriptor;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
@@ -31,6 +27,7 @@ public class PrimitiveProcedureGenerator {
         var dividePrimaryProcedure = createBinaryReduciblePrimitiveProcedure(DividePrimitiveProcedureNodeFactory.getInstance(), language, "/");
 
         var listPrimitiveProcedure = createArbitraryPrimitiveProcedure(ListExprNodeFactory.getInstance(), language, "list");
+        var mapPrimitiveProcedure = createArbitraryPrimitiveProcedure(MapExprNodeFactory.getInstance(), language, "map");
 
         var equalPrimitiveProcedure = createBinaryReduciblePrimitiveProcedure(EqualPrimitiveProcedureNodeFactory.getInstance(), language, "=");
         var moreThenPrimitiveProcedure = createBinaryReduciblePrimitiveProcedure(MoreThenPrimitiveProcedureNodeFactory.getInstance(), language, ">");
@@ -60,6 +57,7 @@ public class PrimitiveProcedureGenerator {
         result.put(new SchemeSymbol(">="), moreThenEqualPrimitiveProcedure);
         result.put(new SchemeSymbol("<"), lessThenPrimitiveProcedure);
         result.put(new SchemeSymbol("<="), lessThenEqualPrimitiveProcedure);
+        result.put(new SchemeSymbol("map"), mapPrimitiveProcedure);
 
         return result;
     }

@@ -2,6 +2,7 @@ package com.ihorak.truffle.convertor;
 
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.context.FrameIndexResult;
+import com.ihorak.truffle.convertor.util.MacroUtils;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.literals.*;
 import com.ihorak.truffle.node.scope.ReadClosureVariableExprNodeGen;
@@ -74,10 +75,15 @@ public class ListToExpressionConverter {
         if (isSpecialForm(firstElement)) {
             return SpecialFormConverter.convertListToSpecialForm(list, context);
         } else if (isMacro(firstElement)) {
-            return MacroConverter.convertMarco(list, context);
+            return SchemeMacroConverter.convertMarco(list, context);
+        } else if (isLispMacro(firstElement)) {
+            return LispMacroConverter.convertMacro(list, context);
+        } else if (MacroUtils.isMacroDefined(firstElement)) {
+            return null;
         } else {
             return ProcedureCallConverter.convertListToProcedureCall(list, context);
         }
+
     }
 
     private static boolean isSpecialForm(Object firstElementOfList) {
@@ -86,5 +92,9 @@ public class ListToExpressionConverter {
 
     private static boolean isMacro(Object firstElementOfList) {
         return firstElementOfList instanceof SchemeSymbol && firstElementOfList.equals(new SchemeSymbol("define-macro"));
+    }
+
+    private static boolean isLispMacro(Object firstElementOfList) {
+        return firstElementOfList instanceof SchemeSymbol && firstElementOfList.equals(new SchemeSymbol("defmacro"));
     }
 }

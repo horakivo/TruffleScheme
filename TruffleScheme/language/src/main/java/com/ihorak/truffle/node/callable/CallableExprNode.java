@@ -5,6 +5,7 @@ import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.convertor.ListToExpressionConverter;
 import com.ihorak.truffle.node.callable.DispatchNodeGen;
+import com.ihorak.truffle.node.special_form.IfExprNode;
 import com.ihorak.truffle.type.PrimitiveProcedure;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.UserDefinedProcedure;
@@ -45,8 +46,6 @@ public abstract class CallableExprNode extends SchemeExpression {
 
     @Specialization
     protected Object doUserDefinedProcedure(VirtualFrame frame, UserDefinedProcedure function) {
-        var arguments = getProcedureArguments(function, frame);
-
         if (this.arguments.length < function.getExpectedNumberOfArgs()) {
             userProcedureWrongNumberOfArgsProfile.enter();
             throw new SchemeException("User defined procedure was called with wrong number of arguments." +
@@ -54,13 +53,12 @@ public abstract class CallableExprNode extends SchemeExpression {
                     " \n Given: " + this.arguments.length, this);
         }
 
+        var arguments = getProcedureArguments(function, frame);
         return call(function.getCallTarget(), arguments, frame);
     }
 
     @Specialization
     protected Object doPrimitiveProcedure(VirtualFrame frame, PrimitiveProcedure primitiveProcedure) {
-        var arguments = getPrimitiveProcedureArgs(frame);
-
         var expectedNumberOfArgs = primitiveProcedure.getNumberOfArgs();
         if (expectedNumberOfArgs != null && expectedNumberOfArgs != this.arguments.length) {
             primitiveProcedureWrongNumberOfArgsProfile.enter();
@@ -69,13 +67,13 @@ public abstract class CallableExprNode extends SchemeExpression {
                     "\ngiven: " + this.arguments.length, this);
         }
 
+        var arguments = getPrimitiveProcedureArgs(frame);
         return call(primitiveProcedure.getCallTarget(), arguments, frame);
     }
 
     @Specialization
     protected Object doMacro(VirtualFrame frame, SchemeMacro macro) {
         var transformationProcedure = macro.getTransformationProcedure();
-        var macroArguments = getProcedureOrMacroArgsNoOptional(transformationProcedure, frame);
 
         if (transformationProcedure.getExpectedNumberOfArgs() != this.arguments.length) {
             macroWrongNumberOfArgsProfile.enter();
@@ -84,9 +82,10 @@ public abstract class CallableExprNode extends SchemeExpression {
                     " \n Given: " + this.arguments.length, this);
         }
 
+        var macroArguments = getProcedureOrMacroArgsNoOptional(transformationProcedure, frame);
         var transformedData = applyTransformationProcedure(macro.getTransformationProcedure(), macroArguments);
-
-        return ListToExpressionConverter.convert(transformedData, parsingContext).executeGeneric(frame);
+        var newAST = ListToExpressionConverter.convert(transformedData, parsingContext);
+        return newAST.executeGeneric(frame);
     }
 
     @Fallback

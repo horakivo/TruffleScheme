@@ -8,7 +8,6 @@ public class LambdaExprNode extends SchemeExpression {
 
     private final UserDefinedProcedure userDefinedProcedure;
 
-
     public LambdaExprNode(UserDefinedProcedure userDefinedProcedure) {
         this.userDefinedProcedure = userDefinedProcedure;
     }

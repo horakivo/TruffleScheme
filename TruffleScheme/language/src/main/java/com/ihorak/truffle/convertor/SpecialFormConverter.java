@@ -132,8 +132,8 @@ public class SpecialFormConverter {
         var frameDescriptor = lambdaContext.getFrameDescriptor();
         var rootNode = new ProcedureRootNode(context.getLanguage(), frameDescriptor, allLambdaExpressions);
         var hasOptionalArgs = params instanceof SchemePair;
-        var function = new UserDefinedProcedure(rootNode.getCallTarget(), paramExprs.size(), hasOptionalArgs);
-        return new LambdaExprNode(function);
+        var userDefinedProcedure = new UserDefinedProcedure(rootNode.getCallTarget(), paramExprs.size(), hasOptionalArgs);
+        return new LambdaExprNode(userDefinedProcedure);
     }
 
     private static List<SchemeExpression> createLambdaBody(SchemeCell expressions, ParsingContext lambdaContext) {

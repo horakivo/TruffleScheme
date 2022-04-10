@@ -1,20 +1,28 @@
 package com.ihorak.truffle.builtin.list;
 
-import com.ihorak.truffle.exceptions.SchemeException;
+import com.ihorak.truffle.convertor.util.BuiltinUtils;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-public class MapExprNodeTest {
+public class MapPrimitiveProcedureTest {
 
     private Context context;
 
     @Before
     public void setUp() {
         context = Context.create();
+    }
+
+    @BeforeClass
+    public static void before() {
+        BuiltinUtils.isBuiltinEnabled = false;
     }
 
     @Test
@@ -84,5 +92,10 @@ public class MapExprNodeTest {
         assertEquals("User defined procedure: arity mismatch; Expected number of arguments does not match the given number\n" +
                 "expected: 1\n" +
                 "given: 3", msg);
+    }
+
+    @AfterClass
+    public static void after() {
+        BuiltinUtils.isBuiltinEnabled = true;
     }
 }

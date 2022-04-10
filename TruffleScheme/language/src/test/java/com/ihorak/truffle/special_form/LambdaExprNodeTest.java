@@ -18,7 +18,7 @@ public class LambdaExprNodeTest {
 
     @Test
     public void givenLambdaExpr_whenExecuted_thenShouldReturnSchemeFunction() {
-        var program = "(lambda (x) (+ x 2) (+ x 3) #f)";
+        var program = "(lambda (x) (define y 12) (+ x 2) (+ x 3) #f)";
 
         var result = context.eval("scm", program);
 
