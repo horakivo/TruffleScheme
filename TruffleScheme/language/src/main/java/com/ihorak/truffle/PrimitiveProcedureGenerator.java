@@ -28,6 +28,7 @@ public class PrimitiveProcedureGenerator {
 
         var listPrimitiveProcedure = createArbitraryPrimitiveProcedure(ListExprNodeFactory.getInstance(), language, "list");
         var mapPrimitiveProcedure = createArbitraryPrimitiveProcedure(MapExprNodeFactory.getInstance(), language, "map");
+        var appendPrimitiveProcedure = createArbitraryPrimitiveProcedure(AppendExprNodeFactory.getInstance(), language, "append");
 
         var equalPrimitiveProcedure = createBinaryReduciblePrimitiveProcedure(EqualPrimitiveProcedureNodeFactory.getInstance(), language, "=");
         var moreThenPrimitiveProcedure = createBinaryReduciblePrimitiveProcedure(MoreThenPrimitiveProcedureNodeFactory.getInstance(), language, ">");
@@ -58,6 +59,7 @@ public class PrimitiveProcedureGenerator {
         result.put(new SchemeSymbol("<"), lessThenPrimitiveProcedure);
         result.put(new SchemeSymbol("<="), lessThenEqualPrimitiveProcedure);
         result.put(new SchemeSymbol("map"), mapPrimitiveProcedure);
+        result.put(new SchemeSymbol("append"), appendPrimitiveProcedure);
 
         return result;
     }

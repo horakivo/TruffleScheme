@@ -125,19 +125,23 @@ public class BuiltinFactory {
         }
     }
 
-    //TODO this is messy
-    public static SchemeExpression createAppendBuiltin(List<SchemeExpression> arguments) {
-        if (arguments.size() == 0) return ListExprNodeFactory.create(new ConvertSchemeExprsArgumentsNode(new SchemeExpression[] {}));
-        if (arguments.size() == 1) return AppendExprNodeGen.create(arguments.get(0), ListExprNodeFactory.create(new ConvertSchemeExprsArgumentsNode(new SchemeExpression[] {})));
-        return reduceAppend(arguments);
-    }
+//    //TODO this is messy
+//    public static SchemeExpression createAppendBuiltin(List<SchemeExpression> arguments) {
+//        if (arguments.size() == 0) return ListExprNodeFactory.create(new ConvertSchemeExprsArgumentsNode(new SchemeExpression[] {}));
+//        if (arguments.size() == 1) return AppendExprNodeGen.create(arguments.get(0), ListExprNodeFactory.create(new ConvertSchemeExprsArgumentsNode(new SchemeExpression[] {})));
+//        return reduceAppend(arguments);
+//    }
+//
+//    private static AppendExprNode reduceAppend(List<SchemeExpression> arguments) {
+//        if (arguments.size() > 2) {
+//            return AppendExprNodeGen.create(arguments.remove(0), reduceAppend(arguments));
+//        } else {
+//            return AppendExprNodeGen.create(arguments.get(0), arguments.get(1));
+//        }
+//    }
 
-    private static AppendExprNode reduceAppend(List<SchemeExpression> arguments) {
-        if (arguments.size() > 2) {
-            return AppendExprNodeGen.create(arguments.remove(0), reduceAppend(arguments));
-        } else {
-            return AppendExprNodeGen.create(arguments.get(0), arguments.get(1));
-        }
+    public static SchemeExpression createAppendBuiltin(List<SchemeExpression> arguments) {
+       return AppendExprNodeFactory.create(new ConvertSchemeExprsArgumentsNode(arguments.toArray(SchemeExpression[]::new)));
     }
 
     public static SchemeExpression createMapBuiltin(List<SchemeExpression> arguments) {

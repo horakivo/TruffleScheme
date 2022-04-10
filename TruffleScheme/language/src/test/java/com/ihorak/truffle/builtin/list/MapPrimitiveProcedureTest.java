@@ -94,6 +94,15 @@ public class MapPrimitiveProcedureTest {
                 "given: 3", msg);
     }
 
+    @Test
+    public void givenAppendProcedure_whenMap_thenShouldReturnCorrectResult() {
+        var program = "(map append '((1 2) (3 4)) '((5 6) (7 8)))";
+
+        var result = context.eval("scm", program);
+
+        assertEquals("((1 2 5 6) (3 4 7 8))", result.toString());
+    }
+
     @AfterClass
     public static void after() {
         BuiltinUtils.isBuiltinEnabled = true;

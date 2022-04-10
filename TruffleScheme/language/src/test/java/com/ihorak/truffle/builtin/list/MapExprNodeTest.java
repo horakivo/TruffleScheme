@@ -1,6 +1,5 @@
 package com.ihorak.truffle.builtin.list;
 
-import com.ihorak.truffle.exceptions.SchemeException;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
 import org.junit.Before;
@@ -84,5 +83,14 @@ public class MapExprNodeTest {
         assertEquals("User defined procedure: arity mismatch; Expected number of arguments does not match the given number\n" +
                 "expected: 1\n" +
                 "given: 3", msg);
+    }
+
+    @Test
+    public void givenAppendProcedure_whenMap_thenShouldReturnCorrectResult() {
+        var program = "(map append '((1 2) (3 4)) '((5 6) (7 8)))";
+
+        var result = context.eval("scm", program);
+
+        assertEquals("((1 2 5 6) (3 4 7 8))", result.toString());
     }
 }
