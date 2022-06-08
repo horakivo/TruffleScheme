@@ -16,11 +16,10 @@ public abstract class WriteGlobalVariableExprNode extends SchemeExpression {
         this.symbol = symbol;
     }
 
+    //TODO Truffle boundary here?
     @Specialization
     protected UndefinedValue assignVariable(Object valueToStore) {
-        var context = SchemeLanguageContext.get(this);
-        context.getGlobalState().addVariable(symbol, valueToStore);
-
+        getCurrentLanguageContext().getGlobalState().addVariable(symbol, valueToStore);
         return UndefinedValue.SINGLETON;
     }
 

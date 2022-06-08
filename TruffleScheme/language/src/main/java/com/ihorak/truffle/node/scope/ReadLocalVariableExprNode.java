@@ -6,10 +6,7 @@ import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
-import com.oracle.truffle.api.frame.Frame;
-import com.oracle.truffle.api.frame.FrameDescriptor;
-import com.oracle.truffle.api.frame.FrameSlotKind;
-import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.frame.*;
 
 
 public abstract class ReadLocalVariableExprNode extends SchemeExpression {

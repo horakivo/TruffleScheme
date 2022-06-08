@@ -83,7 +83,6 @@ public class ListToExpressionConverter {
         } else {
             return ProcedureCallConverter.convertListToProcedureCall(list, context);
         }
-
     }
 
     private static boolean isSpecialForm(Object firstElementOfList) {
