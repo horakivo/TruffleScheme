@@ -54,6 +54,45 @@ public class PlusExprNodeTest {
         assertEquals(12.3D + 5.3 + 1.1, result.asDouble(), 0);
     }
 
+    @Test
+    public void aaIvoIsBack() {
+        var program = "(+ 1 2 3) (+ 1 2 3 4) (+ 1 2 3 4 5)\n" +
+                "(define fibonacci\n" +
+                "  (lambda (n)\n" +
+                "    (if (< n 2)\n" +
+                "        n\n" +
+                "        (+ (fibonacci (- n 1))\n" +
+                "           (fibonacci (- n 2))))))\n" +
+                "           \n" +
+                "(fibonacci 32)\n" +
+                "(fibonacci 32)\n" +
+                "(fibonacci 32)\n" +
+                "(fibonacci 32)\n" +
+                "(fibonacci 32)\n" +
+                "(fibonacci 32)\n" +
+                "(fibonacci 32)\n" +
+                "(fibonacci 32)\n" +
+                "(fibonacci 32)\n" +
+                "(fibonacci 32)\n" +
+                "(fibonacci 32)\n" +
+                "(fibonacci 32)\n" +
+                "(fibonacci 32)\n" +
+                "(fibonacci 32)\n" +
+                "(fibonacci 32)\n" +
+                "\n" +
+                "(define start (current-milliseconds))\n" +
+                "\n" +
+                "(fibonacci 32)\n" +
+                "\n" +
+                "(define end (current-milliseconds))\n" +
+                "(- end start)";
+
+
+        var result =  context.eval("scm", program);
+
+        assertEquals(6, result.asLong());
+    }
+
 //    @Test
 //    public void givenBigNumber_whenAddThem_thenOverflowShouldOccurAndBigIntShouldBeReturned() {
 //        var program = "(+ 1 2 " + Long.MAX_VALUE + ")";

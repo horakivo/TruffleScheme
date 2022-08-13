@@ -36,20 +36,20 @@ public class ListToExpressionConverter {
     }
 
 
-    private static SchemeExpression convert(long schemeLong) {
-        return new LongLiteralNode(schemeLong);
+    private static SchemeExpression convert(long value) {
+        return new LongLiteralNode(value);
     }
 
     private static SchemeExpression convert(BigInteger bigInteger) {
         return new BigIntLiteralNode(bigInteger);
     }
 
-    private static SchemeExpression convert(double schemeDouble) {
-        return new DoubleLiteralNode(schemeDouble);
+    private static SchemeExpression convert(double value) {
+        return new DoubleLiteralNode(value);
     }
 
-    private static SchemeExpression convert(boolean schemeBoolean) {
-        return new BooleanLiteralNode(schemeBoolean);
+    private static SchemeExpression convert(boolean bool) {
+        return new BooleanLiteralNode(bool);
     }
 
     private static SchemeExpression convert(SchemeSymbol symbol, ParsingContext context) {
@@ -83,7 +83,6 @@ public class ListToExpressionConverter {
         } else {
             return ProcedureCallConverter.convertListToProcedureCall(list, context);
         }
-
     }
 
     private static boolean isSpecialForm(Object firstElementOfList) {

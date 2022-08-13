@@ -125,7 +125,7 @@ public class BuiltinFactory {
         }
     }
 
-//    //TODO this is messy
+//    //TODO this is messy, consider using binary reducibility instead of current approach. Study what is better
 //    public static SchemeExpression createAppendBuiltin(List<SchemeExpression> arguments) {
 //        if (arguments.size() == 0) return ListExprNodeFactory.create(new ConvertSchemeExprsArgumentsNode(new SchemeExpression[] {}));
 //        if (arguments.size() == 1) return AppendExprNodeGen.create(arguments.get(0), ListExprNodeFactory.create(new ConvertSchemeExprsArgumentsNode(new SchemeExpression[] {})));

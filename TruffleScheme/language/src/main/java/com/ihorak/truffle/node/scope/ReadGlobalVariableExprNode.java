@@ -24,17 +24,16 @@ public abstract class ReadGlobalVariableExprNode extends SchemeExpression {
     protected Object readGlobalVariable() {
         if (notRedefinedAssumption.isValid()) {
             if (cache == null) {
-                cache = retrieveValueFromContext();
+                cache = retrieveValueFromLanguageContext();
             }
         } else {
-            cache = retrieveValueFromContext();
+            cache = retrieveValueFromLanguageContext();
         }
         return cache;
     }
 
-    private Object retrieveValueFromContext() {
+    private Object retrieveValueFromLanguageContext() {
         CompilerDirectives.transferToInterpreterAndInvalidate();
-        var context = SchemeLanguageContext.get(this);
-        return context.getGlobalState().getVariable(symbol);
+        return this.getCurrentLanguageContext().getGlobalState().getVariable(symbol);
     }
 }
