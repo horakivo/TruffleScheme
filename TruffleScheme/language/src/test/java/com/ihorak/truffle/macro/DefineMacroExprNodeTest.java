@@ -27,7 +27,7 @@ public class DefineMacroExprNodeTest {
     }
 
 
-    /**`
+    /**
      * APPROACH 1
      * ------------------------------
      *
