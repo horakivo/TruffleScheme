@@ -16,7 +16,7 @@ import java.util.Objects;
 @ExportLibrary(InteropLibrary.class)
 public class SchemeCell implements Iterable<Object>, TruffleObject {
 
-    public static SchemeCell EMPTY_LIST = new SchemeCell(null, null);
+    public static final SchemeCell EMPTY_LIST = new SchemeCell(null, null);
 
     public Object car;
     public SchemeCell cdr;

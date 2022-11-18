@@ -20,12 +20,13 @@ public class UserDefinedProcedure extends AbstractProcedure implements TruffleOb
 
     private final int expectedNumberOfArgs;
     private final boolean optionalArgs;
-    private MaterializedFrame parentFrame;
+    private final MaterializedFrame parentFrame;
     //Because of the Interop library
     private final DispatchNode dispatchNode = DispatchNodeGen.create();
 
-    public UserDefinedProcedure(CallTarget callTarget, int expectedNumberOfArgs, final boolean hasOptionalArgs) {
+    public UserDefinedProcedure(CallTarget callTarget, int expectedNumberOfArgs, final boolean hasOptionalArgs, MaterializedFrame frame) {
         super(callTarget);
+        this.parentFrame = frame;
         if (hasOptionalArgs) {
             this.expectedNumberOfArgs = expectedNumberOfArgs - 1;
         } else {
@@ -34,9 +35,6 @@ public class UserDefinedProcedure extends AbstractProcedure implements TruffleOb
         this.optionalArgs = hasOptionalArgs;
     }
 
-    public void setParentFrame(MaterializedFrame parentFrame) {
-        this.parentFrame = parentFrame;
-    }
 
     public MaterializedFrame getParentFrame() {
         return parentFrame;

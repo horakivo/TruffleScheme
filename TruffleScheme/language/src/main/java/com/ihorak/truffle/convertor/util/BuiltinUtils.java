@@ -30,7 +30,10 @@ public class BuiltinUtils {
                 case "<=":
                 case ">":
                 case ">=":
-                case "loop":
+//                case "loop":
+                case "begin":
+                case "list-ref":
+                case "not":
                     return true;
                 default:
                     return false;

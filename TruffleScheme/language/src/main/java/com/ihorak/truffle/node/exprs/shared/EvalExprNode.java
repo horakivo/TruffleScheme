@@ -1,6 +1,5 @@
 package com.ihorak.truffle.node.exprs.shared;
 
-import com.ihorak.truffle.convertor.context.Mode;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.convertor.ListToExpressionConverter;
@@ -48,8 +47,8 @@ public abstract class EvalExprNode extends LimitedBuiltin {
     //TODO all the tests if I am not sure if this impl will stay
     private ParsingContext createRuntimeContext() {
         //TODO
-        var context = new ParsingContext(null);
-        context.setMode(Mode.RUN_TIME);
+        var context = new ParsingContext(null, null);
+        //context.setMode(Mode.RUN_TIME);
 
         return context;
     }

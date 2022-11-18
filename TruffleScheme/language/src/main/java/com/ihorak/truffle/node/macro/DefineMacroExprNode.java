@@ -7,13 +7,11 @@ import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.frame.VirtualFrame;
 
 public class DefineMacroExprNode extends SchemeExpression {
-
-    private final SchemeSymbol name;
+    @SuppressWarnings("FieldMayBeFinal")
     @Child
     private LambdaExprNode transformationProcedure;
 
-    public DefineMacroExprNode(SchemeSymbol name, LambdaExprNode transformationProcedure) {
-        this.name = name;
+    public DefineMacroExprNode(LambdaExprNode transformationProcedure) {
         this.transformationProcedure = transformationProcedure;
     }
 
@@ -21,13 +19,5 @@ public class DefineMacroExprNode extends SchemeExpression {
     public Object executeGeneric(VirtualFrame virtualFrame) {
         var transformationProc = transformationProcedure.executeUserDefinedProcedure(virtualFrame);
         return new SchemeMacro(transformationProc);
-    }
-
-    public SchemeSymbol getName() {
-        return name;
-    }
-
-    public LambdaExprNode getTransformationProcedure() {
-        return transformationProcedure;
     }
 }

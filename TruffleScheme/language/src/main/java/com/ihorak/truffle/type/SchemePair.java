@@ -1,7 +1,6 @@
 package com.ihorak.truffle.type;
 
 import com.ihorak.truffle.SchemeTruffleLanguage;
-import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.interop.InteropLibrary;
@@ -12,34 +11,18 @@ import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
 import com.oracle.truffle.api.profiles.BranchProfile;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 
 @ExportLibrary(InteropLibrary.class)
-public class SchemePair implements TruffleObject {
-
-    private final Object first;
-    private final Object second;
-
-    public SchemePair(Object first, Object second) {
-        this.first = first;
-        this.second = second;
-    }
-
-    public Object getFirst() {
-        return first;
-    }
-
-    public Object getSecond() {
-        return second;
-    }
+public record SchemePair(
+        Object first,
+        Object second) implements TruffleObject {
 
     @Override
     public String toString() {
         return "(" + first + " . " + second + ")";
     }
-
     //----------------InteropLibrary messages–----------------------
 
     @ExportMessage

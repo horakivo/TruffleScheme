@@ -3,11 +3,11 @@ package com.ihorak.truffle.node.scope;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.oracle.truffle.api.frame.VirtualFrame;
 
-public class ReadProcedureArgExprNode extends SchemeExpression {
+public class ReadLocalProcedureArgExprNode extends SchemeExpression {
 
     private final int index;
 
-    public ReadProcedureArgExprNode(int index) {
+    public ReadLocalProcedureArgExprNode(int index) {
         this.index = index;
     }
 

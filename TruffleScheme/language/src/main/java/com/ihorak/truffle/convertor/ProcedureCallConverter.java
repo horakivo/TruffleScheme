@@ -1,9 +1,12 @@
 package com.ihorak.truffle.convertor;
 
 import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.convertor.util.BuiltinUtils;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.callable.CallableExprNodeGen;
-import com.ihorak.truffle.convertor.util.BuiltinUtils;
+import com.ihorak.truffle.node.callable.MacroCallableExprNode;
+import com.ihorak.truffle.node.scope.ReadGlobalVariableExprNode;
+import com.ihorak.truffle.node.scope.ReadGlobalVariableExprNodeGen;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeSymbol;
 
@@ -20,13 +23,20 @@ public class ProcedureCallConverter {
         var operand = procedureList.car;
         List<SchemeExpression> arguments = getProcedureArguments(procedureList.cdr, context);
 
-        if (operand instanceof SchemeSymbol && BuiltinUtils.isBuiltinProcedure((SchemeSymbol) operand)) {
-            var symbol = (SchemeSymbol) operand;
-            return BuiltinConverter.createBuiltin(symbol, arguments, context);
-        } else {
-            var callable = ListToExpressionConverter.convert(operand, context);
-            return CallableExprNodeGen.create(arguments, context, callable);
+
+        if (operand instanceof SchemeSymbol schemeSymbol) {
+            if (BuiltinUtils.isBuiltinProcedure(schemeSymbol)) {
+                return BuiltinConverter.createBuiltin(schemeSymbol, arguments, context);
+            } else if (context.isMacro(schemeSymbol)) {
+                List<Object> notEvaluatedArgs = new ArrayList<>();
+                procedureList.cdr.forEach(notEvaluatedArgs::add);
+                var macroExpr = ListToExpressionConverter.convert(schemeSymbol, context);
+                return new MacroCallableExprNode(macroExpr, notEvaluatedArgs, context);
+            }
         }
+
+        var callable = ListToExpressionConverter.convert(operand, context);
+        return CallableExprNodeGen.create(arguments, context, callable);
     }
 
     private static List<SchemeExpression> getProcedureArguments(SchemeCell argumentList, ParsingContext context) {

@@ -1,6 +1,8 @@
 package com.ihorak.truffle.node.exprs.core.arithmetic;
 
+import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.exprs.core.BinaryOperationNode;
+import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 
@@ -22,6 +24,11 @@ public abstract class PlusBinaryNode extends BinaryOperationNode {
     @Specialization
     protected double addDoubles(double left, double right) {
         return left + right;
+    }
+
+    @Fallback
+    protected Object fallback(Object left, Object right) {
+        throw new SchemeException("+: contract violation;\nexpected: number?\ngiven: [" + left + "," + right + "]", this);
     }
 
     @Override

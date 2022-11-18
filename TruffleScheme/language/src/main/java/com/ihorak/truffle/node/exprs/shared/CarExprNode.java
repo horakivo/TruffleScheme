@@ -14,7 +14,7 @@ public abstract class CarExprNode extends LimitedBuiltin {
 
     @Specialization
     protected Object doPairCar(SchemePair pair) {
-        return pair.getFirst();
+        return pair.first();
     }
 
     @Specialization

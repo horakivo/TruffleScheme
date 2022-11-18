@@ -7,7 +7,7 @@ import com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic.MultiplyPrim
 import com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic.PlusPrimitiveProcedureNodeFactory;
 import com.ihorak.truffle.node.exprs.primitive_procedure.comparison.*;
 import com.ihorak.truffle.node.exprs.shared.*;
-import com.ihorak.truffle.node.scope.ReadProcedureArgExprNode;
+import com.ihorak.truffle.node.scope.ReadLocalProcedureArgExprNode;
 import com.ihorak.truffle.type.PrimitiveProcedure;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.dsl.NodeFactory;
@@ -68,16 +68,17 @@ public class PrimitiveProcedureGenerator {
         var arbitraryBuiltinExpr = factory.createNode(ReadProcedureArgsExprNodeGen.create());
         var rootNode = new PrimitiveProcedureRootNode(language, arbitraryBuiltinExpr);
 
+
         return new PrimitiveProcedure(rootNode.getCallTarget(), null, name);
     }
 
     public static PrimitiveProcedure createLimitedPrimitiveProcedure(NodeFactory<? extends LimitedBuiltin> factory, SchemeTruffleLanguage language, String name) {
         var expectedNumberOfArgs = factory.getExecutionSignature().size();
-        ReadProcedureArgExprNode[] arguments =
+        ReadLocalProcedureArgExprNode[] arguments =
                 IntStream
                         .range(0, expectedNumberOfArgs)
-                        .mapToObj(ReadProcedureArgExprNode::new)
-                        .toArray(ReadProcedureArgExprNode[]::new);
+                        .mapToObj(ReadLocalProcedureArgExprNode::new)
+                        .toArray(ReadLocalProcedureArgExprNode[]::new);
 
         var expression = factory.createNode((Object) arguments);
         var rootNode = new PrimitiveProcedureRootNode(language, expression);

@@ -9,6 +9,7 @@ import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.UserDefinedProcedure;
 import com.ihorak.truffle.type.SchemeMacro;
 import com.oracle.truffle.api.CallTarget;
+import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.Specialization;
@@ -28,6 +29,10 @@ public abstract class CallableExprNode extends SchemeExpression {
     @Child
     private DispatchNode dispatchNode;
     private final ParsingContext parsingContext;
+
+    //TODO rewrite this
+    @CompilerDirectives.CompilationFinal
+    private SchemeExpression macroExpandedTree;
 
 
     private final BranchProfile macroWrongNumberOfArgsProfile = BranchProfile.create();
@@ -71,7 +76,7 @@ public abstract class CallableExprNode extends SchemeExpression {
 
     @Specialization
     protected Object doMacro(VirtualFrame frame, SchemeMacro macro) {
-        var transformationProcedure = macro.getTransformationProcedure();
+        var transformationProcedure = macro.transformationProcedure();
 
         if (transformationProcedure.getExpectedNumberOfArgs() != this.arguments.length) {
             macroWrongNumberOfArgsProfile.enter();
@@ -80,10 +85,15 @@ public abstract class CallableExprNode extends SchemeExpression {
                     " \n Given: " + this.arguments.length, this);
         }
 
-        var macroArguments = getProcedureOrMacroArgsNoOptional(transformationProcedure, frame);
-        var transformedData = applyTransformationProcedure(macro.getTransformationProcedure(), macroArguments);
-        var newAST = ListToExpressionConverter.convert(transformedData, parsingContext);
-        return newAST.executeGeneric(frame);
+        if (macroExpandedTree == null) {
+            CompilerDirectives.transferToInterpreterAndInvalidate();
+            var macroArguments = getProcedureOrMacroArgsNoOptional(transformationProcedure, frame);
+            var transformedData = applyTransformationProcedure(macro.transformationProcedure(), macroArguments);
+            macroExpandedTree = ListToExpressionConverter.convert(transformedData, parsingContext);
+        }
+
+        var test =  macroExpandedTree.executeGeneric(frame);
+        return test;
     }
 
     @Fallback

@@ -57,6 +57,12 @@ public class BuiltinConverter {
                 return BuiltinFactory.createMoreThenEqual(convertedArguments);
             case "loop":
                 return BuiltinFactory.createLoop(convertedArguments);
+            case "begin":
+                return BuiltinFactory.createBegin(convertedArguments);
+            case "list-ref":
+                return BuiltinFactory.createListRef(convertedArguments);
+            case "not":
+                return BuiltinFactory.createNot(convertedArguments);
             default:
                 throw new RuntimeException("Unable to convert builtin procedure from list to AST. Builtin: " + operand);
         }

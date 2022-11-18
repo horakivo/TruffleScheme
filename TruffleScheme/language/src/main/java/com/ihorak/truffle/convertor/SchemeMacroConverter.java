@@ -1,51 +1,48 @@
 package com.ihorak.truffle.convertor;
 
-import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.context.LexicalScope;
+import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.convertor.util.CreateWriteExprNode;
 import com.ihorak.truffle.exceptions.ParserException;
+import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.macro.DefineMacroExprNode;
-import com.ihorak.truffle.node.scope.WriteGlobalVariableExprNodeGen;
-import com.ihorak.truffle.node.scope.WriteLocalVariableExprNodeGen;
 import com.ihorak.truffle.node.special_form.LambdaExprNode;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeSymbol;
 
 public class SchemeMacroConverter {
 
+    private SchemeMacroConverter() {}
+
     public static SchemeExpression convertMarco(SchemeCell macroList, ParsingContext context) {
-        if (macroList.size() == 3) {
-            var macro = getMacro(macroList, context);
+        validate(macroList);
 
-            if (context.getLexicalScope() == LexicalScope.GLOBAL) {
-                return WriteGlobalVariableExprNodeGen.create(macro.getName(), macro);
-            } else {
-                return createWriteLocalVariable(context, macro);
-            }
-        } else {
-            throw new ParserException("define-macro: contract violation\nExpected three arguments\nGiven: " + macroList.size());
+        var name = (SchemeSymbol) macroList.get(1);
+        var transformationProcedureExpr = ListToExpressionConverter.convert(macroList.get(2), context);
+
+        if (!(transformationProcedureExpr instanceof LambdaExprNode lambdaExprNode)) {
+            throw new ParserException("define-marco: contract violation\nExpected: <procedure>\nGiven: " + transformationProcedureExpr);
         }
+
+        context.addMacro(name);
+        if (context.getLexicalScope() == LexicalScope.GLOBAL) {
+            return CreateWriteExprNode.createWriteGlobalVariableExprNode(name, new DefineMacroExprNode(lambdaExprNode));
+        } else {
+            return CreateWriteExprNode.createWriteLocalVariableExprNode(name, new DefineMacroExprNode(lambdaExprNode), context);
+        }
+
+
     }
 
-    private static SchemeExpression createWriteLocalVariable(ParsingContext context, DefineMacroExprNode macro) {
-        var index = context.findLocalSymbol(macro.getName());
-        if (index == null) {
-            index = context.addLocalSymbol(macro.getName());
-        }
-        return WriteLocalVariableExprNodeGen.create(index, macro.getName(), macro);
-    }
 
-    private static DefineMacroExprNode getMacro(SchemeCell macroList, ParsingContext context) {
-        var potentialName = macroList.get(1);
-        if (potentialName instanceof SchemeSymbol) {
-            var name = (SchemeSymbol) potentialName;
-            var transformationProcedureExpr = ListToExpressionConverter.convert(macroList.get(2), context);
-            if (transformationProcedureExpr instanceof LambdaExprNode) {
-                return new DefineMacroExprNode(name, (LambdaExprNode) transformationProcedureExpr);
-            }
-            throw new ParserException("define-marco: contract violation\nExpected lambda expression\nGiven: " + transformationProcedureExpr);
-        } else {
-            throw new ParserException("define-marco: expected identifier for the macro name.\nGiven: " + potentialName);
+    private static void validate(SchemeCell macroList) {
+        if (macroList.size() != 3) {
+            throw new SchemeException("define-macro: contract violation. Wrong number of arguments\nExpected: 3 \nGiven: " + macroList.size(), null);
+        }
+
+        if (!(macroList.get(1) instanceof SchemeSymbol)) {
+            throw new SchemeException("define-macro: contract violation. No identifier\nExpected: identifier \nGiven: " + macroList.get(1), null);
         }
     }
 }

@@ -15,17 +15,15 @@ import org.jetbrains.annotations.NotNull;
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 
 
-public abstract class ReadClosureVariableExprNode extends SchemeExpression {
+public abstract class ReadNonLocalVariableExprNode extends ContextualNode {
 
-    private final int lexicalScopeDepth;
     private final int frameSlotIndex;
     private final SchemeSymbol symbol;
-    private final BranchProfile parentNotFound = BranchProfile.create();
     @CompilationFinal
     private FrameDescriptor frameDescriptor;
 
-    public ReadClosureVariableExprNode(int lexicalScopeDepth, int frameSlotIndex, SchemeSymbol symbol) {
-        this.lexicalScopeDepth = lexicalScopeDepth;
+    protected ReadNonLocalVariableExprNode(int lexicalScopeDepth, int frameSlotIndex, SchemeSymbol symbol) {
+        super(lexicalScopeDepth);
         this.frameSlotIndex = frameSlotIndex;
         this.symbol = symbol;
     }
@@ -59,24 +57,6 @@ public abstract class ReadClosureVariableExprNode extends SchemeExpression {
         throw new SchemeException(symbol + ": undefined\ncannot reference an identifier before its definition. FrameSlotKind: " + findCorrectVirtualFrame(frame).getFrameDescriptor().getSlotKind(frameSlotIndex), this);
     }
 
-    @NotNull
-    private Object getParentEnvironment(VirtualFrame virtualFrame) {
-        if (virtualFrame.getArguments().length == 0) {
-            parentNotFound.enter();
-            throw new IllegalStateException("No parent found in ReadLocalVariable! This is mistake in the parser!");
-        }
-        return virtualFrame.getArguments()[0];
-    }
-
-    @ExplodeLoop
-    private VirtualFrame findCorrectVirtualFrame(VirtualFrame frame) {
-        VirtualFrame currentFrame = frame;
-        for (int i = 0; i < lexicalScopeDepth; i++) {
-            currentFrame = (VirtualFrame) getParentEnvironment(currentFrame);
-        }
-
-        return currentFrame;
-    }
 
     @ExplodeLoop
     private FrameDescriptor findCorrectFrameDescriptor(VirtualFrame frame) {

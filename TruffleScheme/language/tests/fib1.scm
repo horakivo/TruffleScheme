@@ -6,9 +6,4 @@
            (fibonacci (- n 2))))))
            
 
-(define start (current-milliseconds))
-
 (fibonacci 32)
-
-(define end (current-milliseconds))
-(- end start)

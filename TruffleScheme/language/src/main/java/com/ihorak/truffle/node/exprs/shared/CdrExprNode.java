@@ -14,7 +14,7 @@ public abstract class CdrExprNode extends LimitedBuiltin {
 
     @Specialization
     protected Object doPair(SchemePair pair) {
-        return pair.getSecond();
+        return pair.second();
     }
 
     @Specialization

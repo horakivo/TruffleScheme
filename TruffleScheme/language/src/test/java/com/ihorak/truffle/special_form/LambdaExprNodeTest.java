@@ -222,14 +222,4 @@ public class LambdaExprNodeTest {
         assertEquals(3L, result.getArrayElement(2).getArrayElement(0).asLong());
         assertEquals(4L, result.getArrayElement(2).getArrayElement(1).asLong());
     }
-
-//    @Test
-//    public void fast_test_4() throws IOException, RecognitionException {
-//        var program = "(lambda (x) )";
-//        var expr = Reader.read(new ByteArrayInputStream(program.getBytes()));
-//        GlobalEnvironment globalEnvironment = new GlobalEnvironment();
-//
-//
-//        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
-//    }
 }

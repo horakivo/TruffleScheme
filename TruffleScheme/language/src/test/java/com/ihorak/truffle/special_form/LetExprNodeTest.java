@@ -51,11 +51,110 @@ public class LetExprNodeTest {
     }
 
     @Test
+    public void givenRedefinedValue_whenExecuted_thenCorrectResultIsReturned() {
+        var program = "" +
+                "(let ((x 10))\n" +
+                "  (define x 100)\n" +
+                "  (+ x 10))";
+
+
+        var result = context.eval("scm", program);
+
+        assertEquals(110L, result.asLong());
+    }
+
+
+    @Test
+    public void givenLetWithGlobalReferenceInBinding_whenExecuted_correctResultIsReturned() {
+        var program = "" +
+                "(define fun\n" +
+                "  (lambda ()\n" +
+                "    (let ((x 10)\n" +
+                "          (y (+ x 10)))\n" +
+                "      5)))\n" +
+                "\n" +
+                "(define x 10)\n" +
+                "(fun)";
+
+
+        var result = context.eval("scm", program);
+
+        assertEquals(5L, result.asLong());
+    }
+
+    @Test
+    public void givenMacroDefinedInLambda_whenExecuted_thenLexicalScopeIsStillRight() {
+        var program = "" +
+                "(define fun\n" +
+                "  (lambda (var)\n" +
+                "    (define-macro test\n" +
+                "      (lambda (test)\n" +
+                "        `(if ,test\n" +
+                "             #t\n" +
+                "             #f)))\n" +
+                "    (let ((x 10)\n" +
+                "          (y (+ x 10)))\n" +
+                "      (+ var x y (test 10)))))\n" +
+                "\n" +
+                "(define x 10)\n" +
+                "(fun 10)";
+
+
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+
+        assertEquals("""
+                             +: contract violation;
+                             expected: number?
+                             given: [20,true]""", msg);
+    }
+
+    @Test
+    public void givenLetWithUnknownVariableInBinding_whenExecuted_exceptionIsThrown() {
+        var program = "" +
+                "(define fun\n" +
+                "  (lambda ()\n" +
+                "    (let ((x 10)\n" +
+                "          (y (+ x 10)))\n" +
+                "      5)))\n" +
+                "\n" +
+                "(fun)\n" +
+                "(define x 10)";
+
+
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+
+        assertEquals("""
+                             'x: undefined
+                             cannot reference an identifier before its definition""", msg);
+    }
+
+    @Test
+    public void givenLetInSideLambda_whenExecuted_thenLexicalScopeIsStillRight() {
+        var program = "" +
+                "(define fun\n" +
+                "  (lambda (var)\n" +
+                "    (let ((x 10)\n" +
+                "          (y (+ x 10)))\n" +
+                "      (+ var x y))))\n" +
+                "\n" +
+                "(define x 10)\n" +
+                "(fun 10)\n";
+
+
+        var result = context.eval("scm", program);
+
+        assertEquals(40L, result.asLong());
+    }
+
+    @Test
     public void givenWrongSyntax_whenExecuted_thenExceptionShouldBeThrown() {
         var program = "(let ((x 10 5) (y 15)) (+ x y) (- x y))";
 
         var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
-        assertEquals("let: bad syntax (not an identifier and expression for a binding)", msg);
+        assertEquals("""
+                             let: bad syntax
+                             expected size of binding is 2
+                             given: 3""", msg);
     }
 }

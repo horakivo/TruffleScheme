@@ -20,29 +20,29 @@ public abstract class WriteLocalVariableExprNode extends SchemeExpression {
         this.symbol = symbol;
     }
 
-    @Specialization(guards = "isLongOrIllegal(frame)")
-    protected UndefinedValue writeLong(VirtualFrame frame, long value) {
-        /* No-on if already long */
-        frame.getFrameDescriptor().setSlotKind(frameIndex, FrameSlotKind.Long);
-        frame.setLong(frameIndex, value);
-        return UndefinedValue.SINGLETON;
-    }
-
-    @Specialization(guards = "isBooleanOrIllegal(frame)")
-    protected Object writeBoolean(VirtualFrame frame, boolean value) {
-        /* No-on if already boolean */
-        frame.getFrameDescriptor().setSlotKind(frameIndex, FrameSlotKind.Boolean);
-        frame.setBoolean(frameIndex, value);
-        return UndefinedValue.SINGLETON;
-    }
-
-    @Specialization(guards = "isDoubleOrIllegal(frame)")
-    protected Object writeDouble(VirtualFrame frame, double value) {
-        /* No-on if already double */
-        frame.getFrameDescriptor().setSlotKind(frameIndex, FrameSlotKind.Double);
-        frame.setDouble(frameIndex, value);
-        return UndefinedValue.SINGLETON;
-    }
+//    @Specialization(guards = "isLongOrIllegal(frame)")
+//    protected UndefinedValue writeLong(VirtualFrame frame, long value) {
+//        /* No-on if already long */
+//        frame.getFrameDescriptor().setSlotKind(frameIndex, FrameSlotKind.Long);
+//        frame.setLong(frameIndex, value);
+//        return UndefinedValue.SINGLETON;
+//    }
+//
+//    @Specialization(guards = "isBooleanOrIllegal(frame)")
+//    protected Object writeBoolean(VirtualFrame frame, boolean value) {
+//        /* No-on if already boolean */
+//        frame.getFrameDescriptor().setSlotKind(frameIndex, FrameSlotKind.Boolean);
+//        frame.setBoolean(frameIndex, value);
+//        return UndefinedValue.SINGLETON;
+//    }
+//
+//    @Specialization(guards = "isDoubleOrIllegal(frame)")
+//    protected Object writeDouble(VirtualFrame frame, double value) {
+//        /* No-on if already double */
+//        frame.getFrameDescriptor().setSlotKind(frameIndex, FrameSlotKind.Double);
+//        frame.setDouble(frameIndex, value);
+//        return UndefinedValue.SINGLETON;
+//    }
 
 
     /**
@@ -55,7 +55,8 @@ public abstract class WriteLocalVariableExprNode extends SchemeExpression {
      * {@link Object}, it is guaranteed to never fail, i.e., once we are in this specialization the
      * node will never be re-specialized.
      */
-    @Specialization(replaces = {"writeLong", "writeBoolean", "writeDouble"})
+//    @Specialization(replaces = {"writeLong", "writeBoolean", "writeDouble"})
+    @Specialization
     protected Object write(VirtualFrame frame, Object value) {
         /*
          * Regardless of the type before, the new and final type of the local variable is Object.
