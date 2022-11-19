@@ -4,9 +4,13 @@ import com.ihorak.truffle.SchemeTruffleLanguage;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlotKind;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class ParsingContext {
 
@@ -34,14 +38,14 @@ public class ParsingContext {
     //The reason is that if LET is defined in global scope, then we would always consider them as global (look what findClosureSymbol works)
     //This is basically achieving that the storage is the same as the parent one
     //Another benefit is that variables defined in LET at global level will be stored in Frame and not in the global context
-    public ParsingContext(ParsingContext parent) {
-        this.frameDescriptorBuilder = parent.frameDescriptorBuilder;
-        this.scope = LexicalScope.LET;
+    public ParsingContext(ParsingContext parent, LexicalScope lexicalScope, FrameDescriptor.Builder frameDescriptorBuilder) {
+        this.frameDescriptorBuilder = frameDescriptorBuilder;
+        this.scope = lexicalScope;
         this.language = parent.language;
         this.parent = parent;
-        this.localVariableIndex = parent.localVariableIndex;
-        this.lambdaParameterIndex = parent.lambdaParameterIndex;
-        this.macroIndex = parent.macroIndex;
+        this.localVariableIndex = new HashMap<>();
+        this.lambdaParameterIndex = new HashMap<>();
+        this.macroIndex = new HashSet<>();
     }
 
     public ParsingContext(SchemeTruffleLanguage language) {
@@ -57,10 +61,33 @@ public class ParsingContext {
     /**
      * Returns null when the symbol is not found in any local environment
      * Therefore global variables are not returned, since those are not stored in VirtualFrames
+     *
+     * This function also do LET adjustments. Because we are storing all the LET variable in the same frame, but during the parsing
+     * we are creating the environments we need to then subtract the right amount from the lexical depth. 
      */
     @Nullable
     public FrameIndexResult findClosureSymbol(SchemeSymbol symbol) {
-        return findSymbol(this, symbol, 0);
+        var frameIndex = findSymbol(this, symbol, 0);
+        if (frameIndex != null && this.scope == LexicalScope.LET) {
+            return getLetAdjustedFrameIndex(frameIndex);
+        }
+
+        return frameIndex;
+    }
+
+    private int getLetDepth(ParsingContext context) {
+        int letDepth = 0;
+        var currentContext = context;
+        while (currentContext.getLexicalScope() == LexicalScope.LET) {
+            letDepth++;
+            currentContext = currentContext.getParent();
+        }
+        return letDepth;
+    }
+
+    private FrameIndexResult getLetAdjustedFrameIndex(@NotNull FrameIndexResult frameIndex) {
+        var letDepth = getLetDepth(this);
+        return new FrameIndexResult(frameIndex.index(), frameIndex.isLambdaParameter(), frameIndex.lexicalScopeDepth() - letDepth);
     }
 
 
@@ -89,7 +116,7 @@ public class ParsingContext {
     }
 
     public int addLocalSymbol(SchemeSymbol schemeSymbol) {
-       return localVariableIndex.computeIfAbsent(schemeSymbol, symbol -> frameDescriptorBuilder.addSlot(FrameSlotKind.Illegal, symbol, null));
+        return localVariableIndex.computeIfAbsent(schemeSymbol, symbol -> frameDescriptorBuilder.addSlot(FrameSlotKind.Illegal, symbol, null));
     }
 
     public FrameDescriptor buildAndGetFrameDescriptor() {
@@ -146,5 +173,9 @@ public class ParsingContext {
 
     public Set<SchemeSymbol> getMacroIndex() {
         return macroIndex;
+    }
+
+    public ParsingContext getParent() {
+        return parent;
     }
 }

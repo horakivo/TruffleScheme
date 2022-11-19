@@ -147,6 +147,24 @@ public class LetExprNodeTest {
     }
 
     @Test
+    public void givenLambdaAndLetWithSameParameter_whenExecuted_thenLexicalScopeIsResolvedCorrectly() {
+        var program = "" +
+                "(define fun\n" +
+                "  (lambda (y)\n" +
+                "    (define y 30)\n" +
+                "    (let ((y 20))\n" +
+                "      100)\n" +
+                "    (+ y 200)))\n" +
+                "\n" +
+                "(fun 10)";
+
+
+        var result = context.eval("scm", program);
+
+        assertEquals(230L, result.asLong());
+    }
+
+    @Test
     public void givenWrongSyntax_whenExecuted_thenExceptionShouldBeThrown() {
         var program = "(let ((x 10 5) (y 15)) (+ x y) (- x y))";
 

@@ -54,16 +54,6 @@ public class PlusExprNodeTest {
         assertEquals(12.3D + 5.3 + 1.1, result.asDouble(), 0);
     }
 
-    @Test
-    public void aaaa() {
-        var program = "((lambda (x) (define y 10) (+ x y)) 10)";
-
-
-        var result =  context.eval("scm", program);
-
-        assertEquals(12.3D + 5.3 + 1.1, result.asDouble(), 0);
-    }
-
 //    @Test
 //    public void givenBigNumber_whenAddThem_thenOverflowShouldOccurAndBigIntShouldBeReturned() {
 //        var program = "(+ 1 2 " + Long.MAX_VALUE + ")";

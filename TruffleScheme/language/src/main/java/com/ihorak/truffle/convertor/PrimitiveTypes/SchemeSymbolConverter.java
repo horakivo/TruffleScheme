@@ -1,6 +1,7 @@
 package com.ihorak.truffle.convertor.PrimitiveTypes;
 
 import com.ihorak.truffle.convertor.context.FrameIndexResult;
+import com.ihorak.truffle.convertor.context.LexicalScope;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.scope.*;
