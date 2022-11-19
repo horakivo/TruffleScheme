@@ -16,6 +16,7 @@ public class SpecialFormUtils {
             case "and":
             case "or":
             case "cond":
+            case "letrec":
                 return true;
             default:
                 return false;

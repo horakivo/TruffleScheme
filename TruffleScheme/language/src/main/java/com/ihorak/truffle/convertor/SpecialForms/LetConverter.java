@@ -55,13 +55,4 @@ public class LetConverter extends AbstractLetConverter{
 
         return result;
     }
-
-    private static List<SchemeExpression> createBodyExpr(SchemeCell body, ParsingContext letContext) {
-        List<SchemeExpression> result = new ArrayList<>();
-        for (Object obj : body) {
-            result.add(ListToExpressionConverter.convert(obj, letContext));
-        }
-
-        return result;
-    }
 }

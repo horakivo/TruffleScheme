@@ -3,6 +3,7 @@ package com.ihorak.truffle.convertor;
 import com.ihorak.truffle.convertor.SpecialForms.DefineConverter;
 import com.ihorak.truffle.convertor.SpecialForms.LambdaConverter;
 import com.ihorak.truffle.convertor.SpecialForms.LetConverter;
+import com.ihorak.truffle.convertor.SpecialForms.LetrecConverter;
 import com.ihorak.truffle.convertor.context.LexicalScope;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.exceptions.SchemeException;
@@ -39,6 +40,8 @@ public class SpecialFormConverter {
                 return LetConverter.convert(specialFormList, context);
 //            case "let*":
 //                return convertLetStar(specialFormList, context);
+            case "letrec":
+                return LetrecConverter.convert(specialFormList, context);
             case "and":
                 return convertAnd(specialFormList, context);
             case "or":
