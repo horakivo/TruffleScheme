@@ -23,7 +23,7 @@ public abstract class EqualBinaryNode extends BinaryOperationNode {
 
     @Specialization
     protected boolean equalDoubles(double left, double right) {
-        return left < right;
+        return left == right;
     }
 
     @TruffleBoundary

@@ -20,7 +20,7 @@ public class WriteGlobalVariableExprNode extends SchemeExpression {
     }
 
    // @CompilerDirectives.TruffleBoundary
-    //TODO Truffle boundary can't be here but transfer to interprate and invalidate can be. Is this correct? 
+    //TODO Truffle boundary can't be here but transfer to interprate and invalidate can be. Is this correct?
     @Override
     public Object executeGeneric(final VirtualFrame virtualFrame) {
         CompilerDirectives.transferToInterpreterAndInvalidate();

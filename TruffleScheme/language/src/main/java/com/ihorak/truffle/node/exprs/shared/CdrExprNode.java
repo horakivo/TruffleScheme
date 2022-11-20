@@ -12,19 +12,17 @@ public abstract class CdrExprNode extends LimitedBuiltin {
 
     private final BranchProfile emptyListProfile = BranchProfile.create();
 
+
+    @Specialization(guards = "!list.isEmpty()")
+    protected SchemeCell doList(SchemeCell list) {
+        return list.cdr;
+    }
+
     @Specialization
     protected Object doPair(SchemePair pair) {
         return pair.second();
     }
 
-    @Specialization
-    protected SchemeCell doList(SchemeCell list) {
-        if (list == SchemeCell.EMPTY_LIST) {
-            emptyListProfile.enter();
-            throw new SchemeException("cdr: contract violation\nexpected: pair? or list?\ngiven: " + list, this);
-        }
-        return list.cdr;
-    }
 
     @Fallback
     protected Object fallback(Object value) {
