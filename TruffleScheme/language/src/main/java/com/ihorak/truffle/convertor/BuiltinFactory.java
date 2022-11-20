@@ -4,6 +4,7 @@ package com.ihorak.truffle.convertor;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.SleepNode;
 import com.ihorak.truffle.node.exprs.builtin.*;
 import com.ihorak.truffle.node.exprs.builtin.arithmetic.*;
 import com.ihorak.truffle.node.exprs.builtin.comparison.*;
@@ -306,4 +307,24 @@ public class BuiltinFactory {
         throw new SchemeException(
                 "not: arity mismatch; Expected number of arguments does not match the given number\nExpected: 1\nGiven: " + arguments.size(), null);
     }
+
+    public static SchemeExpression createIsNull(List<SchemeExpression> arguments) {
+        if (arguments.size() == 1) {
+            return IsNullExprNodeGen.create(arguments.get(0));
+        }
+
+        throw new SchemeException(
+                "null: arity mismatch; Expected number of arguments does not match the given number\nExpected: 1\nGiven: " + arguments.size(), null);
+    }
+
+    public static SchemeExpression createModulo(List<SchemeExpression> arguments) {
+        if (arguments.size() == 2) {
+            return ModuloExprNodeGen.create(arguments.get(0), arguments.get(1));
+        }
+
+        throw new SchemeException(
+                "modulo: arity mismatch; Expected number of arguments does not match the given number\nExpected: 2\nGiven: " + arguments.size(),
+                null);
+    }
+
 }
