@@ -34,6 +34,8 @@ public class BuiltinUtils {
                 case "begin":
                 case "list-ref":
                 case "not":
+                case "null?":
+                case "modulo":
                     return true;
                 default:
                     return false;

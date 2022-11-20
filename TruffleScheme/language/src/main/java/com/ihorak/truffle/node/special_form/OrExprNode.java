@@ -41,4 +41,10 @@ public class OrExprNode extends SchemeExpression {
         return !ConditionUtil.convertObjectToBoolean(obj);
     }
 
+//    @Override
+//    public void setTailRecursiveAsTrue() {
+//        super.setTailRecursiveAsTrue();
+//        right.setTailRecursiveAsTrue();
+//    }
+
 }

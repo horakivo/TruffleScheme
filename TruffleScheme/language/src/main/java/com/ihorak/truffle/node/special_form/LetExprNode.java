@@ -28,4 +28,10 @@ public class LetExprNode extends SchemeExpression {
 
         return bindingAndBodyExpressions[bindingAndBodyExpressions.length - 1].executeGeneric(virtualFrame);
     }
+
+
+    @Override
+    public void setTailRecursiveAsTrue() {
+        bindingAndBodyExpressions[bindingAndBodyExpressions.length - 1].setTailRecursiveAsTrue();
+    }
 }

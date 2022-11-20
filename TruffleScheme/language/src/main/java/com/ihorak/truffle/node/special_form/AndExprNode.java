@@ -40,4 +40,10 @@ public class AndExprNode extends SchemeExpression {
     private boolean isEvaluateRight(Object obj) {
         return ConditionUtil.convertObjectToBoolean(obj);
     }
+
+//    @Override
+//    public void setTailRecursiveAsTrue() {
+//        super.setTailRecursiveAsTrue();
+//        right.setTailRecursiveAsTrue();
+//    }
 }

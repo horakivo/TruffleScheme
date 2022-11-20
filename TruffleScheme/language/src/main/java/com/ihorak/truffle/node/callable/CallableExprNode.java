@@ -1,15 +1,13 @@
 package com.ihorak.truffle.node.callable;
 
-import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.exceptions.SchemeException;
+import com.ihorak.truffle.exceptions.TailCallException;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.convertor.ListToExpressionConverter;
 import com.ihorak.truffle.type.PrimitiveProcedure;
 import com.ihorak.truffle.type.SchemeCell;
+import com.ihorak.truffle.type.SchemeSymbol;
 import com.ihorak.truffle.type.UserDefinedProcedure;
-import com.ihorak.truffle.type.SchemeMacro;
 import com.oracle.truffle.api.CallTarget;
-import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.Specialization;
@@ -28,23 +26,18 @@ public abstract class CallableExprNode extends SchemeExpression {
     @SuppressWarnings("FieldMayBeFinal")
     @Child
     private DispatchNode dispatchNode;
-    private final ParsingContext parsingContext;
-
-    //TODO rewrite this
-    @CompilerDirectives.CompilationFinal
-    private SchemeExpression macroExpandedTree;
+    public final Object dataOperand;
 
 
-    private final BranchProfile macroWrongNumberOfArgsProfile = BranchProfile.create();
     private final BranchProfile userProcedureWrongNumberOfArgsProfile = BranchProfile.create();
     private final BranchProfile primitiveProcedureWrongNumberOfArgsProfile = BranchProfile.create();
     private final ConditionProfile conditionProfile = ConditionProfile.createBinaryProfile();
 
 
-    public CallableExprNode(List<SchemeExpression> arguments, ParsingContext context) {
+    public CallableExprNode(List<SchemeExpression> arguments, Object dataOperand) {
         this.arguments = arguments.toArray(SchemeExpression[]::new);
         this.dispatchNode = DispatchNodeGen.create();
-        this.parsingContext = context;
+        this.dataOperand = dataOperand;
     }
 
     @Specialization
@@ -52,12 +45,13 @@ public abstract class CallableExprNode extends SchemeExpression {
         if (this.arguments.length < function.getExpectedNumberOfArgs()) {
             userProcedureWrongNumberOfArgsProfile.enter();
             throw new SchemeException("User defined procedure was called with wrong number of arguments." +
-                    " \n Expected: " + function.getExpectedNumberOfArgs() +
-                    " \n Given: " + this.arguments.length, this);
+                                              " \n Expected: " + function.getExpectedNumberOfArgs() +
+                                              " \n Given: " + this.arguments.length, this);
         }
 
-        var arguments = getProcedureArguments(function, frame);
-        return call(function.getCallTarget(), arguments, frame);
+        var args = getUserDefinedProcedureArguments(function, frame);
+
+        return call(function.getCallTarget(), args, frame);
     }
 
     @Specialization
@@ -65,43 +59,23 @@ public abstract class CallableExprNode extends SchemeExpression {
         var expectedNumberOfArgs = primitiveProcedure.getNumberOfArgs();
         if (expectedNumberOfArgs != null && expectedNumberOfArgs != this.arguments.length) {
             primitiveProcedureWrongNumberOfArgsProfile.enter();
-            throw new SchemeException(primitiveProcedure.getName() + ": arity mismatch; Expected number of arguments does not match the given number" +
-                    "\nexpected: " + expectedNumberOfArgs + "" +
-                    "\ngiven: " + this.arguments.length, this);
+            throw new SchemeException(
+                    primitiveProcedure.getName() + ": arity mismatch; Expected number of arguments does not match the given number" +
+                            "\nexpected: " + expectedNumberOfArgs + "" +
+                            "\ngiven: " + this.arguments.length, this);
         }
 
-        var arguments = getPrimitiveProcedureArgs(frame);
-        return call(primitiveProcedure.getCallTarget(), arguments, frame);
-    }
-
-    @Specialization
-    protected Object doMacro(VirtualFrame frame, SchemeMacro macro) {
-        var transformationProcedure = macro.transformationProcedure();
-
-        if (transformationProcedure.getExpectedNumberOfArgs() != this.arguments.length) {
-            macroWrongNumberOfArgsProfile.enter();
-            throw new SchemeException("Procedure was called with wrong number of arguments." +
-                    " \n Expected: " + transformationProcedure.getExpectedNumberOfArgs() +
-                    " \n Given: " + this.arguments.length, this);
-        }
-
-        if (macroExpandedTree == null) {
-            CompilerDirectives.transferToInterpreterAndInvalidate();
-            var macroArguments = getProcedureOrMacroArgsNoOptional(transformationProcedure, frame);
-            var transformedData = applyTransformationProcedure(macro.transformationProcedure(), macroArguments);
-            macroExpandedTree = ListToExpressionConverter.convert(transformedData, parsingContext);
-        }
-
-        var test =  macroExpandedTree.executeGeneric(frame);
-        return test;
+        var args = getPrimitiveProcedureArgs(frame);
+        return call(primitiveProcedure.getCallTarget(), args, frame);
     }
 
     @Fallback
     protected Object fallback(Object object) {
-        throw new SchemeException("application: not a procedure or macro;\nexpected: macro or procedure that can be applied to arguments\ngiven: " + object, this);
+        throw new SchemeException(
+                "application: not a procedure or macro;\nexpected: macro or procedure that can be applied to arguments\ngiven: " + object, this);
     }
 
-    private Object[] getProcedureArguments(UserDefinedProcedure function, VirtualFrame parentFrame) {
+    private Object[] getUserDefinedProcedureArguments(UserDefinedProcedure function, VirtualFrame parentFrame) {
         if (conditionProfile.profile(function.isOptionalArgs())) {
             return getProcedureArgsWithOptional(function, parentFrame);
         } else {
@@ -159,25 +133,25 @@ public abstract class CallableExprNode extends SchemeExpression {
 
     }
 
-    private Object applyTransformationProcedure(UserDefinedProcedure transformationProcedure, Object[] arguments) {
-        return dispatchNode.executeDispatch(transformationProcedure.getCallTarget(), arguments);
+    @Override
+    public void setSelfTailRecursive(final List<SchemeSymbol> currentlyDefiningProcedures) {
+        this.isSelfTailRecursive = dataOperand instanceof SchemeSymbol symbol && currentlyDefiningProcedures.contains(symbol);
     }
 
     private Object call(CallTarget callTarget, Object[] arguments, VirtualFrame frame) {
-        return dispatchNode.executeDispatch(callTarget, arguments);
-//        if (this.isTailRecursive()) {
-//            throw new TailCallException(callTarget, arguments);
-//        } else {
-//            while (true) {
-//                try {
-//                    return dispatchNode.executeDispatch(callTarget, arguments);
-//                } catch (TailCallException tailCallException) {
-//                    callTarget = tailCallException.getCallTarget();
-//                    arguments = tailCallException.getArguments();
-//                }
-//            }
-//        }
+
+        if (this.isTailRecursive) {
+            throw new TailCallException(callTarget, arguments);
+        }
+
+        while (true) {
+            try {
+                return dispatchNode.executeDispatch(callTarget, arguments);
+            } catch (TailCallException tailCallException) {
+                callTarget = tailCallException.getCallTarget();
+                arguments = tailCallException.getArguments();
+            }
+        }
+        //        return dispatchNode.executeDispatch(callTarget, arguments);
     }
-
-
 }

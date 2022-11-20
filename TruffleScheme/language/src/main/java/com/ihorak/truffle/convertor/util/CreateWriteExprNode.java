@@ -2,7 +2,7 @@ package com.ihorak.truffle.convertor.util;
 
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.scope.WriteGlobalVariableExprNodeGen;
+import com.ihorak.truffle.node.scope.WriteGlobalVariableExprNode;
 import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
 import com.ihorak.truffle.node.scope.WriteLocalVariableExprNodeGen;
 import com.ihorak.truffle.type.SchemeSymbol;
@@ -20,7 +20,7 @@ public class CreateWriteExprNode {
     }
 
     public static SchemeExpression createWriteGlobalVariableExprNode(SchemeSymbol name, SchemeExpression valueToStore) {
-        return WriteGlobalVariableExprNodeGen.create(name, valueToStore);
+        return new WriteGlobalVariableExprNode(valueToStore, name);
     }
 
 }

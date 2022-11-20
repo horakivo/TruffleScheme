@@ -97,7 +97,7 @@ public class ProgramTest {
                 "  (lambda (n)\n" +
                 "    (if (< n 1)\n" +
                 "        0\n" +
-                "        (countdown (- n 1)))))\n" +
+                "        (cons 1 (countdown (- n 1))))))\n" +
                 "\n" +
                 "(define start (current-milliseconds))\n" +
                 "\n" +
@@ -107,6 +107,102 @@ public class ProgramTest {
                 "(- end start)";
 
         var result  = context.eval("scm", program);
+
+    }
+
+    @Test
+    public void tak() {
+        var program = "" +
+                "(define tak\n" +
+                "  (lambda (x y z)\n" +
+                "    (if (not (< y x))\n" +
+                "        z\n" +
+                "        (tak (tak (- x 1) y z)\n" +
+                "           (tak (- y 1) z x)\n" +
+                "           (tak (- z 1) x y)))))\n" +
+                "\n" +
+                "\n" +
+                "(define loop\n" +
+                "  (lambda (n)\n" +
+                "    (tak 18 12 6)\n" +
+                "    (if (> n 0) (loop (- n 1)))))\n" +
+                "\n" +
+                "\n" +
+                "(loop 100)\n" +
+                "(loop 100)\n" +
+                "(loop 100)\n" +
+                "(loop 100)\n" +
+                "(loop 100)\n" +
+                "(loop 100)\n" +
+                "\n" +
+                "\n" +
+                "\n" +
+                "\n" +
+                "(define start (current-milliseconds))\n" +
+                "\n" +
+                "(loop 100)\n" +
+                "\n" +
+                "(define end (current-milliseconds))\n" +
+                "(- end start)";
+
+        var result  = context.eval("scm", program);
+        System.out.println(result);
+
+    }
+
+    @Test
+    public void primes() {
+        var program = "\n" +
+                "(define interval-list\n" +
+                "  (lambda (m n)\n" +
+                "    (if (> m n)\n" +
+                "        '()\n" +
+                "        (cons m (interval-list (+ 1 m) n)))))\n" +
+                "\n" +
+                "(define sieve\n" +
+                "  (lambda  (l)\n" +
+                "    (letrec ((remove-multiples\n" +
+                "              (lambda (n l)\n" +
+                "                (if (null? l)\n" +
+                "                    '()\n" +
+                "                    (if (= (modulo (car l) n) 0)\n" +
+                "                        (remove-multiples n (cdr l))\n" +
+                "                        (cons (car l)\n" +
+                "                              (remove-multiples n (cdr l))))))))\n" +
+                "      (if (null? l)\n" +
+                "          '()\n" +
+                "          (cons (car l)\n" +
+                "                (sieve (remove-multiples (car l) (cdr l))))))))\n" +
+                "\n" +
+                "(define primes<=\n" +
+                "  (lambda (n)\n" +
+                "    (sieve (interval-list 2 n))))\n" +
+                "\n" +
+                "\n" +
+                "(define loop\n" +
+                "  (lambda (n)\n" +
+                "    (primes<= 10000)\n" +
+                "    (if (> n 0) (loop (- n 1)))))\n" +
+                "\n" +
+                "\n" +
+                "(loop 10000)\n" +
+                "(loop 10000)\n" +
+                "(loop 10000)\n" +
+                "(loop 10000)\n" +
+                "(loop 10000)\n" +
+                "(loop 10000)\n" +
+                "\n" +
+                "(define start (current-milliseconds))\n" +
+                "\n" +
+                "(loop 10000)\n" +
+                "\n" +
+                "(define end (current-milliseconds))\n" +
+                "(- end start)\n" +
+                "\n" +
+                "\n";
+
+        var result  = context.eval("scm", program);
+        System.out.println(result);
 
     }
 

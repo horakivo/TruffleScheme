@@ -2,9 +2,12 @@ package com.ihorak.truffle.node.special_form;
 
 import com.ihorak.truffle.node.ConditionUtil;
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.type.SchemeSymbol;
 import com.ihorak.truffle.type.UndefinedValue;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.profiles.ConditionProfile;
+
+import java.util.List;
 
 public class IfExprNode extends SchemeExpression {
 
@@ -39,6 +42,14 @@ public class IfExprNode extends SchemeExpression {
         thenExpr.setTailRecursiveAsTrue();
         if (elseExpr != null) {
             elseExpr.setTailRecursiveAsTrue();
+        }
+    }
+
+    @Override
+    public void setSelfTailRecursive(final List<SchemeSymbol> currentlyDefiningProcedures) {
+        thenExpr.setSelfTailRecursive(currentlyDefiningProcedures);
+        if (elseExpr != null) {
+            elseExpr.setSelfTailRecursive(currentlyDefiningProcedures);
         }
     }
 }

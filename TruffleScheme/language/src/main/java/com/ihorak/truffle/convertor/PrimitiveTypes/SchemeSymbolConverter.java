@@ -18,14 +18,17 @@ public class SchemeSymbolConverter {
             if (indexPair.isLambdaParameter()) {
                 return createReadProcedureArgExpr(indexPair);
             }
-            return createReadVariableExpr(indexPair, symbol);
+            return createReadVariableExpr(indexPair, symbol, context);
         } else {
-            return ReadGlobalVariableExprNodeGen.create(symbol);
+            return new ReadGlobalVariableExprNode(symbol);
         }
     }
 
-    private static SchemeExpression createReadVariableExpr(FrameIndexResult indexFrameIndexResult, SchemeSymbol symbol) {
+    private static SchemeExpression createReadVariableExpr(FrameIndexResult indexFrameIndexResult, SchemeSymbol symbol, ParsingContext context) {
         if (indexFrameIndexResult.lexicalScopeDepth() == 0) {
+            if (context.getLexicalScope() == LexicalScope.LETREC) {
+                return ReadLocalNullableVariableExprNodeGen.create(indexFrameIndexResult.index(), symbol);
+            }
             return ReadLocalVariableExprNodeGen.create(indexFrameIndexResult.index(), symbol);
         }
         return ReadNonLocalVariableExprNodeGen.create(indexFrameIndexResult.lexicalScopeDepth(), indexFrameIndexResult.index(), symbol);

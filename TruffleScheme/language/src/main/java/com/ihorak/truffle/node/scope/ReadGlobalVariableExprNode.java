@@ -1,39 +1,48 @@
 package com.ihorak.truffle.node.scope;
 
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.SchemeLanguageContext;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.Assumption;
-import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.Truffle;
-import com.oracle.truffle.api.dsl.Specialization;
+import com.oracle.truffle.api.utilities.CyclicAssumption;
+import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
+import com.oracle.truffle.api.frame.VirtualFrame;
 
-public abstract class ReadGlobalVariableExprNode extends SchemeExpression {
+public class ReadGlobalVariableExprNode extends SchemeExpression {
 
     private final SchemeSymbol symbol;
     @CompilationFinal
-    private Object cache;
-    public static final Assumption notRedefinedAssumption = Truffle.getRuntime().createAssumption();
+    private Object cachedValue;
+    public static final CyclicAssumption notRedefinedAssumption = new CyclicAssumption("global variable not redefined");
+    //TODO do I need this?
+    @CompilationFinal
+    private Assumption cachedAssumption;
+
 
     public ReadGlobalVariableExprNode(SchemeSymbol symbol) {
         this.symbol = symbol;
+        cachedAssumption = notRedefinedAssumption.getAssumption();
     }
 
-    @Specialization
-    protected Object readGlobalVariable() {
-        if (notRedefinedAssumption.isValid()) {
-            if (cache == null) {
-                cache = retrieveValueFromLanguageContext();
+    @Override
+    public Object executeGeneric(final VirtualFrame virtualFrame) {
+        if (cachedAssumption.isValid()) {
+            if (cachedValue != null) {
+                return cachedValue;
+            } else {
+                return retrieveAndUpdateCachedValueFromLanguageContext();
             }
         } else {
-            cache = retrieveValueFromLanguageContext();
+            //TODO Do I need here CompilerDirectives.transferToInterpreterAndInvalidate()?
+            cachedAssumption = notRedefinedAssumption.getAssumption();
+            return retrieveAndUpdateCachedValueFromLanguageContext();
         }
-        return cache;
     }
 
-    private Object retrieveValueFromLanguageContext() {
+    private Object retrieveAndUpdateCachedValueFromLanguageContext() {
         CompilerDirectives.transferToInterpreterAndInvalidate();
-        return this.getCurrentLanguageContext().getGlobalState().getVariable(symbol);
+        cachedValue = this.getCurrentLanguageContext().getGlobalState().getVariable(symbol);
+        return cachedValue;
     }
 }

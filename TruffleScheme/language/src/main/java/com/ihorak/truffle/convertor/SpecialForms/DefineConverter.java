@@ -6,7 +6,6 @@ import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.util.CreateWriteExprNode;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.scope.WriteGlobalVariableExprNodeGen;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeSymbol;
 
@@ -18,9 +17,11 @@ public class DefineConverter {
         validate(defineList);
 
         var identifier = (SchemeSymbol) defineList.get(1);
+        context.addCurrentlyDefiningName(identifier);
         var defineBody = defineList.get(2);
         var bodyExpr = ListToExpressionConverter.convert(defineBody, context);
 
+        context.removeCurrentlyDefiningName(identifier);
         if (context.getLexicalScope() == LexicalScope.GLOBAL) {
             return CreateWriteExprNode.createWriteGlobalVariableExprNode(identifier, bodyExpr);
         } else {

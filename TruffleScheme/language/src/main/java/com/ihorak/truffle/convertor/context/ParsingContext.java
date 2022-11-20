@@ -6,16 +6,19 @@ import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlotKind;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ParsingContext {
 
-    private final Set<SchemeSymbol> macroIndex;
-    private final Map<SchemeSymbol, Integer> lambdaParameterIndex;
-    private final Map<SchemeSymbol, Integer> localVariableIndex;
+    private final Set<SchemeSymbol> macroIndex = new HashSet<>();
+    private final Map<SchemeSymbol, Integer> lambdaParameterIndex = new HashMap<>();
+    private final Map<SchemeSymbol, Integer> localVariableIndex = new HashMap<>();
+
+    //for self tail optimalization
+    private final List<SchemeSymbol> currentlyDefiningNames;
+
+    //(letrec ([id val-expr] ...) body ...+)
+    private final List<SchemeSymbol> letrecIds = new ArrayList<>();
 
     private final ParsingContext parent;
     private final SchemeTruffleLanguage language;
@@ -25,36 +28,27 @@ public class ParsingContext {
 
     public ParsingContext(ParsingContext parent, LexicalScope lexicalScope) {
         this.frameDescriptorBuilder = FrameDescriptor.newBuilder();
-        this.localVariableIndex = new HashMap<>();
-        this.lambdaParameterIndex = new HashMap<>();
-        this.macroIndex = new HashSet<>();
         this.scope = lexicalScope;
         this.language = parent.language;
         this.parent = parent;
+        this.currentlyDefiningNames = parent.currentlyDefiningNames;
     }
 
-    //For creating LET - Why do we need to even create this Parsing context not just modify lexical scope?
-    //The reason is that if LET is defined in global scope, then we would always consider them as global (look what findClosureSymbol works)
-    //This is basically achieving that the storage is the same as the parent one
-    //Another benefit is that variables defined in LET at global level will be stored in Frame and not in the global context
+    //For creating LET - we don't want to create a new FrameDescriptor because we are using the parent one.
     public ParsingContext(ParsingContext parent, LexicalScope lexicalScope, FrameDescriptor.Builder frameDescriptorBuilder) {
         this.frameDescriptorBuilder = frameDescriptorBuilder;
         this.scope = lexicalScope;
         this.language = parent.language;
         this.parent = parent;
-        this.localVariableIndex = new HashMap<>();
-        this.lambdaParameterIndex = new HashMap<>();
-        this.macroIndex = new HashSet<>();
+        this.currentlyDefiningNames = parent.currentlyDefiningNames;
     }
 
     public ParsingContext(SchemeTruffleLanguage language) {
         this.frameDescriptorBuilder = FrameDescriptor.newBuilder();
-        this.localVariableIndex = new HashMap<>();
-        this.lambdaParameterIndex = new HashMap<>();
         this.scope = LexicalScope.GLOBAL;
         this.language = language;
+        this.currentlyDefiningNames = new ArrayList<>();
         this.parent = null;
-        this.macroIndex = new HashSet<>();
     }
 
     /**
@@ -85,7 +79,7 @@ public class ParsingContext {
 
 
         //recursive call
-        if (context.scope == LexicalScope.LET) {
+        if (context.scope == LexicalScope.LET || context.scope == LexicalScope.LETREC) {
             return findSymbol(context.parent, symbol, depth);
         }
         return findSymbol(context.parent, symbol, depth + 1);
@@ -143,5 +137,26 @@ public class ParsingContext {
 
     public int getNumberOfLambdaParameters() {
         return lambdaParameterIndex.size();
+    }
+
+
+    public List<SchemeSymbol> getCurrentlyDefiningNames() {
+        return currentlyDefiningNames;
+    }
+
+    public void addCurrentlyDefiningName(final SchemeSymbol defineName) {
+        currentlyDefiningNames.add(defineName);
+    }
+
+    public void removeCurrentlyDefiningName(final SchemeSymbol defineName) {
+        currentlyDefiningNames.remove(defineName);
+    }
+
+    public void addLetrecIds(List<SchemeSymbol> ids) {
+        letrecIds.addAll(ids);
+    }
+
+    public void removeLetrecIds(List<SchemeSymbol> ids) {
+        letrecIds.removeAll(ids);
     }
 }

@@ -13,6 +13,13 @@ public class NotExprNode extends SchemeExpression {
         this.expression = expression;
     }
 
+    //TODO WHAT is better here this or
+    //@Specialization (boolean b)
+    //return !b;
+
+    //@Specialization (Object b)
+    //return true;
+
     @Override
     public boolean executeBoolean(final VirtualFrame virtualFrame) {
         var booleanValue = ConditionUtil.convertObjectToBoolean(expression.executeGeneric(virtualFrame));

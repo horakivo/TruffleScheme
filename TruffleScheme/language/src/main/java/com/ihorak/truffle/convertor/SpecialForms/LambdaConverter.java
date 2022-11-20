@@ -43,7 +43,9 @@ public class LambdaConverter {
             bodyExprs.add(ListToExpressionConverter.convert(obj, lambdaContext));
         }
 
-        bodyExprs.get(bodyExprs.size() - 1).setTailRecursiveAsTrue();
+        var lastExpr = bodyExprs.get(bodyExprs.size() - 1);
+        lastExpr.setTailRecursiveAsTrue();
+        lastExpr.setSelfTailRecursive(lambdaContext.getCurrentlyDefiningNames());
 
         return bodyExprs;
     }

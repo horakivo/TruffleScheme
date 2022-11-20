@@ -20,7 +20,7 @@ public class LetrecConverter extends AbstractLetConverter {
     //TODO solve code duplication
     public static LetExprNode convert(SchemeCell letList, ParsingContext context) {
         validate(letList);
-        ParsingContext letContext = new ParsingContext(context, LexicalScope.LET, context.getFrameDescriptorBuilder());
+        ParsingContext letContext = new ParsingContext(context, LexicalScope.LETREC, context.getFrameDescriptorBuilder());
 
         SchemeCell localBindings = (SchemeCell) letList.get(1);
         SchemeCell body = letList.cdr.cdr;
@@ -47,10 +47,14 @@ public class LetrecConverter extends AbstractLetConverter {
             dataExpressions.add(bindingList.get(1));
         }
 
+        letContext.addLetrecIds(symbols);
+
         for (int i = 0; i < symbols.size(); i++) {
             var expression = ListToExpressionConverter.convert(dataExpressions.get(i), letContext);
             result.add(CreateWriteExprNode.createWriteLocalVariableExprNode(symbols.get(i), expression, letContext));
         }
+
+        letContext.removeLetrecIds(symbols);
 
         return result;
     }

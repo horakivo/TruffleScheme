@@ -4,7 +4,6 @@ package com.ihorak.truffle.convertor;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.SleepNode;
 import com.ihorak.truffle.node.exprs.builtin.*;
 import com.ihorak.truffle.node.exprs.builtin.arithmetic.*;
 import com.ihorak.truffle.node.exprs.builtin.comparison.*;

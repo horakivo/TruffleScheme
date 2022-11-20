@@ -5,8 +5,6 @@ import com.ihorak.truffle.convertor.util.BuiltinUtils;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.callable.CallableExprNodeGen;
 import com.ihorak.truffle.node.callable.MacroCallableExprNode;
-import com.ihorak.truffle.node.scope.ReadGlobalVariableExprNode;
-import com.ihorak.truffle.node.scope.ReadGlobalVariableExprNodeGen;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeSymbol;
 
@@ -36,7 +34,7 @@ public class ProcedureCallConverter {
         }
 
         var callable = ListToExpressionConverter.convert(operand, context);
-        return CallableExprNodeGen.create(arguments, context, callable);
+        return CallableExprNodeGen.create(arguments, operand, callable);
     }
 
     private static List<SchemeExpression> getProcedureArguments(SchemeCell argumentList, ParsingContext context) {

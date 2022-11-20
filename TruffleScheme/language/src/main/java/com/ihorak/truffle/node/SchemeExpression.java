@@ -6,11 +6,15 @@ import com.oracle.truffle.api.nodes.UnexpectedResultException;
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 
 import java.math.BigInteger;
+import java.util.List;
 
 public abstract class SchemeExpression extends SchemeNode {
 
     @CompilationFinal
-    private boolean isTailRecursive = false;
+    public boolean isTailRecursive = false;
+
+    @CompilationFinal
+    public boolean isSelfTailRecursive = false;
 
     /**
      * The execute method when no specialization is possible. This is the most general case,
@@ -48,6 +52,10 @@ public abstract class SchemeExpression extends SchemeNode {
 
     public void setTailRecursiveAsTrue() {
         this.isTailRecursive = true;
+    }
+
+    public void setSelfTailRecursive(List<SchemeSymbol> currentlyDefiningProcedures) {
+        this.isSelfTailRecursive = false;
     }
 
     public boolean isTailRecursive() {

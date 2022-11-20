@@ -39,18 +39,16 @@ public class SchemeLanguageContext {
         public Object getVariable(SchemeSymbol symbol) {
             var value = globalVariableStorage.get(symbol);
             if (value == null) {
-                CompilerDirectives.transferToInterpreterAndInvalidate();
                 throw new SchemeException(symbol + ": undefined\ncannot reference an identifier before its definition", null);
             }
             return value;
         }
 
         public void addVariable(SchemeSymbol symbol, Object valueToStore) {
-            if (globalVariableStorage.containsKey(symbol)) {
-                ReadGlobalVariableExprNode.notRedefinedAssumption.invalidate();
-            }
-
+            var shouldInvalidate = globalVariableStorage.containsKey(symbol);
             globalVariableStorage.put(symbol, valueToStore);
+            if (shouldInvalidate) ReadGlobalVariableExprNode.notRedefinedAssumption.invalidate();
+
         }
     }
 }
