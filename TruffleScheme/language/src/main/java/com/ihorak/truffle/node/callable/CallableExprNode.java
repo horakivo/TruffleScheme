@@ -1,7 +1,6 @@
 package com.ihorak.truffle.node.callable;
 
 import com.ihorak.truffle.exceptions.SchemeException;
-import com.ihorak.truffle.exceptions.TailCallException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.PrimitiveProcedure;
 import com.ihorak.truffle.type.SchemeCell;
@@ -139,19 +138,19 @@ public abstract class CallableExprNode extends SchemeExpression {
     }
 
     private Object call(CallTarget callTarget, Object[] arguments, VirtualFrame frame) {
-
-        if (this.isTailRecursive) {
-            throw new TailCallException(callTarget, arguments);
-        }
-
-        while (true) {
-            try {
-                return dispatchNode.executeDispatch(callTarget, arguments);
-            } catch (TailCallException tailCallException) {
-                callTarget = tailCallException.getCallTarget();
-                arguments = tailCallException.getArguments();
-            }
-        }
-        //        return dispatchNode.executeDispatch(callTarget, arguments);
+//
+//        if (this.isTailRecursive) {
+//            throw new TailCallException(callTarget, arguments);
+//        }
+//
+//        while (true) {
+//            try {
+//                return dispatchNode.executeDispatch(callTarget, arguments);
+//            } catch (TailCallException tailCallException) {
+//                callTarget = tailCallException.getCallTarget();
+//                arguments = tailCallException.getArguments();
+//            }
+//        }
+        return dispatchNode.executeDispatch(callTarget, arguments);
     }
 }
