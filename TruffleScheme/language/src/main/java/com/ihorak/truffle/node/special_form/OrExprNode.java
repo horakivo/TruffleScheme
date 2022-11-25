@@ -1,7 +1,9 @@
 package com.ihorak.truffle.node.special_form;
 
-import com.ihorak.truffle.node.ConditionUtil;
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.cast.BooleanCastExprNode;
+import com.ihorak.truffle.node.cast.BooleanCastExprNodeGen;
+import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.profiles.ConditionProfile;
 
@@ -19,6 +21,9 @@ public class OrExprNode extends SchemeExpression {
     @SuppressWarnings("FieldMayBeFinal")
     @Child
     private SchemeExpression right;
+
+    @Child
+    private BooleanCastExprNode leftCast;
     private final ConditionProfile evaluateRightProfile = ConditionProfile.createCountingProfile();
 
 
@@ -27,19 +32,26 @@ public class OrExprNode extends SchemeExpression {
         this.right = right;
     }
 
-
     @Override
     public Object executeGeneric(VirtualFrame frame) {
         var leftValue = left.executeGeneric(frame);
-        if (evaluateRightProfile.profile(isEvaluateRight(leftValue))) {
+        if (evaluateRightProfile.profile(castToBoolean(leftValue))) {
+            return leftValue;
+        } else {
             return right.executeGeneric(frame);
+
         }
-        return leftValue;
     }
 
-    private boolean isEvaluateRight(Object obj) {
-        return !ConditionUtil.convertObjectToBoolean(obj);
+    private boolean castToBoolean(Object value) {
+        if (leftCast == null) {
+            CompilerDirectives.transferToInterpreterAndInvalidate();
+            leftCast = insert(BooleanCastExprNodeGen.create(null));
+        }
+
+        return leftCast.executeBoolean(value);
     }
+
 
 //    @Override
 //    public void setTailRecursiveAsTrue() {

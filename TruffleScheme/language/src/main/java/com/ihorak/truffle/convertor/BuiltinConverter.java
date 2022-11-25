@@ -67,6 +67,10 @@ public class BuiltinConverter {
                 return BuiltinFactory.createIsNull(convertedArguments);
             case "modulo":
                 return BuiltinFactory.createModulo(convertedArguments);
+            case "cadr":
+                return BuiltinFactory.createCadr(convertedArguments);
+            case "infinite":
+                return BuiltinFactory.createInfinite(convertedArguments);
             default:
                 throw new RuntimeException("Unable to convert builtin procedure from list to AST. Builtin: " + operand);
         }

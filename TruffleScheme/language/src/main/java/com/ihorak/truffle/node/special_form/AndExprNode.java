@@ -1,7 +1,7 @@
 package com.ihorak.truffle.node.special_form;
 
-import com.ihorak.truffle.node.ConditionUtil;
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.cast.BooleanCastExprNode;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.profiles.ConditionProfile;
 
@@ -15,31 +15,28 @@ public class AndExprNode extends SchemeExpression {
 
     @SuppressWarnings("FieldMayBeFinal")
     @Child
-    private SchemeExpression left;
+    private BooleanCastExprNode left;
     @SuppressWarnings("FieldMayBeFinal")
     @Child
     private SchemeExpression right;
     private final ConditionProfile evaluateRightProfile = ConditionProfile.createCountingProfile();
 
 
-    public AndExprNode(SchemeExpression left, SchemeExpression right) {
+    public AndExprNode(BooleanCastExprNode left, SchemeExpression right) {
         this.left = left;
         this.right = right;
     }
 
     @Override
     public Object executeGeneric(VirtualFrame frame) {
-        var leftValue = left.executeGeneric(frame);
-        if (evaluateRightProfile.profile(isEvaluateRight(leftValue))) {
+        if (evaluateRightProfile.profile(left.executeBoolean(frame))) {
             return right.executeGeneric(frame);
+        } else {
+            return false;
         }
 
-        return false;
     }
 
-    private boolean isEvaluateRight(Object obj) {
-        return ConditionUtil.convertObjectToBoolean(obj);
-    }
 
 //    @Override
 //    public void setTailRecursiveAsTrue() {

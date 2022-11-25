@@ -32,7 +32,7 @@ public class LambdaConverter {
         var bodyExpressions = createLambdaBodyExpressions(expressions, lambdaContext);
 
         var frameDescriptor = lambdaContext.buildAndGetFrameDescriptor();
-        var rootNode = new ProcedureRootNode(context.getLanguage(), frameDescriptor, bodyExpressions);
+        var rootNode = new ProcedureRootNode(context.getLanguage(), frameDescriptor, bodyExpressions, context.getLastName());
         var hasOptionalArgs = params instanceof SchemePair;
         return new LambdaExprNode(rootNode.getCallTarget(), lambdaContext.getNumberOfLambdaParameters(), hasOptionalArgs);
     }

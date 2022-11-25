@@ -4,6 +4,7 @@ package com.ihorak.truffle.convertor;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.cast.BooleanCastExprNodeGen;
 import com.ihorak.truffle.node.exprs.builtin.*;
 import com.ihorak.truffle.node.exprs.builtin.arithmetic.*;
 import com.ihorak.truffle.node.exprs.builtin.comparison.*;
@@ -300,7 +301,7 @@ public class BuiltinFactory {
 
     public static SchemeExpression createNot(List<SchemeExpression> arguments) {
         if (arguments.size() == 1) {
-            return new NotExprNode(arguments.get(0));
+            return new NotExprNode(BooleanCastExprNodeGen.create(arguments.get(0)));
         }
 
         throw new SchemeException(
@@ -324,6 +325,23 @@ public class BuiltinFactory {
         throw new SchemeException(
                 "modulo: arity mismatch; Expected number of arguments does not match the given number\nExpected: 2\nGiven: " + arguments.size(),
                 null);
+    }
+
+    public static SchemeExpression createCadr(List<SchemeExpression> arguments) {
+        if (arguments.size() == 1) {
+           var cdr = CdrExprNodeFactory.create(arguments.toArray(SchemeExpression[]::new));
+           var car = CarExprNodeFactory.create(new SchemeExpression[] {cdr});
+
+           return car;
+        }
+
+        throw new SchemeException(
+                "cadr: arity mismatch; Expected number of arguments does not match the given number\nExpected: 1\nGiven: " + arguments.size(),
+                null);
+    }
+
+    public static SchemeExpression createInfinite(List<SchemeExpression> arguments) {
+        return new WhileInfiniteExprNode(arguments.get(0));
     }
 
 }

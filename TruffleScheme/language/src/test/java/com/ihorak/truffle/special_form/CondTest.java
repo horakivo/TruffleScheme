@@ -37,6 +37,7 @@ public class CondTest {
         assertEquals(20L, result.asLong());
     }
 
+
     @Test
     public void givenSimpleCondWithElse_whenEvaluated_thenCorrectResultIsReturned() {
         var program = "(cond (#f 20) (else 22))";

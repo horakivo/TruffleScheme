@@ -15,14 +15,14 @@ import com.oracle.truffle.api.library.ExportMessage;
 
 import java.math.BigInteger;
 
-@ExportLibrary(InteropLibrary.class)
+//@ExportLibrary(InteropLibrary.class)
 public class UserDefinedProcedure extends AbstractProcedure implements TruffleObject {
 
     private final int expectedNumberOfArgs;
     private final boolean optionalArgs;
     private final MaterializedFrame parentFrame;
     //Because of the Interop library
-    private final DispatchNode dispatchNode = DispatchNodeGen.create();
+//    private final DispatchNode dispatchNode = DispatchNodeGen.create();
 
     public UserDefinedProcedure(CallTarget callTarget, int expectedNumberOfArgs, final boolean hasOptionalArgs, MaterializedFrame frame) {
         super(callTarget);
@@ -54,42 +54,42 @@ public class UserDefinedProcedure extends AbstractProcedure implements TruffleOb
     }
 
     //----------------InteropLibrary messages–----------------------
-
-    @ExportMessage
-    boolean hasLanguage() {
-        return true;
-    }
-
-    @ExportMessage
-    Class<? extends TruffleLanguage<?>> getLanguage() {
-        return SchemeTruffleLanguage.class;
-    }
-
-    @ExportMessage
-    Object toDisplayString(@SuppressWarnings("unused") boolean allowSideEffects) {
-        return "#<procedure>";
-    }
-
-    @ExportMessage
-    boolean isExecutable() {
-        return true;
-    }
-
-    @ExportMessage
-    Object execute(Object[] arguments) {
-        for (Object argument : arguments) {
-            if (!isSchemeValue(argument)) {
-                CompilerDirectives.transferToInterpreterAndInvalidate();
-                throw new SchemeException("'" + argument + "' is not an EasyScript value", null);
-            }
-        }
-        return this.dispatchNode.executeDispatch(getCallTarget(), arguments);
-    }
-
-
-    private boolean isSchemeValue(Object argument) {
-        return argument instanceof Long || argument instanceof Double || argument instanceof BigInteger || argument instanceof SchemeCell || argument instanceof UserDefinedProcedure || argument instanceof UndefinedValue;
-
-    }
+//
+//    @ExportMessage
+//    boolean hasLanguage() {
+//        return true;
+//    }
+//
+//    @ExportMessage
+//    Class<? extends TruffleLanguage<?>> getLanguage() {
+//        return SchemeTruffleLanguage.class;
+//    }
+//
+//    @ExportMessage
+//    Object toDisplayString(@SuppressWarnings("unused") boolean allowSideEffects) {
+//        return "#<procedure>";
+//    }
+//
+//    @ExportMessage
+//    boolean isExecutable() {
+//        return true;
+//    }
+//
+//    @ExportMessage
+//    Object execute(Object[] arguments) {
+//        for (Object argument : arguments) {
+//            if (!isSchemeValue(argument)) {
+//                CompilerDirectives.transferToInterpreterAndInvalidate();
+//                throw new SchemeException("'" + argument + "' is not an EasyScript value", null);
+//            }
+//        }
+//        return this.dispatchNode.executeDispatch(getCallTarget(), arguments);
+//    }
+//
+//
+//    private boolean isSchemeValue(Object argument) {
+//        return argument instanceof Long || argument instanceof Double || argument instanceof BigInteger || argument instanceof SchemeCell || argument instanceof UserDefinedProcedure || argument instanceof UndefinedValue;
+//
+//    }
 
 }

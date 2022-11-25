@@ -2,46 +2,38 @@ package com.ihorak.truffle.node.special_form;
 
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.cast.BooleanCastExprNode;
-import com.ihorak.truffle.type.SchemeSymbol;
-import com.ihorak.truffle.type.UndefinedValue;
-import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.profiles.ConditionProfile;
 
-import java.util.List;
+public class IfElseExprNode extends SchemeExpression {
 
-public class IfExprNode extends SchemeExpression {
 
     @Child private BooleanCastExprNode condition;
     @Child private SchemeExpression thenExpr;
+    @Child private SchemeExpression elseExpr;
 
-    private final ConditionProfile conditionProfile = ConditionProfile.createCountingProfile();
-
-    public IfExprNode(BooleanCastExprNode condition, SchemeExpression thenExpr) {
+    public IfElseExprNode(final BooleanCastExprNode condition, final SchemeExpression thenExpr, final SchemeExpression elseExpr) {
         this.condition = condition;
         this.thenExpr = thenExpr;
+        this.elseExpr = elseExpr;
     }
+
+    private final ConditionProfile conditionProfile = ConditionProfile.createCountingProfile();
 
     @Override
     public Object executeGeneric(VirtualFrame frame) {
         if (conditionProfile.profile(condition.executeBoolean(frame))) {
             return thenExpr.executeGeneric(frame);
         } else {
-            return UndefinedValue.SINGLETON;
+            return elseExpr.executeGeneric(frame);
         }
     }
+
 
     @Override
     public void setTailRecursiveAsTrue() {
         super.setTailRecursiveAsTrue();
         thenExpr.setTailRecursiveAsTrue();
+        elseExpr.setTailRecursiveAsTrue();
     }
-
-//    @Override
-//    public void setSelfTailRecursive(final List<SchemeSymbol> currentlyDefiningProcedures) {
-//        thenExpr.setSelfTailRecursive(currentlyDefiningProcedures);
-//        if (elseExpr != null) {
-//            elseExpr.setSelfTailRecursive(currentlyDefiningProcedures);
-//        }
-//    }
 }

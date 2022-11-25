@@ -144,6 +144,10 @@ public class ParsingContext {
         return currentlyDefiningNames;
     }
 
+    public SchemeSymbol getLastName() {
+        return currentlyDefiningNames.get(currentlyDefiningNames.size() - 1);
+    }
+
     public void addCurrentlyDefiningName(final SchemeSymbol defineName) {
         currentlyDefiningNames.add(defineName);
     }

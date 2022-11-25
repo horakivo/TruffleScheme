@@ -1,6 +1,7 @@
 package com.ihorak.truffle.node.special_form;
 
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.callable.DispatchNodeGen;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.ihorak.truffle.type.UserDefinedProcedure;
 import com.oracle.truffle.api.CallTarget;
@@ -19,10 +20,6 @@ public class LambdaExprNode extends SchemeExpression {
         this.hasOptionalArgs = hasOptionalArgs;
     }
 
-    /**
-     * Parent cannot be saved only once, since the virtual frame is also containing arguments!
-     * It would cause that the arguments from the previous call will be applied!
-     */
     @Override
     public UserDefinedProcedure executeUserDefinedProcedure(VirtualFrame virtualFrame) {
         return new UserDefinedProcedure(callTarget, amountOfArguments, hasOptionalArgs, virtualFrame.materialize());

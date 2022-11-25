@@ -1,2 +1,8 @@
-(define a (lambda (x y) (+ x y)))
-(a 1 2)
+(define fibonacci
+  (lambda (n)
+      (if (< n 2)
+          n
+          (+ (fibonacci (- n 1))
+             (fibonacci (- n 2))))))
+
+(infinite (fibonacci 14))
