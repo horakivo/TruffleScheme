@@ -1,6 +1,6 @@
 package com.ihorak.truffle.convertor.SpecialForms;
 
-import com.ihorak.truffle.convertor.ListToExpressionConverter;
+import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.context.LexicalScope;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.exceptions.SchemeException;
@@ -40,7 +40,7 @@ public class LambdaConverter {
     private static List<SchemeExpression> createLambdaBodyExpressions(SchemeCell expressions, ParsingContext lambdaContext) {
         List<SchemeExpression> bodyExprs = new ArrayList<>();
         for (Object obj : expressions) {
-            bodyExprs.add(ListToExpressionConverter.convert(obj, lambdaContext));
+            bodyExprs.add(InternalRepresentationConverter.convert(obj, lambdaContext));
         }
 
         var lastExpr = bodyExprs.get(bodyExprs.size() - 1);

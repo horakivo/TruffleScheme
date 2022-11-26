@@ -1,10 +1,9 @@
 package com.ihorak.truffle.convertor.SpecialForms;
 
-import com.ihorak.truffle.convertor.ListToExpressionConverter;
+import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.context.LexicalScope;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.util.CreateWriteExprNode;
-import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
 import com.ihorak.truffle.node.special_form.LetExprNode;
@@ -44,7 +43,7 @@ public class LetConverter extends AbstractLetConverter{
             var bindingList = (SchemeCell) obj;
             var name = (SchemeSymbol) bindingList.get(0);
             var dataExpr = bindingList.get(1);
-            var expr = ListToExpressionConverter.convert(dataExpr, context);
+            var expr = InternalRepresentationConverter.convert(dataExpr, context);
             expressions.add(expr);
             symbols.add(name);
         }

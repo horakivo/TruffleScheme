@@ -1,6 +1,6 @@
 package com.ihorak.truffle.convertor.SpecialForms;
 
-import com.ihorak.truffle.convertor.ListToExpressionConverter;
+import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.context.LexicalScope;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.util.CreateWriteExprNode;
@@ -50,7 +50,7 @@ public class LetrecConverter extends AbstractLetConverter {
         letContext.makeLocalVariablesNullable(symbols);
 
         for (int i = 0; i < symbols.size(); i++) {
-            var expression = ListToExpressionConverter.convert(dataExpressions.get(i), letContext);
+            var expression = InternalRepresentationConverter.convert(dataExpressions.get(i), letContext);
             result.add(CreateWriteExprNode.createWriteLocalVariableExprNode(symbols.get(i), expression, letContext));
         }
 

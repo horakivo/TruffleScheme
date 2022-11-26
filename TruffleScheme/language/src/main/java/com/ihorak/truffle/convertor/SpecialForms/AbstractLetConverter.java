@@ -1,6 +1,6 @@
 package com.ihorak.truffle.convertor.SpecialForms;
 
-import com.ihorak.truffle.convertor.ListToExpressionConverter;
+import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
@@ -43,7 +43,7 @@ public abstract class AbstractLetConverter {
     protected static List<SchemeExpression> createBodyExpr(SchemeCell body, ParsingContext letContext) {
         List<SchemeExpression> result = new ArrayList<>();
         for (Object obj : body) {
-            result.add(ListToExpressionConverter.convert(obj, letContext));
+            result.add(InternalRepresentationConverter.convert(obj, letContext));
         }
 
         return result;

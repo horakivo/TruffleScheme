@@ -19,7 +19,7 @@ public class SchemeMacroConverter {
         validate(macroList);
 
         var name = (SchemeSymbol) macroList.get(1);
-        var transformationProcedureExpr = ListToExpressionConverter.convert(macroList.get(2), context);
+        var transformationProcedureExpr = InternalRepresentationConverter.convert(macroList.get(2), context);
 
         if (!(transformationProcedureExpr instanceof LambdaExprNode lambdaExprNode)) {
             throw new ParserException("define-marco: contract violation\nExpected: <procedure>\nGiven: " + transformationProcedureExpr);

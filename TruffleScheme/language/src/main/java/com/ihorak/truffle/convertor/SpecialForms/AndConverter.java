@@ -1,6 +1,6 @@
 package com.ihorak.truffle.convertor.SpecialForms;
 
-import com.ihorak.truffle.convertor.ListToExpressionConverter;
+import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.cast.BooleanCastExprNodeGen;
@@ -33,7 +33,7 @@ public class AndConverter {
     private static List<SchemeExpression> convertSchemeCellToSchemeExpressions(SchemeCell schemeCell, ParsingContext context) {
         List<SchemeExpression> result = new ArrayList<>();
         for (Object obj : schemeCell) {
-            result.add(ListToExpressionConverter.convert(obj, context));
+            result.add(InternalRepresentationConverter.convert(obj, context));
         }
 
         return result;

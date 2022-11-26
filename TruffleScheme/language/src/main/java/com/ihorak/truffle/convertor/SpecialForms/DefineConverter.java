@@ -1,6 +1,6 @@
 package com.ihorak.truffle.convertor.SpecialForms;
 
-import com.ihorak.truffle.convertor.ListToExpressionConverter;
+import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.context.LexicalScope;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.util.CreateWriteExprNode;
@@ -28,7 +28,7 @@ public class DefineConverter {
 
 
         var defineBody = defineList.get(2);
-        var bodyExpr = ListToExpressionConverter.convert(defineBody, context);
+        var bodyExpr = InternalRepresentationConverter.convert(defineBody, context);
 
         if (isNonGlobalEnv) {
             context.makeLocalVariablesNonNullable(List.of(identifier));

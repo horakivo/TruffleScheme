@@ -28,12 +28,12 @@ public class ProcedureCallConverter {
             } else if (context.isMacro(schemeSymbol)) {
                 List<Object> notEvaluatedArgs = new ArrayList<>();
                 procedureList.cdr.forEach(notEvaluatedArgs::add);
-                var macroExpr = ListToExpressionConverter.convert(schemeSymbol, context);
+                var macroExpr = InternalRepresentationConverter.convert(schemeSymbol, context);
                 return new MacroCallableExprNode(macroExpr, notEvaluatedArgs, context);
             }
         }
 
-        var callable = ListToExpressionConverter.convert(operand, context);
+        var callable = InternalRepresentationConverter.convert(operand, context);
         return CallableExprNodeGen.create(arguments, operand, callable);
     }
 
@@ -41,7 +41,7 @@ public class ProcedureCallConverter {
         List<SchemeExpression> result = new ArrayList<>();
 
         for (Object obj : argumentList) {
-            result.add(ListToExpressionConverter.convert(obj, context));
+            result.add(InternalRepresentationConverter.convert(obj, context));
         }
         return result;
     }

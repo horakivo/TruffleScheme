@@ -1,6 +1,6 @@
 package com.ihorak.truffle.node.callable;
 
-import com.ihorak.truffle.convertor.ListToExpressionConverter;
+import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
@@ -42,7 +42,7 @@ public class MacroCallableExprNode extends SchemeExpression {
                 var transformationCallTarget = macro.transformationProcedure().getCallTarget();
                 var notEvalArgs = getNotEvaluatedArguments(virtualFrame);
                 var transformedData = dispatchNode.executeDispatch(transformationCallTarget, notEvalArgs);
-                macroExpandedTree = ListToExpressionConverter.convert(transformedData, parsingContext);
+                macroExpandedTree = InternalRepresentationConverter.convert(transformedData, parsingContext);
             }
 
             return macroExpandedTree.executeGeneric(virtualFrame);

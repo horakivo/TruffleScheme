@@ -4,8 +4,6 @@ import com.ihorak.truffle.convertor.SpecialForms.*;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
-import com.ihorak.truffle.node.scope.WriteLocalVariableExprNodeGen;
 import com.ihorak.truffle.node.special_form.*;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeSymbol;
@@ -89,7 +87,7 @@ public class SpecialFormConverter {
             if (element instanceof SchemeCell list) {
                 if (isUnquoteOrUnquoteSplicingList(list)) {
                     if (list.size() != 2) throw new SchemeException("unquote: expects exactly one expression", null);
-                    result.add(ListToExpressionConverter.convert(list.get(1), context));
+                    result.add(InternalRepresentationConverter.convert(list.get(1), context));
                 } else {
                     result.addAll(convertList(list, context));
                 }

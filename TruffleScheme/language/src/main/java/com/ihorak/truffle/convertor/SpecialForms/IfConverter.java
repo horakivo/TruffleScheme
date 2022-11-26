@@ -1,6 +1,6 @@
 package com.ihorak.truffle.convertor.SpecialForms;
 
-import com.ihorak.truffle.convertor.ListToExpressionConverter;
+import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
@@ -24,16 +24,16 @@ public class IfConverter {
     }
 
     private static IfExprNode covertIfNode(SchemeCell ifList, ParsingContext context) {
-        var conditionExpr = ListToExpressionConverter.convert(ifList.get(1), context);
-        var thenExpr = ListToExpressionConverter.convert(ifList.get(2), context);
+        var conditionExpr = InternalRepresentationConverter.convert(ifList.get(1), context);
+        var thenExpr = InternalRepresentationConverter.convert(ifList.get(2), context);
 
         return new IfExprNode(BooleanCastExprNodeGen.create(conditionExpr), thenExpr);
     }
 
     private static IfElseExprNode covertIfElseNode(SchemeCell ifList, ParsingContext context) {
-        var conditionExpr = ListToExpressionConverter.convert(ifList.get(1), context);
-        var thenExpr = ListToExpressionConverter.convert(ifList.get(2), context);
-        var elseExpr = ListToExpressionConverter.convert(ifList.get(3), context);
+        var conditionExpr = InternalRepresentationConverter.convert(ifList.get(1), context);
+        var thenExpr = InternalRepresentationConverter.convert(ifList.get(2), context);
+        var elseExpr = InternalRepresentationConverter.convert(ifList.get(3), context);
 
         return new IfElseExprNode(BooleanCastExprNodeGen.create(conditionExpr), thenExpr, elseExpr);
     }

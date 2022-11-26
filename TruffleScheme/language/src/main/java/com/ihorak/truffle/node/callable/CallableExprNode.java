@@ -5,7 +5,6 @@ import com.ihorak.truffle.exceptions.TailCallException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.PrimitiveProcedure;
 import com.ihorak.truffle.type.SchemeCell;
-import com.ihorak.truffle.type.SchemeSymbol;
 import com.ihorak.truffle.type.UserDefinedProcedure;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.dsl.Fallback;
