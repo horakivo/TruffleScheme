@@ -4,11 +4,6 @@ import com.ihorak.truffle.convertor.SpecialForms.*;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.cast.BooleanCastExprNode;
-import com.ihorak.truffle.node.cast.BooleanCastExprNodeGen;
-import com.ihorak.truffle.node.exprs.builtin.arithmetic.OneArgumentExprNodeGen;
-import com.ihorak.truffle.node.literals.BooleanLiteralNode;
-import com.ihorak.truffle.node.literals.UndefinedLiteralNode;
 import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
 import com.ihorak.truffle.node.scope.WriteLocalVariableExprNodeGen;
 import com.ihorak.truffle.node.special_form.*;
@@ -130,28 +125,28 @@ public class SpecialFormConverter {
 //    }
 
 
-    private static List<WriteLocalVariableExprNode> createLocalVariablesForLetStar(SchemeCell parametersList, ParsingContext context) {
-        List<WriteLocalVariableExprNode> result = new ArrayList<>();
-        for (Object obj : parametersList) {
-            if (obj instanceof SchemeCell) {
-                var currentList = (SchemeCell) obj;
-                if (currentList.size() != 2) {
-                    throw new SchemeException("let: bad syntax (not an identifier and expression for a binding)", null);
-                }
-                var symbolExpected = currentList.car;
-                if (symbolExpected instanceof SchemeSymbol) {
-                    var valueToStore = ListToExpressionConverter.convert(currentList.get(1), context);
-                    var symbol = (SchemeSymbol) symbolExpected;
-                    int frameIndex = context.addLocalSymbol(symbol);
-                    var localVariableNode = WriteLocalVariableExprNodeGen.create(frameIndex, symbol, valueToStore);
-                    result.add(localVariableNode);
-                    continue;
-                }
-            }
-            throw new SchemeException("Parser error in LET: contract violation \n expected: (let ((id val-expr) ...) body ...+)", null);
-        }
-        return result;
-    }
+//    private static List<WriteLocalVariableExprNode> createLocalVariablesForLetStar(SchemeCell parametersList, ParsingContext context) {
+//        List<WriteLocalVariableExprNode> result = new ArrayList<>();
+//        for (Object obj : parametersList) {
+//            if (obj instanceof SchemeCell) {
+//                var currentList = (SchemeCell) obj;
+//                if (currentList.size() != 2) {
+//                    throw new SchemeException("let: bad syntax (not an identifier and expression for a binding)", null);
+//                }
+//                var symbolExpected = currentList.car;
+//                if (symbolExpected instanceof SchemeSymbol) {
+//                    var valueToStore = ListToExpressionConverter.convert(currentList.get(1), context);
+//                    var symbol = (SchemeSymbol) symbolExpected;
+//                    int frameIndex = context.findOrAddLocalSymbol(symbol);
+//                    var localVariableNode = WriteLocalVariableExprNodeGen.create(frameIndex, symbol, valueToStore);
+//                    result.add(localVariableNode);
+//                    continue;
+//                }
+//            }
+//            throw new SchemeException("Parser error in LET: contract violation \n expected: (let ((id val-expr) ...) body ...+)", null);
+//        }
+//        return result;
+//    }
 
 
 

@@ -18,15 +18,20 @@ public class SchemeSymbolConverter {
             if (indexPair.isLambdaParameter()) {
                 return createReadProcedureArgExpr(indexPair);
             }
-            return createReadVariableExpr(indexPair, symbol, context);
+            return createReadVariableExpr(indexPair, symbol);
         } else {
             return new ReadGlobalVariableExprNode(symbol);
         }
     }
 
-    private static SchemeExpression createReadVariableExpr(FrameIndexResult indexFrameIndexResult, SchemeSymbol symbol, ParsingContext context) {
+    private static SchemeExpression createReadVariableExpr(@NotNull FrameIndexResult indexFrameIndexResult, SchemeSymbol symbol) {
+        /*
+        * As far as I know nullable arguments are problematic only as local variables because the value then can be NULL.
+        * There is no other way how to delay the execution then lambda expr. Look at tests {@link DefineExprNodeTest}
+        *
+        * */
         if (indexFrameIndexResult.lexicalScopeDepth() == 0) {
-            if (context.getLexicalScope() == LexicalScope.LETREC) {
+            if (indexFrameIndexResult.isNullable()) {
                 return ReadLocalNullableVariableExprNodeGen.create(indexFrameIndexResult.index(), symbol);
             }
             return ReadLocalVariableExprNodeGen.create(indexFrameIndexResult.index(), symbol);

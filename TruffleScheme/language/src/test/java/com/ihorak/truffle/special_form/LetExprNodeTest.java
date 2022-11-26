@@ -164,6 +164,29 @@ public class LetExprNodeTest {
         assertEquals(230L, result.asLong());
     }
 
+
+    @Test
+    public void givenRecursiveCallInLet_whenExecuted_thenErrorShouldBeThrown() {
+        var program = """
+                (define random-list1
+                  (lambda (len)
+                    (let ((generate (lambda (len p q s result)
+                                      (if (= len 0)
+                                          result
+                                          ((lambda (value)
+                                             (generate (- len 1) p q value (cons value result)))
+                                           (modulo (* s s) (* p q)))))))
+                      (generate len 101 17 3 '()))))
+                (random-list1 10)""";
+
+
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+
+        assertEquals("""
+                             'generate: undefined
+                             cannot reference an identifier before its definition""", msg);
+    }
+
     @Test
     public void givenWrongSyntax_whenExecuted_thenExceptionShouldBeThrown() {
         var program = "(let ((x 10 5) (y 15)) (+ x y) (- x y))";

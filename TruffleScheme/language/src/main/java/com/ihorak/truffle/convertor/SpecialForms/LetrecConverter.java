@@ -42,19 +42,19 @@ public class LetrecConverter extends AbstractLetConverter {
         for (Object obj : localBindings) {
             var bindingList = (SchemeCell) obj;
             var name = (SchemeSymbol) bindingList.get(0);
-            letContext.addLocalSymbol(name);
+            letContext.findOrAddLocalSymbol(name);
             symbols.add(name);
             dataExpressions.add(bindingList.get(1));
         }
 
-        letContext.addLetrecIds(symbols);
+        letContext.makeLocalVariablesNullable(symbols);
 
         for (int i = 0; i < symbols.size(); i++) {
             var expression = ListToExpressionConverter.convert(dataExpressions.get(i), letContext);
             result.add(CreateWriteExprNode.createWriteLocalVariableExprNode(symbols.get(i), expression, letContext));
         }
 
-        letContext.removeLetrecIds(symbols);
+        letContext.makeLocalVariablesNonNullable(symbols);
 
         return result;
     }

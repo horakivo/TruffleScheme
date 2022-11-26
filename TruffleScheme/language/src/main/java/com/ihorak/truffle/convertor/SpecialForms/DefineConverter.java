@@ -9,6 +9,8 @@ import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeSymbol;
 
+import java.util.List;
+
 public class DefineConverter {
 
     private DefineConverter() {}
@@ -17,11 +19,21 @@ public class DefineConverter {
         validate(defineList);
 
         var identifier = (SchemeSymbol) defineList.get(1);
-        context.addCurrentlyDefiningName(identifier);
+        var isNonGlobalEnv = context.getLexicalScope() != LexicalScope.GLOBAL;
+
+        if (isNonGlobalEnv) {
+            context.findOrAddLocalSymbol(identifier);
+            context.makeLocalVariablesNullable(List.of(identifier));
+        }
+
+
         var defineBody = defineList.get(2);
         var bodyExpr = ListToExpressionConverter.convert(defineBody, context);
 
-        context.removeCurrentlyDefiningName(identifier);
+        if (isNonGlobalEnv) {
+            context.makeLocalVariablesNonNullable(List.of(identifier));
+        }
+
         if (context.getLexicalScope() == LexicalScope.GLOBAL) {
             return CreateWriteExprNode.createWriteGlobalVariableExprNode(identifier, bodyExpr);
         } else {

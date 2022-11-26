@@ -5,6 +5,7 @@ import com.ihorak.truffle.exceptions.SchemeException;
 public record FrameIndexResult(
         int index,
         boolean isLambdaParameter,
+        boolean isNullable,
         int lexicalScopeDepth) {
 
     public FrameIndexResult {

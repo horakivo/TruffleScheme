@@ -14,23 +14,23 @@ public class ProcedureRootNode extends RootNode {
 
     @Children private final SchemeExpression[] expressions;
 
-    private final SchemeSymbol symbol;
+//    private final SchemeSymbol symbol;
 
-    public ProcedureRootNode(TruffleLanguage<?> language, FrameDescriptor frameDescriptor, List<SchemeExpression> schemeExpressions, SchemeSymbol symbol) {
+    public ProcedureRootNode(TruffleLanguage<?> language, FrameDescriptor frameDescriptor, List<SchemeExpression> schemeExpressions) {
         super(language, frameDescriptor);
         this.expressions = schemeExpressions.toArray(SchemeExpression[]::new);
-        this.symbol = symbol;
+//        this.symbol = symbol;
     }
 
-    @Override
-    public String getName() {
-        return symbol.getValue();
-    }
-
-    @Override
-    public String toString() {
-        return symbol.getValue();
-    }
+//    @Override
+//    public String getName() {
+//        return symbol.getValue();
+//    }
+//
+//    @Override
+//    public String toString() {
+//        return symbol.getValue();
+//    }
 
     @Override
     @ExplodeLoop

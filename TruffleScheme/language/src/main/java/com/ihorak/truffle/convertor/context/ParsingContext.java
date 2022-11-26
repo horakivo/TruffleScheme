@@ -1,6 +1,7 @@
 package com.ihorak.truffle.convertor.context;
 
 import com.ihorak.truffle.SchemeTruffleLanguage;
+import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlotKind;
@@ -12,13 +13,7 @@ public class ParsingContext {
 
     private final Set<SchemeSymbol> macroIndex = new HashSet<>();
     private final Map<SchemeSymbol, Integer> lambdaParameterIndex = new HashMap<>();
-    private final Map<SchemeSymbol, Integer> localVariableIndex = new HashMap<>();
-
-    //for self tail optimalization
-    private final List<SchemeSymbol> currentlyDefiningNames;
-
-    //(letrec ([id val-expr] ...) body ...+)
-    private final List<SchemeSymbol> letrecIds = new ArrayList<>();
+    private final Map<SchemeSymbol, LocalVariableInfo> localVariableIndex = new HashMap<>();
 
     private final ParsingContext parent;
     private final SchemeTruffleLanguage language;
@@ -31,7 +26,6 @@ public class ParsingContext {
         this.scope = lexicalScope;
         this.language = parent.language;
         this.parent = parent;
-        this.currentlyDefiningNames = parent.currentlyDefiningNames;
     }
 
     //For creating LET - we don't want to create a new FrameDescriptor because we are using the parent one.
@@ -40,14 +34,12 @@ public class ParsingContext {
         this.scope = lexicalScope;
         this.language = parent.language;
         this.parent = parent;
-        this.currentlyDefiningNames = parent.currentlyDefiningNames;
     }
 
     public ParsingContext(SchemeTruffleLanguage language) {
         this.frameDescriptorBuilder = FrameDescriptor.newBuilder();
         this.scope = LexicalScope.GLOBAL;
         this.language = language;
-        this.currentlyDefiningNames = new ArrayList<>();
         this.parent = null;
     }
 
@@ -70,12 +62,12 @@ public class ParsingContext {
             return null;
         }
 
-        Integer frameDescriptorIndex = context.localVariableIndex.get(symbol);
+        LocalVariableInfo localVariableInfo = context.localVariableIndex.get(symbol);
         //we found local variable
-        if (frameDescriptorIndex != null) return new FrameIndexResult(frameDescriptorIndex, false, depth);
+        if (localVariableInfo != null) return new FrameIndexResult(localVariableInfo.getIndex(), false, localVariableInfo.isNullable(), depth);
         var argumentIndex = context.getLambdaParameterIndex(symbol);
         //we found argument
-        if (argumentIndex != null) return new FrameIndexResult(argumentIndex, true, depth);
+        if (argumentIndex != null) return new FrameIndexResult(argumentIndex, true, false, depth);
 
 
         //recursive call
@@ -86,13 +78,13 @@ public class ParsingContext {
 
     }
 
-    @Nullable
-    public Integer findLocalSymbol(SchemeSymbol symbol) {
-        return localVariableIndex.get(symbol);
-    }
+    public int findOrAddLocalSymbol(SchemeSymbol schemeSymbol) {
+        var localInfo = localVariableIndex.computeIfAbsent(schemeSymbol, symbol -> {
+            var index = frameDescriptorBuilder.addSlot(FrameSlotKind.Illegal, symbol, null);
+            return new LocalVariableInfo(index, false);
+        });
 
-    public int addLocalSymbol(SchemeSymbol schemeSymbol) {
-        return localVariableIndex.computeIfAbsent(schemeSymbol, symbol -> frameDescriptorBuilder.addSlot(FrameSlotKind.Illegal, symbol, null));
+        return localInfo.getIndex();
     }
 
     public FrameDescriptor buildAndGetFrameDescriptor() {
@@ -126,6 +118,22 @@ public class ParsingContext {
         return isMacro(schemeSymbol, parsingContext.parent);
     }
 
+    public void makeLocalVariablesNullable(List<SchemeSymbol> names) {
+        for (SchemeSymbol name : names) {
+            var localVarInfo = localVariableIndex.get(name);
+            if (localVarInfo == null) throw new SchemeException("CONVERTER ERROR: Unable to update local variable to nullable type. Name: " + names, null);
+            localVarInfo.setNullable(true);
+        }
+    }
+
+    public void makeLocalVariablesNonNullable(List<SchemeSymbol> names) {
+        for (SchemeSymbol name : names) {
+            var localVarInfo = localVariableIndex.get(name);
+            if (localVarInfo == null) throw new SchemeException("CONVERTER ERROR: Unable to update local variable to non-nullable type. Name: " + names, null);
+            localVarInfo.setNullable(false);
+        }
+    }
+
     public void addLambdaParameter(SchemeSymbol name) {
         lambdaParameterIndex.put(name, lambdaParameterIndex.size());
     }
@@ -137,30 +145,5 @@ public class ParsingContext {
 
     public int getNumberOfLambdaParameters() {
         return lambdaParameterIndex.size();
-    }
-
-
-    public List<SchemeSymbol> getCurrentlyDefiningNames() {
-        return currentlyDefiningNames;
-    }
-
-    public SchemeSymbol getLastName() {
-        return currentlyDefiningNames.get(currentlyDefiningNames.size() - 1);
-    }
-
-    public void addCurrentlyDefiningName(final SchemeSymbol defineName) {
-        currentlyDefiningNames.add(defineName);
-    }
-
-    public void removeCurrentlyDefiningName(final SchemeSymbol defineName) {
-        currentlyDefiningNames.remove(defineName);
-    }
-
-    public void addLetrecIds(List<SchemeSymbol> ids) {
-        letrecIds.addAll(ids);
-    }
-
-    public void removeLetrecIds(List<SchemeSymbol> ids) {
-        letrecIds.removeAll(ids);
     }
 }

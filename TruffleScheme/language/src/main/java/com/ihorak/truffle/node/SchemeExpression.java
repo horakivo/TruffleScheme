@@ -54,9 +54,9 @@ public abstract class SchemeExpression extends SchemeNode {
         this.isTailRecursive = true;
     }
 
-    public void setSelfTailRecursive(List<SchemeSymbol> currentlyDefiningProcedures) {
-        this.isSelfTailRecursive = false;
-    }
+//    public void setSelfTailRecursive(List<SchemeSymbol> currentlyDefiningProcedures) {
+//        this.isSelfTailRecursive = false;
+//    }
 
     public boolean isTailRecursive() {
         return isTailRecursive;

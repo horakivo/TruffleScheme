@@ -32,7 +32,7 @@ public class LambdaConverter {
         var bodyExpressions = createLambdaBodyExpressions(expressions, lambdaContext);
 
         var frameDescriptor = lambdaContext.buildAndGetFrameDescriptor();
-        var rootNode = new ProcedureRootNode(context.getLanguage(), frameDescriptor, bodyExpressions, context.getLastName());
+        var rootNode = new ProcedureRootNode(context.getLanguage(), frameDescriptor, bodyExpressions);
         var hasOptionalArgs = params instanceof SchemePair;
         return new LambdaExprNode(rootNode.getCallTarget(), lambdaContext.getNumberOfLambdaParameters(), hasOptionalArgs);
     }
@@ -45,10 +45,11 @@ public class LambdaConverter {
 
         var lastExpr = bodyExprs.get(bodyExprs.size() - 1);
         lastExpr.setTailRecursiveAsTrue();
-        lastExpr.setSelfTailRecursive(lambdaContext.getCurrentlyDefiningNames());
+//        lastExpr.setSelfTailRecursive(lambdaContext.getCurrentlyDefiningNames());
 
         return bodyExprs;
     }
+
 
     private static void updateParsingContext(Object params, ParsingContext context) {
         if (params instanceof SchemeCell list) {

@@ -12,10 +12,7 @@ public class CreateWriteExprNode {
     private CreateWriteExprNode() {}
 
     public static WriteLocalVariableExprNode createWriteLocalVariableExprNode(SchemeSymbol name, SchemeExpression valueToWrite, ParsingContext context) {
-        var index = context.findLocalSymbol(name);
-        if (index == null) {
-            index = context.addLocalSymbol(name);
-        }
+        var index = context.findOrAddLocalSymbol(name);
         return WriteLocalVariableExprNodeGen.create(index, name, valueToWrite);
     }
 

@@ -151,6 +151,23 @@ public class ProgramTest {
     }
 
     @Test
+    public void asdasda() {
+        var program = """
+                (define countdown
+                  (lambda (n)
+                    (if (= 0 n)
+                        0
+                        (countdown (- n 1)))))
+                        
+                (countdown 10)
+                """;
+
+        var result  = context.eval("scm", program);
+        System.out.println(result);
+
+    }
+
+    @Test
     public void primes() {
         var program = "\n" +
                 "(define interval-list\n" +

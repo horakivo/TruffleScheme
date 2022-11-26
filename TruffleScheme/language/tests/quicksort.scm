@@ -24,6 +24,7 @@
             (append (quicksort1 (car parts))
                     (quicksort1 (cadr parts))))))))
 
+
 (define random-list
   (lambda (len)
     (define generate

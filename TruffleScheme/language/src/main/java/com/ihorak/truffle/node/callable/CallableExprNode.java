@@ -133,10 +133,10 @@ public abstract class CallableExprNode extends SchemeExpression {
 
     }
 
-    @Override
-    public void setSelfTailRecursive(final List<SchemeSymbol> currentlyDefiningProcedures) {
-        this.isSelfTailRecursive = dataOperand instanceof SchemeSymbol symbol && currentlyDefiningProcedures.contains(symbol);
-    }
+//    @Override
+//    public void setSelfTailRecursive(final List<SchemeSymbol> currentlyDefiningProcedures) {
+//        this.isSelfTailRecursive = dataOperand instanceof SchemeSymbol symbol && currentlyDefiningProcedures.contains(symbol);
+//    }
 
     private Object call(CallTarget callTarget, Object[] arguments, VirtualFrame frame) {
 

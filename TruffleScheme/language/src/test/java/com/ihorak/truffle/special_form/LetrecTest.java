@@ -47,7 +47,7 @@ public class LetrecTest {
     }
 
     @Test
-    public void aaa() {
+    public void givenLetrecNestedInLambda_whenExecuted_thenCorrectResultShouldBeReturned() {
         var program = """
                 (define test
                   (lambda ()
@@ -83,7 +83,7 @@ public class LetrecTest {
     }
 
     @Test
-    public void givenNestedLetrec_whenExecuted_thenExceptionShouldBeThrown() {
+    public void givenNestedLetrec_whenExecuted_correctResultShouldBeReturned() {
         var program = """
                 (letrec
                     ((x 10)
