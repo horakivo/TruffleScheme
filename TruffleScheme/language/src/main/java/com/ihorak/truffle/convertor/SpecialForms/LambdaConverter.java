@@ -3,6 +3,7 @@ package com.ihorak.truffle.convertor.SpecialForms;
 import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.context.LexicalScope;
 import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.convertor.util.TailCallUtil;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.callable.ProcedureRootNode;
@@ -29,27 +30,13 @@ public class LambdaConverter {
         var expressions = lambdaList.cdr.cdr;
 
         updateParsingContext(params, lambdaContext);
-        var bodyExpressions = createLambdaBodyExpressions(expressions, lambdaContext);
+        var bodyExpressions = TailCallUtil.convertBodyToSchemeExpressionsWithTCO(expressions, lambdaContext);
 
         var frameDescriptor = lambdaContext.buildAndGetFrameDescriptor();
         var rootNode = new ProcedureRootNode(context.getLanguage(), frameDescriptor, bodyExpressions);
         var hasOptionalArgs = params instanceof SchemePair;
         return new LambdaExprNode(rootNode.getCallTarget(), lambdaContext.getNumberOfLambdaParameters(), hasOptionalArgs);
     }
-
-    private static List<SchemeExpression> createLambdaBodyExpressions(SchemeCell expressions, ParsingContext lambdaContext) {
-        List<SchemeExpression> bodyExprs = new ArrayList<>();
-        for (Object obj : expressions) {
-            bodyExprs.add(InternalRepresentationConverter.convert(obj, lambdaContext));
-        }
-
-        var lastExpr = bodyExprs.get(bodyExprs.size() - 1);
-        lastExpr.setTailRecursiveAsTrue();
-//        lastExpr.setSelfTailRecursive(lambdaContext.getCurrentlyDefiningNames());
-
-        return bodyExprs;
-    }
-
 
     private static void updateParsingContext(Object params, ParsingContext context) {
         if (params instanceof SchemeCell list) {

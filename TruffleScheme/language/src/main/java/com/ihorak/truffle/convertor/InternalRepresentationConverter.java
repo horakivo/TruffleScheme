@@ -12,7 +12,7 @@ public class InternalRepresentationConverter {
 
     private InternalRepresentationConverter() {}
 
-    public static SchemeExpression convert(Object obj, ParsingContext context) {
+    public static SchemeExpression convert(Object obj, ParsingContext context, boolean isTailCall) {
         if (obj instanceof Long longValue) {
             return LongConverter.convert(longValue);
         } else if (obj instanceof SchemeSymbol schemeSymbol) {
@@ -20,7 +20,7 @@ public class InternalRepresentationConverter {
         } else if (obj instanceof Boolean bool) {
             return BooleanConverter.convert(bool);
         } else if (obj instanceof SchemeCell schemeCell) {
-            return SchemeCellConverter.convert(schemeCell, context);
+            return SchemeCellConverter.convert(schemeCell, context, isTailCall);
         } else if (obj instanceof BigInteger bigInt) {
             return BigIntConverter.convert(bigInt);
         } else if (obj instanceof Double doubleValue) {

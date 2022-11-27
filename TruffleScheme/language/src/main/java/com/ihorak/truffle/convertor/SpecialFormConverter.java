@@ -87,7 +87,7 @@ public class SpecialFormConverter {
             if (element instanceof SchemeCell list) {
                 if (isUnquoteOrUnquoteSplicingList(list)) {
                     if (list.size() != 2) throw new SchemeException("unquote: expects exactly one expression", null);
-                    result.add(InternalRepresentationConverter.convert(list.get(1), context));
+                    result.add(InternalRepresentationConverter.convert(list.get(1), context, false));
                 } else {
                     result.addAll(convertList(list, context));
                 }

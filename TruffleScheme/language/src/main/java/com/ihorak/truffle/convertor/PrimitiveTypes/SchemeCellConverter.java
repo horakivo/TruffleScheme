@@ -14,7 +14,7 @@ public class SchemeCellConverter {
     private SchemeCellConverter() {}
 
 
-    public static SchemeExpression convert(SchemeCell list, ParsingContext context) {
+    public static SchemeExpression convert(SchemeCell list, ParsingContext context, boolean isTailCall) {
         var firstElement = list.car;
 
         if (isSpecialForm(firstElement)) {
@@ -22,7 +22,7 @@ public class SchemeCellConverter {
         } else if (isMacro(firstElement)) {
             return SchemeMacroConverter.convertMarco(list, context);
         } else {
-            return ProcedureCallConverter.convertListToProcedureCall(list, context);
+            return ProcedureCallConverter.convertListToProcedureCall(list, context, isTailCall);
         }
     }
 

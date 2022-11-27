@@ -24,16 +24,16 @@ public class IfConverter {
     }
 
     private static IfExprNode covertIfNode(SchemeCell ifList, ParsingContext context) {
-        var conditionExpr = InternalRepresentationConverter.convert(ifList.get(1), context);
-        var thenExpr = InternalRepresentationConverter.convert(ifList.get(2), context);
+        var conditionExpr = InternalRepresentationConverter.convert(ifList.get(1), context, false);
+        var thenExpr = InternalRepresentationConverter.convert(ifList.get(2), context, true);
 
         return new IfExprNode(BooleanCastExprNodeGen.create(conditionExpr), thenExpr);
     }
 
     private static IfElseExprNode covertIfElseNode(SchemeCell ifList, ParsingContext context) {
-        var conditionExpr = InternalRepresentationConverter.convert(ifList.get(1), context);
-        var thenExpr = InternalRepresentationConverter.convert(ifList.get(2), context);
-        var elseExpr = InternalRepresentationConverter.convert(ifList.get(3), context);
+        var conditionExpr = InternalRepresentationConverter.convert(ifList.get(1), context, false);
+        var thenExpr = InternalRepresentationConverter.convert(ifList.get(2), context, true);
+        var elseExpr = InternalRepresentationConverter.convert(ifList.get(3), context, true);
 
         return new IfElseExprNode(BooleanCastExprNodeGen.create(conditionExpr), thenExpr, elseExpr);
     }

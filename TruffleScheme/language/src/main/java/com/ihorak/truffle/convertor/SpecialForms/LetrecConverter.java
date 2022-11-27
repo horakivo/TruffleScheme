@@ -4,6 +4,7 @@ import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.context.LexicalScope;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.util.CreateWriteExprNode;
+import com.ihorak.truffle.convertor.util.TailCallUtil;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
 import com.ihorak.truffle.node.special_form.LetExprNode;
@@ -26,7 +27,7 @@ public class LetrecConverter extends AbstractLetConverter {
         SchemeCell body = letList.cdr.cdr;
 
         List<WriteLocalVariableExprNode> bindingExpressions = createWriteLocalVariables(localBindings, letContext);
-        List<SchemeExpression> bodyExpressions = createBodyExpr(body, letContext);
+        List<SchemeExpression> bodyExpressions = TailCallUtil.convertBodyToSchemeExpressionsWithTCO(body, letContext);
 
         List<SchemeExpression> bindingsAndBodyExpressions = new ArrayList<>(bindingExpressions.size() + bodyExpressions.size());
         bindingsAndBodyExpressions.addAll(bindingExpressions);
@@ -50,7 +51,7 @@ public class LetrecConverter extends AbstractLetConverter {
         letContext.makeLocalVariablesNullable(symbols);
 
         for (int i = 0; i < symbols.size(); i++) {
-            var expression = InternalRepresentationConverter.convert(dataExpressions.get(i), letContext);
+            var expression = InternalRepresentationConverter.convert(dataExpressions.get(i), letContext, false);
             result.add(CreateWriteExprNode.createWriteLocalVariableExprNode(symbols.get(i), expression, letContext));
         }
 

@@ -30,12 +30,12 @@ public abstract class EvalExprNode extends LimitedBuiltin {
 
     @Specialization
     public Object evalSymbol(VirtualFrame frame, SchemeSymbol value) {
-        return InternalRepresentationConverter.convert(value, createRuntimeContext()).executeGeneric(frame);
+        return InternalRepresentationConverter.convert(value, createRuntimeContext(), false).executeGeneric(frame);
     }
 
     @Specialization
     public Object evalList(VirtualFrame frame, SchemeCell schemeCell) {
-        return InternalRepresentationConverter.convert(schemeCell, createRuntimeContext()).executeGeneric(frame);
+        return InternalRepresentationConverter.convert(schemeCell, createRuntimeContext(), false).executeGeneric(frame);
     }
 
     @Specialization

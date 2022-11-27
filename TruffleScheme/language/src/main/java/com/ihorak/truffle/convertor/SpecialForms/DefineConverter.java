@@ -28,7 +28,7 @@ public class DefineConverter {
 
 
         var defineBody = defineList.get(2);
-        var bodyExpr = InternalRepresentationConverter.convert(defineBody, context);
+        var bodyExpr = InternalRepresentationConverter.convert(defineBody, context, false);
 
         if (isNonGlobalEnv) {
             context.makeLocalVariablesNonNullable(List.of(identifier));

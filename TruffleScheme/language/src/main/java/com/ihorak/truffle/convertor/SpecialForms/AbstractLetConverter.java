@@ -39,13 +39,4 @@ public abstract class AbstractLetConverter {
             }
         }
     }
-
-    protected static List<SchemeExpression> createBodyExpr(SchemeCell body, ParsingContext letContext) {
-        List<SchemeExpression> result = new ArrayList<>();
-        for (Object obj : body) {
-            result.add(InternalRepresentationConverter.convert(obj, letContext));
-        }
-
-        return result;
-    }
 }

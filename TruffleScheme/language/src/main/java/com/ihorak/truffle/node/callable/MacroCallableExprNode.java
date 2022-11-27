@@ -42,7 +42,7 @@ public class MacroCallableExprNode extends SchemeExpression {
                 var transformationCallTarget = macro.transformationProcedure().getCallTarget();
                 var notEvalArgs = getNotEvaluatedArguments(virtualFrame);
                 var transformedData = dispatchNode.executeDispatch(transformationCallTarget, notEvalArgs);
-                macroExpandedTree = InternalRepresentationConverter.convert(transformedData, parsingContext);
+                macroExpandedTree = InternalRepresentationConverter.convert(transformedData, parsingContext, false);
             }
 
             return macroExpandedTree.executeGeneric(virtualFrame);

@@ -21,8 +21,8 @@ public class CondConverter {
         if (condExpressions.size() == 0) return new UndefinedLiteralNode();
         if (condExpressions.size() == 1) {
             var condExpr = (SchemeCell) condExpressions.get(0);
-            var conditionExpr = InternalRepresentationConverter.convert(condExpr.get(0), context);
-            var thenExpr = InternalRepresentationConverter.convert(condExpr.get(1), context);
+            var conditionExpr = InternalRepresentationConverter.convert(condExpr.get(0), context, false);
+            var thenExpr = InternalRepresentationConverter.convert(condExpr.get(1), context, true);
             return new IfExprNode(BooleanCastExprNodeGen.create(conditionExpr), thenExpr);
         }
 
@@ -32,8 +32,8 @@ public class CondConverter {
     private static SchemeExpression reduceCond(SchemeCell condExpressions, ParsingContext context) {
         if (condExpressions.size() > 2) {
             var firstCondExpr = (SchemeCell) condExpressions.get(0);
-            var conditionExpr = InternalRepresentationConverter.convert(firstCondExpr.get(0), context);
-            var thenExpr = InternalRepresentationConverter.convert(firstCondExpr.get(1), context);
+            var conditionExpr = InternalRepresentationConverter.convert(firstCondExpr.get(0), context, false);
+            var thenExpr = InternalRepresentationConverter.convert(firstCondExpr.get(1), context, true);
             return new IfElseExprNode(BooleanCastExprNodeGen.create(conditionExpr), thenExpr, reduceCond(condExpressions.cdr, context));
         } else {
             return convertCondWithTwoConditions(condExpressions, context);
@@ -44,15 +44,15 @@ public class CondConverter {
         var firstCondExpr = (SchemeCell) condExpressions.get(0);
         var secondCondExpr = (SchemeCell) condExpressions.get(1);
 
-        var firstConditionExpr = InternalRepresentationConverter.convert(firstCondExpr.get(0), context);
-        var firstThenExpr = InternalRepresentationConverter.convert(firstCondExpr.get(1), context);
-        var secondThenExpr = InternalRepresentationConverter.convert(secondCondExpr.get(1), context);
+        var firstConditionExpr = InternalRepresentationConverter.convert(firstCondExpr.get(0), context, false);
+        var firstThenExpr = InternalRepresentationConverter.convert(firstCondExpr.get(1), context, true);
+        var secondThenExpr = InternalRepresentationConverter.convert(secondCondExpr.get(1), context, true);
 
         if (secondCondExpr.get(0).equals(new SchemeSymbol("else"))) {
-            var elseExpr = InternalRepresentationConverter.convert(secondCondExpr.get(1), context);
+            var elseExpr = InternalRepresentationConverter.convert(secondCondExpr.get(1), context, true);
             return new IfElseExprNode(BooleanCastExprNodeGen.create(firstConditionExpr), firstThenExpr, elseExpr);
         } else {
-            var secondConditionExpr = InternalRepresentationConverter.convert(secondCondExpr.get(0), context);
+            var secondConditionExpr = InternalRepresentationConverter.convert(secondCondExpr.get(0), context, false);
             return new IfElseExprNode(BooleanCastExprNodeGen.create(firstConditionExpr), firstThenExpr,
                                       new IfExprNode(BooleanCastExprNodeGen.create(secondConditionExpr), secondThenExpr));
         }
