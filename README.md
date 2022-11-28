@@ -9,6 +9,14 @@ Building is done using Maven. Please for now skip tests since a lot of stuff is 
     mvn clean install -DskipTests
 ```
 
+# Run
+You can run the the tests (after you build it) using this command
+
+```
+cd TruffleScheme
+
+java -cp launcher/target/scm-launcher.jar -Dtruffle.class.path.append=language/target/truffleScheme.jar com.ihorak.truffle.launcher.Main language/tests/tak.scm
+```
 
 ## Supported
 - +, -, *, /
