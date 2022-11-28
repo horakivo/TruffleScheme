@@ -5,8 +5,8 @@ Scheme (R5RS) implementation on Truffle framework.
 Building is done using Maven. Please for now skip tests since a lot of stuff is WIP and some tests are currently failing.
 
 ```
-    cd TruffleScheme
-    mvn clean install -DskipTests
+cd TruffleScheme
+mvn clean install -DskipTests
 ```
 
 # Run
