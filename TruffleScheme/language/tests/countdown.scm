@@ -4,4 +4,4 @@
         0
         (countdown (- n 1)))))
 
-(infinite (countdown 3))
+(infinite (countdown 2))

@@ -12,42 +12,33 @@ import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.LoopNode;
 
+import java.util.List;
+
 /** Put in place of every non-tail call */
-public class TailCallCatcherNode extends SchemeExpression {
+public class TailCallCatcherNode extends CallableExprNode {
 
 
-    @Child private CallableExprNode callNode;
-    @Child private DispatchNode dispatchNode = DispatchNodeGen.create();
-
-    @Child private LoopNode loopNode;
-    public TailCallCatcherNode(final CallableExprNode callNode) {
-        this.callNode = callNode;
+//    @Child private CallableExprNode callNode;
+//    @Child private DispatchNode dispatchNode = DispatchNodeGen.create();
+//
+//    @Child private LoopNode loopNode;
+    public TailCallCatcherNode(List<SchemeExpression> arguments, SchemeExpression callable) {
+        super(arguments, callable);
     }
 
     @Override
-    public Object executeGeneric(final VirtualFrame frame) {
-        try {
-            return callNode.executeGeneric(frame);
-        } catch (TailCallException e) {
-
-            CallTarget callTarget = e.getCallTarget();
-            Object[] arguments = e.getArguments();
-
-            while (true) {
-                try {
-                    return dispatchNode.executeDispatch(callTarget, arguments);
-                } catch (TailCallException e2) {
-                    callTarget = e2.getCallTarget();
-                    arguments = e2.getArguments();
-                }
+    protected Object call(CallTarget callTarget, Object[] arguments) {
+        while (true) {
+            try {
+                return super.call(callTarget, arguments);
+            } catch (TailCallException e) {
+                callTarget = e.getCallTarget();
+                arguments = e.getArguments();
             }
         }
     }
 
-
-
-
-//    @Override
+    //    @Override
 //    public Object executeGeneric(final VirtualFrame frame) {
 //        try {
 //            return callNode.executeGeneric(frame);

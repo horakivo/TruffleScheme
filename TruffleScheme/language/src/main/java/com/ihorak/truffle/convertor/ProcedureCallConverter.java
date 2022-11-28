@@ -3,7 +3,7 @@ package com.ihorak.truffle.convertor;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.util.BuiltinUtils;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.callable.CallableExprNodeGen;
+import com.ihorak.truffle.node.callable.CallableExprNode;
 import com.ihorak.truffle.node.callable.MacroCallableExprNode;
 import com.ihorak.truffle.node.callable.TCO.TailCallCatcherNode;
 import com.ihorak.truffle.node.callable.TCO.TailCallThrowerNodeGen;
@@ -39,13 +39,15 @@ public class ProcedureCallConverter {
 
 
         var callable = InternalRepresentationConverter.convert(operand, context, false);
-        var callNode = CallableExprNodeGen.create(arguments, operand, callable);
-
+        //var callNode = new CallableExprNode(arguments, callable);
+//
         if (isTailCall) {
             return TailCallThrowerNodeGen.create(arguments, callable);
         } else {
-            return new TailCallCatcherNode(callNode);
+            return new TailCallCatcherNode(arguments, callable);
         }
+
+       //return callNode;
 
     }
 
