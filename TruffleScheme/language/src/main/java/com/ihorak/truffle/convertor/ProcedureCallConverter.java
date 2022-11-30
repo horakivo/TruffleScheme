@@ -9,6 +9,7 @@ import com.ihorak.truffle.node.callable.TCO.TailCallCatcherNode;
 import com.ihorak.truffle.node.callable.TCO.TailCallThrowerNodeGen;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeSymbol;
+import com.oracle.truffle.api.frame.FrameSlotKind;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,10 +42,13 @@ public class ProcedureCallConverter {
         var callable = InternalRepresentationConverter.convert(operand, context, false);
       //  var callNode = new CallableExprNode(arguments, callable);
 //
+        
         if (isTailCall) {
             return TailCallThrowerNodeGen.create(arguments, callable);
         } else {
-            return new TailCallCatcherNode(arguments, callable);
+        	int tailCallArgumentsSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
+        	int tailCallTargetSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
+            return new TailCallCatcherNode(arguments, callable, tailCallArgumentsSlot, tailCallTargetSlot);
         }
 
      // return callNode;

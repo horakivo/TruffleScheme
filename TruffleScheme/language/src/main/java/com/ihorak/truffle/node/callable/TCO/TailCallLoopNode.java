@@ -12,12 +12,13 @@ import com.oracle.truffle.api.nodes.RepeatingNode;
 public class TailCallLoopNode extends SchemeNode implements RepeatingNode {
 
     @Child private DispatchNode dispatchNode = DispatchNodeGen.create();
-    private CallTarget callTarget;
-    private Object[] arguments;
 
-    public TailCallLoopNode(final CallTarget callTarget, final Object[] arguments) {
-        this.callTarget = callTarget;
-        this.arguments = arguments;
+    private final int tailCallArgumentsSlot;
+    private final int tailCallTargetSlot;
+    
+    public TailCallLoopNode(int tailCallArgumentsSlot, int tailCallTargetSlot) {
+    	 this.tailCallArgumentsSlot = tailCallArgumentsSlot;
+         this.tailCallTargetSlot = tailCallTargetSlot;
     }
 
     @Override
@@ -28,10 +29,13 @@ public class TailCallLoopNode extends SchemeNode implements RepeatingNode {
     @Override
     public Object executeRepeatingWithValue(final VirtualFrame frame) {
         try {
-            return dispatchNode.executeDispatch(callTarget, arguments);
+        	Object[] arguments = (Object[])frame.getObject(tailCallArgumentsSlot);
+        	CallTarget target = (CallTarget)frame.getObject(tailCallTargetSlot);
+            Object result = dispatchNode.executeDispatch(target, arguments);
+            return result;
         } catch (TailCallException e) {
-            this.callTarget = e.getCallTarget();
-            this.arguments = e.getArguments();
+        	frame.setObject(tailCallTargetSlot, e.getCallTarget());
+        	frame.setObject(tailCallArgumentsSlot, e.getArguments());
             return CONTINUE_LOOP_STATUS;
         }
     }

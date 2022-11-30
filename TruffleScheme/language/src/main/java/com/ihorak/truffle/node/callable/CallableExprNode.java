@@ -39,7 +39,6 @@ public class CallableExprNode extends SchemeExpression {
     public Object executeGeneric(final VirtualFrame frame) {
         var function = (UserDefinedProcedure) callable.executeGeneric(frame);
         var args = getProcedureOrMacroArgsNoOptional(function, frame);
-
         return call(function.getCallTarget(), args, frame);
     }
 
