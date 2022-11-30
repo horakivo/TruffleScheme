@@ -28,7 +28,12 @@ public class DefineConverter {
 
 
         var defineBody = defineList.get(2);
+        if (isFunctionDefinition(defineBody)) {
+            context.setFunctionDefinitionName(identifier);
+        }
         var bodyExpr = InternalRepresentationConverter.convert(defineBody, context, false);
+
+        context.setFunctionDefinitionName(null);
 
         if (isNonGlobalEnv) {
             context.makeLocalVariablesNonNullable(List.of(identifier));
@@ -39,6 +44,16 @@ public class DefineConverter {
         } else {
             return CreateWriteExprNode.createWriteLocalVariableExprNode(identifier, bodyExpr, context);
         }
+    }
+
+
+    private static boolean isFunctionDefinition(Object defineBody) {
+        if (defineBody instanceof SchemeCell schemeCellBody) {
+            var firstElement = schemeCellBody.car;
+            return (firstElement instanceof SchemeSymbol symbol && symbol.getValue().equals("lambda"));
+        }
+
+        return false;
     }
 
     private static void validate(SchemeCell defineList) {

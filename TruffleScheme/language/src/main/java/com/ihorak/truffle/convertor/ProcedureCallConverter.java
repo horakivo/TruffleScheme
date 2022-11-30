@@ -39,7 +39,7 @@ public class ProcedureCallConverter {
 
 
         var callable = InternalRepresentationConverter.convert(operand, context, false);
-        //var callNode = new CallableExprNode(arguments, callable);
+      //  var callNode = new CallableExprNode(arguments, callable);
 //
         if (isTailCall) {
             return TailCallThrowerNodeGen.create(arguments, callable);
@@ -47,7 +47,7 @@ public class ProcedureCallConverter {
             return new TailCallCatcherNode(arguments, callable);
         }
 
-       //return callNode;
+     // return callNode;
 
     }
 

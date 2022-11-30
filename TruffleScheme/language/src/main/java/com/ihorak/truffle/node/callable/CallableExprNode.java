@@ -19,8 +19,7 @@ public class CallableExprNode extends SchemeExpression {
 
     @Child private SchemeExpression callable;
     @SuppressWarnings("FieldMayBeFinal")
-    @Child
-    private DispatchNode dispatchNode;
+    @Child protected DispatchNode dispatchNode;
     // public final Object dataOperand;
 
 
@@ -41,7 +40,7 @@ public class CallableExprNode extends SchemeExpression {
         var function = (UserDefinedProcedure) callable.executeGeneric(frame);
         var args = getProcedureOrMacroArgsNoOptional(function, frame);
 
-        return call(function.getCallTarget(), args);
+        return call(function.getCallTarget(), args, frame);
     }
 
     @ExplodeLoop
@@ -59,7 +58,7 @@ public class CallableExprNode extends SchemeExpression {
     }
 
 
-    protected Object call(CallTarget callTarget, Object[] arguments) {
+    protected Object call(CallTarget callTarget, Object[] arguments, VirtualFrame frame) {
         return dispatchNode.executeDispatch(callTarget, arguments);
     }
 

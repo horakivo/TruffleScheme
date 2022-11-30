@@ -1,14 +1,15 @@
 package com.ihorak.truffle.node.callable.TCO;
 
 import com.ihorak.truffle.exceptions.TailCallException;
-import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.SchemeNode;
 import com.ihorak.truffle.node.callable.DispatchNode;
 import com.ihorak.truffle.node.callable.DispatchNodeGen;
 import com.oracle.truffle.api.CallTarget;
+import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.RepeatingNode;
 
-public class TailCallLoopNode extends SchemeExpression implements RepeatingNode {
+public class TailCallLoopNode extends SchemeNode implements RepeatingNode {
 
     @Child private DispatchNode dispatchNode = DispatchNodeGen.create();
     private CallTarget callTarget;
@@ -20,19 +21,23 @@ public class TailCallLoopNode extends SchemeExpression implements RepeatingNode 
     }
 
     @Override
-    public Object executeGeneric(final VirtualFrame frame) {
-        return true;
+    public boolean executeRepeating(final VirtualFrame frame) {
+        throw CompilerDirectives.shouldNotReachHere();
     }
 
     @Override
-    public boolean executeRepeating(final VirtualFrame frame) {
+    public Object executeRepeatingWithValue(final VirtualFrame frame) {
         try {
-            dispatchNode.executeDispatch(callTarget, arguments);
-            return false;
+            return dispatchNode.executeDispatch(callTarget, arguments);
         } catch (TailCallException e) {
             this.callTarget = e.getCallTarget();
             this.arguments = e.getArguments();
-            return true;
+            return CONTINUE_LOOP_STATUS;
         }
+    }
+
+    @Override
+    public boolean shouldContinue(final Object returnValue) {
+        return returnValue == CONTINUE_LOOP_STATUS;
     }
 }

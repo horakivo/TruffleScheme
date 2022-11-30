@@ -33,7 +33,8 @@ public class LambdaConverter {
         var bodyExpressions = TailCallUtil.convertBodyToSchemeExpressionsWithTCO(expressions, lambdaContext);
 
         var frameDescriptor = lambdaContext.buildAndGetFrameDescriptor();
-        var rootNode = new ProcedureRootNode(context.getLanguage(), frameDescriptor, bodyExpressions);
+        var name = context.getFunctionDefinitionName() == null ? new SchemeSymbol("anonymous_procedure") : context.getFunctionDefinitionName();
+        var rootNode = new ProcedureRootNode(name, context.getLanguage(), frameDescriptor, bodyExpressions);
         var hasOptionalArgs = params instanceof SchemePair;
         return new LambdaExprNode(rootNode.getCallTarget(), lambdaContext.getNumberOfLambdaParameters(), hasOptionalArgs);
     }

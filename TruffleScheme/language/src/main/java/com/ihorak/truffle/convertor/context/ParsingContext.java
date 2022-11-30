@@ -15,6 +15,8 @@ public class ParsingContext {
     private final Map<SchemeSymbol, Integer> lambdaParameterIndex = new HashMap<>();
     private final Map<SchemeSymbol, LocalVariableInfo> localVariableIndex = new HashMap<>();
 
+    private SchemeSymbol functionDefinitionName;
+
     private final ParsingContext parent;
     private final SchemeTruffleLanguage language;
     private final LexicalScope scope;
@@ -145,5 +147,13 @@ public class ParsingContext {
 
     public int getNumberOfLambdaParameters() {
         return lambdaParameterIndex.size();
+    }
+
+    public SchemeSymbol getFunctionDefinitionName() {
+        return functionDefinitionName;
+    }
+
+    public void setFunctionDefinitionName(final SchemeSymbol functionDefinitionName) {
+        this.functionDefinitionName = functionDefinitionName;
     }
 }
