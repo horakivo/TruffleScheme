@@ -1,5 +1,9 @@
 package com.ihorak.truffle.node.callable.TCO;
 
+import java.util.List;
+
+import com.ihorak.truffle.SchemeTruffleLanguage;
+import com.ihorak.truffle.SchemeTruffleLanguage.TCOTarget;
 import com.ihorak.truffle.exceptions.TailCallException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.UserDefinedProcedure;
@@ -7,8 +11,6 @@ import com.oracle.truffle.api.dsl.Executed;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
-
-import java.util.List;
 
 public abstract class TailCallThrowerNode extends SchemeExpression {
 
@@ -26,9 +28,12 @@ public abstract class TailCallThrowerNode extends SchemeExpression {
 
     @Specialization
     protected Object doThrow(VirtualFrame frame, UserDefinedProcedure procedure) {
-        throw new TailCallException(procedure.getCallTarget(), gerArguments(procedure, frame));
+    	TCOTarget target= SchemeTruffleLanguage.getTCOTarget(this);
+    	Object[] arguments =  gerArguments(procedure, frame);
+    	target.target= procedure.getCallTarget();
+    	target.arguments = arguments; 
+        throw TailCallException.INSTANCE;
     }
-
 
     @ExplodeLoop
     private Object[] gerArguments(UserDefinedProcedure function, VirtualFrame parentFrame) {

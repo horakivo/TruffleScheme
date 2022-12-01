@@ -3,6 +3,8 @@ package com.ihorak.truffle.node.callable.TCO;
 
 import java.util.List;
 
+import com.ihorak.truffle.SchemeTruffleLanguage;
+import com.ihorak.truffle.SchemeTruffleLanguage.TCOTarget;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.callable.CallableExprNode;
 import com.oracle.truffle.api.CallTarget;
