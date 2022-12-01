@@ -11,6 +11,7 @@ import com.ihorak.truffle.node.special_form.LambdaExprNode;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemePair;
 import com.ihorak.truffle.type.SchemeSymbol;
+import com.oracle.truffle.api.frame.FrameSlotKind;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,9 +33,10 @@ public class LambdaConverter {
         updateParsingContext(params, lambdaContext);
         var bodyExpressions = TailCallUtil.convertBodyToSchemeExpressionsWithTCO(expressions, lambdaContext);
 
+        int argumentsIndex= lambdaContext.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
         var frameDescriptor = lambdaContext.buildAndGetFrameDescriptor();
         var name = context.getFunctionDefinitionName() == null ? new SchemeSymbol("anonymous_procedure") : context.getFunctionDefinitionName();
-        var rootNode = new ProcedureRootNode(name, context.getLanguage(), frameDescriptor, bodyExpressions);
+        var rootNode = new ProcedureRootNode(name, context.getLanguage(), frameDescriptor, bodyExpressions, argumentsIndex);
         var hasOptionalArgs = params instanceof SchemePair;
         return new LambdaExprNode(rootNode.getCallTarget(), lambdaContext.getNumberOfLambdaParameters(), hasOptionalArgs);
     }

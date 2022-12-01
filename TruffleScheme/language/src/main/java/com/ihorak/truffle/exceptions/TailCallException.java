@@ -5,6 +5,8 @@ import com.oracle.truffle.api.nodes.ControlFlowException;
 
 public class TailCallException extends ControlFlowException {
 
+	public static final TailCallException INSTANCE = new TailCallException(null, null);
+	
     private final CallTarget callTarget;
     private final Object[] arguments;
 

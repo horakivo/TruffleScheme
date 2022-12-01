@@ -1,5 +1,7 @@
 package com.ihorak.truffle.node.callable.TCO;
 
+import com.ihorak.truffle.SchemeTruffleLanguage;
+import com.ihorak.truffle.SchemeTruffleLanguage.TCOTarget;
 import com.ihorak.truffle.exceptions.TailCallException;
 import com.ihorak.truffle.node.SchemeNode;
 import com.ihorak.truffle.node.callable.DispatchNode;
@@ -30,12 +32,13 @@ public class TailCallLoopNode extends SchemeNode implements RepeatingNode {
     public Object executeRepeatingWithValue(final VirtualFrame frame) {
         try {
         	Object[] arguments = (Object[])frame.getObject(tailCallArgumentsSlot);
-        	CallTarget target = (CallTarget)frame.getObject(tailCallTargetSlot);
+         	CallTarget target = (CallTarget)frame.getObject(tailCallTargetSlot);
             Object result = dispatchNode.executeDispatch(target, arguments);
             return result;
         } catch (TailCallException e) {
-        	frame.setObject(tailCallTargetSlot, e.getCallTarget());
-        	frame.setObject(tailCallArgumentsSlot, e.getArguments());
+        	TCOTarget target= SchemeTruffleLanguage.getTCOTarget(this);
+        	frame.setObject(tailCallTargetSlot, target.target);
+        	frame.setObject(tailCallArgumentsSlot, target.arguments);
             return CONTINUE_LOOP_STATUS;
         }
     }
