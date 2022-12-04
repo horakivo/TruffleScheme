@@ -42,7 +42,7 @@ public class ReadGlobalVariableExprNode extends SchemeExpression {
 
     private Object retrieveAndUpdateCachedValueFromLanguageContext() {
         CompilerDirectives.transferToInterpreterAndInvalidate();
-        cachedValue = this.getCurrentLanguageContext().getGlobalState().getVariable(symbol);
+        cachedValue = getContext().getVariable(symbol);
         return cachedValue;
     }
 }

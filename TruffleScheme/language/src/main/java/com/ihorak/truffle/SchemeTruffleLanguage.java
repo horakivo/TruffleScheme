@@ -36,11 +36,6 @@ public class SchemeTruffleLanguage extends TruffleLanguage<SchemeLanguageContext
         return rootNode.getCallTarget();
     }
 
-    @Override
-    protected SchemeLanguageContext createContext(Env env) {
-        return new SchemeLanguageContext(this);
-    }
-
     public static List<SchemeExpression> convertInternalRepresentationToSchemeExpressions(CharStream charStream, ParsingContext globalContext) {
 
         var internalRepresentation = Parser.parse(charStream);
@@ -51,7 +46,12 @@ public class SchemeTruffleLanguage extends TruffleLanguage<SchemeLanguageContext
 
         return result;
     }
-    
+
+    @Override
+    protected SchemeLanguageContext createContext(Env env) {
+        return new SchemeLanguageContext(this);
+    }
+
     public static TCOTarget getTCOTarget(Node node) {
     	return REFERENCE.get(node).target.get();
     }

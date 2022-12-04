@@ -51,6 +51,21 @@ public class ProcedureRootNode extends RootNode {
 		return name.getValue();
 	}
 
+	@Override
+	public Object execute(VirtualFrame frame) {
+		frame.setObject(argumentsIndex, frame.getArguments());
+		return loop.execute(frame);
+	}
+
+	@ExplodeLoop
+	private Object executeImpl(VirtualFrame frame) {
+		for (int i = 0; i < expressions.length - 1; i++) {
+			expressions[i].executeGeneric(frame);
+		}
+		// return last element
+		return expressions[expressions.length - 1].executeGeneric(frame);
+	}
+
 	final class RecursiveTailCallLoopNode extends SchemeNode implements RepeatingNode {
 
 		@Override
@@ -78,20 +93,5 @@ public class ProcedureRootNode extends RootNode {
 		public boolean shouldContinue(final Object returnValue) {
 			return returnValue == CONTINUE_LOOP_STATUS;
 		}
-	}
-
-	@Override
-	public Object execute(VirtualFrame frame) {
-		frame.setObject(argumentsIndex, frame.getArguments());
-		return loop.execute(frame);
-	}
-
-	@ExplodeLoop
-	private Object executeImpl(VirtualFrame frame) {
-		for (int i = 0; i < expressions.length - 1; i++) {
-			expressions[i].executeGeneric(frame);
-		}
-		// return last element
-		return expressions[expressions.length - 1].executeGeneric(frame);
 	}
 }

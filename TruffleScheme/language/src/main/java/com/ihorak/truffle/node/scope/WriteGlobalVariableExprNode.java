@@ -1,5 +1,6 @@
 package com.ihorak.truffle.node.scope;
 
+import com.ihorak.truffle.SchemeLanguageContext;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.ihorak.truffle.type.UndefinedValue;
@@ -24,7 +25,7 @@ public class WriteGlobalVariableExprNode extends SchemeExpression {
     @Override
     public Object executeGeneric(final VirtualFrame virtualFrame) {
         CompilerDirectives.transferToInterpreterAndInvalidate();
-        getCurrentLanguageContext().getGlobalState().addVariable(symbol, valueToStore.executeGeneric(virtualFrame));
+        getContext().addVariable(symbol, valueToStore.executeGeneric(virtualFrame));
         return UndefinedValue.SINGLETON;
     }
 

@@ -11,10 +11,10 @@ import java.util.Map;
 
 public class SchemeLanguageContext {
 
-    private final GlobalState globalState;
+    private final Map<SchemeSymbol, Object> globalVariableStorage;
 
     public SchemeLanguageContext(SchemeTruffleLanguage language) {
-        globalState = new GlobalState(language);
+        this.globalVariableStorage = PrimitiveProcedureGenerator.generate(language);
     }
 
     private static final TruffleLanguage.ContextReference<SchemeLanguageContext> REFERENCE =
@@ -24,31 +24,18 @@ public class SchemeLanguageContext {
         return REFERENCE.get(node);
     }
 
-    public GlobalState getGlobalState() {
-        return globalState;
+    public Object getVariable(SchemeSymbol symbol) {
+        var value = globalVariableStorage.get(symbol);
+        if (value == null) {
+            throw new SchemeException(symbol + ": undefined\ncannot reference an identifier before its definition", null);
+        }
+        return value;
     }
 
+    public void addVariable(SchemeSymbol symbol, Object valueToStore) {
+        var shouldInvalidate = globalVariableStorage.containsKey(symbol);
+        globalVariableStorage.put(symbol, valueToStore);
+        if (shouldInvalidate) ReadGlobalVariableExprNode.notRedefinedAssumption.invalidate();
 
-    public static final class GlobalState {
-        private final Map<SchemeSymbol, Object> globalVariableStorage;
-
-        public GlobalState(SchemeTruffleLanguage language) {
-            this.globalVariableStorage = PrimitiveProcedureGenerator.generate(language);
-        }
-
-        public Object getVariable(SchemeSymbol symbol) {
-            var value = globalVariableStorage.get(symbol);
-            if (value == null) {
-                throw new SchemeException(symbol + ": undefined\ncannot reference an identifier before its definition", null);
-            }
-            return value;
-        }
-
-        public void addVariable(SchemeSymbol symbol, Object valueToStore) {
-            var shouldInvalidate = globalVariableStorage.containsKey(symbol);
-            globalVariableStorage.put(symbol, valueToStore);
-            if (shouldInvalidate) ReadGlobalVariableExprNode.notRedefinedAssumption.invalidate();
-
-        }
     }
 }
