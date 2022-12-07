@@ -13,10 +13,7 @@ import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.VirtualFrame;
-import com.oracle.truffle.api.nodes.ExplodeLoop;
-import com.oracle.truffle.api.nodes.LoopNode;
-import com.oracle.truffle.api.nodes.RepeatingNode;
-import com.oracle.truffle.api.nodes.RootNode;
+import com.oracle.truffle.api.nodes.*;
 import com.oracle.truffle.api.profiles.ConditionProfile;
 
 public class ProcedureRootNode extends RootNode {
@@ -26,6 +23,7 @@ public class ProcedureRootNode extends RootNode {
 
 	private final SchemeSymbol name;
 	private final ConditionProfile tailRecursion = ConditionProfile.create();
+	@Child private DispatchNode dispatchNode = DispatchNodeGen.create();
 
 	@Child
 	private LoopNode loop;
@@ -77,15 +75,23 @@ public class ProcedureRootNode extends RootNode {
 		public Object executeRepeatingWithValue(final VirtualFrame frame) {
 			try {
 				Object[] arguments = (Object[]) frame.getObject(argumentsIndex);
-				return executeImpl(Truffle.getRuntime().createVirtualFrame(arguments, getFrameDescriptor()));
+				var framee = Truffle.getRuntime().createVirtualFrame(arguments, getFrameDescriptor());
+				//return dispatchNode.executeDispatch(getCallTarget(), arguments);
+				return executeImpl(framee);
 			} catch (TailCallException e) {
+//				frame.setObject(argumentsIndex, e.getArguments());
+//				return CONTINUE_LOOP_STATUS;
+
 				TCOTarget target = SchemeTruffleLanguage.getTCOTarget(this);
-				if (tailRecursion.profile(target.target == getCallTarget())) {
-					frame.setObject(argumentsIndex, target.arguments);
-					return CONTINUE_LOOP_STATUS;
-				} else {
-					throw e;
-				}
+				frame.setObject(argumentsIndex, target.arguments);
+				return CONTINUE_LOOP_STATUS;
+
+//				if (tailRecursion.profile(target.target == getCallTarget())) {
+//					frame.setObject(argumentsIndex, e.getArguments());
+//					return CONTINUE_LOOP_STATUS;
+//				} else {
+//					throw e;
+//				}
 			}
 		}
 

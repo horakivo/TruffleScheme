@@ -46,9 +46,10 @@ public class ProcedureCallConverter {
         if (isTailCall) {
             return TailCallThrowerNodeGen.create(arguments, callable);
         } else {
-        	int tailCallArgumentsSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
-        	int tailCallTargetSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
-            return new TailCallCatcherNode(arguments, callable, tailCallArgumentsSlot, tailCallTargetSlot);
+//        	int tailCallArgumentsSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
+//        	int tailCallTargetSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
+//            return new TailCallCatcherNode(arguments, callable, tailCallArgumentsSlot, tailCallTargetSlot);
+            return  new CallableExprNode(arguments, callable);
         }
 
      // return callNode;

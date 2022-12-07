@@ -112,41 +112,54 @@ public class ProgramTest {
 
     @Test
     public void tak() {
-        var program = "" +
-                "(define tak\n" +
-                "  (lambda (x y z)\n" +
-                "    (if (not (< y x))\n" +
-                "        z\n" +
-                "        (tak (tak (- x 1) y z)\n" +
-                "           (tak (- y 1) z x)\n" +
-                "           (tak (- z 1) x y)))))\n" +
-                "\n" +
-                "\n" +
-                "(define loop\n" +
-                "  (lambda (n)\n" +
-                "    (tak 18 12 6)\n" +
-                "    (if (> n 0) (loop (- n 1)))))\n" +
-                "\n" +
-                "\n" +
-                "(loop 100)\n" +
-                "(loop 100)\n" +
-                "(loop 100)\n" +
-                "(loop 100)\n" +
-                "(loop 100)\n" +
-                "(loop 100)\n" +
-                "\n" +
-                "\n" +
-                "\n" +
-                "\n" +
-                "(define start (current-milliseconds))\n" +
-                "\n" +
-                "(loop 100)\n" +
-                "\n" +
-                "(define end (current-milliseconds))\n" +
-                "(- end start)";
+        var program = """
+                ;;; TAK -- A vanilla version of the TAKeuchi function.
+                                
+                (define tak
+                  (lambda (x y z)
+                    (if (not (< y x))
+                        z
+                        (tak (tak (- x 1) y z)
+                           (tak (- y 1) z x)
+                           (tak (- z 1) x y)))))
+                                
+                                
+                (define loop
+                  (lambda (n)
+                    (tak 18 12 6)
+                    (if (> n 0) (loop (- n 1)))))
+                                
+                                
+                (loop 100)
+                (loop 100)
+                (loop 100)
+                (loop 100)
+                (loop 100)
+                (loop 100)
+                                
+                                
+                                
+                                
+                (define start (current-milliseconds))
+                                
+                (loop 100)
+                (loop 100)
+                (loop 100)
+                (loop 100)
+                (loop 100)
+                (loop 100)
+                (loop 100)
+                (loop 100)
+                (loop 100)
+                (loop 100)
+                                
+                (define end (current-milliseconds))
+                (- end start)
+                                
+                """;
 
-        var result  = context.eval("scm", program);
-        System.out.println(result);
+        var result = context.eval("scm", program).asLong();
+        System.out.println(result / 10D);
 
     }
 
@@ -247,63 +260,8 @@ public class ProgramTest {
         var result = context.eval("scm", program);
     }
 
-    @Test
-    public void test10() {
-        var program = "" +
-                "(define fibonacci\n" +
-                "  (lambda (n)\n" +
-                "    (if (< n 2)\n" +
-                "        1\n" +
-                "        (+ (fibonacci (- n 1))\n" +
-                "           (fibonacci (- n 2))))))\n" +
-                "           \n" +
-                "(fibonacci 30)\n" +
-                "(fibonacci 30)\n" +
-                "(fibonacci 30)\n" +
-                "(fibonacci 30)\n" +
-                "(fibonacci 30)\n" +
-                "(fibonacci 30)\n" +
-                "(fibonacci 30)\n" +
-                "(define start (current-milliseconds))\n" +
-                "\n" +
-                "(fibonacci 30)\n" +
-                "\n" +
-                "(define end (current-milliseconds))" +
-                "(- end start)";
-        var result  = context.eval("scm", program);
-    }
 
-    @Test
-    public void test11() {
-        var program = "" +
-                "(define fibonacci\n" +
-                "  (lambda (n)\n" +
-                "    (if (< n 2)\n" +
-                "        n\n" +
-                "        (+ (fibonacci (- n 1))\n" +
-                "           (fibonacci (- n 2))))))\n" +
-                "           \n" +
-                "(fibonacci 32)\n" +
-                "(fibonacci 32)\n" +
-                "(fibonacci 32)\n" +
-                "(fibonacci 32)\n" +
-                "(fibonacci 32)\n" +
-                "(fibonacci 32)\n" +
-                "(fibonacci 32)\n" +
-                "(fibonacci 32)\n" +
-                "(fibonacci 32)\n" +
-                "(fibonacci 32)\n" +
-                "(fibonacci 32)\n" +
-                "(define start (current-milliseconds))\n" +
-                "\n" +
-                "(fibonacci 32)\n" +
-                "\n" +
-                "(define end (current-milliseconds))" +
-                "(- end start)";
 
-        var test = context.eval("scm", program);
-        System.out.println(test);
-    }
 
     @Test
     public void test12() {
