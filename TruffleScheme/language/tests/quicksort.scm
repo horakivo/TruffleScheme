@@ -36,6 +36,8 @@
              (modulo (* s s) (* p q))))))
       (generate len 101 17 3 '())))
 
+
+
 (define start (current-milliseconds))
 
 (quicksort1 (random-list 500000))

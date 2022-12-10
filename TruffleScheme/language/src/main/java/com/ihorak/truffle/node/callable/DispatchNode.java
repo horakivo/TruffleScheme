@@ -11,7 +11,7 @@ public abstract class DispatchNode extends SchemeNode {
 
     public abstract Object executeDispatch(CallTarget callTarget, Object[] arguments);
 
-    @Specialization(guards = "callTarget == directCallNode.getCallTarget()", limit = "2")
+    @Specialization(guards = "callTarget == directCallNode.getCallTarget()", limit = "3")
     protected static Object directlyDispatch(CallTarget callTarget,
                                              Object[] arguments,
                                              @Cached("create(callTarget)") DirectCallNode directCallNode) {

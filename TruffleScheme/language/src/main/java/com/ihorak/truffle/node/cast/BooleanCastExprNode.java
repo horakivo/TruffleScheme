@@ -15,8 +15,6 @@ public abstract class BooleanCastExprNode extends SchemeNode {
     public abstract boolean executeBoolean(VirtualFrame frame);
     public abstract boolean executeBoolean(Object value);
 
-    //public abstract boolean execute(Object object);
-
     @Specialization
     protected boolean doBoolean(boolean value) {
         return value;

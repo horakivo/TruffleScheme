@@ -37,6 +37,7 @@ public class BuiltinUtils {
                 case "null?":
                 case "modulo":
                 case "cadr":
+                case "equal?":
                 case "infinite":
                     return true;
                 default:

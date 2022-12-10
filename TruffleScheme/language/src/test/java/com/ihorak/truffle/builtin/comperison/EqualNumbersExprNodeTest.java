@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class EqualExprNodeTest {
+public class EqualNumbersExprNodeTest {
 
     private Context context;
 

@@ -13,6 +13,7 @@ import com.oracle.truffle.api.nodes.RepeatingNode;
 
 public class TailCallLoopNode extends SchemeNode implements RepeatingNode {
 
+    @SuppressWarnings("FieldMayBeFinal")
     @Child private DispatchNode dispatchNode = DispatchNodeGen.create();
 
     private final int tailCallArgumentsSlot;
@@ -36,9 +37,9 @@ public class TailCallLoopNode extends SchemeNode implements RepeatingNode {
             Object result = dispatchNode.executeDispatch(target, arguments);
             return result;
         } catch (TailCallException e) {
-        	TCOTarget target= SchemeTruffleLanguage.getTCOTarget(this);
-        	frame.setObject(tailCallTargetSlot, target.target);
-        	frame.setObject(tailCallArgumentsSlot, target.arguments);
+        	//TCOTarget target= SchemeTruffleLanguage.getTCOTarget(this);
+        	frame.setObject(tailCallTargetSlot, e.getCallTarget());
+        	frame.setObject(tailCallArgumentsSlot, e.getArguments());
             return CONTINUE_LOOP_STATUS;
         }
     }

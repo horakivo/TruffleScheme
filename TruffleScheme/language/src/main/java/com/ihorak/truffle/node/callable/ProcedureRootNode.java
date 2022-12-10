@@ -36,7 +36,7 @@ public class ProcedureRootNode extends RootNode {
 		this.expressions = schemeExpressions.toArray(SchemeExpression[]::new);
 		this.name = name;
 		this.argumentsIndex = argumentsIndex;
-		this.loop = Truffle.getRuntime().createLoopNode(new RecursiveTailCallLoopNode());
+		this.loop = Truffle.getRuntime().createLoopNode(new TailRecursiveCallLoopNode());
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class ProcedureRootNode extends RootNode {
 		return expressions[expressions.length - 1].executeGeneric(frame);
 	}
 
-	final class RecursiveTailCallLoopNode extends SchemeNode implements RepeatingNode {
+	final class TailRecursiveCallLoopNode extends SchemeNode implements RepeatingNode {
 
 		@Override
 		public boolean executeRepeating(final VirtualFrame frame) {
@@ -75,23 +75,14 @@ public class ProcedureRootNode extends RootNode {
 		public Object executeRepeatingWithValue(final VirtualFrame frame) {
 			try {
 				Object[] arguments = (Object[]) frame.getObject(argumentsIndex);
-				var framee = Truffle.getRuntime().createVirtualFrame(arguments, getFrameDescriptor());
-				//return dispatchNode.executeDispatch(getCallTarget(), arguments);
-				return executeImpl(framee);
+				return executeImpl(Truffle.getRuntime().createVirtualFrame(arguments, getFrameDescriptor()));
 			} catch (TailCallException e) {
-//				frame.setObject(argumentsIndex, e.getArguments());
-//				return CONTINUE_LOOP_STATUS;
-
-				TCOTarget target = SchemeTruffleLanguage.getTCOTarget(this);
-				frame.setObject(argumentsIndex, target.arguments);
-				return CONTINUE_LOOP_STATUS;
-
-//				if (tailRecursion.profile(target.target == getCallTarget())) {
-//					frame.setObject(argumentsIndex, e.getArguments());
-//					return CONTINUE_LOOP_STATUS;
-//				} else {
-//					throw e;
-//				}
+				if (tailRecursion.profile(e.getCallTarget() == getCallTarget())) {
+					frame.setObject(argumentsIndex, e.getArguments());
+					return CONTINUE_LOOP_STATUS;
+				} else {
+					throw e;
+				}
 			}
 		}
 

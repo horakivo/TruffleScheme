@@ -184,19 +184,19 @@ public class BuiltinFactory {
         return result;
     }
 
-    public static SchemeExpression createEqual(List<SchemeExpression> arguments) {
+    public static SchemeExpression createEqualNumbers(List<SchemeExpression> arguments) {
         if (arguments.size() == 0)
             throw new SchemeException(
                     "=: arity mismatch; Expected number of argument does not match the given number\nexpected: at least 1\ngiven: 0", null);
         if (arguments.size() == 1) return new BooleanLiteralNode(true);
-        if (arguments.size() == 2) return new EqualExprNode(arguments.get(0), arguments.get(1));
+        if (arguments.size() == 2) new EqualNumbersExprNode(arguments.get(0), arguments.get(1));
         return new ReduceComparisonExprNode(reduceEqual(arguments));
     }
 
     private static List<SchemeExpression> reduceEqual(List<SchemeExpression> arguments) {
         List<SchemeExpression> result = new ArrayList<>();
         for (int i = 0; i < arguments.size() - 1; i++) {
-            result.add(new EqualExprNode(arguments.get(i), arguments.get(i + 1)));
+            result.add(new EqualNumbersExprNode(arguments.get(i), arguments.get(i + 1)));
         }
         return result;
     }
@@ -342,6 +342,16 @@ public class BuiltinFactory {
 
     public static SchemeExpression createInfinite(List<SchemeExpression> arguments) {
         return new WhileInfiniteExprNode(arguments.get(0));
+    }
+
+    public static SchemeExpression createEqual(List<SchemeExpression> arguments) {
+        if (arguments.size() == 2) {
+            return new EqualExprNode(arguments.get(0), arguments.get(1));
+        }
+
+        throw new SchemeException(
+                "equal: arity mismatch; Expected number of arguments does not match the given number\nExpected: 2\nGiven: " + arguments.size(),
+                null);
     }
 
 }

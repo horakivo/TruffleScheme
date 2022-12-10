@@ -2,6 +2,7 @@ package com.ihorak.truffle.node.exprs.primitive_procedure.comparison;
 
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.exprs.BinaryReducibleBuiltin;
+import com.ihorak.truffle.node.exprs.core.BinaryBooleanOperationNode;
 import com.ihorak.truffle.node.exprs.core.BinaryOperationNode;
 import com.ihorak.truffle.node.exprs.core.comperison.LessThenEqualBinaryNodeGen;
 import com.oracle.truffle.api.dsl.Specialization;
@@ -10,7 +11,7 @@ import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 public abstract class LessThenEqualPrimitiveProcedureNode extends BinaryReducibleBuiltin {
 
     @SuppressWarnings("FieldMayBeFinal")
-    @Child private BinaryOperationNode lessThenEqualOperation = LessThenEqualBinaryNodeGen.create();
+    @Child private BinaryBooleanOperationNode lessThenEqualOperation = LessThenEqualBinaryNodeGen.create();
     @SuppressWarnings("FieldMayBeFinal")
     @Child private ReduceComparisonPrimitiveProcedureNode comparisonReduceNode = ReduceComparisonPrimitiveProcedureNodeGen.create();
 
