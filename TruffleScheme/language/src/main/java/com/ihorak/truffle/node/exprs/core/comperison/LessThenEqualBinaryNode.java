@@ -1,6 +1,7 @@
 package com.ihorak.truffle.node.exprs.core.comperison;
 
 import com.ihorak.truffle.exceptions.SchemeException;
+import com.ihorak.truffle.node.exprs.core.BinaryBooleanOperationNode;
 import com.ihorak.truffle.node.exprs.core.BinaryOperationNode;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
@@ -8,7 +9,7 @@ import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 
 import java.math.BigInteger;
 
-public abstract class LessThenEqualBinaryNode extends BinaryOperationNode {
+public abstract class LessThenEqualBinaryNode extends BinaryBooleanOperationNode {
 
     @Specialization
     protected boolean lessThenEqualLongs(long left, long right) {
@@ -28,7 +29,7 @@ public abstract class LessThenEqualBinaryNode extends BinaryOperationNode {
 
     @TruffleBoundary
     @Fallback
-    protected Object fallback(Object left, Object right) {
+    protected boolean fallback(Object left, Object right) {
         throw new SchemeException("<=: contract violation\nexpected: real?\ngiven left: " + left + "\ngiven right: " + right, this);
     }
 }

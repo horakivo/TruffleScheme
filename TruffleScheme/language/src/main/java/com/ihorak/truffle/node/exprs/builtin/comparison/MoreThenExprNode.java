@@ -1,6 +1,7 @@
 package com.ihorak.truffle.node.exprs.builtin.comparison;
 
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.exprs.core.BinaryBooleanOperationNode;
 import com.ihorak.truffle.node.exprs.core.BinaryOperationNode;
 import com.ihorak.truffle.node.exprs.core.comperison.MoreThenBinaryNodeGen;
 import com.oracle.truffle.api.frame.VirtualFrame;
@@ -9,7 +10,7 @@ public class MoreThenExprNode extends SchemeExpression {
 
     @Child private SchemeExpression left;
     @Child private SchemeExpression right;
-    @Child private BinaryOperationNode moreThenOperation = MoreThenBinaryNodeGen.create();
+    @Child private BinaryBooleanOperationNode moreThenOperation = MoreThenBinaryNodeGen.create();
 
     public MoreThenExprNode(SchemeExpression left, SchemeExpression right) {
         this.left = left;
@@ -18,7 +19,7 @@ public class MoreThenExprNode extends SchemeExpression {
 
     @Override
     public boolean executeBoolean(VirtualFrame frame) {
-        return moreThenOperation.executeBoolean(left.executeGeneric(frame), right.executeGeneric(frame));
+        return moreThenOperation.execute(left.executeGeneric(frame), right.executeGeneric(frame));
     }
 
     @Override

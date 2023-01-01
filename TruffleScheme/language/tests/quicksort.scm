@@ -41,10 +41,6 @@
 (quicksort1 (random-list 500000))
 (quicksort1 (random-list 500000))
 (quicksort1 (random-list 500000))
-(quicksort1 (random-list 500000))
-(quicksort1 (random-list 500000))
-(quicksort1 (random-list 500000))
-(quicksort1 (random-list 500000))
 
 
 (define start (current-milliseconds))

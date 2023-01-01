@@ -1,34 +1,42 @@
 package com.ihorak.truffle.node.exprs.core.comperison;
 
 import com.ihorak.truffle.exceptions.SchemeException;
+import com.ihorak.truffle.node.exprs.core.BinaryBooleanOperationNode;
 import com.ihorak.truffle.node.exprs.core.BinaryOperationNode;
+import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 
 import java.math.BigInteger;
 
-public abstract class EqualBinaryNode extends BinaryOperationNode {
+public abstract class EqualBinaryNode extends BinaryBooleanOperationNode {
+
 
     @Specialization
-    protected boolean equalLongs(long left, long right) {
+    protected boolean doSchemeSymbols(SchemeSymbol left, SchemeSymbol right) {
+        return left.equals(right);
+    }
+
+    @Specialization
+    protected boolean doLongs(long left, long right) {
         return left == right;
     }
 
-    @TruffleBoundary
     @Specialization
-    protected boolean equalBigInts(BigInteger left, BigInteger right) {
-        return left.compareTo(right) == 0;
+    protected boolean doSchemeSymbolAndLong(long left, SchemeSymbol right) {
+        return false;
     }
 
     @Specialization
-    protected boolean equalDoubles(double left, double right) {
-        return left == right;
+    protected boolean doLongAndSchemeSymbol(SchemeSymbol left, long right) {
+        return false;
     }
 
-    @TruffleBoundary
+
     @Fallback
-    protected Object fallback(Object left, Object right) {
-        throw new SchemeException("=: contract violation\nexpected: real?\ngiven left: " + left + "\ngiven right: " + right, this);
+    protected boolean fallback(Object left, Object right) {
+        System.out.println("left: " + left + " right: " + right);
+        return false;
     }
 }

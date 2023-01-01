@@ -1,19 +1,17 @@
 package com.ihorak.truffle.node.exprs.builtin.comparison;
 
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.exprs.core.BinaryBooleanOperationNode;
-import com.ihorak.truffle.node.exprs.core.BinaryOperationNode;
-import com.ihorak.truffle.node.exprs.core.comperison.EqualBinaryNodeGen;
+import com.ihorak.truffle.node.exprs.core.comperison.EqualNumbersBinaryNode;
+import com.ihorak.truffle.node.exprs.core.comperison.EqualNumbersBinaryNodeGen;
 import com.oracle.truffle.api.frame.VirtualFrame;
 
-
-public class EqualExprNode extends SchemeExpression {
+public class EqualNumbersExprNode extends SchemeExpression {
 
     @Child private SchemeExpression left;
     @Child private SchemeExpression right;
-    @Child private BinaryBooleanOperationNode equalOperation = EqualBinaryNodeGen.create();
+    @Child private EqualNumbersBinaryNode equalOperation = EqualNumbersBinaryNodeGen.create();
 
-    public EqualExprNode(SchemeExpression left, SchemeExpression right) {
+    public EqualNumbersExprNode(SchemeExpression left, SchemeExpression right) {
         this.left = left;
         this.right = right;
     }
@@ -25,6 +23,6 @@ public class EqualExprNode extends SchemeExpression {
 
     @Override
     public Object executeGeneric(VirtualFrame frame) {
-        return executeBoolean(frame);
+        return equalOperation.execute(left.executeGeneric(frame), right.executeGeneric(frame));
     }
 }
