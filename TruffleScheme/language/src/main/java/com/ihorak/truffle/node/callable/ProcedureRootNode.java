@@ -77,8 +77,9 @@ public class ProcedureRootNode extends RootNode {
 				Object[] arguments = (Object[]) frame.getObject(argumentsIndex);
 				return executeImpl(Truffle.getRuntime().createVirtualFrame(arguments, getFrameDescriptor()));
 			} catch (TailCallException e) {
-				if (tailRecursion.profile(e.getCallTarget() == getCallTarget())) {
-					frame.setObject(argumentsIndex, e.getArguments());
+				TCOTarget target = SchemeTruffleLanguage.getTCOTarget(this);
+				if (tailRecursion.profile(target.target == getCallTarget())) {
+					frame.setObject(argumentsIndex, target.arguments);
 					return CONTINUE_LOOP_STATUS;
 				} else {
 					throw e;

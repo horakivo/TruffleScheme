@@ -1,5 +1,6 @@
 package com.ihorak.truffle.builtin;
 
+import com.ihorak.truffle.type.SchemeList;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
 import org.junit.Before;
@@ -217,59 +218,7 @@ public class ProgramTest {
 
     }
 
-    @Test
-    public void debugging1() {
-        var program = """             
-                (define random-list
-                  (lambda (len)
-                    (define generate
-                      (lambda (len p q s result)
-                        (if (= len 0)
-                            result
-                            ((lambda (value)
-                               (generate (- len 1) p q value (cons value result)))
-                             (modulo (* s s) (* p q))))))
-                      (generate len 101 17 3 '())))
-                               
-                               
-                               
-                               
-                (random-list 100)
-                               
-                """;
 
-        var result = context.eval("scm", program);
-        System.out.println(result);
-
-    }
-
-    @Test
-    public void debugging2() {
-        var program = """             
-                (define random-list
-                  (lambda (len)
-                    (define generate
-                      (lambda (len p q s result)
-                        (if (= len 0)
-                            result
-                            ((lambda (value)
-                               (generate (- len 1) p q value (cons value result)))
-                             (modulo (* s s) (* p q))))))
-                      (generate len 101 17 3 '())))
-
-                (define start (current-milliseconds))
-
-                (random-list 500000)
-
-                (define end (current-milliseconds))
-                (- end start)
-                                               
-                """;
-
-        var result = context.eval("scm", program);
-        System.out.println(result);
-
-    }
 
     @Test
     public void asdasda() {
@@ -423,5 +372,26 @@ public class ProgramTest {
         var program = "(define fun (lambda (x y) (+ x y))) (fun 1 2) (fun 2 3) (fun 3 4)";
 
         var test = context.eval("scm", program);
+    }
+
+    @Test
+    public void newListStructureTest() {
+        var list = new SchemeList(1);
+        list.add(2);
+        list.add(3);
+
+        System.out.println(list);
+    }
+
+    @Test
+    public void newListStructureTest1() {
+        var list = new SchemeList(1);
+        list.add(2);
+        list.add(3);
+        var list2 = new SchemeList(4);
+        list2.add(5);
+        list.addAll(list2);
+
+        System.out.println(list);
     }
 }

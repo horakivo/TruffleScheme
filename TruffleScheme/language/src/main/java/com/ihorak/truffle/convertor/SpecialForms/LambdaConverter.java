@@ -7,6 +7,7 @@ import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.callable.ProcedureRootNode;
 import com.ihorak.truffle.node.special_form.LambdaExprNode;
 import com.ihorak.truffle.type.SchemeCell;
+import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemePair;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.frame.FrameSlotKind;
@@ -18,12 +19,12 @@ public class LambdaConverter {
     private static final String NOT_IDENTIFIER_IN_PARAMS = "lambda: not an identifier in parameters";
 
 
-    public static LambdaExprNode convert(SchemeCell lambdaList, ParsingContext context) {
+    public static LambdaExprNode convert(SchemeList lambdaList, ParsingContext context) {
         validate(lambdaList);
         ParsingContext lambdaContext = new ParsingContext(context, LexicalScope.LAMBDA);
 
-        var params = lambdaList.cdr.car;
-        var expressions = lambdaList.cdr.cdr;
+        var params = lambdaList.cdr().car();
+        var expressions = lambdaList.cdr().cdr();
 
         updateParsingContext(params, lambdaContext);
         var bodyExpressions = TailCallUtil.convertBodyToSchemeExpressionsWithTCO(expressions, lambdaContext);
@@ -37,7 +38,7 @@ public class LambdaConverter {
     }
 
     private static void updateParsingContext(Object params, ParsingContext context) {
-        if (params instanceof SchemeCell list) {
+        if (params instanceof SchemeList list) {
             for (Object obj : list) {
                 context.addLambdaParameter((SchemeSymbol) obj);
             }
@@ -54,11 +55,11 @@ public class LambdaConverter {
     }
 
     // (lambda (arg1 ... argN) expr1 ..exprN)
-    private static void validate(SchemeCell lambdaList) {
-        var params = lambdaList.cdr.car;
-        var body = lambdaList.cdr.cdr;
+    private static void validate(SchemeList lambdaList) {
+        var params = lambdaList.cdr().car();
+        var body = lambdaList.cdr().cdr();
 
-        if (params instanceof SchemeCell list) {
+        if (params instanceof SchemeList list) {
             for (Object obj : list) {
                 if (!(obj instanceof SchemeSymbol)) {
                     throw new SchemeException(NOT_IDENTIFIER_IN_PARAMS, null);
@@ -79,7 +80,7 @@ public class LambdaConverter {
 
         }
 
-        if (body.isEmpty()) {
+        if (body.isEmpty) {
             throw new SchemeException("lambda: no expression in body", null);
         }
     }

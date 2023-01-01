@@ -9,13 +9,14 @@ import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.macro.DefineMacroExprNode;
 import com.ihorak.truffle.node.special_form.LambdaExprNode;
 import com.ihorak.truffle.type.SchemeCell;
+import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
 
 public class SchemeMacroConverter {
 
     private SchemeMacroConverter() {}
 
-    public static SchemeExpression convertMarco(SchemeCell macroList, ParsingContext context) {
+    public static SchemeExpression convertMarco(SchemeList macroList, ParsingContext context) {
         validate(macroList);
 
         var name = (SchemeSymbol) macroList.get(1);
@@ -36,9 +37,9 @@ public class SchemeMacroConverter {
     }
 
 
-    private static void validate(SchemeCell macroList) {
-        if (macroList.size() != 3) {
-            throw new SchemeException("define-macro: contract violation. Wrong number of arguments\nExpected: 3 \nGiven: " + macroList.size(), null);
+    private static void validate(SchemeList macroList) {
+        if (macroList.size != 3) {
+            throw new SchemeException("define-macro: contract violation. Wrong number of arguments\nExpected: 3 \nGiven: " + macroList.size, null);
         }
 
         if (!(macroList.get(1) instanceof SchemeSymbol)) {

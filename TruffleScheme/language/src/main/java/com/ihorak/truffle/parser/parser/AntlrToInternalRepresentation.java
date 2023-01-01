@@ -1,11 +1,11 @@
 package com.ihorak.truffle.parser.parser;
 
-import com.ihorak.truffle.exceptions.SchemeException;
-import com.ihorak.truffle.node.literals.DoubleLiteralNode;
 import com.ihorak.truffle.parser.antlr.R5RSBaseVisitor;
 import com.ihorak.truffle.parser.antlr.R5RSParser;
-import com.ihorak.truffle.type.*;
-import org.antlr.v4.runtime.tree.*;
+import com.ihorak.truffle.type.SchemeList;
+import com.ihorak.truffle.type.SchemePair;
+import com.ihorak.truffle.type.SchemeSymbol;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -19,11 +19,11 @@ public class AntlrToInternalRepresentation extends R5RSBaseVisitor<Object> {
     }
 
     @Override
-    public SchemeCell visitList(R5RSParser.ListContext ctx) {
-        SchemeCell list = SchemeCell.EMPTY_LIST;
+    public SchemeList visitList(R5RSParser.ListContext ctx) {
+        SchemeList list = new SchemeList();
         // we are ignoring first and last child since those are '(' and ')'
-        for (int i = ctx.getChildCount() - 1; i-- > 1; ) {
-            list = list.cons(visit(ctx.getChild(i)), list);
+        for (int i = 1; i < ctx.getChildCount() - 1; i++) {
+            list.add(visit(ctx.getChild(i)));
         }
 
         return list;
@@ -61,38 +61,26 @@ public class AntlrToInternalRepresentation extends R5RSBaseVisitor<Object> {
 
     @Override
     public Object visitQuote(R5RSParser.QuoteContext ctx) {
-        SchemeCell result = SchemeCell.EMPTY_LIST;
         // 'form -> just take second child since the first one is '
-        result = result.cons(visit(ctx.getChild(1)), result);
-        result = result.cons(new SchemeSymbol("quote"), result);
-        return result;
+        return new SchemeList(new SchemeSymbol("quote"), visit(ctx.getChild(1)));
     }
 
     @Override
     public Object visitQuasiquote(R5RSParser.QuasiquoteContext ctx) {
-        SchemeCell result = SchemeCell.EMPTY_LIST;
-        // 'form -> just take second child since the first one is `
-        result = result.cons(visit(ctx.getChild(1)), result);
-        result = result.cons(new SchemeSymbol("quasiquote"), result);
-        return result;
+        // `form -> just take second child since the first one is `
+        return new SchemeList(new SchemeSymbol("quasiquote"), visit(ctx.getChild(1)));
     }
 
     @Override
     public Object visitUnquote(R5RSParser.UnquoteContext ctx) {
-        SchemeCell result = SchemeCell.EMPTY_LIST;
-        // 'form -> just take second child since the first one is ,
-        result = result.cons(visit(ctx.getChild(1)), result);
-        result = result.cons(new SchemeSymbol("unquote"), result);
-        return result;
+        // ,form -> just take second child since the first one is ,
+        return new SchemeList(new SchemeSymbol("unquote"), visit(ctx.getChild(1)));
     }
 
     @Override
     public Object visitUnquote_splicing(R5RSParser.Unquote_splicingContext ctx) {
-        SchemeCell result = SchemeCell.EMPTY_LIST;
-        // 'form -> just take second child since the first one is ,@
-        result = result.cons(visit(ctx.getChild(1)), result);
-        result = result.cons(new SchemeSymbol("unquote-splicing"), result);
-        return result;
+        // ,@form -> just take second child since the first one is ,@
+        return new SchemeList(new SchemeSymbol("unquote-splicing"), visit(ctx.getChild(1)));
     }
 
     @Override

@@ -8,7 +8,7 @@ import com.ihorak.truffle.convertor.util.TailCallUtil;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
 import com.ihorak.truffle.node.special_form.LetExprNode;
-import com.ihorak.truffle.type.SchemeCell;
+import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
 
 import java.util.ArrayList;
@@ -18,12 +18,12 @@ public class LetConverter extends AbstractLetConverter{
 
     private LetConverter() {}
 
-    public static LetExprNode convert(SchemeCell letList, ParsingContext context) {
+    public static LetExprNode convert(SchemeList letList, ParsingContext context) {
         validate(letList);
         ParsingContext letContext = new ParsingContext(context, LexicalScope.LET, context.getFrameDescriptorBuilder());
 
-        SchemeCell localBindings = (SchemeCell) letList.get(1);
-        SchemeCell body = letList.cdr.cdr;
+        SchemeList localBindings = (SchemeList) letList.get(1);
+        SchemeList body = letList.cdr().cdr();
 
         List<WriteLocalVariableExprNode> bindingExpressions = createWriteLocalVariables(localBindings, letContext);
         List<SchemeExpression> bodyExpressions = TailCallUtil.convertBodyToSchemeExpressionsWithTCO(body, letContext);
@@ -36,12 +36,12 @@ public class LetConverter extends AbstractLetConverter{
 
     }
 
-    private static List<WriteLocalVariableExprNode> createWriteLocalVariables(SchemeCell localBindings, ParsingContext context) {
+    private static List<WriteLocalVariableExprNode> createWriteLocalVariables(SchemeList localBindings, ParsingContext context) {
         List<WriteLocalVariableExprNode> result = new ArrayList<>();
         List<SchemeExpression> expressions = new ArrayList<>();
         List<SchemeSymbol> symbols = new ArrayList<>();
         for (Object obj : localBindings) {
-            var bindingList = (SchemeCell) obj;
+            var bindingList = (SchemeList) obj;
             var name = (SchemeSymbol) bindingList.get(0);
             var dataExpr = bindingList.get(1);
             var expr = InternalRepresentationConverter.convert(dataExpr, context, false);

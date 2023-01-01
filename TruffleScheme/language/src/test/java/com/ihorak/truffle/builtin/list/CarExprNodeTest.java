@@ -54,9 +54,9 @@ public class CarExprNodeTest {
         var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
         assertEquals("" +
-                "car: arity mismatch; Expected number of arguments does not match the given number\n" +
-                "expected: 1\n" +
-                "given: 2", msg);
+                             "car: arity mismatch; Expected number of arguments does not match the given number\n" +
+                             "expected: 1\n" +
+                             "given: 2", msg);
     }
 
     @Test
@@ -66,8 +66,8 @@ public class CarExprNodeTest {
         var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
         assertEquals("car: contract violation\n" +
-                "expected: pair? or list?\n" +
-                "given: 1", msg);
+                             "expected: pair? or list?\n" +
+                             "given: 1", msg);
     }
 
     @Test
@@ -77,7 +77,23 @@ public class CarExprNodeTest {
         var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
         assertEquals("car: contract violation\n" +
-                "expected: pair? or list?\n" +
-                "given: ()", msg);
+                             "expected: pair? or list?\n" +
+                             "given: ()", msg);
+    }
+
+
+    @Test
+    public void CARE_THIS_IS_BAD() {
+        var program = """
+                (define x (list 1 2))
+                (append x (list 3 4))
+                x
+                """;
+
+        var result = context.eval("scm", program);
+
+        assertTrue(result.hasArrayElements());
+        assertEquals("(1 2)", result.toString());
+        assertEquals(2L, result.getArraySize());
     }
 }

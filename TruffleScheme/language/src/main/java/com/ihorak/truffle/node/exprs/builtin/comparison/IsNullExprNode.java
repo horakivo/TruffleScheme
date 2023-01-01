@@ -2,6 +2,7 @@ package com.ihorak.truffle.node.exprs.builtin.comparison;
 
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeCell;
+import com.ihorak.truffle.type.SchemeList;
 import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.Specialization;
 
@@ -9,8 +10,8 @@ import com.oracle.truffle.api.dsl.Specialization;
 public abstract class IsNullExprNode extends SchemeExpression {
 
     @Specialization
-    protected boolean doList(SchemeCell list) {
-        return list == SchemeCell.EMPTY_LIST;
+    protected boolean doList(SchemeList list) {
+        return list.isEmpty;
     }
 
 

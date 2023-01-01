@@ -81,4 +81,15 @@ public class AppendExprNodeTest {
                 "expecting all arguments lists\n" +
                 "given: (3 . 4)", msg);
     }
+
+
+    @Test
+    public void aaaa() {
+        var program = "(define x (list 1 2)) (append x (list 3 4)) x";
+
+
+        var result = context.eval("scm", program);
+
+        System.out.println(result);
+    }
 }

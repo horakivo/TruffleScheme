@@ -7,6 +7,7 @@ import com.ihorak.truffle.convertor.util.CreateWriteExprNode;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeCell;
+import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public class DefineConverter {
 
     private DefineConverter() {}
 
-    public static SchemeExpression convert(SchemeCell defineList, ParsingContext context) {
+    public static SchemeExpression convert(SchemeList defineList, ParsingContext context) {
         validate(defineList);
 
         var identifier = (SchemeSymbol) defineList.get(1);
@@ -48,23 +49,23 @@ public class DefineConverter {
 
 
     private static boolean isFunctionDefinition(Object defineBody) {
-        if (defineBody instanceof SchemeCell schemeCellBody) {
-            var firstElement = schemeCellBody.car;
+        if (defineBody instanceof SchemeList schemeCellBody) {
+            var firstElement = schemeCellBody.car();
             return (firstElement instanceof SchemeSymbol symbol && symbol.getValue().equals("lambda"));
         }
 
         return false;
     }
 
-    private static void validate(SchemeCell defineList) {
+    private static void validate(SchemeList defineList) {
         var identifier = defineList.get(1);
-        var body = defineList.cdr.cdr;
+        var body = defineList.cdr().cdr();
 
         if (!(identifier instanceof SchemeSymbol)) {
             throw new SchemeException("define: bad syntax. Not an identifier. Given: " + identifier, null);
         }
 
-        if (body.size() != 1) {
+        if (body.size != 1) {
             throw new SchemeException("define: multiple expressions after identifier", null);
         }
     }

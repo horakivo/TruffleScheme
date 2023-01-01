@@ -8,9 +8,7 @@ import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
 import com.oracle.truffle.api.profiles.BranchProfile;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Objects;
 
 @ExportLibrary(InteropLibrary.class)
@@ -19,7 +17,7 @@ public class SchemeCell implements Iterable<Object>, TruffleObject {
     public static final SchemeCell EMPTY_LIST = new SchemeCell(null, null);
 
     public final Object car;
-    public final SchemeCell cdr;
+    public SchemeCell cdr;
 
 
     public SchemeCell(Object car, SchemeCell cdr) {
@@ -30,11 +28,6 @@ public class SchemeCell implements Iterable<Object>, TruffleObject {
     public boolean isEmpty() {
         return this == EMPTY_LIST;
     }
-
-    public SchemeCell cons(Object car, SchemeCell cdr) {
-        return new SchemeCell(car, cdr);
-    }
-
 
     public int size() {
 

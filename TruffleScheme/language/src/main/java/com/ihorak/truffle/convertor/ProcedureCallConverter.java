@@ -3,10 +3,12 @@ package com.ihorak.truffle.convertor;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.util.BuiltinUtils;
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.callable.CallableExprNode;
 import com.ihorak.truffle.node.callable.MacroCallableExprNode;
 import com.ihorak.truffle.node.callable.TCO.TailCallCatcherNode;
 import com.ihorak.truffle.node.callable.TCO.TailCallThrowerNodeGen;
 import com.ihorak.truffle.type.SchemeCell;
+import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.frame.FrameSlotKind;
 
@@ -21,9 +23,9 @@ public class ProcedureCallConverter {
      *  --> (operand argExpr1 ... argExprN)
      * */
     //here it can be either procedure or builtin
-    public static SchemeExpression convertListToProcedureCall(SchemeCell procedureList, ParsingContext context, boolean isTailCall) {
-        var operand = procedureList.car;
-        List<SchemeExpression> arguments = getProcedureArguments(procedureList.cdr, context);
+    public static SchemeExpression convertListToProcedureCall(SchemeList procedureList, ParsingContext context, boolean isTailCall) {
+        var operand = procedureList.car();
+        List<SchemeExpression> arguments = getProcedureArguments(procedureList.cdr(), context);
 
 
         if (operand instanceof SchemeSymbol schemeSymbol) {
@@ -31,7 +33,7 @@ public class ProcedureCallConverter {
                 return BuiltinConverter.createBuiltin(schemeSymbol, arguments, context);
             } else if (context.isMacro(schemeSymbol)) {
                 List<Object> notEvaluatedArgs = new ArrayList<>();
-                procedureList.cdr.forEach(notEvaluatedArgs::add);
+                procedureList.cdr().forEach(notEvaluatedArgs::add);
                 var macroExpr = InternalRepresentationConverter.convert(schemeSymbol, context, false);
                 return new MacroCallableExprNode(macroExpr, notEvaluatedArgs, context);
             }
@@ -39,7 +41,7 @@ public class ProcedureCallConverter {
 
 
         var callable = InternalRepresentationConverter.convert(operand, context, false);
-        //     var callNode = new CallableExprNode(arguments, callable);
+             //var callNode = new CallableExprNode(arguments, callable);
 //
 
         if (isTailCall) {
@@ -51,11 +53,11 @@ public class ProcedureCallConverter {
             //return  new CallableExprNode(arguments, callable);
         }
 
-        //return callNode;
+       // return callNode;
 
     }
 
-    private static List<SchemeExpression> getProcedureArguments(SchemeCell argumentList, ParsingContext context) {
+    private static List<SchemeExpression> getProcedureArguments(SchemeList argumentList, ParsingContext context) {
         List<SchemeExpression> result = new ArrayList<>();
 
         for (Object obj : argumentList) {

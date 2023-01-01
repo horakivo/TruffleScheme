@@ -6,6 +6,7 @@ import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.special_form.*;
 import com.ihorak.truffle.type.SchemeCell;
+import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
 
 import java.util.ArrayList;
@@ -14,8 +15,8 @@ import java.util.List;
 
 public class SpecialFormConverter {
 
-    public static SchemeExpression convertListToSpecialForm(SchemeCell specialFormList, ParsingContext context) {
-        var operationSymbol = (SchemeSymbol) specialFormList.car;
+    public static SchemeExpression convertListToSpecialForm(SchemeList specialFormList, ParsingContext context) {
+        var operationSymbol = (SchemeSymbol) specialFormList.get(0);
         switch (operationSymbol.getValue()) {
             case "if":
                 return IfConverter.convert(specialFormList, context);
@@ -46,26 +47,26 @@ public class SpecialFormConverter {
     }
 
 
-    private static QuoteExprNode convertQuote(SchemeCell quoteList, ParsingContext context) {
-        if (quoteList.size() == 2) {
+    private static QuoteExprNode convertQuote(SchemeList quoteList, ParsingContext context) {
+        if (quoteList.size == 2) {
             return new QuoteExprNode(quoteList.get(1));
         } else {
-            throw new SchemeException("quote: arity mismatch\nexpected: 1\ngiven: " + (quoteList.size() - 1), null);
+            throw new SchemeException("quote: arity mismatch\nexpected: 1\ngiven: " + (quoteList.size - 1), null);
         }
     }
 
-    private static QuasiquoteExprNode convertQuasiquote(SchemeCell quasiquoteList, ParsingContext context) {
-        if (quasiquoteList.size() == 2) {
+    private static QuasiquoteExprNode convertQuasiquote(SchemeList quasiquoteList, ParsingContext context) {
+        if (quasiquoteList.size == 2) {
             var toBeEvalExpr = quasiquoteHelper(quasiquoteList.get(1), context);
             Collections.reverse(toBeEvalExpr);
             return new QuasiquoteExprNode(quasiquoteList.get(1), toBeEvalExpr, context);
         } else {
-            throw new SchemeException("quasiquote: arity mismatch\nexpected: 1\ngiven: " + (quasiquoteList.size() - 1), null);
+            throw new SchemeException("quasiquote: arity mismatch\nexpected: 1\ngiven: " + (quasiquoteList.size - 1), null);
         }
     }
 
     private static List<SchemeExpression> quasiquoteHelper(Object datum, ParsingContext context) {
-        if (datum instanceof SchemeCell list) {
+        if (datum instanceof SchemeList list) {
             return convertList(list, context);
 //            for (Object element : list) {
 //                if (element instanceof SchemeCell sublist && isUnquoteOrUnquoteSplicingList(sublist)) {
@@ -81,12 +82,12 @@ public class SpecialFormConverter {
         return new ArrayList<>();
     }
 
-    private static List<SchemeExpression> convertList(SchemeCell schemeCell, ParsingContext context) {
+    private static List<SchemeExpression> convertList(SchemeList schemeList, ParsingContext context) {
         List<SchemeExpression> result = new ArrayList<>();
-        for (Object element : schemeCell) {
-            if (element instanceof SchemeCell list) {
+        for (Object element : schemeList) {
+            if (element instanceof SchemeList list) {
                 if (isUnquoteOrUnquoteSplicingList(list)) {
-                    if (list.size() != 2) throw new SchemeException("unquote: expects exactly one expression", null);
+                    if (list.size != 2) throw new SchemeException("unquote: expects exactly one expression", null);
                     result.add(InternalRepresentationConverter.convert(list.get(1), context, false));
                 } else {
                     result.addAll(convertList(list, context));
@@ -97,8 +98,8 @@ public class SpecialFormConverter {
         return result;
     }
 
-    private static boolean isUnquoteOrUnquoteSplicingList(SchemeCell list) {
-        var firstElement = list.car;
+    private static boolean isUnquoteOrUnquoteSplicingList(SchemeList list) {
+        var firstElement = list.car();
         if (firstElement instanceof SchemeSymbol symbol) {
             return symbol.getValue().equals("unquote") || symbol.getValue().equals("unquote-splicing");
         }

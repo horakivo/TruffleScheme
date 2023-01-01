@@ -37,9 +37,9 @@ public class TailCallLoopNode extends SchemeNode implements RepeatingNode {
             Object result = dispatchNode.executeDispatch(target, arguments);
             return result;
         } catch (TailCallException e) {
-        	//TCOTarget target= SchemeTruffleLanguage.getTCOTarget(this);
-        	frame.setObject(tailCallTargetSlot, e.getCallTarget());
-        	frame.setObject(tailCallArgumentsSlot, e.getArguments());
+        	TCOTarget target = SchemeTruffleLanguage.getTCOTarget(this);
+        	frame.setObject(tailCallTargetSlot, target.target);
+        	frame.setObject(tailCallArgumentsSlot, target.arguments);
             return CONTINUE_LOOP_STATUS;
         }
     }

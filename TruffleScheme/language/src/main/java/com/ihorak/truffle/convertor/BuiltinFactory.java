@@ -8,6 +8,8 @@ import com.ihorak.truffle.node.cast.BooleanCastExprNodeGen;
 import com.ihorak.truffle.node.exprs.builtin.*;
 import com.ihorak.truffle.node.exprs.builtin.arithmetic.*;
 import com.ihorak.truffle.node.exprs.builtin.comparison.*;
+import com.ihorak.truffle.node.exprs.builtin.list.AppendExprNode1;
+import com.ihorak.truffle.node.exprs.builtin.list.AppendExprNode1NodeGen;
 import com.ihorak.truffle.node.exprs.builtin.list.ListRefExprNodeGen;
 import com.ihorak.truffle.node.exprs.shared.*;
 import com.ihorak.truffle.node.literals.BooleanLiteralNode;
@@ -139,32 +141,33 @@ public class BuiltinFactory {
     }
 
 //    //TODO this is messy, consider using binary reducibility instead of current approach. Study what is better
-//    public static SchemeExpression createAppendBuiltin(List<SchemeExpression> arguments) {
-//        if (arguments.size() == 0) return ListExprNodeFactory.create(new ConvertSchemeExprsArgumentsNode(new SchemeExpression[] {}));
-//        if (arguments.size() == 1) return AppendExprNodeGen.create(arguments.get(0), ListExprNodeFactory.create(new ConvertSchemeExprsArgumentsNode(new SchemeExpression[] {})));
-//        return reduceAppend(arguments);
-//    }
-//
-//    private static AppendExprNode reduceAppend(List<SchemeExpression> arguments) {
-//        if (arguments.size() > 2) {
-//            return AppendExprNodeGen.create(arguments.remove(0), reduceAppend(arguments));
-//        } else {
-//            return AppendExprNodeGen.create(arguments.get(0), arguments.get(1));
-//        }
-//    }
-
     public static SchemeExpression createAppendBuiltin(List<SchemeExpression> arguments) {
-        return AppendExprNodeFactory.create(new ConvertSchemeExprsArgumentsNode(arguments.toArray(SchemeExpression[]::new)));
+        if (arguments.isEmpty()) return ListExprNodeFactory.create(new ConvertSchemeExprsArgumentsNode(new SchemeExpression[] {}));
+        if (arguments.size() == 1) return AppendExprNode1NodeGen.create(arguments.get(0), ListExprNodeFactory.create(new ConvertSchemeExprsArgumentsNode(new SchemeExpression[] {})));
+        return reduceAppend(arguments);
     }
 
-    public static SchemeExpression createMapBuiltin(List<SchemeExpression> arguments) {
-        if (arguments.size() > 1) {
-            return MapExprNodeFactory.create(new ConvertSchemeExprsArgumentsNode(arguments.toArray(SchemeExpression[]::new)));
+    private static AppendExprNode1 reduceAppend(List<SchemeExpression> arguments) {
+        if (arguments.size() > 2) {
+            return AppendExprNode1NodeGen.create(arguments.remove(0), reduceAppend(arguments));
         } else {
-            throw new SchemeException(
-                    "map: arity mismatch; Expected number of argument does not match the given number \n expected: at least 2 \n given: " + (arguments.size()),
-                    null);
+            return AppendExprNode1NodeGen.create(arguments.get(0), arguments.get(1));
         }
+    }
+
+//    public static SchemeExpression createAppendBuiltin(List<SchemeExpression> arguments) {
+//        return null;
+//    }
+
+    public static SchemeExpression createMapBuiltin(List<SchemeExpression> arguments) {
+        throw new SchemeException("NOT IMPLEMENTED YET", null);
+//        if (arguments.size() > 1) {
+//            return MapExprNodeFactory.create(new ConvertSchemeExprsArgumentsNode(arguments.toArray(SchemeExpression[]::new)));
+//        } else {
+//            throw new SchemeException(
+//                    "map: arity mismatch; Expected number of argument does not match the given number \n expected: at least 2 \n given: " + (arguments.size()),
+//                    null);
+//        }
     }
 
     public static SchemeExpression createLessThenOrEqual(List<SchemeExpression> arguments) {

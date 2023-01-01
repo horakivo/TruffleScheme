@@ -7,6 +7,7 @@ import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.util.SpecialFormUtils;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeCell;
+import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
 
 public class SchemeCellConverter {
@@ -14,8 +15,8 @@ public class SchemeCellConverter {
     private SchemeCellConverter() {}
 
 
-    public static SchemeExpression convert(SchemeCell list, ParsingContext context, boolean isTailCall) {
-        var firstElement = list.car;
+    public static SchemeExpression convert(SchemeList list, ParsingContext context, boolean isTailCall) {
+        var firstElement = list.get(0);
 
         if (isSpecialForm(firstElement)) {
             return SpecialFormConverter.convertListToSpecialForm(list, context);

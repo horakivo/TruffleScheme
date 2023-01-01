@@ -38,9 +38,21 @@
 
 
 
+(random-list 500000)
+(random-list 500000)
+(random-list 500000)
+(random-list 500000)
+(random-list 500000)
+(random-list 500000)
+(random-list 500000)
+(random-list 500000)
+(random-list 500000)
+(random-list 500000)
+
+
 (define start (current-milliseconds))
 
-(quicksort1 (random-list 500000))
+(random-list 500000)
 
 (define end (current-milliseconds))
 (- end start)
