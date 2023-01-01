@@ -140,18 +140,18 @@ public abstract class CallableExprNode extends SchemeExpression {
 
     private Object call(CallTarget callTarget, Object[] arguments, VirtualFrame frame) {
 
-        if (this.isTailRecursive) {
-            throw new TailCallException(callTarget, arguments);
-        }
-
-        while (true) {
-            try {
-                return dispatchNode.executeDispatch(callTarget, arguments);
-            } catch (TailCallException tailCallException) {
-                callTarget = tailCallException.getCallTarget();
-                arguments = tailCallException.getArguments();
-            }
-        }
-       //return dispatchNode.executeDispatch(callTarget, arguments);
+//        if (this.isTailRecursive) {
+//            throw new TailCallException(callTarget, arguments);
+//        }
+//
+//        while (true) {
+//            try {
+//                return dispatchNode.executeDispatch(callTarget, arguments);
+//            } catch (TailCallException tailCallException) {
+//                callTarget = tailCallException.getCallTarget();
+//                arguments = tailCallException.getArguments();
+//            }
+//        }
+       return dispatchNode.executeDispatch(callTarget, arguments);
     }
 }
