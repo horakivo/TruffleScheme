@@ -10,12 +10,6 @@ import java.util.List;
 
 public abstract class SchemeExpression extends SchemeNode {
 
-    @CompilationFinal
-    public boolean isTailRecursive = false;
-
-    @CompilationFinal
-    public boolean isSelfTailRecursive = false;
-
     /**
      * The execute method when no specialization is possible. This is the most general case,
      * therefore it must be provided by all subclasses.
@@ -48,17 +42,5 @@ public abstract class SchemeExpression extends SchemeNode {
 
     public SchemeMacro executeMacro(VirtualFrame virtualFrame) throws UnexpectedResultException {
         return SchemeTypesGen.expectSchemeMacro(executeGeneric(virtualFrame));
-    }
-
-    public void setTailRecursiveAsTrue() {
-        this.isTailRecursive = true;
-    }
-
-//    public void setSelfTailRecursive(List<SchemeSymbol> currentlyDefiningProcedures) {
-//        this.isSelfTailRecursive = false;
-//    }
-
-    public boolean isTailRecursive() {
-        return isTailRecursive;
     }
 }

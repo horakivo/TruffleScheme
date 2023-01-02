@@ -10,9 +10,9 @@ import com.oracle.truffle.api.frame.VirtualFrame;
 public class LambdaExprNode extends SchemeExpression {
 
 
-    private CallTarget callTarget;
-    private int amountOfArguments;
-    private boolean hasOptionalArgs;
+    private final CallTarget callTarget;
+    private final int amountOfArguments;
+    private final boolean hasOptionalArgs;
 
     public LambdaExprNode(CallTarget callTarget, int amountOfArguments, boolean hasOptionalArgs) {
         this.callTarget = callTarget;

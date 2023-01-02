@@ -30,18 +30,4 @@ public class IfExprNode extends SchemeExpression {
             return UndefinedValue.SINGLETON;
         }
     }
-
-    @Override
-    public void setTailRecursiveAsTrue() {
-        super.setTailRecursiveAsTrue();
-        thenExpr.setTailRecursiveAsTrue();
-    }
-
-//    @Override
-//    public void setSelfTailRecursive(final List<SchemeSymbol> currentlyDefiningProcedures) {
-//        thenExpr.setSelfTailRecursive(currentlyDefiningProcedures);
-//        if (elseExpr != null) {
-//            elseExpr.setSelfTailRecursive(currentlyDefiningProcedures);
-//        }
-//    }
 }

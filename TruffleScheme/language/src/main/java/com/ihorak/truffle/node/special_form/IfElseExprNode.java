@@ -29,11 +29,4 @@ public class IfElseExprNode extends SchemeExpression {
         }
     }
 
-
-    @Override
-    public void setTailRecursiveAsTrue() {
-        super.setTailRecursiveAsTrue();
-        thenExpr.setTailRecursiveAsTrue();
-        elseExpr.setTailRecursiveAsTrue();
-    }
 }
