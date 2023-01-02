@@ -46,8 +46,8 @@ public class LambdaConverter {
         int argumentsIndex = lambdaContext.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
         var frameDescriptor = lambdaContext.buildAndGetFrameDescriptor();
         var name = context.getFunctionDefinitionName() == null ? new SchemeSymbol("anonymous_procedure") : context.getFunctionDefinitionName();
-        //var rootNode = new SelfTailProcedureRootNode(name, context.getLanguage(), frameDescriptor, allExpr, argumentsIndex);
-        var rootNode = new ProcedureRootNode(name, context.getLanguage(), frameDescriptor, allExpr);
+        var rootNode = new SelfTailProcedureRootNode(name, context.getLanguage(), frameDescriptor, allExpr, argumentsIndex);
+        //var rootNode = new ProcedureRootNode(name, context.getLanguage(), frameDescriptor, allExpr);
         var hasOptionalArgs = params instanceof SchemePair;
         return new LambdaExprNode(rootNode.getCallTarget(), lambdaContext.getNumberOfLambdaParameters(), hasOptionalArgs);
     }
