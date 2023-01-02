@@ -2,15 +2,22 @@ package com.ihorak.truffle.convertor.SpecialForms;
 
 import com.ihorak.truffle.convertor.context.LexicalScope;
 import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.convertor.util.CreateWriteExprNode;
 import com.ihorak.truffle.convertor.util.TailCallUtil;
+import com.ihorak.truffle.exceptions.InterpreterException;
 import com.ihorak.truffle.exceptions.SchemeException;
+import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.callable.ProcedureRootNode;
+import com.ihorak.truffle.node.callable.SelfTailProcedureRootNode;
+import com.ihorak.truffle.node.scope.ReadLocalProcedureArgExprNode;
 import com.ihorak.truffle.node.special_form.LambdaExprNode;
-import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemePair;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.frame.FrameSlotKind;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class LambdaConverter {
 
@@ -22,17 +29,25 @@ public class LambdaConverter {
     public static LambdaExprNode convert(SchemeList lambdaList, ParsingContext context) {
         validate(lambdaList);
         ParsingContext lambdaContext = new ParsingContext(context, LexicalScope.LAMBDA);
+//        if (context.isFunctionDefinition()) {
+//            lambdaContext.setFunctionDefinitionName(context.getFunctionDefinitionName());
+//        }
 
         var params = lambdaList.cdr().car();
         var expressions = lambdaList.cdr().cdr();
 
-        updateParsingContext(params, lambdaContext);
+        var writeLocalVariableExpr = createLocalVariableExpressions(params, lambdaContext);
+        //updateParsingContext(params, lambdaContext);
         var bodyExpressions = TailCallUtil.convertBodyToSchemeExpressionsWithTCO(expressions, lambdaContext);
+        List<SchemeExpression> allExpr = new ArrayList<>();
+        allExpr.addAll(writeLocalVariableExpr);
+        allExpr.addAll(bodyExpressions);
 
         int argumentsIndex = lambdaContext.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
         var frameDescriptor = lambdaContext.buildAndGetFrameDescriptor();
         var name = context.getFunctionDefinitionName() == null ? new SchemeSymbol("anonymous_procedure") : context.getFunctionDefinitionName();
-        var rootNode = new ProcedureRootNode(name, context.getLanguage(), frameDescriptor, bodyExpressions, argumentsIndex);
+        //var rootNode = new SelfTailProcedureRootNode(name, context.getLanguage(), frameDescriptor, allExpr, argumentsIndex);
+        var rootNode = new ProcedureRootNode(name, context.getLanguage(), frameDescriptor, allExpr);
         var hasOptionalArgs = params instanceof SchemePair;
         return new LambdaExprNode(rootNode.getCallTarget(), lambdaContext.getNumberOfLambdaParameters(), hasOptionalArgs);
     }
@@ -53,6 +68,40 @@ public class LambdaConverter {
         }
 
     }
+
+    private static List<SchemeExpression> createLocalVariableExpressions(Object params, ParsingContext context) {
+        if (params instanceof SchemeList list) {
+            return createLocalVariableForSchemeList(list, context);
+        } else if (params instanceof SchemePair pair) {
+            return createLocalVariableForSchemePair(pair, context);
+        }
+        throw InterpreterException.shouldNotReachHere();
+    }
+
+    private static List<SchemeExpression> createLocalVariableForSchemeList(SchemeList list, ParsingContext context) {
+        List<SchemeExpression> result = new ArrayList<>();
+        for (int i = 0; i < list.size; i++) {
+            var symbol = (SchemeSymbol) list.get(i);
+            result.add(CreateWriteExprNode.createWriteLocalVariableExprNode(symbol, new ReadLocalProcedureArgExprNode(i), context));
+        }
+
+        return result;
+    }
+
+    private static List<SchemeExpression> createLocalVariableForSchemePair(SchemePair pair, ParsingContext context) {
+        List<SchemeExpression> result = new ArrayList<>();
+        var currentPair = pair;
+        var index = 0;
+        while (currentPair.second() instanceof SchemePair nextPair) {
+            var symbol = (SchemeSymbol) currentPair.first();
+            result.add(CreateWriteExprNode.createWriteLocalVariableExprNode(symbol, new ReadLocalProcedureArgExprNode(index), context));
+            currentPair = nextPair;
+            index++;
+        }
+
+        return result;
+    }
+
 
     // (lambda (arg1 ... argN) expr1 ..exprN)
     private static void validate(SchemeList lambdaList) {
@@ -84,4 +133,5 @@ public class LambdaConverter {
             throw new SchemeException("lambda: no expression in body", null);
         }
     }
+
 }

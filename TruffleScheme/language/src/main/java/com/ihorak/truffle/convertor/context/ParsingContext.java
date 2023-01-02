@@ -15,6 +15,7 @@ public class ParsingContext {
     private final Map<SchemeSymbol, Integer> lambdaParameterIndex = new HashMap<>();
     private final Map<SchemeSymbol, LocalVariableInfo> localVariableIndex = new HashMap<>();
 
+    private boolean isFunctionDefinition = false;
     private SchemeSymbol functionDefinitionName;
 
     private final ParsingContext parent;
@@ -155,5 +156,13 @@ public class ParsingContext {
 
     public void setFunctionDefinitionName(final SchemeSymbol functionDefinitionName) {
         this.functionDefinitionName = functionDefinitionName;
+    }
+
+    public void setFunctionDefinition(final boolean functionDefinition) {
+        isFunctionDefinition = functionDefinition;
+    }
+
+    public boolean isFunctionDefinition() {
+        return isFunctionDefinition;
     }
 }

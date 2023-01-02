@@ -505,7 +505,7 @@ public class ProgramTest {
                     (generate len 101 17 3 '())))
                                 
                                 
-                                
+                (generate 10 4 3 2 '())
                 (random-list 500000)
                 (random-list 500000)
                 (random-list 500000)
@@ -564,6 +564,92 @@ public class ProgramTest {
                                 
                 (define end (current-milliseconds))
                 (- end start)
+                """;
+
+
+        var result = context.eval("scm", program).asLong();
+        System.out.println(result);
+    }
+
+
+    @Test
+    public void randomListTest3ProblemQuestionMark() {
+        var program = """   
+                 (define return-given-value
+                  (lambda (x)
+                    x))
+                            
+                 (define generate
+                   (lambda (len p q s result)
+                     (if (= len 0)
+                         (return-given-value result)
+                         (generate (- len 1) p q (modulo (* s s) (* p q)) (cons (modulo (* s s) (* p q)) result)))))
+                                
+                                
+                (define random-list
+                  (lambda (len)
+                    (generate len 101 17 3 '())))
+                                
+                                
+                (generate 10 4 3 2 '())
+                (random-list 500000)
+                (random-list 500000)
+                (random-list 500000)
+                (random-list 500000)
+                (random-list 500000)
+                (random-list 500000)
+                                
+                                
+                (define start (current-milliseconds))
+                                
+                (random-list 500000)
+                (random-list 500000)
+                (random-list 500000)
+                (random-list 500000)
+                (random-list 500000)
+                (random-list 500000)
+                (random-list 500000)
+                (random-list 500000)
+                (random-list 500000)
+                (random-list 500000)
+                                
+                (define end (current-milliseconds))
+                (- end start)
+                """;
+
+
+        var result = context.eval("scm", program).asLong();
+        System.out.println(result / 10D);
+    }
+
+    @Test
+    public void sadasd() {
+        var program = """   
+                                                         
+                (define random-list
+                  (lambda (len)
+                    (define generate
+                      (lambda (len p q s result)
+                        (if (= len 0)
+                            result
+                            ((lambda (value)
+                               (generate (- len 1) p q value (cons value result)))
+                             (modulo (* s s) (* p q))))))
+                      (generate len 101 17 3 '())))
+                                
+                                
+                                
+     
+                                
+                                
+                (define start (current-milliseconds))
+                                
+                (random-list 500000)
+                                
+                (define end (current-milliseconds))
+                (- end start)
+                                
+                                
                 """;
 
 

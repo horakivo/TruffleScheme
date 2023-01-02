@@ -6,7 +6,6 @@ import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.util.CreateWriteExprNode;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
 
@@ -20,7 +19,10 @@ public class DefineConverter {
         validate(defineList);
 
         var identifier = (SchemeSymbol) defineList.get(1);
+        var defineBody = defineList.get(2);
         var isNonGlobalEnv = context.getLexicalScope() != LexicalScope.GLOBAL;
+        var isFunctionDefinition = isFunctionDefinition(defineBody);
+
 
         if (isNonGlobalEnv) {
             context.findOrAddLocalSymbol(identifier);
@@ -28,13 +30,22 @@ public class DefineConverter {
         }
 
 
-        var defineBody = defineList.get(2);
-        if (isFunctionDefinition(defineBody)) {
+//        var previousFunctionDefinition = context.isFunctionDefinition();
+//        var previousFunctionDefinitionName = context.getFunctionDefinitionName();
+
+        if (isFunctionDefinition) {
+           // context.setFunctionDefinition(true);
             context.setFunctionDefinitionName(identifier);
         }
         var bodyExpr = InternalRepresentationConverter.convert(defineBody, context, false);
 
         context.setFunctionDefinitionName(null);
+
+//        if (isFunctionDefinition) {
+//            context.setFunctionDefinition(previousFunctionDefinition);
+//            context.setFunctionDefinitionName(previousFunctionDefinitionName);
+//
+//        }
 
         if (isNonGlobalEnv) {
             context.makeLocalVariablesNonNullable(List.of(identifier));
