@@ -18,6 +18,14 @@
 (random-list 500000)
 (random-list 500000)
 (random-list 500000)
+(random-list 500000)
+(random-list 500000)
+(random-list 500000)
+(random-list 500000)
+(random-list 500000)
+(random-list 500000)
+(random-list 500000)
+(random-list 500000)
 
 (define start (current-milliseconds))
 
