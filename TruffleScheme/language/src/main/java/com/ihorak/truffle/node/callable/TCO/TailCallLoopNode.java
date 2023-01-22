@@ -5,6 +5,7 @@ import com.ihorak.truffle.exceptions.TailCallException;
 import com.ihorak.truffle.node.SchemeNode;
 import com.ihorak.truffle.node.callable.DispatchNode;
 import com.ihorak.truffle.node.callable.DispatchNodeGen;
+import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.frame.VirtualFrame;
@@ -17,10 +18,18 @@ public class TailCallLoopNode extends SchemeNode implements RepeatingNode {
 
     private final int tailCallArgumentsSlot;
     private final int tailCallTargetSlot;
+    private final SchemeSymbol name;
 
-    public TailCallLoopNode(int tailCallArgumentsSlot, int tailCallTargetSlot) {
+    public TailCallLoopNode(int tailCallArgumentsSlot, int tailCallTargetSlot, SchemeSymbol name) {
         this.tailCallArgumentsSlot = tailCallArgumentsSlot;
         this.tailCallTargetSlot = tailCallTargetSlot;
+        this.name = name;
+    }
+
+
+    @Override
+    public String toString() {
+        return name.toString();
     }
 
     @Override

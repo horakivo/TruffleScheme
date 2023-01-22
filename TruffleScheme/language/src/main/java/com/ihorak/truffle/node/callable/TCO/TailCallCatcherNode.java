@@ -7,6 +7,7 @@ import com.ihorak.truffle.SchemeTruffleLanguage;
 import com.ihorak.truffle.SchemeTruffleLanguage.TCOTarget;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.callable.CallableExprNode;
+import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.frame.VirtualFrame;
@@ -22,15 +23,17 @@ public class TailCallCatcherNode extends CallableExprNode {
 //    @Child private DispatchNode dispatchNode = DispatchNodeGen.create();
 //
     @Child private LoopNode loopNode;
-    
+
+    private final SchemeSymbol name;
     private final int tailCallArgumentsSlot;
     private final int tailCallTargetSlot;
 
-    public TailCallCatcherNode(List<SchemeExpression> arguments, SchemeExpression callable, int tailCallArgumentsSlot, int tailCallTargetSlot) {
+    public TailCallCatcherNode(List<SchemeExpression> arguments, SchemeExpression callable, int tailCallArgumentsSlot, int tailCallTargetSlot, SchemeSymbol name) {
         super(arguments, callable);
         this.tailCallArgumentsSlot = tailCallArgumentsSlot;
         this.tailCallTargetSlot = tailCallTargetSlot;
-        this.loopNode = Truffle.getRuntime().createLoopNode(new TailCallLoopNode(tailCallArgumentsSlot, tailCallTargetSlot));
+        this.name  = name;
+        this.loopNode = Truffle.getRuntime().createLoopNode(new TailCallLoopNode(tailCallArgumentsSlot, tailCallTargetSlot, name));
     }
 
 //    @Override

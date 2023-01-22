@@ -39,7 +39,7 @@ public class ProcedureCallConverter {
             }
         }
 
-
+        var name = operand instanceof SchemeSymbol name1? name1 : new SchemeSymbol(operand.toString());
         var callable = InternalRepresentationConverter.convert(operand, context, false);
              //var callNode = new CallableExprNode(arguments, callable);
 //
@@ -49,7 +49,7 @@ public class ProcedureCallConverter {
         } else {
             int tailCallArgumentsSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
             int tailCallTargetSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
-            return new TailCallCatcherNode(arguments, callable, tailCallArgumentsSlot, tailCallTargetSlot);
+            return new TailCallCatcherNode(arguments, callable, tailCallArgumentsSlot, tailCallTargetSlot, name);
             //return  new CallableExprNode(arguments, callable);
         }
 
