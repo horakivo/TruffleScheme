@@ -27,7 +27,7 @@ public class SpecialFormConverter {
             case "quote":
                 return convertQuote(specialFormList, context);
             case "quasiquote":
-                return convertQuasiquote(specialFormList, context);
+                return QuasiquioteConverter.convert(specialFormList, context);
             case "let":
                 return LetConverter.convert(specialFormList, context);
 //            case "let*":
@@ -53,58 +53,6 @@ public class SpecialFormConverter {
         } else {
             throw new SchemeException("quote: arity mismatch\nexpected: 1\ngiven: " + (quoteList.size - 1), null);
         }
-    }
-
-    private static QuasiquoteExprNode convertQuasiquote(SchemeList quasiquoteList, ParsingContext context) {
-        if (quasiquoteList.size == 2) {
-            var toBeEvalExpr = quasiquoteHelper(quasiquoteList.get(1), context);
-            Collections.reverse(toBeEvalExpr);
-            return new QuasiquoteExprNode(quasiquoteList.get(1), toBeEvalExpr, context);
-        } else {
-            throw new SchemeException("quasiquote: arity mismatch\nexpected: 1\ngiven: " + (quasiquoteList.size - 1), null);
-        }
-    }
-
-    private static List<SchemeExpression> quasiquoteHelper(Object datum, ParsingContext context) {
-        if (datum instanceof SchemeList list) {
-            return convertList(list, context);
-//            for (Object element : list) {
-//                if (element instanceof SchemeCell sublist && isUnquoteOrUnquoteSplicingList(sublist)) {
-//                    if (sublist.size() == 2) {
-//                        result.add(ListToExpressionConverter.convert(sublist.get(1), context));
-//                    } else {
-//                        throw new SchemeException("unquote: expects exactly one expression", null);
-//                    }
-//                }
-//            }
-        }
-
-        return new ArrayList<>();
-    }
-
-    private static List<SchemeExpression> convertList(SchemeList schemeList, ParsingContext context) {
-        List<SchemeExpression> result = new ArrayList<>();
-        for (Object element : schemeList) {
-            if (element instanceof SchemeList list) {
-                if (isUnquoteOrUnquoteSplicingList(list)) {
-                    if (list.size != 2) throw new SchemeException("unquote: expects exactly one expression", null);
-                    result.add(InternalRepresentationConverter.convert(list.get(1), context, false));
-                } else {
-                    result.addAll(convertList(list, context));
-                }
-            }
-        }
-
-        return result;
-    }
-
-    private static boolean isUnquoteOrUnquoteSplicingList(SchemeList list) {
-        var firstElement = list.car();
-        if (firstElement instanceof SchemeSymbol symbol) {
-            return symbol.getValue().equals("unquote") || symbol.getValue().equals("unquote-splicing");
-        }
-
-        return false;
     }
 
 //    private static SchemeExpression convertLetStar(SchemeCell letStarList, ParsingContext context) {

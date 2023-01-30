@@ -29,6 +29,16 @@ public class DefineMacroExprNodeTest {
     }
 
     @Test
+    public void aaa() {
+        var program = "(define-macro macro (lambda (test first) `(if ,test ,first #f)))";
+
+        var result = context.eval("scm", program);
+
+        assertEquals(true, result.isNull());
+        assertEquals("undefined", result.toString());
+    }
+
+    @Test
     public void givenDefineMacro_whenCalled_thenCorrectResultShouldBeReturned() {
         var program = "(define-macro macro (lambda (test first) `(if ,test ,first #f))) (macro (= 10 5) 5)";
 

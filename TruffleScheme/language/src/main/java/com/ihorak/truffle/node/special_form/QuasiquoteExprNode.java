@@ -1,58 +1,85 @@
 package com.ihorak.truffle.node.special_form;
 
-import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeCell;
-import com.ihorak.truffle.type.SchemeSymbol;
+import com.ihorak.truffle.type.SchemeList;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.nodes.ExplodeLoop;
 
 import java.util.List;
 
 public class QuasiquoteExprNode extends SchemeExpression {
 
     private final Object datum;
-    private final ParsingContext parsingContext;
-
     @Children
-    private final SchemeExpression[] toBeEvaluated;
+    private final SchemeExpression[] unquoteToEval;
+    @Children
+    private final SchemeExpression[] unquoteSplicingToEval;
 
-    public QuasiquoteExprNode(Object datum, List<SchemeExpression> toBeEvaluated, ParsingContext parsingContext) {
+    private final SchemeCell[] unquoteToInsert;
+    private final SchemeCell[] unquoteSplicingToInsert;
+
+    public QuasiquoteExprNode(Object datum, List<SchemeExpression> unquoteToEval, List<SchemeCell> unquoteToInsert, List<SchemeExpression> unquoteSplicingToEval, List<SchemeCell> unquoteSplicingToInsert) {
         this.datum = datum;
-        this.parsingContext = parsingContext;
-        this.toBeEvaluated = toBeEvaluated.toArray(SchemeExpression[]::new);
+        this.unquoteToEval = unquoteToEval.toArray(SchemeExpression[]::new);
+        this.unquoteToInsert = unquoteToInsert.toArray(SchemeCell[]::new);
+        this.unquoteSplicingToEval = unquoteSplicingToEval.toArray(SchemeExpression[]::new);
+        this.unquoteSplicingToInsert = unquoteSplicingToInsert.toArray(SchemeCell[]::new);
     }
+
 
     @Override
-    public Object executeGeneric(final VirtualFrame virtualFrame) {
-        if (toBeEvaluated.length == 0) return datum;
-
-        var result = SchemeCell.EMPTY_LIST;
-        int index = 0;
-        if (datum instanceof SchemeCell list) {
-            for (int i = list.size() - 1; i >= 0; i--) {
-                var obj = list.get(i);
-                if (shouldBeReplaced(obj)) {
-                    result = new SchemeCell(toBeEvaluated[index].executeGeneric(virtualFrame), result);
-                    index++;
-                } else {
-                    result = new SchemeCell(obj, result);
-                }
-            }
+    @ExplodeLoop
+    public Object executeGeneric(final VirtualFrame frame) {
+        for (int i = 0; i < unquoteToEval.length; i++) {
+            var test = unquoteToEval[i].executeGeneric(frame);
+            unquoteToInsert[i].car = test;
         }
 
-        return result;
+        for (int i = 0; i < unquoteSplicingToEval.length; i++) {
+            var test = (SchemeList) unquoteSplicingToEval[i].executeGeneric(frame);
+            //todo validate whether it returns list
+            var previousCell = unquoteSplicingToInsert[i + 1];
+            var cellTeReplace = unquoteSplicingToInsert[i];
+            previousCell.cdr = test.list;
+            test.bindingCell.cdr = cellTeReplace.cdr;
 
-    }
-
-    private boolean shouldBeReplaced(Object obj) {
-        if (obj instanceof SchemeCell list) {
-            var firstElement = list.car;
-            return firstElement instanceof SchemeSymbol symbol && (symbol.getValue().equals("unquote") || symbol.getValue()
-                                                                                                                .equals("unquote-splicing"));
         }
 
-        return false;
+        return datum;
     }
+
+//    @Override
+//    public Object executeGeneric(final VirtualFrame virtualFrame) {
+//        if (toBeEvaluated.length == 0) return datum;
+//
+//        var result = SchemeCell.EMPTY_LIST;
+//        int index = 0;
+//        if (datum instanceof SchemeCell list) {
+//            for (int i = list.size() - 1; i >= 0; i--) {
+//                var obj = list.get(i);
+//                if (shouldBeReplaced(obj)) {
+//                    result = new SchemeCell(toBeEvaluated[index].executeGeneric(virtualFrame), result);
+//                    index++;
+//                } else {
+//                    result = new SchemeCell(obj, result);
+//                }
+//            }
+//        }
+//
+//        return result;
+//
+//    }
+
+//    private boolean shouldBeReplaced(Object obj) {
+//        if (obj instanceof SchemeCell list) {
+//            var firstElement = list.car;
+//            return firstElement instanceof SchemeSymbol symbol && (symbol.getValue().equals("unquote") || symbol.getValue()
+//                                                                                                                .equals("unquote-splicing"));
+//        }
+//
+//        return false;
+//    }
 
 //    @Override
 //    public Object executeGeneric(VirtualFrame virtualFrame) {

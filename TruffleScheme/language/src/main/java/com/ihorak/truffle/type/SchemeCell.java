@@ -16,7 +16,7 @@ public class SchemeCell implements Iterable<Object>, TruffleObject {
 
     public static final SchemeCell EMPTY_LIST = new SchemeCell(null, null);
 
-    public final Object car;
+    public Object car;
     public SchemeCell cdr;
 
 

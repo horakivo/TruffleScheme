@@ -121,6 +121,19 @@ public class QuasiquoteExprNodeTest {
     }
 
     @Test
+    public void givenUnquote_whenExecuted_thenUnquoteIsCorrectlyEvaluated() {
+        var program = "`(list 1 ,(+ 1 2) 3)";
+
+        var result = context.eval("scm", program);
+
+        assertTrue(result.hasArrayElements());
+        assertEquals(4L, result.getArraySize());
+        assertEquals(1L, result.getArrayElement(0).asLong());
+        assertEquals(3L, result.getArrayElement(1).asLong());
+        assertEquals(3L, result.getArrayElement(2).asLong());
+    }
+
+    @Test
     public void givenNestedUnquoting_whenExecuted_thenShouldThrowSchemeException() {
         var program = "`(list 1 ,(list 1 2) ,@(list ,(+ 1 2) 4) 3)";
 
