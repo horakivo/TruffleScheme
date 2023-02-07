@@ -141,6 +141,4 @@ public class BenchmarkTests {
         assertEquals(1531L, result.getArrayElement(8).asLong());
         assertEquals(1684L, result.getArrayElement(9).asLong());
     }
-
-
 }

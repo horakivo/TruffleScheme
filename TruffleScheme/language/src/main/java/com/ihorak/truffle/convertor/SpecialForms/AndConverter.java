@@ -17,7 +17,7 @@ public class AndConverter {
     private AndConverter() {}
 
     public static SchemeExpression convert(SchemeList andList, ParsingContext context) {
-        var schemeExprs = TailCallUtil.convertBodyToSchemeExpressionsWithTCO(andList.cdr(), context);
+        var schemeExprs = TailCallUtil.convertExpressionsToSchemeExpressionsWithTCO(andList.cdr(), context);
         if (schemeExprs.isEmpty()) return new BooleanLiteralNode(true);
         if (schemeExprs.size() == 1) return OneArgumentExprNodeGen.create(schemeExprs.get(0));
         return reduceAnd(schemeExprs);

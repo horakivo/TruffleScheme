@@ -16,7 +16,7 @@ public class OrConverter {
     private OrConverter() {}
 
     public static SchemeExpression convert(SchemeList orList, ParsingContext context) {
-        var schemeExprs = TailCallUtil.convertBodyToSchemeExpressionsWithTCO(orList.cdr(), context);
+        var schemeExprs = TailCallUtil.convertExpressionsToSchemeExpressionsWithTCO(orList.cdr(), context);
         if (schemeExprs.isEmpty()) return new BooleanLiteralNode(false);
         if (schemeExprs.size() == 1) return OneArgumentExprNodeGen.create(schemeExprs.get(0));
         return reduceOr(schemeExprs);

@@ -117,7 +117,7 @@ public class QuasiquoteExprNodeTest {
 
         var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
-        assertEquals("define: not allowed in an expression context in: ('define 'x 2)", msg);
+        assertEquals("define: not allowed in an expression context", msg);
     }
 
     @Test
@@ -128,9 +128,10 @@ public class QuasiquoteExprNodeTest {
 
         assertTrue(result.hasArrayElements());
         assertEquals(4L, result.getArraySize());
-        assertEquals(1L, result.getArrayElement(0).asLong());
-        assertEquals(3L, result.getArrayElement(1).asLong());
+        assertEquals("list", result.getArrayElement(0).asString());
+        assertEquals(1L, result.getArrayElement(1).asLong());
         assertEquals(3L, result.getArrayElement(2).asLong());
+        assertEquals(3L, result.getArrayElement(3).asLong());
     }
 
     @Test

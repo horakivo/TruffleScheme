@@ -44,7 +44,7 @@ public class LetConverter extends AbstractLetConverter{
             var bindingList = (SchemeList) obj;
             var name = (SchemeSymbol) bindingList.get(0);
             var dataExpr = bindingList.get(1);
-            var expr = InternalRepresentationConverter.convert(dataExpr, context, false);
+            var expr = InternalRepresentationConverter.convert(dataExpr, context, false, false);
             expressions.add(expr);
             symbols.add(name);
         }

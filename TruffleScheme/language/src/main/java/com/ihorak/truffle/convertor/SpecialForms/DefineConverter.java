@@ -15,8 +15,8 @@ public class DefineConverter {
 
     private DefineConverter() {}
 
-    public static SchemeExpression convert(SchemeList defineList, ParsingContext context) {
-        validate(defineList);
+    public static SchemeExpression convert(SchemeList defineList, ParsingContext context, boolean isDefinitionAllowed) {
+        validate(defineList, isDefinitionAllowed);
 
         var identifier = (SchemeSymbol) defineList.get(1);
         var defineBody = defineList.get(2);
@@ -37,7 +37,7 @@ public class DefineConverter {
            // context.setFunctionDefinition(true);
             context.setFunctionDefinitionName(identifier);
         }
-        var bodyExpr = InternalRepresentationConverter.convert(defineBody, context, false);
+        var bodyExpr = InternalRepresentationConverter.convert(defineBody, context, false, false);
 
         context.setFunctionDefinitionName(null);
 
@@ -68,7 +68,8 @@ public class DefineConverter {
         return false;
     }
 
-    private static void validate(SchemeList defineList) {
+    private static void validate(SchemeList defineList, boolean isDefinitionAllowed) {
+        if (!isDefinitionAllowed) throw new SchemeException("define: not allowed in an expression context", null);
         var identifier = defineList.get(1);
         var body = defineList.cdr().cdr();
 

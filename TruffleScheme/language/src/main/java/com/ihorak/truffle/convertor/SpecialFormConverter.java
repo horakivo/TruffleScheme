@@ -15,35 +15,23 @@ import java.util.List;
 
 public class SpecialFormConverter {
 
-    public static SchemeExpression convertListToSpecialForm(SchemeList specialFormList, ParsingContext context) {
+    public static SchemeExpression convertListToSpecialForm(SchemeList specialFormList, ParsingContext context, boolean isDefinitionAllowed) {
         var operationSymbol = (SchemeSymbol) specialFormList.get(0);
-        switch (operationSymbol.getValue()) {
-            case "if":
-                return IfConverter.convert(specialFormList, context);
-            case "define":
-                return DefineConverter.convert(specialFormList, context);
-            case "lambda":
-                return LambdaConverter.convert(specialFormList, context);
-            case "quote":
-                return convertQuote(specialFormList, context);
-            case "quasiquote":
-                return QuasiquioteConverter.convert(specialFormList, context);
-            case "let":
-                return LetConverter.convert(specialFormList, context);
+        return switch (operationSymbol.getValue()) {
+            case "if" -> IfConverter.convert(specialFormList, context);
+            case "define" -> DefineConverter.convert(specialFormList, context, isDefinitionAllowed);
+            case "lambda" -> LambdaConverter.convert(specialFormList, context);
+            case "quote" -> convertQuote(specialFormList, context);
+            case "quasiquote" -> QuasiquioteConverter.convert(specialFormList, context);
+            case "let" -> LetConverter.convert(specialFormList, context);
 //            case "let*":
 //                return convertLetStar(specialFormList, context);
-            case "letrec":
-                return LetrecConverter.convert(specialFormList, context);
-            case "and":
-                return AndConverter.convert(specialFormList, context);
-            case "or":
-                return OrConverter.convert(specialFormList, context);
-            case "cond":
-                return CondConverter.convertCond(specialFormList, context);
-            default:
-                throw new IllegalArgumentException("Unknown special form");
-
-        }
+            case "letrec" -> LetrecConverter.convert(specialFormList, context);
+            case "and" -> AndConverter.convert(specialFormList, context);
+            case "or" -> OrConverter.convert(specialFormList, context);
+            case "cond" -> CondConverter.convertCond(specialFormList, context);
+            default -> throw new IllegalArgumentException("Unknown special form");
+        };
     }
 
 

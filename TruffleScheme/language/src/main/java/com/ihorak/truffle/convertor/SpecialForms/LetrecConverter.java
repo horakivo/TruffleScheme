@@ -52,7 +52,7 @@ public class LetrecConverter extends AbstractLetConverter {
         letContext.makeLocalVariablesNullable(symbols);
 
         for (int i = 0; i < symbols.size(); i++) {
-            var expression = InternalRepresentationConverter.convert(dataExpressions.get(i), letContext, false);
+            var expression = InternalRepresentationConverter.convert(dataExpressions.get(i), letContext, false, false);
             result.add(CreateWriteExprNode.createWriteLocalVariableExprNode(symbols.get(i), expression, letContext));
         }
 

@@ -4,6 +4,8 @@ import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.scope.WriteGlobalVariableExprNode;
+import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
 import com.ihorak.truffle.node.special_form.QuasiquoteExprNode;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeList;
@@ -14,13 +16,15 @@ import java.util.List;
 
 public class QuasiquioteConverter {
 
-    private QuasiquioteConverter() {}
+    private QuasiquioteConverter() {
+    }
 
 
     record QuasiquoteHolder(List<SchemeExpression> unquoteToEval,
                             List<SchemeExpression> unquoteSplicingToEval,
                             List<SchemeCell> unquoteToInsert,
-                            List<SchemeCell> unquoteSplicingToInsert) {}
+                            List<SchemeCell> unquoteSplicingToInsert) {
+    }
 
     public static QuasiquoteExprNode convert(SchemeList quasiquoteList, ParsingContext context) {
         if (quasiquoteList.size == 2) {
@@ -46,9 +50,9 @@ public class QuasiquioteConverter {
         }
 
         return new QuasiquoteHolder(new ArrayList<>(),
-                                    new ArrayList<>(),
-                                    new ArrayList<>(),
-                                    new ArrayList<>());
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>());
     }
 
 //    private static List<SchemeExpression> convertList(SchemeList schemeList, ParsingContext context) {
@@ -76,11 +80,11 @@ public class QuasiquioteConverter {
             if (element instanceof SchemeList list) {
                 if (isUnquote(list)) {
                     if (list.size != 2) throw new SchemeException("unquote: expects exactly one expression", null);
-                    quasiquoteHolderResult.unquoteToEval.add(InternalRepresentationConverter.convert(list.get(1), context, false));
+                    quasiquoteHolderResult.unquoteToEval.add(convertDataToTruffleAST(list.get(1), context));
                     quasiquoteHolderResult.unquoteToInsert.add(currentCell);
                 } else if (isUnquoteSplicing(list)) {
                     if (list.size != 2) throw new SchemeException("unquoteSplicing: expects exactly one expression", null);
-                    quasiquoteHolderResult.unquoteSplicingToEval.add(InternalRepresentationConverter.convert(list.get(1), context, false));
+                    quasiquoteHolderResult.unquoteSplicingToEval.add(convertDataToTruffleAST(list.get(1), context));
                     quasiquoteHolderResult.unquoteSplicingToInsert.add(currentCell);
                     quasiquoteHolderResult.unquoteSplicingToInsert.add(previousCell);
                 } else {
@@ -100,6 +104,11 @@ public class QuasiquioteConverter {
         return quasiquoteHolderResult;
     }
 
+
+    private static SchemeExpression convertDataToTruffleAST(Object schemeList, ParsingContext context) {
+        var dataConvertedToAST = InternalRepresentationConverter.convert(schemeList, context, false, false);
+        return dataConvertedToAST;
+    }
 
 
     private static boolean isUnquote(SchemeList list) {

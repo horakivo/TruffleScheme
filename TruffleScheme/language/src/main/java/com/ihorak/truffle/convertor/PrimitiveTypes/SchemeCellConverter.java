@@ -15,11 +15,11 @@ public class SchemeCellConverter {
     private SchemeCellConverter() {}
 
 
-    public static SchemeExpression convert(SchemeList list, ParsingContext context, boolean isTailCall) {
+    public static SchemeExpression convert(SchemeList list, ParsingContext context, boolean isTailCall, boolean isDefinitionAllowed) {
         var firstElement = list.get(0);
 
         if (isSpecialForm(firstElement)) {
-            return SpecialFormConverter.convertListToSpecialForm(list, context);
+            return SpecialFormConverter.convertListToSpecialForm(list, context, isDefinitionAllowed);
         } else if (isMacro(firstElement)) {
             return SchemeMacroConverter.convertMarco(list, context);
         } else {

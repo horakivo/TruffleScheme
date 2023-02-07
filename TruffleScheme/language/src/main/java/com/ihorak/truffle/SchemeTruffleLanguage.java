@@ -41,7 +41,7 @@ public class SchemeTruffleLanguage extends TruffleLanguage<SchemeLanguageContext
         var internalRepresentation = Parser.parse(charStream);
         List<SchemeExpression> result = new ArrayList<>();
         for (Object obj : internalRepresentation) {
-            result.add(InternalRepresentationConverter.convert(obj, globalContext, false));
+            result.add(InternalRepresentationConverter.convert(obj, globalContext, false, true));
         }
 
         return result;
