@@ -237,6 +237,22 @@ public class ProgramTest {
 
     }
 
+    //TODO THIS_IS_WRONG
+    @Test
+    public void asdasassada() {
+        var program = """
+                (define countdown
+                  (lambda (n)
+                    n))
+                    
+                (if 3 (countdown 10) 69)
+                """;
+
+        var result = context.eval("scm", program);
+        System.out.println(result);
+
+    }
+
     @Test
     public void primes() {
         var program = "\n" +

@@ -16,7 +16,8 @@ public abstract class TailCallThrowerNode extends SchemeExpression {
     @Children
     private final SchemeExpression[] arguments;
 
-    @Child @Executed
+    @Child
+    @Executed
     protected SchemeExpression callable;
 
 
@@ -27,11 +28,11 @@ public abstract class TailCallThrowerNode extends SchemeExpression {
 
     @Specialization
     protected Object doThrow(VirtualFrame frame, UserDefinedProcedure procedure) {
-        SchemeTruffleLanguage.TCOTarget target = SchemeTruffleLanguage.getTCOTarget(this);
-        target.target = procedure.getCallTarget();
-        target.arguments = getArguments(procedure, frame);
-        throw TailCallException.INSTANCE;
-        //throw new TailCallException(procedure.getCallTarget(), getArguments(procedure, frame));
+//        SchemeTruffleLanguage.TCOTarget target = SchemeTruffleLanguage.getTCOTarget(this);
+//        target.target = procedure.getCallTarget();
+//        target.arguments = getArguments(procedure, frame);
+//        throw TailCallException.INSTANCE;
+        throw new TailCallException(procedure.getCallTarget(), getArguments(procedure, frame));
     }
 
     @ExplodeLoop
