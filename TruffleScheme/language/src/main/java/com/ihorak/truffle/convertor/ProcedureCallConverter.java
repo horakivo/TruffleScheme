@@ -2,6 +2,7 @@ package com.ihorak.truffle.convertor;
 
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.util.BuiltinUtils;
+import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.callable.CallableExprNode;
 import com.ihorak.truffle.node.callable.MacroCallableExprNode;
@@ -17,7 +18,8 @@ import java.util.List;
 
 public class ProcedureCallConverter {
 
-    private ProcedureCallConverter() {}
+    private ProcedureCallConverter() {
+    }
 
     /*
      *  --> (operand argExpr1 ... argExprN)
@@ -29,6 +31,12 @@ public class ProcedureCallConverter {
 
 
         if (operand instanceof SchemeSymbol schemeSymbol) {
+            if (isUnquote(schemeSymbol))
+                throw new SchemeException("unquote: expression not valid outside of quasiquote in form " + procedureList, null);
+            if (isUnquoteSplicing(schemeSymbol))
+                throw new SchemeException("unquote-splicing: expression not valid outside of quasiquote in form " + procedureList, null);
+
+
             if (BuiltinUtils.isBuiltinProcedure(schemeSymbol)) {
                 return BuiltinConverter.createBuiltin(schemeSymbol, arguments, context);
             } else if (context.isMacro(schemeSymbol)) {
@@ -41,7 +49,7 @@ public class ProcedureCallConverter {
 
 
         var callable = InternalRepresentationConverter.convert(operand, context, false, false);
-             //var callNode = new CallableExprNode(arguments, callable);
+        //var callNode = new CallableExprNode(arguments, callable);
 //
 
         if (isTailCall) {
@@ -53,7 +61,7 @@ public class ProcedureCallConverter {
             //return  new CallableExprNode(arguments, callable);
         }
 
-       // return callNode;
+        // return callNode;
 
     }
 
@@ -64,5 +72,13 @@ public class ProcedureCallConverter {
             result.add(InternalRepresentationConverter.convert(obj, context, false, false));
         }
         return result;
+    }
+
+    private static boolean isUnquote(SchemeSymbol schemeSymbol) {
+        return schemeSymbol.getValue().equals("unquote");
+    }
+
+    private static boolean isUnquoteSplicing(SchemeSymbol schemeSymbol) {
+        return schemeSymbol.getValue().equals("unquote-splicing");
     }
 }

@@ -7,6 +7,7 @@ import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.scope.WriteGlobalVariableExprNode;
 import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
 import com.ihorak.truffle.node.special_form.QuasiquoteExprNode;
+import com.ihorak.truffle.node.special_form.UnquoteSplicingInsertInfo;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
@@ -23,7 +24,7 @@ public class QuasiquioteConverter {
     record QuasiquoteHolder(List<SchemeExpression> unquoteToEval,
                             List<SchemeExpression> unquoteSplicingToEval,
                             List<SchemeCell> unquoteToInsert,
-                            List<SchemeCell> unquoteSplicingToInsert) {
+                            List<UnquoteSplicingInsertInfo> unquoteSplicingToInsert) {
     }
 
     public static QuasiquoteExprNode convert(SchemeList quasiquoteList, ParsingContext context) {
@@ -78,27 +79,36 @@ public class QuasiquioteConverter {
         while (currentCell != SchemeCell.EMPTY_LIST) {
             var element = currentCell.car;
             if (element instanceof SchemeList list) {
-                if (isUnquote(list)) {
-                    if (list.size != 2) throw new SchemeException("unquote: expects exactly one expression", null);
+                if (shouldUnquoteBeDone(list, context)) {
+                    if (list.size != 2) throw new SchemeException("unquote: expects exactly one expression in " + list, null);
                     quasiquoteHolderResult.unquoteToEval.add(convertDataToTruffleAST(list.get(1), context));
                     quasiquoteHolderResult.unquoteToInsert.add(currentCell);
-                } else if (isUnquoteSplicing(list)) {
-                    if (list.size != 2) throw new SchemeException("unquoteSplicing: expects exactly one expression", null);
+                } else if (shouldUnquoteSplicingBeDone(list, context)) {
+                    if (list.size != 2) throw new SchemeException("unquote-splicing: expects exactly one expression in " + list, null);
                     quasiquoteHolderResult.unquoteSplicingToEval.add(convertDataToTruffleAST(list.get(1), context));
-                    quasiquoteHolderResult.unquoteSplicingToInsert.add(currentCell);
-                    quasiquoteHolderResult.unquoteSplicingToInsert.add(previousCell);
+                    quasiquoteHolderResult.unquoteSplicingToInsert.add(new UnquoteSplicingInsertInfo(previousCell, currentCell));
                 } else {
+                    var isQuasiquote = isQuasiquote(list);
+                    var isUnquoteOrUnquoteSplicing = isUnquote(list) || isUnquoteSplicing(list);
+
+                    if (isQuasiquote) context.increaseQuasiquoteNestedLevel();
+                    if (isUnquoteOrUnquoteSplicing) context.decreaseQuasiquoteNestedLevel();
+
+
                     //TODO validace jestli jsem v unqote or nah, pres boolean
                     var holder = convertList(list, context);
                     quasiquoteHolderResult.unquoteToEval.addAll(holder.unquoteToEval);
                     quasiquoteHolderResult.unquoteToInsert.addAll(holder.unquoteToInsert);
                     quasiquoteHolderResult.unquoteSplicingToEval.addAll(holder.unquoteSplicingToEval);
                     quasiquoteHolderResult.unquoteSplicingToInsert.addAll(holder.unquoteSplicingToInsert);
+
+
+                    if (isQuasiquote) context.decreaseQuasiquoteNestedLevel();
+                    if (isUnquoteOrUnquoteSplicing) context.increaseQuasiquoteNestedLevel();
                 }
             }
             previousCell = currentCell;
             currentCell = currentCell.cdr;
-
         }
 
         return quasiquoteHolderResult;
@@ -111,12 +121,24 @@ public class QuasiquioteConverter {
     }
 
 
+    private static boolean shouldUnquoteBeDone(SchemeList list, ParsingContext context) {
+        return isUnquote(list) && context.getQuasiquoteNestedLevel() == 0;
+    }
+
+    private static boolean shouldUnquoteSplicingBeDone(SchemeList list, ParsingContext context) {
+        return isUnquoteSplicing(list) && context.getQuasiquoteNestedLevel() == 0;
+    }
+
     private static boolean isUnquote(SchemeList list) {
         return list.car() instanceof SchemeSymbol symbol && symbol.getValue().equals("unquote");
     }
 
     private static boolean isUnquoteSplicing(SchemeList list) {
         return list.car() instanceof SchemeSymbol symbol && symbol.getValue().equals("unquote-splicing");
+    }
+
+    private static boolean isQuasiquote(SchemeList list) {
+        return list.car() instanceof SchemeSymbol symbol && symbol.getValue().equals("quasiquote");
     }
 
 

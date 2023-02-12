@@ -36,7 +36,7 @@ public class PrimitiveProcedureGenerator {
         var lessThenEqualPrimitiveProcedure = createBinaryReduciblePrimitiveProcedure(LessThenEqualPrimitiveProcedureNodeFactory.getInstance(), language, "<=");
         var lessThenPrimitiveProcedure = createBinaryReduciblePrimitiveProcedure(LessThenPrimitiveProcedureNodeFactory.getInstance(), language, "<");
 
-        var evalPrimitiveProcedure = createLimitedPrimitiveProcedure(EvalExprNodeFactory.getInstance(), language, "eval");
+        //var evalPrimitiveProcedure = createLimitedPrimitiveProcedure(EvalExprNodeFactory.getInstance(), language, "eval");
         var carPrimitiveProcedure = createLimitedPrimitiveProcedure(CarExprNodeFactory.getInstance(), language, "car");
         var consPrimitiveProcedure = createLimitedPrimitiveProcedure(ConsExprNodeFactory.getInstance(), language, "cons");
         var lengthPrimitiveProcedure = createLimitedPrimitiveProcedure(LengthExprNodeFactory.getInstance(), language, "length");
@@ -47,7 +47,7 @@ public class PrimitiveProcedureGenerator {
         result.put(new SchemeSymbol("-"), minusPrimitiveProcedure);
         result.put(new SchemeSymbol("*"), multiplyPrimitiveProcedure);
         result.put(new SchemeSymbol("/"), dividePrimaryProcedure);
-        result.put(new SchemeSymbol("eval"), evalPrimitiveProcedure);
+       // result.put(new SchemeSymbol("eval"), evalPrimitiveProcedure);
         result.put(new SchemeSymbol("car"), carPrimitiveProcedure);
         result.put(new SchemeSymbol("cons"), consPrimitiveProcedure);
         result.put(new SchemeSymbol("length"), lengthPrimitiveProcedure);

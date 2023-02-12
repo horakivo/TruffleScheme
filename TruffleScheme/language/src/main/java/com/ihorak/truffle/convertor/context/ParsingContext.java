@@ -21,6 +21,8 @@ public class ParsingContext {
     private final ParsingContext parent;
     private final SchemeTruffleLanguage language;
     private final LexicalScope scope;
+
+    private int quasiquoteNestedLevel = 0;
     private final FrameDescriptor.Builder frameDescriptorBuilder;
 
 
@@ -164,5 +166,17 @@ public class ParsingContext {
 
     public boolean isFunctionDefinition() {
         return isFunctionDefinition;
+    }
+
+    public int getQuasiquoteNestedLevel() {
+        return quasiquoteNestedLevel;
+    }
+
+    public void increaseQuasiquoteNestedLevel() {
+        quasiquoteNestedLevel++;
+    }
+
+    public void decreaseQuasiquoteNestedLevel() {
+        quasiquoteNestedLevel--;
     }
 }

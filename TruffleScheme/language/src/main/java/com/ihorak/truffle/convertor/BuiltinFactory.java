@@ -83,14 +83,15 @@ public class BuiltinFactory {
     }
 
     public static SchemeExpression createEvalBuiltin(List<SchemeExpression> arguments, ParsingContext context) {
-        int expectedSize = EvalExprNodeFactory.getInstance().getExecutionSignature().size();
-        if (arguments.size() == expectedSize) {
-            return EvalExprNodeFactory.create(arguments.toArray(SchemeExpression[]::new));
-        } else {
-            throw new SchemeException(
-                    "eval: arity mismatch; Expected number of arguments does not match the given number\nexpected: " + expectedSize + "\ngiven: " + arguments.size(),
-                    null);
-        }
+//        int expectedSize = EvalExprNodeFactory.getInstance().getExecutionSignature().size();
+//        if (arguments.size() == expectedSize) {
+//            return EvalExprNodeFactory.create(arguments.toArray(SchemeExpression[]::new));
+//        } else {
+//            throw new SchemeException(
+//                    "eval: arity mismatch; Expected number of arguments does not match the given number\nexpected: " + expectedSize + "\ngiven: " + arguments.size(),
+//                    null);
+//        }
+        return null;
     }
 
     public static SchemeExpression createListBuiltin(List<SchemeExpression> arguments) {

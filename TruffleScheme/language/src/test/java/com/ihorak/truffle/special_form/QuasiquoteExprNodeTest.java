@@ -88,7 +88,7 @@ public class QuasiquoteExprNodeTest {
     }
 
     @Test
-    public void test() {
+    public void givenLambdaWithQuasiquote_whenExexuted_thenCorrectResultIsReturned() {
         var program = "((lambda (x) `(if ,x #t #f)) 5)";
 
         var result = context.eval("scm", program);
@@ -140,16 +140,26 @@ public class QuasiquoteExprNodeTest {
 
         var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
-        assertEquals("unquote or unquote-splicing: not in quasiquote in: ('unquote ('+ 1 2))", msg);
+        assertEquals("unquote: expression not valid outside of quasiquote in form ('unquote ('+ 1 2))", msg);
     }
 
+    //TODO interesting that quile evals (display `(list 1 (unquote (list 1 2) 2) 3)) to (list 1 (1 2) 2 3)
     @Test
     public void givenMoreArgsToUnquote_whenExecuted_thenShouldThrowSchemeException() {
         var program = "`(list 1 (unquote (list 1 2) 2) 3)";
 
         var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
-        assertEquals("unquote: expects exactly one expression", msg);
+        assertEquals("unquote: expects exactly one expression in ('unquote ('list 1 2) 2)", msg);
+    }
+
+    @Test
+    public void givenMoreArgsToUnquoteSplicing_whenExecuted_thenShouldThrowSchemeException() {
+        var program = "`(list 1 (unquote-splicing (list 1 2) 2) 3)";
+
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+
+        assertEquals("unquote-splicing: expects exactly one expression in ('unquote-splicing ('list 1 2) 2)", msg);
     }
 
 
@@ -159,6 +169,58 @@ public class QuasiquoteExprNodeTest {
 
         var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
-        assertEquals("unquote or unquote-splicing: not in quasiquote in: ('unquote 1)", msg);
+        assertEquals("unquote: expression not valid outside of quasiquote in form ('unquote 1)", msg);
+    }
+
+    @Test
+    public void givenSimpleNestedUnquoteSplicing_whenExecuted_thenShouldThrowException() {
+        var program = "`(list 1 (unquote (list ,@1 2)) 3)";
+
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+
+        assertEquals("unquote-splicing: expression not valid outside of quasiquote in form ('unquote-splicing 1)", msg);
+    }
+
+    @Test
+    public void givenNestedQuasiquote_whenExecuted_thenCorrectResultIsReturned() {
+        var program = "`(1 `,,@(list (+ 1 2)) 4)";
+
+        var result = context.eval("scm", program);
+
+        assertEquals("(1 ('quasiquote ('unquote 3)) 4)",result.toString());
+        assertTrue(result.hasArrayElements());
+        assertEquals(3L, result.getArraySize());
+        assertEquals(1L, result.getArrayElement(0).asLong());
+        assertEquals("quasiquote", result.getArrayElement(1).getArrayElement(0).asString());
+        assertEquals("unquote", result.getArrayElement(1).getArrayElement(1).getArrayElement(0).asString());
+        assertEquals(3L, result.getArrayElement(1).getArrayElement(1).getArrayElement(1).asLong());
+        assertEquals(4L, result.getArrayElement(2).asLong());
+    }
+
+    @Test
+    public void givenNestedQuasiquoteWithMoreUnquoteDepth_whenExecuted_thenExceptionIsThrown() {
+        var program = "`(1 `,,,(list (+ 1 2)) 4)";
+
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+
+        assertEquals("unquote: expression not valid outside of quasiquote in form ('unquote ('list ('+ 1 2)))", msg);
+    }
+
+    @Test
+    public void givenUnquoteSplicingDirectlyAfterQuasiQuote_whenExecuted_thenUnquoteSplicingIsNotActioned() {
+        var program = "`,@(list 1 2)";
+
+        var result = context.eval("scm", program);
+
+        assertEquals("('unquote-splicing ('list 1 2))", result.toString());
+    }
+
+    @Test
+    public void dsad() {
+        var program = "`(,@(list 1 2))";
+
+        var result = context.eval("scm", program);
+
+        assertEquals("('unquote-splicing ('list 1 2))", result.toString());
     }
 }
