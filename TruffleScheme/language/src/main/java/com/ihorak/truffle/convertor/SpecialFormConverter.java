@@ -18,22 +18,21 @@ public class SpecialFormConverter {
     public static SchemeExpression convertListToSpecialForm(SchemeList specialFormList, ParsingContext context, boolean isDefinitionAllowed) {
         var operationSymbol = (SchemeSymbol) specialFormList.get(0);
         return switch (operationSymbol.getValue()) {
-            case "if" -> IfConverter.convert(specialFormList, context);
-            case "define" -> DefineConverter.convert(specialFormList, context, isDefinitionAllowed);
-            case "lambda" -> LambdaConverter.convert(specialFormList, context);
-            case "quote" -> convertQuote(specialFormList, context);
-            case "quasiquote" -> QuasiquioteConverter.convert(specialFormList, context);
-            case "let" -> LetConverter.convert(specialFormList, context);
+                case "if" -> IfConverter.convert(specialFormList, context);
+                case "define" -> DefineConverter.convert(specialFormList, context, isDefinitionAllowed);
+                case "lambda" -> LambdaConverter.convert(specialFormList, context, new SchemeSymbol("anonymous_procedure"));
+                case "quote" -> convertQuote(specialFormList, context);
+                case "quasiquote" -> QuasiquioteConverter.convert(specialFormList, context);
+                case "let" -> LetConverter.convert(specialFormList, context);
 //            case "let*":
 //                return convertLetStar(specialFormList, context);
-            case "letrec" -> LetrecConverter.convert(specialFormList, context);
-            case "and" -> AndConverter.convert(specialFormList, context);
-            case "or" -> OrConverter.convert(specialFormList, context);
-            case "cond" -> CondConverter.convertCond(specialFormList, context);
-            default -> throw new IllegalArgumentException("Unknown special form");
+                case "letrec" -> LetrecConverter.convert(specialFormList, context);
+                case "and" -> AndConverter.convert(specialFormList, context);
+                case "or" -> OrConverter.convert(specialFormList, context);
+                case "cond" -> CondConverter.convertCond(specialFormList, context);
+                default -> throw new IllegalArgumentException("Unknown special form");
         };
     }
-
 
     private static QuoteExprNode convertQuote(SchemeList quoteList, ParsingContext context) {
         if (quoteList.size == 2) {
@@ -82,7 +81,6 @@ public class SpecialFormConverter {
 //        }
 //        return result;
 //    }
-
 
 
 }

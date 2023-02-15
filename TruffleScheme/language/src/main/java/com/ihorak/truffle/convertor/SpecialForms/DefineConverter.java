@@ -13,15 +13,19 @@ import java.util.List;
 
 public class DefineConverter {
 
-    private DefineConverter() {}
+    private DefineConverter() {
+    }
 
     public static SchemeExpression convert(SchemeList defineList, ParsingContext context, boolean isDefinitionAllowed) {
         validate(defineList, isDefinitionAllowed);
 
+        if (isDefun(defineList)) {
+            return convertDefun(defineList, context);
+        }
+
         var identifier = (SchemeSymbol) defineList.get(1);
         var defineBody = defineList.get(2);
         var isNonGlobalEnv = context.getLexicalScope() != LexicalScope.GLOBAL;
-        var isFunctionDefinition = isFunctionDefinition(defineBody);
 
 
         if (isNonGlobalEnv) {
@@ -33,13 +37,8 @@ public class DefineConverter {
 //        var previousFunctionDefinition = context.isFunctionDefinition();
 //        var previousFunctionDefinitionName = context.getFunctionDefinitionName();
 
-        if (isFunctionDefinition) {
-           // context.setFunctionDefinition(true);
-            context.setFunctionDefinitionName(identifier);
-        }
         var bodyExpr = InternalRepresentationConverter.convert(defineBody, context, false, false);
 
-        context.setFunctionDefinitionName(null);
 
 //        if (isFunctionDefinition) {
 //            context.setFunctionDefinition(previousFunctionDefinition);
@@ -59,13 +58,28 @@ public class DefineConverter {
     }
 
 
-    private static boolean isFunctionDefinition(Object defineBody) {
-        if (defineBody instanceof SchemeList schemeCellBody) {
-            var firstElement = schemeCellBody.car();
-            return (firstElement instanceof SchemeSymbol symbol && symbol.getValue().equals("lambda"));
+    private static SchemeExpression convertDefun(SchemeList defineList, ParsingContext context) {
+        var identifier = (SchemeSymbol) defineList.get(1);
+        var lambdaBody = (SchemeList) defineList.get(2);
+        var isNonGlobalEnv = context.getLexicalScope() != LexicalScope.GLOBAL;
+
+        if (isNonGlobalEnv) {
+            context.findOrAddLocalSymbol(identifier);
+            context.makeLocalVariablesNullable(List.of(identifier));
         }
 
-        return false;
+        var lambdaExpr = LambdaConverter.convert(lambdaBody, context, identifier);
+
+
+        if (isNonGlobalEnv) {
+            context.makeLocalVariablesNonNullable(List.of(identifier));
+        }
+
+        if (context.getLexicalScope() == LexicalScope.GLOBAL) {
+            return CreateWriteExprNode.createWriteGlobalVariableExprNode(identifier, lambdaExpr);
+        } else {
+            return CreateWriteExprNode.createWriteLocalVariableExprNode(identifier, lambdaExpr, context);
+        }
     }
 
     private static void validate(SchemeList defineList, boolean isDefinitionAllowed) {
@@ -80,5 +94,16 @@ public class DefineConverter {
         if (body.size != 1) {
             throw new SchemeException("define: multiple expressions after identifier", null);
         }
+    }
+
+    /**
+     * Returns true when we are defining new function
+     * list has to looks like -> (define <name> (lambda (...) ... ))
+     */
+    private static boolean isDefun(SchemeList defineList) {
+        var body = defineList.get(2);
+        if (!(body instanceof SchemeList list)) return false;
+
+        return list.get(0) instanceof SchemeSymbol symbol && symbol.getValue().equals("lambda");
     }
 }

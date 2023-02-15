@@ -3,10 +3,9 @@ package com.ihorak.truffle.node.callable.TCO;
 
 import java.util.List;
 
-import com.ihorak.truffle.SchemeTruffleLanguage;
-import com.ihorak.truffle.SchemeTruffleLanguage.TCOTarget;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.callable.CallableExprNode;
+import com.ihorak.truffle.node.callable.TCO.loop_nodes.TailCallLoopNode;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.frame.VirtualFrame;
@@ -53,8 +52,8 @@ public class TailCallCatcherNode extends CallableExprNode {
 
 
 
-    	frame.setObject(tailCallTargetSlot, callTarget);
-    	frame.setObject(tailCallArgumentsSlot, arguments);
+    	frame.setObject(TCO_CALLTARGET_SLOT, callTarget);
+    	frame.setObject(TCO_ARGUMENT_SLOT, arguments);
 
 
 

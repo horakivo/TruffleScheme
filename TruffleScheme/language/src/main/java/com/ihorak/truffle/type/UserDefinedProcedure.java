@@ -24,7 +24,7 @@ public class UserDefinedProcedure extends AbstractProcedure implements TruffleOb
     //Because of the Interop library
 //    private final DispatchNode dispatchNode = DispatchNodeGen.create();
 
-    public   UserDefinedProcedure(CallTarget callTarget, int expectedNumberOfArgs, final boolean hasOptionalArgs, MaterializedFrame frame) {
+    public UserDefinedProcedure(CallTarget callTarget, int expectedNumberOfArgs, final boolean hasOptionalArgs, MaterializedFrame frame) {
         super(callTarget);
         this.parentFrame = frame;
         this.expectedNumberOfArgs = expectedNumberOfArgs;

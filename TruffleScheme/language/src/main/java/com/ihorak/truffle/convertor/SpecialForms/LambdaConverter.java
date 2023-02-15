@@ -7,8 +7,7 @@ import com.ihorak.truffle.convertor.util.TailCallUtil;
 import com.ihorak.truffle.exceptions.InterpreterException;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.callable.ProcedureRootNode;
-import com.ihorak.truffle.node.callable.SelfTailProcedureRootNode;
+import com.ihorak.truffle.node.callable.TCO.SelfTailProcedureRootNode;
 import com.ihorak.truffle.node.scope.ReadLocalProcedureArgExprNode;
 import com.ihorak.truffle.node.special_form.LambdaExprNode;
 import com.ihorak.truffle.type.SchemeList;
@@ -21,14 +20,18 @@ import java.util.List;
 
 public class LambdaConverter {
 
-    private LambdaConverter() {}
+    private LambdaConverter() {
+    }
 
     private static final String NOT_IDENTIFIER_IN_PARAMS = "lambda: not an identifier in parameters";
 
 
-    public static LambdaExprNode convert(SchemeList lambdaList, ParsingContext context) {
+    public static LambdaExprNode convert(SchemeList lambdaList, ParsingContext context, SchemeSymbol name) {
         validate(lambdaList);
         ParsingContext lambdaContext = new ParsingContext(context, LexicalScope.LAMBDA);
+        if (!name.getValue().equals("anonymous_procedure")) {
+            lambdaContext.setFunctionDefinitionName(name);
+        }
 //        if (context.isFunctionDefinition()) {
 //            lambdaContext.setFunctionDefinitionName(context.getFunctionDefinitionName());
 //        }
@@ -45,7 +48,6 @@ public class LambdaConverter {
 
         int argumentsIndex = lambdaContext.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
         var frameDescriptor = lambdaContext.buildAndGetFrameDescriptor();
-        var name = context.getFunctionDefinitionName() == null ? new SchemeSymbol("anonymous_procedure") : context.getFunctionDefinitionName();
         var rootNode = new SelfTailProcedureRootNode(name, context.getLanguage(), frameDescriptor, allExpr, argumentsIndex);
         //var rootNode = new ProcedureRootNode(name, context.getLanguage(), frameDescriptor, allExpr);
         var hasOptionalArgs = params instanceof SchemePair;

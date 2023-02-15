@@ -57,14 +57,14 @@ public class DefineExprNodeTest {
         var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
         assertEquals("""
-                             'x: undefined
-                             cannot reference an identifier before its definition""", msg);
+                'x: undefined
+                cannot reference an identifier before its definition""", msg);
 
     }
 
     /*
-    * Idea of this test is that variable called generate should be as NON null since the execution is delayed
-    * */
+     * Idea of this test is that variable called generate should be as NON null since the execution is delayed
+     * */
     @Test
     public void givenNestedDefineWithDelayedExecution_whenExecuted_thenCorrectResultIsReturned() {
         var program = """
@@ -89,7 +89,6 @@ public class DefineExprNodeTest {
     }
 
 
-
     /*
      * Here the execution is not delayed that's why exception is thrown
      * */
@@ -109,7 +108,30 @@ public class DefineExprNodeTest {
         var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
         assertEquals("""
-                             'generate: undefined
-                             cannot reference an identifier before its definition""", msg);
+                'generate: undefined
+                cannot reference an identifier before its definition""", msg);
+    }
+
+
+    /*
+     * Here the value <test11> is found since it is on GLOBAL env and therefore we use ReadGlobalVariable
+     * */
+    @Test
+    public void givenDefiningValueInsideLambdaBody_whenExecuted_thenValueIsFound() {
+        var program = """
+                (define test11
+                  (lambda ()
+                    (list 1 2 test11)))
+                    
+                (test11)""";
+
+        var result = context.eval("scm", program);
+
+        assertTrue(result.hasArrayElements());
+        assertEquals(3L, result.getArraySize());
+        assertEquals(1L, result.getArrayElement(0).asLong());
+        assertEquals(2L, result.getArrayElement(1).asLong());
+        //TODO should work when I implemented Lib
+        //assertTrue(result.getArrayElement(1).canExecute());
     }
 }

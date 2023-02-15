@@ -69,8 +69,8 @@ public class BenchmarkTests {
                             ((lambda (value)
                                (generate (- len 1) p q value (cons value result)))
                              (modulo (* s s) (* p q))))))
-                      (generate len 101 17 3 '())))
-                                
+                    (generate len 101 17 3 '())))
+
                 (random-list 5)
                 """;
 

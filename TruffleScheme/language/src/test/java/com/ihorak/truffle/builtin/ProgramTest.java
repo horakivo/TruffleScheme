@@ -331,12 +331,43 @@ public class ProgramTest {
                 "(foo 5)";
 
         var result = context.eval("scm", program);
+        System.out.println(result);
     }
 
 
     @Test
     public void test12() {
         var program = " (eval '((lambda (x) (+ x 5)) 5))";
+
+        var test = context.eval("scm", program);
+
+        assertEquals(10L, test.asLong());
+    }
+
+    @Test
+    public void tmp_remove_me() {
+        var program = """
+                (define test
+                  (lambda (n)
+                    (if (<= n 0)
+                        (return-n n)
+                        (test (- n 1)))))
+                """;
+
+        var test = context.eval("scm", program);
+
+        assertEquals(10L, test.asLong());
+    }
+
+    @Test
+    public void tmp_remove_me2() {
+        var program = """
+                (define test
+                  (lambda (n)
+                    (if (<= n 0)
+                        (return-n n)
+                        (test (- n 1)))))
+                """;
 
         var test = context.eval("scm", program);
 

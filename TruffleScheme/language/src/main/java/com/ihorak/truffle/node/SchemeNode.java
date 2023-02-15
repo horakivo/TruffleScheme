@@ -9,6 +9,9 @@ import com.oracle.truffle.api.nodes.Node;
 @TypeSystemReference(SchemeTypes.class)
 public abstract class SchemeNode extends Node {
 
+    protected static final int TCO_ARGUMENT_SLOT = 0;
+    protected static final int TCO_CALLTARGET_SLOT = 1;
+
     protected SchemeLanguageContext getContext() {
         return SchemeLanguageContext.get(this);
     }

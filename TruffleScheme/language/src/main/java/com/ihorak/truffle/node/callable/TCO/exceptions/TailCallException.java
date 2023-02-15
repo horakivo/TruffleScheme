@@ -1,4 +1,4 @@
-package com.ihorak.truffle.exceptions;
+package com.ihorak.truffle.node.callable.TCO.exceptions;
 
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.nodes.ControlFlowException;

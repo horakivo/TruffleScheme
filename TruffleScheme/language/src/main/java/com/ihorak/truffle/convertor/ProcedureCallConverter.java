@@ -6,6 +6,8 @@ import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.callable.CallableExprNode;
 import com.ihorak.truffle.node.callable.MacroCallableExprNode;
+import com.ihorak.truffle.node.callable.TCO.SelfRecursiveTailCallThrowerNode;
+import com.ihorak.truffle.node.callable.TCO.SelfRecursiveTailCallThrowerNodeGen;
 import com.ihorak.truffle.node.callable.TCO.TailCallCatcherNode;
 import com.ihorak.truffle.node.callable.TCO.TailCallThrowerNodeGen;
 import com.ihorak.truffle.type.SchemeCell;
@@ -53,6 +55,9 @@ public class ProcedureCallConverter {
 //
 
         if (isTailCall) {
+            if (isSelfTailRecursive(operand, context)) {
+                return SelfRecursiveTailCallThrowerNodeGen.create(arguments, callable);
+            }
             return TailCallThrowerNodeGen.create(arguments, callable);
         } else {
             int tailCallArgumentsSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
@@ -63,6 +68,13 @@ public class ProcedureCallConverter {
 
         // return callNode;
 
+    }
+
+    private static boolean isSelfTailRecursive(Object operand, ParsingContext context) {
+        var currentlyDefiningMethod = context.getFunctionDefinitionName();
+        if (currentlyDefiningMethod == null) return false;
+
+        return operand instanceof SchemeSymbol symbol && symbol.equals(currentlyDefiningMethod);
     }
 
     private static List<SchemeExpression> getProcedureArguments(SchemeList argumentList, ParsingContext context) {

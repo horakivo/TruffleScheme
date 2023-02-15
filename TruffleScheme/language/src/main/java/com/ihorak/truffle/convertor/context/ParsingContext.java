@@ -15,7 +15,6 @@ public class ParsingContext {
     private final Map<SchemeSymbol, Integer> lambdaParameterIndex = new HashMap<>();
     private final Map<SchemeSymbol, LocalVariableInfo> localVariableIndex = new HashMap<>();
 
-    private boolean isFunctionDefinition = false;
     private SchemeSymbol functionDefinitionName;
 
     private final ParsingContext parent;
@@ -26,11 +25,18 @@ public class ParsingContext {
     private final FrameDescriptor.Builder frameDescriptorBuilder;
 
 
+    //Any other child Parsing Context
     public ParsingContext(ParsingContext parent, LexicalScope lexicalScope) {
         this.frameDescriptorBuilder = FrameDescriptor.newBuilder();
         this.scope = lexicalScope;
         this.language = parent.language;
         this.parent = parent;
+
+        //reserved for TCO arguments and CallTarget
+        //Argument slot = 0
+        //CallTarget slot = 1
+        this.frameDescriptorBuilder.addSlot(FrameSlotKind.Object, "TCO Arguments", null);
+        this.frameDescriptorBuilder.addSlot(FrameSlotKind.Object, "TCO CallTarget", null);
     }
 
     //For creating LET - we don't want to create a new FrameDescriptor because we are using the parent one.
@@ -41,6 +47,7 @@ public class ParsingContext {
         this.parent = parent;
     }
 
+    //Global
     public ParsingContext(SchemeTruffleLanguage language) {
         this.frameDescriptorBuilder = FrameDescriptor.newBuilder();
         this.scope = LexicalScope.GLOBAL;
@@ -152,20 +159,13 @@ public class ParsingContext {
         return lambdaParameterIndex.size();
     }
 
+    @Nullable
     public SchemeSymbol getFunctionDefinitionName() {
         return functionDefinitionName;
     }
 
     public void setFunctionDefinitionName(final SchemeSymbol functionDefinitionName) {
         this.functionDefinitionName = functionDefinitionName;
-    }
-
-    public void setFunctionDefinition(final boolean functionDefinition) {
-        isFunctionDefinition = functionDefinition;
-    }
-
-    public boolean isFunctionDefinition() {
-        return isFunctionDefinition;
     }
 
     public int getQuasiquoteNestedLevel() {
