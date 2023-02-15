@@ -1,5 +1,6 @@
 package com.ihorak.truffle.node.callable.TCO;
 
+import com.ihorak.truffle.SchemeTruffleLanguage;
 import com.ihorak.truffle.node.callable.TCO.exceptions.TailCallException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.UserDefinedProcedure;
@@ -28,14 +29,14 @@ public abstract class TailCallThrowerNode extends SchemeExpression {
 
     @Specialization
     protected Object doThrow(VirtualFrame frame, UserDefinedProcedure procedure) {
-        var parentMaterializedFrame = (MaterializedFrame) frame.getArguments()[0];
-        var args = getArguments(procedure, frame);
-        var callTarget = procedure.getCallTarget();
-        parentMaterializedFrame.setObject(TCO_ARGUMENT_SLOT, args);
-        parentMaterializedFrame.setObject(TCO_CALLTARGET_SLOT, callTarget);
-//        SchemeTruffleLanguage.TCOTarget target = SchemeTruffleLanguage.getTCOTarget(this);
-//        target.target = procedure.getCallTarget();
-//        target.arguments = getArguments(procedure, frame);
+//        var parentMaterializedFrame = (MaterializedFrame) frame.getArguments()[0];
+//        var args = getArguments(procedure, frame);
+//        var callTarget = procedure.getCallTarget();
+//        parentMaterializedFrame.setObject(TCO_ARGUMENT_SLOT, args);
+//        parentMaterializedFrame.setObject(TCO_CALLTARGET_SLOT, callTarget);
+        SchemeTruffleLanguage.TCOTarget target = SchemeTruffleLanguage.getTCOTarget(this);
+        target.target = procedure.getCallTarget();
+        target.arguments = getArguments(procedure, frame);
         throw TailCallException.INSTANCE;
 //        throw new TailCallException(procedure.getCallTarget(), getArguments(procedure, frame));
     }

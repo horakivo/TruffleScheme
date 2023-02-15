@@ -54,6 +54,7 @@ public class TailRecursiveCallLoopNode extends SchemeNode implements RepeatingNo
             return executeImpl(virtualFrame);
         } catch (SelfRecursiveTailCallException e) {
             SchemeTruffleLanguage.TCOTarget target = SchemeTruffleLanguage.getTCOTarget(this);
+            frame.setObject(argumentsIndex, target.arguments);
             var test = target.target == callTarget;
             return CONTINUE_LOOP_STATUS;
         }

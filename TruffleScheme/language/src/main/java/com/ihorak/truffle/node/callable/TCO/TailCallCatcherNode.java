@@ -52,8 +52,8 @@ public class TailCallCatcherNode extends CallableExprNode {
 
 
 
-    	frame.setObject(TCO_CALLTARGET_SLOT, callTarget);
-    	frame.setObject(TCO_ARGUMENT_SLOT, arguments);
+    	frame.setObject(tailCallTargetSlot, callTarget);
+    	frame.setObject(tailCallArgumentsSlot, arguments);
 
 
 
