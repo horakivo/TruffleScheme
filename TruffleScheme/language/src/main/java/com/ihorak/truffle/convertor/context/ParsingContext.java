@@ -34,9 +34,11 @@ public class ParsingContext {
 
         //reserved for TCO arguments and CallTarget
         //Argument slot = 0
-        //CallTarget slot = 1
+        //TailCall CallTarget slot = 1
+        //TailRecursive CallTarget slot = 2
         this.frameDescriptorBuilder.addSlot(FrameSlotKind.Object, "TCO Arguments", null);
         this.frameDescriptorBuilder.addSlot(FrameSlotKind.Object, "TCO CallTarget", null);
+        this.frameDescriptorBuilder.addSlot(FrameSlotKind.Object, "Jump Frame", null);
     }
 
     //For creating LET - we don't want to create a new FrameDescriptor because we are using the parent one.
@@ -53,6 +55,14 @@ public class ParsingContext {
         this.scope = LexicalScope.GLOBAL;
         this.language = language;
         this.parent = null;
+
+        //reserved for TCO arguments and CallTarget
+        //Argument slot = 0
+        //TailCall CallTarget slot = 1
+        //TailRecursive CallTarget slot = 2
+        this.frameDescriptorBuilder.addSlot(FrameSlotKind.Object, "TCO Arguments", null);
+        this.frameDescriptorBuilder.addSlot(FrameSlotKind.Object, "TCO CallTarget", null);
+        this.frameDescriptorBuilder.addSlot(FrameSlotKind.Object, "Jump Frame", null);
     }
 
     /**

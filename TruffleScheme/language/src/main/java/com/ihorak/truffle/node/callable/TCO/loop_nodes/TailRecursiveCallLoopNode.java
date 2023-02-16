@@ -49,13 +49,10 @@ public class TailRecursiveCallLoopNode extends SchemeNode implements RepeatingNo
     @Override
     public Object executeRepeatingWithValue(final VirtualFrame frame) {
         try {
-            Object[] arguments = (Object[]) frame.getObject(argumentsIndex);
+            Object[] arguments = (Object[]) frame.getObject(TCO_ARGUMENT_SLOT);
             var virtualFrame = Truffle.getRuntime().createVirtualFrame(arguments, frameDescriptor);
             return executeImpl(virtualFrame);
         } catch (SelfRecursiveTailCallException e) {
-            SchemeTruffleLanguage.TCOTarget target = SchemeTruffleLanguage.getTCOTarget(this);
-            frame.setObject(argumentsIndex, target.arguments);
-            var test = target.target == callTarget;
             return CONTINUE_LOOP_STATUS;
         }
     }
