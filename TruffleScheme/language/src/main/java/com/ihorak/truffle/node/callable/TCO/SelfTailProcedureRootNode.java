@@ -34,7 +34,7 @@ public class SelfTailProcedureRootNode extends RootNode {
     @Override
     public Object execute(VirtualFrame frame) {
         var arguments = frame.getArguments();
-        arguments[2] = frame;
+        arguments[2] = frame.materialize();
         frame.setObject(SchemeNode.TCO_ARGUMENT_SLOT, arguments);
         return loop.execute(frame);
     }
