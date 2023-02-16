@@ -44,10 +44,10 @@ public class CallableExprNode extends SchemeExpression {
 
     @ExplodeLoop
     private Object[] getProcedureOrMacroArgsNoOptional(UserDefinedProcedure function, VirtualFrame parentFrame) {
-        Object[] args = new Object[arguments.length + 3];
+        Object[] args = new Object[arguments.length + 1];
         args[0] = function.getParentFrame();
 
-        int index = 3;
+        int index = 1;
         for (SchemeExpression expression : arguments) {
             args[index] = expression.executeGeneric(parentFrame);
             index++;

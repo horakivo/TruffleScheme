@@ -13,6 +13,6 @@ public class ReadLocalProcedureArgExprNode extends SchemeExpression {
 
     @Override
     public Object executeGeneric(VirtualFrame virtualFrame) {
-        return virtualFrame.getArguments()[index + 3];
+        return virtualFrame.getArguments()[index + 1];
     }
 }

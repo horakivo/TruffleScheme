@@ -56,7 +56,7 @@ public class ProcedureCallConverter {
 
         if (isTailCall) {
             if (isSelfTailRecursive(operand, context)) {
-                return SelfRecursiveTailCallThrowerNodeGen.create(arguments, callable);
+                return SelfRecursiveTailCallThrowerNodeGen.create(arguments);
             }
             return TailCallThrowerNodeGen.create(arguments, callable);
         } else {
