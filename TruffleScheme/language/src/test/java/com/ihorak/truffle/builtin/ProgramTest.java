@@ -422,27 +422,6 @@ public class ProgramTest {
     }
 
     @Test
-    public void newListStructureTest() {
-        var list = new SchemeList(1);
-        list.add(2);
-        list.add(3);
-
-        System.out.println(list);
-    }
-
-    @Test
-    public void newListStructureTest1() {
-        var list = new SchemeList(1);
-        list.add(2);
-        list.add(3);
-        var list2 = new SchemeList(4);
-        list2.add(5);
-        list.addAll(list2);
-
-        System.out.println(list);
-    }
-
-    @Test
     public void randomListTest() {
         var program = """
                 (define random-list

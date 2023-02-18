@@ -20,13 +20,15 @@ public class AntlrToInternalRepresentation extends R5RSBaseVisitor<Object> {
 
     @Override
     public SchemeList visitList(R5RSParser.ListContext ctx) {
-        SchemeList list = new SchemeList();
+        Object[] objects = new Object[ctx.getChildCount() - 2];
+        var index = 0;
         // we are ignoring first and last child since those are '(' and ')'
         for (int i = 1; i < ctx.getChildCount() - 1; i++) {
-            list.add(visit(ctx.getChild(i)));
+            objects[index] = visit(ctx.getChild(i));
+            index++;
         }
 
-        return list;
+        return SchemeListUtil.createList(objects);
     }
 
     @Override
@@ -62,25 +64,25 @@ public class AntlrToInternalRepresentation extends R5RSBaseVisitor<Object> {
     @Override
     public Object visitQuote(R5RSParser.QuoteContext ctx) {
         // 'form -> just take second child since the first one is '
-        return new SchemeList(new SchemeSymbol("quote"), visit(ctx.getChild(1)));
+        return SchemeListUtil.createList(new SchemeSymbol("quote"), visit(ctx.getChild(1)));
     }
 
     @Override
     public Object visitQuasiquote(R5RSParser.QuasiquoteContext ctx) {
         // `form -> just take second child since the first one is `
-        return new SchemeList(new SchemeSymbol("quasiquote"), visit(ctx.getChild(1)));
+        return SchemeListUtil.createList(new SchemeSymbol("quasiquote"), visit(ctx.getChild(1)));
     }
 
     @Override
     public Object visitUnquote(R5RSParser.UnquoteContext ctx) {
         // ,form -> just take second child since the first one is ,
-        return new SchemeList(new SchemeSymbol("unquote"), visit(ctx.getChild(1)));
+        return SchemeListUtil.createList(new SchemeSymbol("unquote"), visit(ctx.getChild(1)));
     }
 
     @Override
     public Object visitUnquote_splicing(R5RSParser.Unquote_splicingContext ctx) {
         // ,@form -> just take second child since the first one is ,@
-        return new SchemeList(new SchemeSymbol("unquote-splicing"), visit(ctx.getChild(1)));
+        return SchemeListUtil.createList(new SchemeSymbol("unquote-splicing"), visit(ctx.getChild(1)));
     }
 
     @Override

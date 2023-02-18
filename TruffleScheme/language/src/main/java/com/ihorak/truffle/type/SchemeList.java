@@ -10,6 +10,7 @@ import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
 import com.oracle.truffle.api.profiles.BranchProfile;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 
@@ -17,73 +18,17 @@ import java.util.Iterator;
 public class SchemeList implements Iterable<Object>, TruffleObject {
 
     public SchemeCell list;
+    @Nullable
     public SchemeCell bindingCell;
     public int size;
-    @CompilationFinal
-    public boolean isEmpty;
+    public final boolean isEmpty;
 
-//    public SchemeList(Object firstObjectToBeAdded) {
-//        this.list = new SchemeCell(firstObjectToBeAdded, SchemeCell.EMPTY_LIST);
-//        this.bindingCell = this.list;
-//        this.size = 1;
-//    }
-//
-//    //not supporting empty list. Used for just internal purposes. Not for interpreter code!
-//    public SchemeList(Object... objectsToBeAdded) {
-//        this(objectsToBeAdded[0]);
-//
-//        for (int i = 1; i < objectsToBeAdded.length; i++) {
-//            add(objectsToBeAdded[i]);
-//        }
-//    }
 
-    public SchemeList() {
-        CompilerDirectives.transferToInterpreterAndInvalidate();
-        this.isEmpty = true;
-        this.list = SchemeCell.EMPTY_LIST;
-        this.size = 0;
-    }
-
-    public SchemeList(final SchemeCell list, final SchemeCell bindingCell, final int size, final boolean isEmpty) {
+    public SchemeList(final SchemeCell list, final @Nullable SchemeCell bindingCell, final int size, final boolean isEmpty) {
         this.list = list;
         this.bindingCell = bindingCell;
         this.size = size;
         this.isEmpty = isEmpty;
-    }
-
-    public SchemeList(Object... objects) {
-        this();
-        for (Object obj : objects) {
-            add(obj);
-        }
-    }
-
-    public void add(Object toBeAdded) {
-        if (isEmpty) {
-            this.list = new SchemeCell(toBeAdded, SchemeCell.EMPTY_LIST);
-            this.bindingCell = this.list;
-            this.size = 1;
-            this.isEmpty = false;
-        } else {
-            var cell = new SchemeCell(toBeAdded, bindingCell.cdr);
-            bindingCell.cdr = cell;
-            this.bindingCell = cell;
-            this.size++;
-        }
-    }
-
-    public void addAll(SchemeList toBeAdded) {
-        if (isEmpty) {
-            this.list = toBeAdded.list;
-            this.size = toBeAdded.size;
-            this.bindingCell = toBeAdded.bindingCell;
-            this.isEmpty = toBeAdded.isEmpty;
-        } else {
-            this.bindingCell.cdr = toBeAdded.list;
-            this.bindingCell = toBeAdded.bindingCell;
-            this.size += toBeAdded.size;
-        }
-
     }
 
     public Object get(int index) {
@@ -109,11 +54,6 @@ public class SchemeList implements Iterable<Object>, TruffleObject {
     public Iterator<Object> iterator() {
         return list.iterator();
     }
-
-
-
-
-
 
 
     // INTEROP LIBRARY

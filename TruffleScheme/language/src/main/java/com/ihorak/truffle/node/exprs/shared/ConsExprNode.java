@@ -12,7 +12,8 @@ public abstract class ConsExprNode extends LimitedBuiltin {
 
     @Specialization(guards = "!list.isEmpty")
     protected SchemeList doNonEmptySchemeList(Object car, SchemeList list) {
-        return new SchemeList(new SchemeCell(car, list.list), list.bindingCell, list.size + 1, false);
+        var schemeCell = new SchemeCell(car, list.list);
+        return new SchemeList(schemeCell, list.bindingCell, list.size + 1, false);
     }
 
     @Specialization(guards = "list.isEmpty")
