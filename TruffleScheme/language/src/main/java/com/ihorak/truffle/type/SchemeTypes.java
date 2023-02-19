@@ -2,10 +2,11 @@ package com.ihorak.truffle.type;
 
 import com.oracle.truffle.api.dsl.ImplicitCast;
 import com.oracle.truffle.api.dsl.TypeSystem;
+import com.oracle.truffle.api.strings.TruffleString;
 
 import java.math.BigInteger;
 
-@TypeSystem({long.class, double.class, boolean.class, String.class, SchemeList.class, UserDefinedProcedure.class, BigInteger.class, SchemeMacro.class, SchemeCell.class})
+@TypeSystem({long.class, double.class, boolean.class, TruffleString.class, SchemeList.class, UserDefinedProcedure.class, BigInteger.class, SchemeMacro.class})
 public abstract class SchemeTypes {
 
     @ImplicitCast

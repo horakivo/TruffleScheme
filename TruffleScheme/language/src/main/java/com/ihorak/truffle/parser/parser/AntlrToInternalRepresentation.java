@@ -6,12 +6,15 @@ import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemePair;
 import com.ihorak.truffle.type.SchemeSymbol;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import com.oracle.truffle.api.strings.TruffleString;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AntlrToInternalRepresentation extends R5RSBaseVisitor<Object> {
+
+    private static final TruffleString.Encoding STRING_ENCODING = TruffleString.Encoding.UTF_16;
 
     @Override
     public Object visitForm(R5RSParser.FormContext ctx) {
@@ -28,7 +31,11 @@ public class AntlrToInternalRepresentation extends R5RSBaseVisitor<Object> {
             index++;
         }
 
-        return SchemeListUtil.createList(objects);
+        var schemeList = SchemeListUtil.createList(objects);
+        var startCharIndex = ctx.start.getStartIndex();
+        var stopCharIndex = ctx.stop.getStopIndex();
+        schemeList.setSourceSectionInfo(startCharIndex, stopCharIndex - startCharIndex);
+        return schemeList;
     }
 
     @Override
@@ -52,8 +59,10 @@ public class AntlrToInternalRepresentation extends R5RSBaseVisitor<Object> {
     }
 
     @Override
-    public String visitString(R5RSParser.StringContext ctx) {
-        return ctx.STRING().getText();
+    public TruffleString visitString(R5RSParser.StringContext ctx) {
+        var stringWithDoubleQuotes = ctx.STRING().getText();
+        var trimmedString = stringWithDoubleQuotes.substring(1, stringWithDoubleQuotes.length() - 1);
+        return TruffleString.fromJavaStringUncached(trimmedString, STRING_ENCODING);
     }
 
     @Override

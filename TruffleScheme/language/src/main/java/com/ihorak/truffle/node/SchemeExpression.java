@@ -1,14 +1,22 @@
 package com.ihorak.truffle.node;
 
 import com.ihorak.truffle.type.*;
+import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.UnexpectedResultException;
+import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
+import com.oracle.truffle.api.source.SourceSection;
 
 import java.math.BigInteger;
 import java.util.List;
 
 public abstract class SchemeExpression extends SchemeNode {
+
+    private static final int NO_SOURCE = -1;
+
+    private int sourceCharIndex = NO_SOURCE;
+    private int sourceLength;
 
     /**
      * The execute method when no specialization is possible. This is the most general case,
@@ -32,10 +40,6 @@ public abstract class SchemeExpression extends SchemeNode {
         return SchemeTypesGen.expectDouble(executeGeneric(virtualFrame));
     }
 
-    public SchemeCell executeList(VirtualFrame virtualFrame) throws UnexpectedResultException {
-        return SchemeTypesGen.expectSchemeCell(executeGeneric(virtualFrame));
-    }
-
     public BigInteger executeBigInt(VirtualFrame virtualFrame) throws UnexpectedResultException {
         return SchemeTypesGen.expectBigInteger(executeGeneric(virtualFrame));
     }
@@ -43,4 +47,10 @@ public abstract class SchemeExpression extends SchemeNode {
     public SchemeMacro executeMacro(VirtualFrame virtualFrame) throws UnexpectedResultException {
         return SchemeTypesGen.expectSchemeMacro(executeGeneric(virtualFrame));
     }
+
+//    @Override
+//    @TruffleBoundary
+//    public SourceSection getSourceSection() {
+//
+//    }
 }

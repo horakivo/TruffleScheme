@@ -6,6 +6,8 @@ import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
+import com.oracle.truffle.api.Truffle;
+import com.oracle.truffle.api.strings.TruffleString;
 
 import java.math.BigInteger;
 
@@ -26,6 +28,8 @@ public class InternalRepresentationConverter {
             return BigIntConverter.convert(bigInt);
         } else if (obj instanceof Double doubleValue) {
             return DoubleConverter.convert(doubleValue);
+        } else if (obj instanceof TruffleString truffleString) {
+            return TruffleStringConverter.convert(truffleString);
         } else {
             throw new IllegalArgumentException("ListToExpressionConverter: Unexpected type during conversion. Type: " + obj);
         }

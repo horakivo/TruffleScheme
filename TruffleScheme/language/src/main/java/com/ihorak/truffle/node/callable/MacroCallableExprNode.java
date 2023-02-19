@@ -32,6 +32,7 @@ public class MacroCallableExprNode extends SchemeExpression {
         this.parsingContext = parsingContext;
     }
 
+    //TODO zde mozna udelat insert (nebo neco jako replace, kdy expandovane makro nahradim proste)
     @Override
     public Object executeGeneric(final VirtualFrame virtualFrame) {
         try {

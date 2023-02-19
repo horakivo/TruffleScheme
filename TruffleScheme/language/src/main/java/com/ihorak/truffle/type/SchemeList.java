@@ -22,6 +22,8 @@ public class SchemeList implements Iterable<Object>, TruffleObject {
     public SchemeCell bindingCell;
     public int size;
     public final boolean isEmpty;
+    public int startCharIndex;
+    public int sourceLength;
 
 
     public SchemeList(final SchemeCell list, final @Nullable SchemeCell bindingCell, final int size, final boolean isEmpty) {
@@ -53,6 +55,12 @@ public class SchemeList implements Iterable<Object>, TruffleObject {
     @Override
     public Iterator<Object> iterator() {
         return list.iterator();
+    }
+
+
+    public void setSourceSectionInfo(int startCharIndex, int sourceLength) {
+        this.sourceLength = sourceLength;
+        this.startCharIndex = startCharIndex;
     }
 
 
