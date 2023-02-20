@@ -3,6 +3,7 @@ package com.ihorak.truffle.node.callable.TCO;
 
 import java.util.List;
 
+import com.ihorak.truffle.SchemeTruffleLanguage;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.callable.CallableExprNode;
 import com.ihorak.truffle.node.callable.TCO.loop_nodes.TailCallLoopNode;
@@ -46,14 +47,14 @@ public class TailCallCatcherNode extends CallableExprNode {
 
     @Override
     protected Object call(CallTarget callTarget, Object[] arguments, VirtualFrame frame) {
-//        TCOTarget target = SchemeTruffleLanguage.getTCOTarget(this);
-//        target.arguments = arguments;
-//        target.target = callTarget;
+        SchemeTruffleLanguage.TCOTarget target = SchemeTruffleLanguage.getTCOTarget(this);
+        target.arguments = arguments;
+        target.target = callTarget;
 
 
 
-    	frame.setObject(tailCallTargetSlot, callTarget);
-    	frame.setObject(tailCallArgumentsSlot, arguments);
+//    	frame.setObject(tailCallTargetSlot, callTarget);
+//    	frame.setObject(tailCallArgumentsSlot, arguments);
 
 
 

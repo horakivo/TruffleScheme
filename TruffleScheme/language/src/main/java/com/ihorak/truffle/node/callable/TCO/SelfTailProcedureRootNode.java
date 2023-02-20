@@ -2,6 +2,7 @@ package com.ihorak.truffle.node.callable.TCO;
 
 import java.util.List;
 
+import com.ihorak.truffle.SchemeTruffleLanguage;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.SchemeNode;
 import com.ihorak.truffle.node.callable.TCO.loop_nodes.TailRecursiveCallLoopNode;
@@ -33,7 +34,11 @@ public class SelfTailProcedureRootNode extends RootNode {
 
     @Override
     public Object execute(VirtualFrame frame) {
-        frame.setObject(argumentsIndex, frame.getArguments());
+        SchemeTruffleLanguage.TCOTarget target = SchemeTruffleLanguage.getTCOTarget(this);
+        target.arguments = frame.getArguments();
+
+        //frame.setObject(argumentsIndex, frame.getArguments());
+
         return loop.execute(frame);
     }
 
