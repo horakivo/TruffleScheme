@@ -1,5 +1,6 @@
 package com.ihorak.truffle;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,18 +28,21 @@ public class SchemeTruffleLanguage extends TruffleLanguage<SchemeLanguageContext
     }
 
     final ContextThreadLocal<TCOTarget> target = createContextThreadLocal((c, t) -> new TCOTarget());
-    
+
     @Override
-    protected CallTarget parse(ParsingRequest request) throws Exception {
+    protected CallTarget parse(ParsingRequest request) throws IOException {
         var globalContext = new ParsingContext(this);
-        var programExpressions = convertInternalRepresentationToSchemeExpressions(CharStreams.fromReader(request.getSource().getReader()), globalContext);
-        var rootNode = new SchemeRootNode(this, globalContext.buildAndGetFrameDescriptor(), programExpressions);
+        var internalRepresentation = parseToInternalRepresentation(request);
+        var schemeExpressions = convertInternalRepresentationToSchemeExpressions(internalRepresentation, globalContext);
+        var rootNode = new SchemeRootNode(this, globalContext.buildAndGetFrameDescriptor(), schemeExpressions);
         return rootNode.getCallTarget();
     }
 
-    public static List<SchemeExpression> convertInternalRepresentationToSchemeExpressions(CharStream charStream, ParsingContext globalContext) {
+    private static List<Object> parseToInternalRepresentation(ParsingRequest request) throws IOException {
+        return Parser.parse(CharStreams.fromReader(request.getSource().getReader()));
+    }
 
-        var internalRepresentation = Parser.parse(charStream);
+    public static List<SchemeExpression> convertInternalRepresentationToSchemeExpressions(List<Object> internalRepresentation, ParsingContext globalContext) {
         List<SchemeExpression> result = new ArrayList<>();
         for (Object obj : internalRepresentation) {
             result.add(InternalRepresentationConverter.convert(obj, globalContext, false, true));
