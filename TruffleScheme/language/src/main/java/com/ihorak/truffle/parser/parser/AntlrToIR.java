@@ -5,14 +5,14 @@ import com.ihorak.truffle.parser.antlr.R5RSParser;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemePair;
 import com.ihorak.truffle.type.SchemeSymbol;
-import org.antlr.v4.runtime.tree.TerminalNode;
 import com.oracle.truffle.api.strings.TruffleString;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AntlrToInternalRepresentation extends R5RSBaseVisitor<Object> {
+public class AntlrToIR extends R5RSBaseVisitor<Object> {
 
     private static final TruffleString.Encoding STRING_ENCODING = TruffleString.Encoding.UTF_16;
 
@@ -31,11 +31,8 @@ public class AntlrToInternalRepresentation extends R5RSBaseVisitor<Object> {
             index++;
         }
 
-        var schemeList = SchemeListUtil.createList(objects);
-        var startCharIndex = ctx.start.getStartIndex();
-        var stopCharIndex = ctx.stop.getStopIndex();
-        schemeList.setSourceSectionInfo(startCharIndex, stopCharIndex - startCharIndex);
-        return schemeList;
+        return SchemeListUtil.createList(objects);
+
     }
 
     @Override
@@ -48,7 +45,7 @@ public class AntlrToInternalRepresentation extends R5RSBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitFloat(R5RSParser.FloatContext ctx) {
+    public Double visitFloat(R5RSParser.FloatContext ctx) {
         return Double.parseDouble(ctx.FLOAT().getText());
     }
 
@@ -71,25 +68,25 @@ public class AntlrToInternalRepresentation extends R5RSBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitQuote(R5RSParser.QuoteContext ctx) {
+    public SchemeList visitQuote(R5RSParser.QuoteContext ctx) {
         // 'form -> just take second child since the first one is '
         return SchemeListUtil.createList(new SchemeSymbol("quote"), visit(ctx.getChild(1)));
     }
 
     @Override
-    public Object visitQuasiquote(R5RSParser.QuasiquoteContext ctx) {
+    public SchemeList visitQuasiquote(R5RSParser.QuasiquoteContext ctx) {
         // `form -> just take second child since the first one is `
         return SchemeListUtil.createList(new SchemeSymbol("quasiquote"), visit(ctx.getChild(1)));
     }
 
     @Override
-    public Object visitUnquote(R5RSParser.UnquoteContext ctx) {
+    public SchemeList visitUnquote(R5RSParser.UnquoteContext ctx) {
         // ,form -> just take second child since the first one is ,
         return SchemeListUtil.createList(new SchemeSymbol("unquote"), visit(ctx.getChild(1)));
     }
 
     @Override
-    public Object visitUnquote_splicing(R5RSParser.Unquote_splicingContext ctx) {
+    public SchemeList visitUnquote_splicing(R5RSParser.Unquote_splicingContext ctx) {
         // ,@form -> just take second child since the first one is ,@
         return SchemeListUtil.createList(new SchemeSymbol("unquote-splicing"), visit(ctx.getChild(1)));
     }
@@ -120,4 +117,5 @@ public class AntlrToInternalRepresentation extends R5RSBaseVisitor<Object> {
             return new SchemePair(arguments.get(0), arguments.get(1));
         }
     }
+
 }

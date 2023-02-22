@@ -14,6 +14,7 @@ import java.util.List;
 public abstract class SchemeExpression extends SchemeNode {
 
     private static final int NO_SOURCE = -1;
+    private static final int UNAVAILABLE_SOURCE = -2;
 
     private int sourceCharIndex = NO_SOURCE;
     private int sourceLength;
@@ -48,9 +49,15 @@ public abstract class SchemeExpression extends SchemeNode {
         return SchemeTypesGen.expectSchemeMacro(executeGeneric(virtualFrame));
     }
 
-//    @Override
-//    @TruffleBoundary
-//    public SourceSection getSourceSection() {
-//
-//    }
+    // invoked by the parser to set the source
+    public final void setSourceSection(int charIndex, int length) {
+        assert sourceCharIndex == NO_SOURCE : "source must only be set once";
+        if (charIndex < 0) {
+            throw new IllegalArgumentException("charIndex < 0");
+        } else if (length < 0) {
+            throw new IllegalArgumentException("length < 0");
+        }
+        this.sourceCharIndex = charIndex;
+        this.sourceLength = length;
+    }
 }

@@ -1,11 +1,13 @@
 package com.ihorak.truffle.convertor.PrimitiveTypes;
 
+import com.ihorak.truffle.convertor.SourceSectionUtil;
 import com.ihorak.truffle.convertor.context.FrameIndexResult;
 import com.ihorak.truffle.convertor.context.LexicalScope;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.scope.*;
 import com.ihorak.truffle.type.SchemeSymbol;
+import org.antlr.v4.runtime.Token;
 import org.jetbrains.annotations.NotNull;
 
 public class SchemeSymbolConverter {
@@ -22,6 +24,13 @@ public class SchemeSymbolConverter {
         } else {
             return new ReadGlobalVariableExprNode(symbol);
         }
+    }
+
+    public static SchemeExpression convert(SchemeSymbol symbol, ParsingContext context, Token symbolToken) {
+        var expr = convert(symbol, context);
+        SourceSectionUtil.setSourceSection(expr, symbolToken);
+
+        return expr;
     }
 
     private static SchemeExpression createReadVariableExpr(@NotNull FrameIndexResult indexFrameIndexResult, SchemeSymbol symbol) {

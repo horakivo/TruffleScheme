@@ -1,17 +1,12 @@
 package com.ihorak.truffle;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.antlr.v4.runtime.CharStream;
+import com.ihorak.truffle.parser.parser.AntlrToAST;
 import org.antlr.v4.runtime.CharStreams;
 
-import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.context.ParsingContext;
-import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.SchemeRootNode;
-import com.ihorak.truffle.parser.parser.Parser;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.ContextThreadLocal;
 import com.oracle.truffle.api.TruffleLanguage;
@@ -32,23 +27,10 @@ public class SchemeTruffleLanguage extends TruffleLanguage<SchemeLanguageContext
     @Override
     protected CallTarget parse(ParsingRequest request) throws IOException {
         var globalContext = new ParsingContext(this);
-        var internalRepresentation = parseToInternalRepresentation(request);
-        var schemeExpressions = convertInternalRepresentationToSchemeExpressions(internalRepresentation, globalContext);
-        var rootNode = new SchemeRootNode(this, globalContext.buildAndGetFrameDescriptor(), schemeExpressions);
+        var charStream = CharStreams.fromReader(request.getSource().getReader());
+        var schemeExprs = AntlrToAST.convert(charStream, globalContext);
+        var rootNode = new SchemeRootNode(this, globalContext.buildAndGetFrameDescriptor(), schemeExprs);
         return rootNode.getCallTarget();
-    }
-
-    private static List<Object> parseToInternalRepresentation(ParsingRequest request) throws IOException {
-        return Parser.parse(CharStreams.fromReader(request.getSource().getReader()));
-    }
-
-    public static List<SchemeExpression> convertInternalRepresentationToSchemeExpressions(List<Object> internalRepresentation, ParsingContext globalContext) {
-        List<SchemeExpression> result = new ArrayList<>();
-        for (Object obj : internalRepresentation) {
-            result.add(InternalRepresentationConverter.convert(obj, globalContext, false, true));
-        }
-
-        return result;
     }
 
     @Override
@@ -57,14 +39,14 @@ public class SchemeTruffleLanguage extends TruffleLanguage<SchemeLanguageContext
     }
 
     public static TCOTarget getTCOTarget(Node node) {
-    	return REFERENCE.get(node).target.get();
+        return REFERENCE.get(node).target.get();
     }
-    
+
     public static class TCOTarget {
-    	
-    	public CallTarget target;
-    	public  Object[] arguments;
-    	
+
+        public CallTarget target;
+        public Object[] arguments;
+
     }
 
 }
