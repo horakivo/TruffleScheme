@@ -2,7 +2,7 @@ package com.ihorak.truffle;
 
 import java.io.IOException;
 
-import com.ihorak.truffle.parser.parser.AntlrToAST;
+import com.ihorak.truffle.parser.AntlrToAST;
 import org.antlr.v4.runtime.CharStreams;
 
 import com.ihorak.truffle.convertor.context.ParsingContext;

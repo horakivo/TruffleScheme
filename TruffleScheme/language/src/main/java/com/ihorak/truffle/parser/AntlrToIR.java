@@ -1,7 +1,5 @@
-package com.ihorak.truffle.parser.parser;
+package com.ihorak.truffle.parser;
 
-import com.ihorak.truffle.parser.antlr.R5RSBaseVisitor;
-import com.ihorak.truffle.parser.antlr.R5RSParser;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemePair;
 import com.ihorak.truffle.type.SchemeSymbol;

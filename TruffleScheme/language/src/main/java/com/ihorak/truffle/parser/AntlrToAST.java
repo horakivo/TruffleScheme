@@ -1,9 +1,7 @@
-package com.ihorak.truffle.parser.parser;
+package com.ihorak.truffle.parser;
 
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.parser.antlr.R5RSLexer;
-import com.ihorak.truffle.parser.antlr.R5RSParser;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 

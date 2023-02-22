@@ -1,4 +1,4 @@
-package com.ihorak.truffle.parser.parser;
+package com.ihorak.truffle.parser;
 
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.RecognitionException;

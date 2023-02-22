@@ -3,10 +3,6 @@ grammar R5RS;
 
 /* the grammar name and file must match */
 
-@header {
-    package com.ihorak.truffle.parser.antlr;
-}
-
 prog: form* EOF                 # Program
     ;
 

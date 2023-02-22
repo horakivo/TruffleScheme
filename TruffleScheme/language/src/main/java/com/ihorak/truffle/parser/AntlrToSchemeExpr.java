@@ -1,4 +1,4 @@
-package com.ihorak.truffle.parser.parser;
+package com.ihorak.truffle.parser;
 
 import com.ihorak.truffle.convertor.PrimitiveTypes.BigIntConverter;
 import com.ihorak.truffle.convertor.PrimitiveTypes.BooleanConverter;
@@ -11,8 +11,6 @@ import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.exceptions.ParserException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.literals.StringLiteralNode;
-import com.ihorak.truffle.parser.antlr.R5RSBaseVisitor;
-import com.ihorak.truffle.parser.antlr.R5RSParser;
 
 import java.math.BigInteger;
 

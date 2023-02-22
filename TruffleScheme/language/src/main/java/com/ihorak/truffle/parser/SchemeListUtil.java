@@ -1,4 +1,4 @@
-package com.ihorak.truffle.parser.parser;
+package com.ihorak.truffle.parser;
 
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeList;
