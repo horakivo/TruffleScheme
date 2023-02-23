@@ -134,27 +134,24 @@
                     <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
-
-
-<!--            <plugin>-->
-<!--                <groupId>org.antlr</groupId>-->
-<!--                <artifactId>antlr4-maven-plugin</artifactId>-->
-<!--                <version>4.9.2</version>-->
-<!--                <configuration>-->
-<!--                    <visitor>true</visitor>-->
-<!--                    <listener>false</listener>-->
-<!--                </configuration>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>antlr</id>-->
-<!--                        <goals>-->
-<!--                            <goal>antlr4</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
-
-
+            <plugin>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-maven-plugin</artifactId>
+                <!-- version 4.9.2 has to be here because of Truffle DSL - it's using antlr-runtime and from version 4.10 it is not compatible with lower versions-->
+                <version>4.9.2</version>
+                <configuration>
+                    <visitor>true</visitor>
+                    <listener>false</listener>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>antlr</id>
+                        <goals>
+                            <goal>antlr4</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -193,17 +190,6 @@
             <artifactId>junit</artifactId>
             <version>4.13.2</version>
             <scope>test</scope>
-        </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>org.junit.jupiter</groupId>-->
-        <!--            <artifactId>junit-jupiter</artifactId>-->
-        <!--            <version>5.8.2</version>-->
-        <!--            <scope>test</scope>-->
-        <!--        </dependency>-->
-        <dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>antlr4-runtime</artifactId>
-            <version>4.9.2</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
