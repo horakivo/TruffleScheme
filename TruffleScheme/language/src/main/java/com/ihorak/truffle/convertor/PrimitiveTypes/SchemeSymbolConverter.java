@@ -17,9 +17,6 @@ public class SchemeSymbolConverter {
     public static SchemeExpression convert(SchemeSymbol symbol, ParsingContext context) {
         var indexPair = context.findClosureSymbol(symbol);
         if (indexPair != null) {
-            if (indexPair.isLambdaParameter()) {
-                return createReadProcedureArgExpr(indexPair);
-            }
             return createReadVariableExpr(indexPair, symbol);
         } else {
             return new ReadGlobalVariableExprNode(symbol);
@@ -46,12 +43,5 @@ public class SchemeSymbolConverter {
             return ReadLocalVariableExprNodeGen.create(indexFrameIndexResult.index(), symbol);
         }
         return ReadNonLocalVariableExprNodeGen.create(indexFrameIndexResult.lexicalScopeDepth(), indexFrameIndexResult.index(), symbol);
-    }
-
-    private static SchemeExpression createReadProcedureArgExpr(@NotNull FrameIndexResult indexResult) {
-        if (indexResult.lexicalScopeDepth() == 0) {
-            return new ReadLocalProcedureArgExprNode(indexResult.index());
-        }
-        return new ReadNonLocalProcedureArgExprNode(indexResult.index(), indexResult.lexicalScopeDepth());
     }
 }

@@ -51,26 +51,9 @@ public class LambdaConverter {
         var rootNode = new SelfTailProcedureRootNode(name, context.getLanguage(), frameDescriptor, allExpr, argumentsIndex);
         //var rootNode = new ProcedureRootNode(name, context.getLanguage(), frameDescriptor, allExpr);
         var hasOptionalArgs = params instanceof SchemePair;
-        return new LambdaExprNode(rootNode.getCallTarget(), lambdaContext.getNumberOfLambdaParameters(), hasOptionalArgs);
+        return new LambdaExprNode(rootNode.getCallTarget(), writeLocalVariableExpr.size(), hasOptionalArgs);
     }
-
-    private static void updateParsingContext(Object params, ParsingContext context) {
-        if (params instanceof SchemeList list) {
-            for (Object obj : list) {
-                context.addLambdaParameter((SchemeSymbol) obj);
-            }
-        } else if (params instanceof SchemePair pair) {
-            var currentPair = pair;
-            while (currentPair.second() instanceof SchemePair) {
-                context.addLambdaParameter((SchemeSymbol) currentPair.first());
-                currentPair = (SchemePair) pair.second();
-            }
-            context.addLambdaParameter((SchemeSymbol) currentPair.first());
-            context.addLambdaParameter((SchemeSymbol) currentPair.second());
-        }
-
-    }
-
+    
     private static List<SchemeExpression> createLocalVariableExpressions(Object params, ParsingContext context) {
         if (params instanceof SchemeList list) {
             return createLocalVariableForSchemeList(list, context);

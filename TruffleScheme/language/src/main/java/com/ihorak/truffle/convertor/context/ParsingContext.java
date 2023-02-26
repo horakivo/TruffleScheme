@@ -12,7 +12,6 @@ import java.util.*;
 public class ParsingContext {
 
     private final Set<SchemeSymbol> macroIndex = new HashSet<>();
-    private final Map<SchemeSymbol, Integer> lambdaParameterIndex = new HashMap<>();
     private final Map<SchemeSymbol, LocalVariableInfo> localVariableIndex = new HashMap<>();
 
     private SchemeSymbol functionDefinitionName;
@@ -86,11 +85,7 @@ public class ParsingContext {
 
         LocalVariableInfo localVariableInfo = context.localVariableIndex.get(symbol);
         //we found local variable
-        if (localVariableInfo != null) return new FrameIndexResult(localVariableInfo.getIndex(), false, localVariableInfo.isNullable(), depth);
-        var argumentIndex = context.getLambdaParameterIndex(symbol);
-        //we found argument
-        if (argumentIndex != null) return new FrameIndexResult(argumentIndex, true, false, depth);
-
+        if (localVariableInfo != null) return new FrameIndexResult(localVariableInfo.getIndex(), localVariableInfo.isNullable(), depth);
 
         //recursive call
         if (context.scope == LexicalScope.LET || context.scope == LexicalScope.LETREC) {
@@ -154,19 +149,6 @@ public class ParsingContext {
             if (localVarInfo == null) throw new SchemeException("CONVERTER ERROR: Unable to update local variable to non-nullable type. Name: " + names, null);
             localVarInfo.setNullable(false);
         }
-    }
-
-    public void addLambdaParameter(SchemeSymbol name) {
-        lambdaParameterIndex.put(name, lambdaParameterIndex.size());
-    }
-
-    @Nullable
-    public Integer getLambdaParameterIndex(SchemeSymbol name) {
-        return lambdaParameterIndex.get(name);
-    }
-
-    public int getNumberOfLambdaParameters() {
-        return lambdaParameterIndex.size();
     }
 
     @Nullable
