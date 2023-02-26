@@ -18,11 +18,7 @@ public class DefineConverter {
 
     public static SchemeExpression convert(SchemeList defineList, ParsingContext context, boolean isDefinitionAllowed) {
         validate(defineList, isDefinitionAllowed);
-
-        if (isDefun(defineList)) {
-            return convertDefun(defineList, context);
-        }
-
+        
         var identifier = (SchemeSymbol) defineList.get(1);
         var defineBody = defineList.get(2);
         var isNonGlobalEnv = context.getLexicalScope() != LexicalScope.GLOBAL;
@@ -33,18 +29,7 @@ public class DefineConverter {
             context.makeLocalVariablesNullable(List.of(identifier));
         }
 
-
-//        var previousFunctionDefinition = context.isFunctionDefinition();
-//        var previousFunctionDefinitionName = context.getFunctionDefinitionName();
-
-        var bodyExpr = InternalRepresentationConverter.convert(defineBody, context, false, false);
-
-
-//        if (isFunctionDefinition) {
-//            context.setFunctionDefinition(previousFunctionDefinition);
-//            context.setFunctionDefinitionName(previousFunctionDefinitionName);
-//
-//        }
+        var bodyExpr = convertDefineBodyToSchemeExpr(defineList, defineBody, context, identifier);
 
         if (isNonGlobalEnv) {
             context.makeLocalVariablesNonNullable(List.of(identifier));
@@ -58,28 +43,15 @@ public class DefineConverter {
     }
 
 
-    private static SchemeExpression convertDefun(SchemeList defineList, ParsingContext context) {
-        var identifier = (SchemeSymbol) defineList.get(1);
-        var lambdaBody = (SchemeList) defineList.get(2);
-        var isNonGlobalEnv = context.getLexicalScope() != LexicalScope.GLOBAL;
-
-        if (isNonGlobalEnv) {
-            context.findOrAddLocalSymbol(identifier);
-            context.makeLocalVariablesNullable(List.of(identifier));
-        }
-
-        var lambdaExpr = LambdaConverter.convert(lambdaBody, context, identifier);
-
-
-        if (isNonGlobalEnv) {
-            context.makeLocalVariablesNonNullable(List.of(identifier));
-        }
-
-        if (context.getLexicalScope() == LexicalScope.GLOBAL) {
-            return CreateWriteExprNode.createWriteGlobalVariableExprNode(identifier, lambdaExpr);
+    private static SchemeExpression convertDefineBodyToSchemeExpr(SchemeList defineList, Object defineBody, ParsingContext context, SchemeSymbol identifier) {
+        SchemeExpression bodyExpr;
+        if (isDefun(defineList)) {
+            bodyExpr = LambdaConverter.convert((SchemeList) defineBody, context, identifier);
         } else {
-            return CreateWriteExprNode.createWriteLocalVariableExprNode(identifier, lambdaExpr, context);
+            bodyExpr = InternalRepresentationConverter.convert(defineBody, context, false, false);
         }
+
+        return bodyExpr;
     }
 
     private static void validate(SchemeList defineList, boolean isDefinitionAllowed) {
