@@ -3,9 +3,11 @@ package com.ihorak.truffle.node;
 import com.ihorak.truffle.type.*;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.nodes.RootNode;
 import com.oracle.truffle.api.nodes.UnexpectedResultException;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
+import com.oracle.truffle.api.source.Source;
 import com.oracle.truffle.api.source.SourceSection;
 
 import java.math.BigInteger;
@@ -18,6 +20,8 @@ public abstract class SchemeExpression extends SchemeNode {
 
     private int sourceCharIndex = NO_SOURCE;
     private int sourceLength;
+
+    private boolean hasRootTag = false;
 
     /**
      * The execute method when no specialization is possible. This is the most general case,
@@ -47,6 +51,35 @@ public abstract class SchemeExpression extends SchemeNode {
 
     public SchemeMacro executeMacro(VirtualFrame virtualFrame) throws UnexpectedResultException {
         return SchemeTypesGen.expectSchemeMacro(executeGeneric(virtualFrame));
+    }
+
+
+    @Override
+    @TruffleBoundary
+    public final SourceSection getSourceSection() {
+        if (sourceCharIndex == NO_SOURCE) {
+            // AST node without source
+            return null;
+        }
+        RootNode rootNode = getRootNode();
+        if (rootNode == null) {
+            // not yet adopted yet
+            return null;
+        }
+        SourceSection rootSourceSection = rootNode.getSourceSection();
+        if (rootSourceSection == null) {
+            return null;
+        }
+        Source source = rootSourceSection.getSource();
+        if (sourceCharIndex == UNAVAILABLE_SOURCE) {
+            if (hasRootTag && !rootSourceSection.isAvailable()) {
+                return rootSourceSection;
+            } else {
+                return source.createUnavailableSection();
+            }
+        } else {
+            return source.createSection(sourceCharIndex, sourceLength);
+        }
     }
 
     // invoked by the parser to set the source

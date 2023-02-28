@@ -1,6 +1,7 @@
 package com.ihorak.truffle.convertor.SpecialForms;
 
 import com.ihorak.truffle.convertor.InternalRepresentationConverter;
+import com.ihorak.truffle.convertor.SourceSectionUtil;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
@@ -11,7 +12,9 @@ import com.ihorak.truffle.node.special_form.UnquoteSplicingInsertInfo;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
+import org.antlr.v4.runtime.ParserRuleContext;
 
+import javax.xml.transform.Source;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,10 +30,11 @@ public class QuasiquioteConverter {
                             List<UnquoteSplicingInsertInfo> unquoteSplicingToInsert) {
     }
 
-    public static QuasiquoteExprNode convert(SchemeList quasiquoteList, ParsingContext context) {
+    public static SchemeExpression convert(SchemeList quasiquoteList, ParsingContext context, ParserRuleContext quasiquoteCtx) {
         if (quasiquoteList.size == 2) {
             var holder = quasiquoteHelper(quasiquoteList.get(1), context);
-            return new QuasiquoteExprNode(quasiquoteList.get(1), holder.unquoteToEval, holder.unquoteToInsert, holder.unquoteSplicingToEval, holder.unquoteSplicingToInsert);
+            var quasiquoteExpr = new QuasiquoteExprNode(quasiquoteList.get(1), holder.unquoteToEval, holder.unquoteToInsert, holder.unquoteSplicingToEval, holder.unquoteSplicingToInsert);
+            return SourceSectionUtil.setSourceSectionAndReturnExpr(quasiquoteExpr, quasiquoteCtx);
         } else {
             throw new SchemeException("quasiquote: arity mismatch\nexpected: 1\ngiven: " + (quasiquoteList.size - 1), null);
         }
@@ -80,11 +84,13 @@ public class QuasiquioteConverter {
             var element = currentCell.car;
             if (element instanceof SchemeList list) {
                 if (shouldUnquoteBeDone(list, context)) {
-                    if (list.size != 2) throw new SchemeException("unquote: expects exactly one expression in " + list, null);
+                    if (list.size != 2)
+                        throw new SchemeException("unquote: expects exactly one expression in " + list, null);
                     quasiquoteHolderResult.unquoteToEval.add(convertDataToTruffleAST(list.get(1), context));
                     quasiquoteHolderResult.unquoteToInsert.add(currentCell);
                 } else if (shouldUnquoteSplicingBeDone(list, context)) {
-                    if (list.size != 2) throw new SchemeException("unquote-splicing: expects exactly one expression in " + list, null);
+                    if (list.size != 2)
+                        throw new SchemeException("unquote-splicing: expects exactly one expression in " + list, null);
                     quasiquoteHolderResult.unquoteSplicingToEval.add(convertDataToTruffleAST(list.get(1), context));
                     quasiquoteHolderResult.unquoteSplicingToInsert.add(new UnquoteSplicingInsertInfo(previousCell, currentCell));
                 } else {

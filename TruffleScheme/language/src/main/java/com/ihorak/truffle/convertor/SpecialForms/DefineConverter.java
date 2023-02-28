@@ -8,17 +8,21 @@ import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.List;
 
 public class DefineConverter {
 
+    private static final int CTX_DEFINE_IDENTIFIER = 2;
+    private static final int CTX_DEFINE_BODY = 3;
+
     private DefineConverter() {
     }
 
-    public static SchemeExpression convert(SchemeList defineList, ParsingContext context, boolean isDefinitionAllowed) {
+    public static SchemeExpression convert(SchemeList defineList, ParsingContext context, boolean isDefinitionAllowed, ParserRuleContext defineCtx) {
         validate(defineList, isDefinitionAllowed);
-        
+
         var identifier = (SchemeSymbol) defineList.get(1);
         var defineBody = defineList.get(2);
         var isNonGlobalEnv = context.getLexicalScope() != LexicalScope.GLOBAL;
@@ -29,26 +33,28 @@ public class DefineConverter {
             context.makeLocalVariablesNullable(List.of(identifier));
         }
 
-        var bodyExpr = convertDefineBodyToSchemeExpr(defineList, defineBody, context, identifier);
+        var bodyExpr = convertDefineBodyToSchemeExpr(defineList, defineBody, context, identifier, defineCtx);
 
         if (isNonGlobalEnv) {
             context.makeLocalVariablesNonNullable(List.of(identifier));
         }
 
         if (context.getLexicalScope() == LexicalScope.GLOBAL) {
-            return CreateWriteExprNode.createWriteGlobalVariableExprNode(identifier, bodyExpr);
+            return CreateWriteExprNode.createWriteGlobalVariableExprNode(identifier, bodyExpr, defineCtx);
         } else {
-            return CreateWriteExprNode.createWriteLocalVariableExprNode(identifier, bodyExpr, context);
+            return CreateWriteExprNode.createWriteLocalVariableExprNode(identifier, bodyExpr, context, defineCtx);
         }
     }
 
 
-    private static SchemeExpression convertDefineBodyToSchemeExpr(SchemeList defineList, Object defineBody, ParsingContext context, SchemeSymbol identifier) {
+    private static SchemeExpression convertDefineBodyToSchemeExpr(SchemeList defineList, Object defineBody, ParsingContext context, SchemeSymbol identifier, ParserRuleContext defineCtx) {
+        var bodyFormCtx = (ParserRuleContext) defineCtx.children.get(CTX_DEFINE_BODY);
         SchemeExpression bodyExpr;
         if (isDefun(defineList)) {
-            bodyExpr = LambdaConverter.convert((SchemeList) defineBody, context, identifier);
+            var lambdaCtx = (ParserRuleContext) bodyFormCtx.getChild(0);
+            bodyExpr = LambdaConverter.convert((SchemeList) defineBody, context, identifier, lambdaCtx);
         } else {
-            bodyExpr = InternalRepresentationConverter.convert(defineBody, context, false, false);
+            bodyExpr = InternalRepresentationConverter.convert(defineBody, context, false, false, bodyFormCtx);
         }
 
         return bodyExpr;

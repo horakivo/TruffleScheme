@@ -3,6 +3,7 @@ package com.ihorak.truffle.convertor;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeSymbol;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.List;
 
@@ -12,70 +13,41 @@ public class BuiltinConverter {
      *
      * --> (operand expr1...exprN)
      * */
-    public static SchemeExpression createBuiltin(SchemeSymbol operand, List<SchemeExpression> convertedArguments, ParsingContext context) {
+    public static SchemeExpression createBuiltin(SchemeSymbol operand, List<SchemeExpression> convertedArguments, ParsingContext context, ParserRuleContext ctx) {
 
-        switch (operand.getValue()) {
-            case "+":
-                return BuiltinFactory.createPlusBuiltin(convertedArguments);
-            case "-":
-                return BuiltinFactory.createMinusBuiltin(convertedArguments);
-            case "/":
-                return BuiltinFactory.createDivideBuiltin(convertedArguments);
-            case "*":
-                return BuiltinFactory.createMultipleBuiltin(convertedArguments);
-            case "eval":
-                return BuiltinFactory.createEvalBuiltin(convertedArguments, context);
-            case "list":
-                return BuiltinFactory.createListBuiltin(convertedArguments);
-            case "cons":
-                return BuiltinFactory.createConsBuiltin(convertedArguments);
-            case "cdr":
-                return BuiltinFactory.createCdrBuiltin(convertedArguments);
-            case "car":
-                return BuiltinFactory.createCarBuiltin(convertedArguments);
-            case "length":
-                return BuiltinFactory.createLengthBuiltin(convertedArguments);
-            case "append":
-                return BuiltinFactory.createAppendBuiltin(convertedArguments);
-            case "map":
-                return BuiltinFactory.createMapBuiltin(convertedArguments);
-            case "<=":
-                return BuiltinFactory.createLessThenOrEqual(convertedArguments);
-            case "current-milliseconds":
-                return BuiltinFactory.createCurrentMillisBuiltin(convertedArguments);
-            case "display":
-                return BuiltinFactory.createDisplayBuiltin(convertedArguments);
-            case "newline":
-                return BuiltinFactory.createNewlineBuiltin(convertedArguments);
-            case "=":
-                return BuiltinFactory.createEqualNumbers(convertedArguments);
-            case "<":
-                return BuiltinFactory.createLessThen(convertedArguments);
-            case ">":
-                return BuiltinFactory.createMoreThen(convertedArguments);
-            case ">=":
-                return BuiltinFactory.createMoreThenEqual(convertedArguments);
-            case "loop":
-                return BuiltinFactory.createLoop(convertedArguments);
-            case "begin":
-                return BuiltinFactory.createBegin(convertedArguments);
-            case "list-ref":
-                return BuiltinFactory.createListRef(convertedArguments);
-            case "not":
-                return BuiltinFactory.createNot(convertedArguments);
-            case "null?":
-                return BuiltinFactory.createIsNull(convertedArguments);
-            case "modulo":
-                return BuiltinFactory.createModulo(convertedArguments);
-            case "cadr":
-                return BuiltinFactory.createCadr(convertedArguments);
-            case "infinite":
-                return BuiltinFactory.createInfinite(convertedArguments);
-            case "equal?":
-                return BuiltinFactory.createEqual(convertedArguments);
-            default:
-                throw new RuntimeException("Unable to convert builtin procedure from list to AST. Builtin: " + operand);
-        }
+        return switch (operand.getValue()) {
+            case "+" -> BuiltinFactory.createPlusBuiltin(convertedArguments, ctx);
+            case "-" -> BuiltinFactory.createMinusBuiltin(convertedArguments, ctx);
+            case "/" -> BuiltinFactory.createDivideBuiltin(convertedArguments);
+            case "*" -> BuiltinFactory.createMultipleBuiltin(convertedArguments);
+            case "eval" -> BuiltinFactory.createEvalBuiltin(convertedArguments, context);
+            case "list" -> BuiltinFactory.createListBuiltin(convertedArguments);
+            case "cons" -> BuiltinFactory.createConsBuiltin(convertedArguments);
+            case "cdr" -> BuiltinFactory.createCdrBuiltin(convertedArguments);
+            case "car" -> BuiltinFactory.createCarBuiltin(convertedArguments);
+            case "length" -> BuiltinFactory.createLengthBuiltin(convertedArguments);
+            case "append" -> BuiltinFactory.createAppendBuiltin(convertedArguments);
+            case "map" -> BuiltinFactory.createMapBuiltin(convertedArguments);
+            case "<=" -> BuiltinFactory.createLessThenOrEqual(convertedArguments);
+            case "current-milliseconds" -> BuiltinFactory.createCurrentMillisBuiltin(convertedArguments);
+            case "display" -> BuiltinFactory.createDisplayBuiltin(convertedArguments);
+            case "newline" -> BuiltinFactory.createNewlineBuiltin(convertedArguments);
+            case "=" -> BuiltinFactory.createEqualNumbers(convertedArguments);
+            case "<" -> BuiltinFactory.createLessThen(convertedArguments, ctx);
+            case ">" -> BuiltinFactory.createMoreThen(convertedArguments);
+            case ">=" -> BuiltinFactory.createMoreThenEqual(convertedArguments);
+            case "loop" -> BuiltinFactory.createLoop(convertedArguments);
+            case "begin" -> BuiltinFactory.createBegin(convertedArguments);
+            case "list-ref" -> BuiltinFactory.createListRef(convertedArguments);
+            case "not" -> BuiltinFactory.createNot(convertedArguments);
+            case "null?" -> BuiltinFactory.createIsNull(convertedArguments);
+            case "modulo" -> BuiltinFactory.createModulo(convertedArguments);
+            case "cadr" -> BuiltinFactory.createCadr(convertedArguments);
+            case "infinite" -> BuiltinFactory.createInfinite(convertedArguments);
+            case "equal?" -> BuiltinFactory.createEqual(convertedArguments);
+            default ->
+                    throw new RuntimeException("Unable to convert builtin procedure from list to AST. Builtin: " + operand);
+        };
 
     }
 }

@@ -13,6 +13,9 @@ import java.util.List;
 
 public abstract class AbstractLetConverter {
 
+    protected static final int CTX_PARAMS_OFFSET = 1;
+    protected static final int CTX_BODY_INDEX = 3;
+
     protected static void validate(SchemeList letList) {
         var localBinding = letList.get(1);
         if (!(localBinding instanceof SchemeList localBindingList)) {

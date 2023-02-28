@@ -8,15 +8,18 @@ import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.macro.DefineMacroExprNode;
 import com.ihorak.truffle.node.special_form.LambdaExprNode;
-import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
+import org.antlr.v4.runtime.ParserRuleContext;
 
-public class SchemeMacroConverter {
+public class SchemeMacroDefinitionConverter {
 
-    private SchemeMacroConverter() {}
+    private static final int CTX_IDENTIFIER = 2;
 
-    public static SchemeExpression convertMarco(SchemeList macroList, ParsingContext context) {
+    private SchemeMacroDefinitionConverter() {
+    }
+
+    public static SchemeExpression convertMarco(SchemeList macroList, ParsingContext context, ParserRuleContext macroCtx) {
         validate(macroList);
 
         var name = (SchemeSymbol) macroList.get(1);
@@ -27,10 +30,11 @@ public class SchemeMacroConverter {
         }
 
         context.addMacro(name);
+        var symbolCtx = (ParserRuleContext) macroCtx.getChild(CTX_IDENTIFIER);
         if (context.getLexicalScope() == LexicalScope.GLOBAL) {
-            return CreateWriteExprNode.createWriteGlobalVariableExprNode(name, new DefineMacroExprNode(lambdaExprNode));
+            return CreateWriteExprNode.createWriteGlobalVariableExprNode(name, new DefineMacroExprNode(lambdaExprNode), symbolCtx);
         } else {
-            return CreateWriteExprNode.createWriteLocalVariableExprNode(name, new DefineMacroExprNode(lambdaExprNode), context);
+            return CreateWriteExprNode.createWriteLocalVariableExprNode(name, new DefineMacroExprNode(lambdaExprNode), context, symbolCtx);
         }
 
 

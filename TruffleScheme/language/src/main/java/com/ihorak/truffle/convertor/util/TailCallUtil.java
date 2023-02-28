@@ -5,28 +5,38 @@ import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeList;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TailCallUtil {
 
-    private TailCallUtil() {}
-
+    private TailCallUtil() {
+    }
 
 
     //body is e.g. body of lambda or let where definitions+ are allowed
     //TCO: (<definitions>+ <expressions>* <tail expression>)
-    public static List<SchemeExpression> convertBodyToSchemeExpressionsWithTCO(SchemeList body, ParsingContext context) {
+
+    /**
+     * ctx - Parser context (e.g lambda, or, and)
+     * ctxBodyStartIndex - since the body is defined as follows: <definitions>+ <expressions>* we don't know where in the
+     * lambda, or we should start. This index is the starting point
+     */
+    public static List<SchemeExpression> convertBodyToSchemeExpressionsWithTCO(SchemeList body, ParsingContext context, ParserRuleContext ctx, int ctxBodyStartIndex) {
         List<SchemeExpression> result = new ArrayList<>();
         var size = body.size;
         for (int i = 0; i < size - 1; i++) {
-            result.add(InternalRepresentationConverter.convert(body.get(i), context, false, true));
+            var currentCtx = (ParserRuleContext) ctx.getChild(ctxBodyStartIndex + i);
+            result.add(InternalRepresentationConverter.convert(body.get(i), context, false, true, currentCtx));
         }
 
         //TCO: (or <expression>* <tail expression>)
         if (size > 0) {
-            result.add(InternalRepresentationConverter.convert(body.get(size - 1), context, true, false));
+            var lastIndex = size - 1;
+            var currentCtx = (ParserRuleContext) ctx.getChild(ctxBodyStartIndex + lastIndex);
+            result.add(InternalRepresentationConverter.convert(body.get(size - 1), context, true, false, currentCtx));
 
         }
 
@@ -35,15 +45,18 @@ public class TailCallUtil {
 
 
     //TCO: (or <expression>* <tail expression>)
-    public static List<SchemeExpression> convertExpressionsToSchemeExpressionsWithTCO(SchemeList expressions, ParsingContext context) {
+    public static List<SchemeExpression> convertExpressionsToSchemeExpressionsWithTCO(SchemeList expressions, ParsingContext context, ParserRuleContext ctx, int ctxBodyStartIndex) {
         List<SchemeExpression> result = new ArrayList<>();
         var size = expressions.size;
         for (int i = 0; i < size - 1; i++) {
-            result.add(InternalRepresentationConverter.convert(expressions.get(i), context, false, false));
+            var currentCtx = (ParserRuleContext) ctx.getChild(ctxBodyStartIndex + i);
+            result.add(InternalRepresentationConverter.convert(expressions.get(i), context, false, false, currentCtx));
         }
 
         if (size > 0) {
-            result.add(InternalRepresentationConverter.convert(expressions.get(size - 1), context, true, false));
+            var lastIndex = size - 1;
+            var currentCtx = (ParserRuleContext) ctx.getChild(ctxBodyStartIndex + lastIndex);
+            result.add(InternalRepresentationConverter.convert(expressions.get(lastIndex), context, true, false, currentCtx));
 
         }
 

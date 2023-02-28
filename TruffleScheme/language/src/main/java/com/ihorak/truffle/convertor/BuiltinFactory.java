@@ -14,6 +14,7 @@ import com.ihorak.truffle.node.exprs.builtin.list.ListRefExprNodeGen;
 import com.ihorak.truffle.node.exprs.shared.*;
 import com.ihorak.truffle.node.literals.BooleanLiteralNode;
 import com.ihorak.truffle.node.literals.LongLiteralNode;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,12 +38,13 @@ public class BuiltinFactory {
         }
     }
 
-    public static SchemeExpression createMinusBuiltin(List<SchemeExpression> arguments) {
+    public static SchemeExpression createMinusBuiltin(List<SchemeExpression> arguments, ParserRuleContext minusCtx) {
         if (arguments.size() == 0)
             throw new SchemeException(
                     "-: arity mismatch; Expected number of arguments does not match the given number\nexpected: at least 1\ngiven: 0", null);
         if (arguments.size() == 1) return NegateNumberExprNodeGen.create(arguments.get(0));
-        return reduceMinus(arguments);
+        var minusExpr = reduceMinus(arguments);
+        return SourceSectionUtil.setSourceSectionAndReturnExpr(minusExpr, minusCtx);
     }
 
     private static SchemeExpression reduceMinus(List<SchemeExpression> arguments) {
@@ -54,10 +56,11 @@ public class BuiltinFactory {
         }
     }
 
-    public static SchemeExpression createPlusBuiltin(List<SchemeExpression> arguments) {
+    public static SchemeExpression createPlusBuiltin(List<SchemeExpression> arguments, ParserRuleContext plusCtx) {
         if (arguments.size() == 0) return new LongLiteralNode(0);
         if (arguments.size() == 1) return OneArgumentExprNodeGen.create(arguments.get(0));
-        return reducePlus(arguments);
+        var plusExpr = reducePlus(arguments);
+        return SourceSectionUtil.setSourceSectionAndReturnExpr(plusExpr, plusCtx);
     }
 
     private static SchemeExpression reducePlus(List<SchemeExpression> arguments) {
@@ -141,10 +144,12 @@ public class BuiltinFactory {
         }
     }
 
-//    //TODO this is messy, consider using binary reducibility instead of current approach. Study what is better
+    //    //TODO this is messy, consider using binary reducibility instead of current approach. Study what is better
     public static SchemeExpression createAppendBuiltin(List<SchemeExpression> arguments) {
-        if (arguments.isEmpty()) return ListExprNodeFactory.create(new ConvertSchemeExprsArgumentsNode(new SchemeExpression[] {}));
-        if (arguments.size() == 1) return AppendExprNode1NodeGen.create(arguments.get(0), ListExprNodeFactory.create(new ConvertSchemeExprsArgumentsNode(new SchemeExpression[] {})));
+        if (arguments.isEmpty())
+            return ListExprNodeFactory.create(new ConvertSchemeExprsArgumentsNode(new SchemeExpression[]{}));
+        if (arguments.size() == 1)
+            return AppendExprNode1NodeGen.create(arguments.get(0), ListExprNodeFactory.create(new ConvertSchemeExprsArgumentsNode(new SchemeExpression[]{})));
         return reduceAppend(arguments);
     }
 
@@ -205,12 +210,15 @@ public class BuiltinFactory {
         return result;
     }
 
-    public static SchemeExpression createLessThen(List<SchemeExpression> arguments) {
+    public static SchemeExpression createLessThen(List<SchemeExpression> arguments, ParserRuleContext ctx) {
         if (arguments.size() == 0)
             throw new SchemeException(
                     "<: arity mismatch; Expected number of argument does not match the given number\nexpected: at least 1\ngiven: 0", null);
         if (arguments.size() == 1) return new BooleanLiteralNode(true);
-        if (arguments.size() == 2) return new LessThenExprNode(arguments.get(0), arguments.get(1));
+        if (arguments.size() == 2) {
+            var lessExpr = new LessThenExprNode(arguments.get(0), arguments.get(1));
+            return SourceSectionUtil.setSourceSectionAndReturnExpr(lessExpr, ctx);
+        }
         return new ReduceComparisonExprNode(reduceLessThen(arguments));
     }
 
@@ -333,10 +341,10 @@ public class BuiltinFactory {
 
     public static SchemeExpression createCadr(List<SchemeExpression> arguments) {
         if (arguments.size() == 1) {
-           var cdr = CdrExprNodeFactory.create(arguments.toArray(SchemeExpression[]::new));
-           var car = CarExprNodeFactory.create(new SchemeExpression[] {cdr});
+            var cdr = CdrExprNodeFactory.create(arguments.toArray(SchemeExpression[]::new));
+            var car = CarExprNodeFactory.create(new SchemeExpression[]{cdr});
 
-           return car;
+            return car;
         }
 
         throw new SchemeException(

@@ -1,6 +1,7 @@
 package com.ihorak.truffle.convertor.SpecialForms;
 
 import com.ihorak.truffle.convertor.InternalRepresentationConverter;
+import com.ihorak.truffle.convertor.SourceSectionUtil;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
@@ -11,25 +12,33 @@ import com.ihorak.truffle.node.special_form.IfExprNode;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 public class CondConverter {
 
-    private CondConverter() {}
-
-    public static SchemeExpression convertCond(SchemeList condList, ParsingContext context) {
-        validate(condList);
-        var condExpressions = condList.cdr();
-        if (condExpressions.size == 0) return new UndefinedLiteralNode();
-        if (condExpressions.size == 1) {
-            var condExpr = (SchemeList) condExpressions.get(0);
-            var conditionExpr = InternalRepresentationConverter.convert(condExpr.get(0), context, false, false);
-            var thenExpr = InternalRepresentationConverter.convert(condExpr.get(1), context, true, false);
-            return new IfExprNode(BooleanCastExprNodeGen.create(conditionExpr), thenExpr);
-        }
-
-        return reduceCond(condExpressions, context);
+    private CondConverter() {
     }
 
+    public static SchemeExpression convertCond(SchemeList condList, ParsingContext context, ParserRuleContext condCtx) {
+        validate(condList);
+        var condExpressions = condList.cdr();
+        if (condExpressions.size == 0)
+            return SourceSectionUtil.setSourceSectionAndReturnExpr(new UndefinedLiteralNode(), condCtx);
+        if (condExpressions.size == 1) {
+            var condExpr = (SchemeList) condExpressions.get(0);
+            var conditionCtx = (ParserRuleContext) condCtx.getChild(3);
+            var thenCtx = (ParserRuleContext) condCtx.getChild(4);
+            var conditionExpr = InternalRepresentationConverter.convert(condExpr.get(0), context, false, false, conditionCtx);
+            var thenExpr = InternalRepresentationConverter.convert(condExpr.get(1), context, true, false, thenCtx);
+
+            var ifExpr = new IfExprNode(BooleanCastExprNodeGen.create(conditionExpr), thenExpr);
+            return SourceSectionUtil.setSourceSectionAndReturnExpr(ifExpr, condCtx);
+        }
+
+        return SourceSectionUtil.setSourceSectionAndReturnExpr(reduceCond(condExpressions, context), condCtx);
+    }
+
+    //TODO is it a problem that those doesn't have Source section?
     private static SchemeExpression reduceCond(SchemeList condExpressions, ParsingContext context) {
         if (condExpressions.size > 2) {
             var firstCondExpr = (SchemeList) condExpressions.get(0);
@@ -55,7 +64,7 @@ public class CondConverter {
         } else {
             var secondConditionExpr = InternalRepresentationConverter.convert(secondCondExpr.get(0), context, false, false);
             return new IfElseExprNode(BooleanCastExprNodeGen.create(firstConditionExpr), firstThenExpr,
-                                      new IfExprNode(BooleanCastExprNodeGen.create(secondConditionExpr), secondThenExpr));
+                    new IfExprNode(BooleanCastExprNodeGen.create(secondConditionExpr), secondThenExpr));
         }
     }
 
@@ -69,14 +78,14 @@ public class CondConverter {
 
             if (list.size != 2) {
                 throw new SchemeException("""
-                                                  cond: bad syntax
-                                                  expected syntax: (cond (<test1> <action1>)
-                                                                                .
-                                                                                .
-                                                                                .
-                                                                         (<testN> <actionN>)
-                                                                         (else <action>))        
-                                                  """, null);
+                        cond: bad syntax
+                        expected syntax: (cond (<test1> <action1>)
+                                                      .
+                                                      .
+                                                      .
+                                               (<testN> <actionN>)
+                                               (else <action>))        
+                        """, null);
             }
         }
     }

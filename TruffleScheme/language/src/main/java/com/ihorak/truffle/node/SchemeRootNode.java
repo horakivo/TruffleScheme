@@ -10,7 +10,7 @@ import java.util.List;
 
 public class SchemeRootNode extends RootNode {
 
-    @Children private final SchemeExpression[] schemeExpressions;
+    @Children public final SchemeExpression[] schemeExpressions;
 
     public SchemeRootNode(SchemeTruffleLanguage language, FrameDescriptor frameDescriptor, List<SchemeExpression> schemeExpressions) {
         super(language, frameDescriptor);
@@ -25,5 +25,15 @@ public class SchemeRootNode extends RootNode {
         }
         //return last element
         return schemeExpressions[schemeExpressions.length - 1].executeGeneric(frame);
+    }
+
+    @Override
+    public String getName() {
+        return "main root";
+    }
+
+    @Override
+    public String toString() {
+        return "main root";
     }
 }

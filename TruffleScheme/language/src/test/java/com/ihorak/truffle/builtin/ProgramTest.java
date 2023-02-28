@@ -541,4 +541,15 @@ public class ProgramTest {
         var result = context.eval("scm", program).asLong();
         System.out.println(result);
     }
+
+    @Test
+    public void asdasd() {
+        var program = """   
+                (if 5 4 3)
+                """;
+
+
+        var result = context.eval("scm", program).asLong();
+        System.out.println(result);
+    }
 }

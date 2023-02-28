@@ -14,6 +14,7 @@ import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemePair;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.frame.FrameSlotKind;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,24 +25,27 @@ public class LambdaConverter {
     }
 
     private static final String NOT_IDENTIFIER_IN_PARAMS = "lambda: not an identifier in parameters";
+    private static final int CTX_LAMBDA_PARAMS = 2;
+    private static final int CTX_LAMBDA_BODY_INDEX = 3;
+    private static final int CTX_PARAMS_OFFSET = 1;
 
 
-    public static LambdaExprNode convert(SchemeList lambdaList, ParsingContext context, SchemeSymbol name) {
+    public static LambdaExprNode convert(SchemeList lambdaList, ParsingContext context, SchemeSymbol name, ParserRuleContext lambdaCtx) {
         validate(lambdaList);
         ParsingContext lambdaContext = new ParsingContext(context, LexicalScope.LAMBDA);
         if (!name.getValue().equals("anonymous_procedure")) {
             lambdaContext.setFunctionDefinitionName(name);
         }
-//        if (context.isFunctionDefinition()) {
-//            lambdaContext.setFunctionDefinitionName(context.getFunctionDefinitionName());
-//        }
 
         var params = lambdaList.cdr().car();
         var expressions = lambdaList.cdr().cdr();
 
-        var writeLocalVariableExpr = createLocalVariableExpressions(params, lambdaContext);
-        //updateParsingContext(params, lambdaContext);
-        var bodyExpressions = TailCallUtil.convertBodyToSchemeExpressionsWithTCO(expressions, lambdaContext);
+        //
+        var paramsCtx = (ParserRuleContext) lambdaCtx.getChild(CTX_LAMBDA_PARAMS).getChild(0);
+        var writeLocalVariableExpr = createLocalVariableExpressions(params, lambdaContext, paramsCtx);
+
+        var bodyExpressions = TailCallUtil.convertBodyToSchemeExpressionsWithTCO(expressions, lambdaContext, lambdaCtx, CTX_LAMBDA_BODY_INDEX);
+
         List<SchemeExpression> allExpr = new ArrayList<>();
         allExpr.addAll(writeLocalVariableExpr);
         allExpr.addAll(bodyExpressions);
@@ -53,36 +57,39 @@ public class LambdaConverter {
         var hasOptionalArgs = params instanceof SchemePair;
         return new LambdaExprNode(rootNode.getCallTarget(), writeLocalVariableExpr.size(), hasOptionalArgs);
     }
-    
-    private static List<SchemeExpression> createLocalVariableExpressions(Object params, ParsingContext context) {
+
+    private static List<SchemeExpression> createLocalVariableExpressions(Object params, ParsingContext context, ParserRuleContext paramsCtx) {
         if (params instanceof SchemeList list) {
-            return createLocalVariableForSchemeList(list, context);
+            return createLocalVariableForSchemeList(list, context, paramsCtx);
         } else if (params instanceof SchemePair pair) {
-            return createLocalVariableForSchemePair(pair, context);
+            return createLocalVariableForSchemePair(pair, context, paramsCtx);
         }
         throw InterpreterException.shouldNotReachHere();
     }
 
-    private static List<SchemeExpression> createLocalVariableForSchemeList(SchemeList list, ParsingContext context) {
+    private static List<SchemeExpression> createLocalVariableForSchemeList(SchemeList list, ParsingContext context, ParserRuleContext paramsCtx) {
         List<SchemeExpression> result = new ArrayList<>();
         for (int i = 0; i < list.size; i++) {
             var symbol = (SchemeSymbol) list.get(i);
-            result.add(CreateWriteExprNode.createWriteLocalVariableExprNode(symbol, new ReadLocalProcedureArgExprNode(i), context));
+            var symbolCtx = (ParserRuleContext) paramsCtx.getChild(i + CTX_PARAMS_OFFSET);
+            result.add(CreateWriteExprNode.createWriteLocalVariableExprNode(symbol, new ReadLocalProcedureArgExprNode(i), context, symbolCtx));
         }
 
         return result;
     }
 
-    private static List<SchemeExpression> createLocalVariableForSchemePair(SchemePair pair, ParsingContext context) {
+    private static List<SchemeExpression> createLocalVariableForSchemePair(SchemePair pair, ParsingContext context, ParserRuleContext paramsCtx) {
         List<SchemeExpression> result = new ArrayList<>();
         var currentPair = pair;
         var index = 0;
         while (currentPair.second() instanceof SchemePair nextPair) {
             var symbol = (SchemeSymbol) currentPair.first();
-            result.add(CreateWriteExprNode.createWriteLocalVariableExprNode(symbol, new ReadLocalProcedureArgExprNode(index), context));
+            var symbolCtx = (ParserRuleContext) paramsCtx.getChild(index + CTX_PARAMS_OFFSET);
+            result.add(CreateWriteExprNode.createWriteLocalVariableExprNode(symbol, new ReadLocalProcedureArgExprNode(index), context, symbolCtx));
             currentPair = nextPair;
             index++;
         }
+        //TODO Fix this
 
         return result;
     }
