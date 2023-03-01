@@ -17,14 +17,16 @@ public abstract class SelfRecursiveTailCallThrowerNode extends SchemeExpression 
 
     @Children
     private final SchemeExpression[] arguments;
+    private final int tailRecursiveArgumentSlot;
 
 //    @Child
 //    @Executed
 //    protected SchemeExpression callable;
 
 
-    public SelfRecursiveTailCallThrowerNode(List<SchemeExpression> arguments) {
+    public SelfRecursiveTailCallThrowerNode(List<SchemeExpression> arguments, int tailRecursiveArgumentSlot) {
         this.arguments = arguments.toArray(SchemeExpression[]::new);
+        this.tailRecursiveArgumentSlot = tailRecursiveArgumentSlot;
 //        this.callable = callable;
     }
 
@@ -37,9 +39,11 @@ public abstract class SelfRecursiveTailCallThrowerNode extends SchemeExpression 
 //        parentMaterializedFrame.setObject(TCO_CALLTARGET_SLOT, callTarget);
 
 
-        SchemeTruffleLanguage.TCOTarget target = SchemeTruffleLanguage.getTCOTarget(this);
         //target.target = procedure.getCallTarget();
-        target.arguments = getArguments(frame);
+//        SchemeTruffleLanguage.TCOTarget target = SchemeTruffleLanguage.getTCOTarget(this);
+//        target.arguments = getArguments(frame);
+
+        frame.setObject(tailRecursiveArgumentSlot, getArguments(frame));
         throw SelfRecursiveTailCallException.INSTANCE;
     }
 

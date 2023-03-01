@@ -13,6 +13,10 @@ public final class InterpreterException {
         throw shouldNotReachHere(null, cause);
     }
 
+    public static RuntimeException shouldNotReachHere(String message) {
+        throw new ShouldNotReachHere(message, null);
+    }
+
     public static RuntimeException shouldNotReachHere(String message, Throwable cause) {
         throw new ShouldNotReachHere(message, cause);
     }

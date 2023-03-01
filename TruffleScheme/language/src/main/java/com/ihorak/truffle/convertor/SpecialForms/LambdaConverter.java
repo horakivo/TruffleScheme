@@ -8,7 +8,8 @@ import com.ihorak.truffle.exceptions.InterpreterException;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.callable.TCO.SelfTailProcedureRootNode;
-import com.ihorak.truffle.node.scope.ReadLocalProcedureArgExprNode;
+import com.ihorak.truffle.node.scope.ReadProcedureArgExprNode;
+import com.ihorak.truffle.node.scope.ReadSlotProcedureArgExprNode;
 import com.ihorak.truffle.node.special_form.LambdaExprNode;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemePair;
@@ -40,17 +41,21 @@ public class LambdaConverter {
         var params = lambdaList.cdr().car();
         var expressions = lambdaList.cdr().cdr();
 
-        //
-        var paramsCtx = (ParserRuleContext) lambdaCtx.getChild(CTX_LAMBDA_PARAMS).getChild(0);
-        var writeLocalVariableExpr = createLocalVariableExpressions(params, lambdaContext, paramsCtx);
-
+        addLocalVariablesToParsingContext(params, lambdaContext);
         var bodyExpressions = TailCallUtil.convertBodyToSchemeExpressionsWithTCO(expressions, lambdaContext, lambdaCtx, CTX_LAMBDA_BODY_INDEX);
+
+
+        var writeLocalVariableExpr = createLocalVariableExpressions(params, lambdaContext, lambdaCtx);
+
 
         List<SchemeExpression> allExpr = new ArrayList<>();
         allExpr.addAll(writeLocalVariableExpr);
         allExpr.addAll(bodyExpressions);
 
-        int argumentsIndex = lambdaContext.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
+
+        //TODO maybe create SeltTailProcedureRootNode only when we detect there is a self-tail call? Using the lambdaContext.getSelfTailRecursionArgumentInde
+        int argumentsIndex = lambdaContext.getSelfTailRecursionArgumentIndex()
+                .orElseGet(() -> lambdaContext.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null));
         var frameDescriptor = lambdaContext.buildAndGetFrameDescriptor();
         var rootNode = new SelfTailProcedureRootNode(name, context.getLanguage(), frameDescriptor, allExpr, argumentsIndex);
         //var rootNode = new ProcedureRootNode(name, context.getLanguage(), frameDescriptor, allExpr);
@@ -58,7 +63,21 @@ public class LambdaConverter {
         return new LambdaExprNode(rootNode.getCallTarget(), writeLocalVariableExpr.size(), hasOptionalArgs);
     }
 
-    private static List<SchemeExpression> createLocalVariableExpressions(Object params, ParsingContext context, ParserRuleContext paramsCtx) {
+    private static void addLocalVariablesToParsingContext(Object params, ParsingContext context) {
+        if (params instanceof SchemeList list) {
+            for (Object obj : list) {
+                var symbol = (SchemeSymbol) obj;
+                context.findOrAddLocalSymbol(symbol);
+            }
+        } else if (params instanceof SchemePair pair) {
+            //TODO implement
+        } else {
+            throw InterpreterException.shouldNotReachHere();
+        }
+    }
+
+    private static List<SchemeExpression> createLocalVariableExpressions(Object params, ParsingContext context, ParserRuleContext lambdaCtx) {
+        var paramsCtx = (ParserRuleContext) lambdaCtx.getChild(CTX_LAMBDA_PARAMS).getChild(0);
         if (params instanceof SchemeList list) {
             return createLocalVariableForSchemeList(list, context, paramsCtx);
         } else if (params instanceof SchemePair pair) {
@@ -69,12 +88,21 @@ public class LambdaConverter {
 
     private static List<SchemeExpression> createLocalVariableForSchemeList(SchemeList list, ParsingContext context, ParserRuleContext paramsCtx) {
         List<SchemeExpression> result = new ArrayList<>();
-        for (int i = 0; i < list.size; i++) {
-            var symbol = (SchemeSymbol) list.get(i);
-            var symbolCtx = (ParserRuleContext) paramsCtx.getChild(i + CTX_PARAMS_OFFSET);
-            result.add(CreateWriteExprNode.createWriteLocalVariableExprNode(symbol, new ReadProcedureArgExprNode(i), context, symbolCtx));
+        var isSelfTailCall = context.getSelfTailRecursionArgumentIndex().isPresent();
+        if (isSelfTailCall) {
+            int argumentSlotIndex = context.getSelfTailRecursionArgumentIndex().get();
+            for (int i = 0; i < list.size; i++) {
+                var symbol = (SchemeSymbol) list.get(i);
+                var symbolCtx = (ParserRuleContext) paramsCtx.getChild(i + CTX_PARAMS_OFFSET);
+                result.add(CreateWriteExprNode.createWriteLocalVariableExprNode(symbol, new ReadSlotProcedureArgExprNode(i, argumentSlotIndex), context, symbolCtx));
+            }
+        } else {
+            for (int i = 0; i < list.size; i++) {
+                var symbol = (SchemeSymbol) list.get(i);
+                var symbolCtx = (ParserRuleContext) paramsCtx.getChild(i + CTX_PARAMS_OFFSET);
+                result.add(CreateWriteExprNode.createWriteLocalVariableExprNode(symbol, new ReadProcedureArgExprNode(i), context, symbolCtx));
+            }
         }
-
         return result;
     }
 

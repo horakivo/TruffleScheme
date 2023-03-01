@@ -1,6 +1,7 @@
 package com.ihorak.truffle.convertor.context;
 
 import com.ihorak.truffle.SchemeTruffleLanguage;
+import com.ihorak.truffle.exceptions.InterpreterException;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.frame.FrameDescriptor;
@@ -15,6 +16,10 @@ public class ParsingContext {
     private final Map<SchemeSymbol, LocalVariableInfo> localVariableIndex = new HashMap<>();
 
     private SchemeSymbol functionDefinitionName;
+
+
+    // This can be used to determine whether in lambda body self-tail recursion occur
+    private Optional<Integer> selfTailRecursionArgumentIndex = Optional.empty();
 
     private final ParsingContext parent;
     private final SchemeTruffleLanguage language;
@@ -158,6 +163,17 @@ public class ParsingContext {
 
     public void setFunctionDefinitionName(final SchemeSymbol functionDefinitionName) {
         this.functionDefinitionName = functionDefinitionName;
+    }
+
+    public Optional<Integer> getSelfTailRecursionArgumentIndex() {
+        return selfTailRecursionArgumentIndex;
+    }
+
+    public void setSelfTailRecursionArgumentIndex(int selfTailRecursionArgumentIndex) {
+        if (this.selfTailRecursionArgumentIndex.isPresent()) {
+            throw InterpreterException.shouldNotReachHere("Converter error: selfTailRecursionArgumentIndex should be set only once!");
+        }
+        this.selfTailRecursionArgumentIndex = Optional.of(selfTailRecursionArgumentIndex);
     }
 
     public int getQuasiquoteNestedLevel() {

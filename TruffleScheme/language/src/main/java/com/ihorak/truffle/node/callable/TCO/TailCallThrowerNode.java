@@ -12,7 +12,7 @@ import com.oracle.truffle.api.nodes.ExplodeLoop;
 
 import java.util.List;
 
-public abstract class TailCallThrowerNode extends SchemeExpression {
+abstract class TailCallThrowerNode extends SchemeExpression {
 
     @Children
     private final SchemeExpression[] arguments;
