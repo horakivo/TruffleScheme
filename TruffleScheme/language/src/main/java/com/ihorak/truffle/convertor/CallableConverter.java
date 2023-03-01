@@ -28,48 +28,17 @@ public class CallableConverter {
      *  --> (operand argExpr1 ... argExprN)
      * procedureCtx is coming without form
      * */
-    public static SchemeExpression convertListToProcedureCall(SchemeList procedureList, ParsingContext context, boolean isTailCall, ParserRuleContext procedureCtx) {
-        var operand = procedureList.car();
-        List<SchemeExpression> arguments = getProcedureArguments(procedureList.cdr(), context, procedureCtx);
+    public static SchemeExpression convertListToProcedureCall(SchemeList callableList, ParsingContext context, boolean isTailCall, ParserRuleContext procedureCtx) {
+        validate(callableList);
 
-
-        if (operand instanceof SchemeSymbol schemeSymbol) {
-            if (isUnquote(schemeSymbol))
-                throw new SchemeException("unquote: expression not valid outside of quasiquote in form " + procedureList, null);
-            if (isUnquoteSplicing(schemeSymbol))
-                throw new SchemeException("unquote-splicing: expression not valid outside of quasiquote in form " + procedureList, null);
-
-
-            if (BuiltinUtils.isBuiltinProcedure(schemeSymbol)) {
-                return BuiltinConverter.createBuiltin(schemeSymbol, arguments, context, procedureCtx);
-            } else if (context.isMacro(schemeSymbol)) {
-                List<Object> notEvaluatedArgs = new ArrayList<>();
-                procedureList.cdr().forEach(notEvaluatedArgs::add);
-                var macroExpr = InternalRepresentationConverter.convert(schemeSymbol, context, false, false);
-                return new MacroCallableExprNode(macroExpr, notEvaluatedArgs, context);
-            }
-        }
-
-
-        var callableCtx = (ParserRuleContext) procedureCtx.getChild(CTX_CALLABLE_INDEX);
-        var callable = InternalRepresentationConverter.convert(operand, context, false, false, callableCtx);
-        //var callNode = new CallableExprNode(arguments, callable);
-//
-
-        if (isTailCall) {
-            if (isSelfTailRecursive(operand, context)) {
-                return SelfRecursiveTailCallThrowerNodeGen.create(arguments);
-            }
-            return TailCallThrowerNodeGen.create(arguments, callable);
+        if (isBuiltin(callableList)) {
+            return createBuiltin(callableList, context, procedureCtx);
+        } else if (isMacro(callableList, context)) {
+            return createMacro(callableList, context);
         } else {
-            int tailCallArgumentsSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
-            int tailCallTargetSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
-            var catcherNode =  new TailCallCatcherNode(arguments, callable, tailCallArgumentsSlot, tailCallTargetSlot);
-            return SourceSectionUtil.setSourceSectionAndReturnExpr(catcherNode, procedureCtx);
-            //return  new CallableExprNode(arguments, callable);
+            //some callable procedure or potential runtime error
+            return createProcedureCall(callableList, isTailCall, context, procedureCtx);
         }
-
-        // return callNode;
 
     }
 
@@ -78,6 +47,63 @@ public class CallableConverter {
         if (currentlyDefiningMethod == null) return false;
 
         return operand instanceof SchemeSymbol symbol && symbol.equals(currentlyDefiningMethod);
+    }
+
+    private static boolean isUnquote(SchemeSymbol schemeSymbol) {
+        return schemeSymbol.getValue().equals("unquote");
+    }
+
+    private static boolean isUnquoteSplicing(SchemeSymbol schemeSymbol) {
+        return schemeSymbol.getValue().equals("unquote-splicing");
+    }
+
+    private static boolean isBuiltin(SchemeList callableList) {
+        return callableList.car() instanceof SchemeSymbol symbol && BuiltinUtils.isBuiltinProcedure(symbol);
+    }
+
+    private static boolean isMacro(SchemeList callableList, ParsingContext context) {
+        return callableList.car() instanceof SchemeSymbol symbol && context.isMacro(symbol);
+
+    }
+
+    private static SchemeExpression createBuiltin(SchemeList callableList, ParsingContext context, ParserRuleContext procedureCtx) {
+        var symbol = (SchemeSymbol) callableList.car();
+        List<SchemeExpression> arguments = getProcedureArguments(callableList.cdr(), context, procedureCtx);
+        return BuiltinConverter.createBuiltin(symbol, arguments, context, procedureCtx);
+    }
+
+    private static SchemeExpression createMacro(SchemeList callableList, ParsingContext context) {
+        var symbol = (SchemeSymbol) callableList.car();
+        List<Object> notEvaluatedArgs = new ArrayList<>();
+        callableList.cdr().forEach(notEvaluatedArgs::add);
+        var macroExpr = InternalRepresentationConverter.convert(symbol, context, false, false);
+        return new MacroCallableExprNode(macroExpr, notEvaluatedArgs, context);
+    }
+
+    private static SchemeExpression createProcedureCall(SchemeList callableList, boolean isTailCall, ParsingContext context, ParserRuleContext procedureCtx) {
+        var operand = callableList.car();
+        List<SchemeExpression> arguments = getProcedureArguments(callableList.cdr(), context, procedureCtx);
+        var callableCtx = (ParserRuleContext) procedureCtx.getChild(CTX_CALLABLE_INDEX);
+        var callableExpr = InternalRepresentationConverter.convert(operand, context, false, false, callableCtx);
+        //var callNode = new CallableExprNode(arguments, callable);
+//
+
+        if (isTailCall) {
+            if (isSelfTailRecursive(operand, context)) {
+                int tailRecursiveArgumentSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
+                context.setSelfTailRecursionArgumentIndex(tailRecursiveArgumentSlot);
+                return SelfRecursiveTailCallThrowerNodeGen.create(arguments, tailRecursiveArgumentSlot);
+            }
+            return TailCallThrowerNodeGen.create(arguments, callableExpr);
+        } else {
+            int tailCallArgumentsSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
+            int tailCallTargetSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
+            var catcherNode = new TailCallCatcherNode(arguments, callableExpr, tailCallArgumentsSlot, tailCallTargetSlot);
+            return SourceSectionUtil.setSourceSectionAndReturnExpr(catcherNode, procedureCtx);
+            //return  new CallableExprNode(arguments, callable);
+        }
+
+        // return callNode;
     }
 
     private static List<SchemeExpression> getProcedureArguments(SchemeList argumentList, ParsingContext context, ParserRuleContext procedureCtx) {
@@ -90,11 +116,15 @@ public class CallableConverter {
         return result;
     }
 
-    private static boolean isUnquote(SchemeSymbol schemeSymbol) {
-        return schemeSymbol.getValue().equals("unquote");
+    private static void validate(SchemeList callableList) {
+        var operand = callableList.car();
+        if (operand instanceof SchemeSymbol schemeSymbol) {
+            if (isUnquote(schemeSymbol))
+                throw new SchemeException("unquote: expression not valid outside of quasiquote in form " + callableList, null);
+            if (isUnquoteSplicing(schemeSymbol))
+                throw new SchemeException("unquote-splicing: expression not valid outside of quasiquote in form " + callableList, null);
+
+        }
     }
 
-    private static boolean isUnquoteSplicing(SchemeSymbol schemeSymbol) {
-        return schemeSymbol.getValue().equals("unquote-splicing");
-    }
 }
