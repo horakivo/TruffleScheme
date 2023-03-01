@@ -72,7 +72,7 @@ public class LambdaConverter {
         for (int i = 0; i < list.size; i++) {
             var symbol = (SchemeSymbol) list.get(i);
             var symbolCtx = (ParserRuleContext) paramsCtx.getChild(i + CTX_PARAMS_OFFSET);
-            result.add(CreateWriteExprNode.createWriteLocalVariableExprNode(symbol, new ReadLocalProcedureArgExprNode(i), context, symbolCtx));
+            result.add(CreateWriteExprNode.createWriteLocalVariableExprNode(symbol, new ReadProcedureArgExprNode(i), context, symbolCtx));
         }
 
         return result;
@@ -85,7 +85,7 @@ public class LambdaConverter {
         while (currentPair.second() instanceof SchemePair nextPair) {
             var symbol = (SchemeSymbol) currentPair.first();
             var symbolCtx = (ParserRuleContext) paramsCtx.getChild(index + CTX_PARAMS_OFFSET);
-            result.add(CreateWriteExprNode.createWriteLocalVariableExprNode(symbol, new ReadLocalProcedureArgExprNode(index), context, symbolCtx));
+            result.add(CreateWriteExprNode.createWriteLocalVariableExprNode(symbol, new ReadProcedureArgExprNode(index), context, symbolCtx));
             currentPair = nextPair;
             index++;
         }
