@@ -8,7 +8,6 @@ import com.ihorak.truffle.convertor.util.TailCallUtil;
 import com.ihorak.truffle.exceptions.InterpreterException;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.SchemeRootNode;
 import com.ihorak.truffle.node.callable.TCO.SelfTailProcedureRootNode;
 import com.ihorak.truffle.node.scope.ReadProcedureArgExprNode;
 import com.ihorak.truffle.node.scope.ReadSlotProcedureArgExprNode;
@@ -16,11 +15,15 @@ import com.ihorak.truffle.node.special_form.LambdaExprNode;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemePair;
 import com.ihorak.truffle.type.SchemeSymbol;
+import com.oracle.truffle.api.CallTarget;
+import com.oracle.truffle.api.RootCallTarget;
 import com.oracle.truffle.api.frame.FrameSlotKind;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class LambdaConverter {
 
@@ -40,46 +43,54 @@ public class LambdaConverter {
             lambdaContext.setFunctionDefinitionName(name);
         }
 
-        var params = lambdaList.cdr().car();
-        var expressions = lambdaList.cdr().cdr();
+        var parametersIR = lambdaList.cdr().car();
+        var lambdaBodyIR = lambdaList.cdr().cdr();
 
-        addLocalVariablesToParsingContext(params, lambdaContext);
-        var bodyExpressions = TailCallUtil.convertBodyToSchemeExpressionsWithTCO(expressions, lambdaContext, lambdaCtx, CTX_LAMBDA_BODY_INDEX);
-
-
-        var writeLocalVariableExpr = createLocalVariableExpressions(params, lambdaContext, lambdaCtx);
-
-
-        List<SchemeExpression> allExpr = new ArrayList<>();
-        allExpr.addAll(writeLocalVariableExpr);
-        allExpr.addAll(bodyExpressions);
+        addLocalVariablesToParsingContext(parametersIR, lambdaContext);
+        var bodyExprs = TailCallUtil.convertBodyToSchemeExpressionsWithTCO(lambdaBodyIR, lambdaContext, lambdaCtx, CTX_LAMBDA_BODY_INDEX);
+        var writeLocalVariableExpr = createWriteLocalVariableNodes(parametersIR, lambdaContext, lambdaCtx);
+        var allExprs = Stream.concat(writeLocalVariableExpr.stream(), bodyExprs.stream()).toList();
 
 
+        var callTarget = creatCallTarget(allExprs, name, lambdaContext);
+        var hasOptionalArgs = parametersIR instanceof SchemePair;
+        return new LambdaExprNode(callTarget, writeLocalVariableExpr.size(), hasOptionalArgs);
+    }
+
+
+    private static RootCallTarget creatCallTarget(List<SchemeExpression> expressions, SchemeSymbol name, ParsingContext lambdaContext) {
         //TODO maybe create SeltTailProcedureRootNode only when we detect there is a self-tail call? Using the lambdaContext.getSelfTailRecursionArgumentInde
         int argumentsIndex = lambdaContext.getSelfTailRecursionArgumentIndex()
                 .orElseGet(() -> lambdaContext.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null));
         var frameDescriptor = lambdaContext.buildAndGetFrameDescriptor();
-        var sourceSection = SourceSectionUtil.createSourceSection(allExpr, lambdaContext.getSource());
-        var rootNode = new SelfTailProcedureRootNode(name, context.getLanguage(), frameDescriptor, allExpr, argumentsIndex, sourceSection);
-        //var rootNode = new SchemeRootNode(context.getLanguage(), frameDescriptor, allExpr, name);
-        var hasOptionalArgs = params instanceof SchemePair;
-        return new LambdaExprNode(rootNode.getCallTarget(), writeLocalVariableExpr.size(), hasOptionalArgs);
+        var sourceSection = SourceSectionUtil.createSourceSection(expressions, lambdaContext.getSource());
+        var rootNode = new SelfTailProcedureRootNode(name, lambdaContext.getLanguage(), frameDescriptor, expressions, argumentsIndex, sourceSection);
+        //var rootNode = new SchemeRootNode(context.getLanguage(), frameDescriptor, allExpr, name, sourceSection);
+
+        return rootNode.getCallTarget();
     }
 
-    private static void addLocalVariablesToParsingContext(Object params, ParsingContext context) {
-        if (params instanceof SchemeList list) {
+    /*
+     * We need to add those first because we can convert lambdaBodyIR to SchemeExprs first to determine whether there is
+     * Self Tail recursion or not. Without those parameters in Parsing context we wouldn't be able to convert bodyIR to SchemeExprs.
+     *
+     * If there is Self Tail recursion the lambda context will have getSelfTailRecursionArgumentIndex which is used in
+     * method createWriteLocalVariableNodes.
+     */
+    private static void addLocalVariablesToParsingContext(Object parametersIR, ParsingContext context) {
+        if (parametersIR instanceof SchemeList list) {
             for (Object obj : list) {
                 var symbol = (SchemeSymbol) obj;
                 context.findOrAddLocalSymbol(symbol);
             }
-        } else if (params instanceof SchemePair pair) {
+        } else if (parametersIR instanceof SchemePair pair) {
             //TODO implement
         } else {
             throw InterpreterException.shouldNotReachHere();
         }
     }
 
-    private static List<SchemeExpression> createLocalVariableExpressions(Object params, ParsingContext context, ParserRuleContext lambdaCtx) {
+    private static List<SchemeExpression> createWriteLocalVariableNodes(Object params, ParsingContext context, ParserRuleContext lambdaCtx) {
         var paramsCtx = (ParserRuleContext) lambdaCtx.getChild(CTX_LAMBDA_PARAMS).getChild(0);
         if (params instanceof SchemeList list) {
             return createLocalVariableForSchemeList(list, context, paramsCtx);

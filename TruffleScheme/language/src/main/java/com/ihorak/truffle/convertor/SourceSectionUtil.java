@@ -38,7 +38,7 @@ public class SourceSectionUtil {
         return expression;
     }
 
-    public static void setSourceSection(@NotNull SchemeExpression expression,@NotNull Token startToken,@NotNull Token stopToken) {
+    public static void setSourceSection(@NotNull SchemeExpression expression, @NotNull Token startToken, @NotNull Token stopToken) {
         var startIndex = startToken.getStartIndex();
         var stopIndex = stopToken.getStopIndex();
         var length = stopIndex - startIndex + 1;

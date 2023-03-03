@@ -4,6 +4,7 @@ import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.util.BuiltinUtils;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.callable.CallableExprNode;
 import com.ihorak.truffle.node.callable.MacroCallableExprNode;
 import com.ihorak.truffle.node.callable.TCO.SelfRecursiveTailCallThrowerNodeGen;
 import com.ihorak.truffle.node.callable.TCO.TailCallCatcherNode;
@@ -100,7 +101,7 @@ public class CallableConverter {
             int tailCallTargetSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
             var catcherNode = new TailCallCatcherNode(arguments, callableExpr, tailCallArgumentsSlot, tailCallTargetSlot);
             return SourceSectionUtil.setSourceSectionAndReturnExpr(catcherNode, procedureCtx);
-            //return  new CallableExprNode(arguments, callable);
+            //return  new CallableExprNode(arguments, callableExpr);
         }
 
         // return callNode;
