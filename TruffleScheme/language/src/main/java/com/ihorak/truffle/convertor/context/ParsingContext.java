@@ -6,6 +6,7 @@ import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlotKind;
+import com.oracle.truffle.api.source.Source;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -14,6 +15,8 @@ public class ParsingContext {
 
     private final Set<SchemeSymbol> macroIndex = new HashSet<>();
     private final Map<SchemeSymbol, LocalVariableInfo> localVariableIndex = new HashMap<>();
+
+    private final Source source;
 
     private SchemeSymbol functionDefinitionName;
 
@@ -30,43 +33,30 @@ public class ParsingContext {
 
 
     //Any other child Parsing Context
-    public ParsingContext(ParsingContext parent, LexicalScope lexicalScope) {
+    public ParsingContext(ParsingContext parent, LexicalScope lexicalScope, Source source) {
         this.frameDescriptorBuilder = FrameDescriptor.newBuilder();
         this.scope = lexicalScope;
         this.language = parent.language;
         this.parent = parent;
-
-        //reserved for TCO arguments and CallTarget
-        //Argument slot = 0
-        //TailCall CallTarget slot = 1
-        //TailRecursive CallTarget slot = 2
-        this.frameDescriptorBuilder.addSlot(FrameSlotKind.Object, "TCO Arguments", null);
-        this.frameDescriptorBuilder.addSlot(FrameSlotKind.Object, "TCO CallTarget", null);
-        this.frameDescriptorBuilder.addSlot(FrameSlotKind.Object, "Jump Frame", null);
+        this.source = source;
     }
 
     //For creating LET - we don't want to create a new FrameDescriptor because we are using the parent one.
-    public ParsingContext(ParsingContext parent, LexicalScope lexicalScope, FrameDescriptor.Builder frameDescriptorBuilder) {
+    public ParsingContext(ParsingContext parent, LexicalScope lexicalScope, FrameDescriptor.Builder frameDescriptorBuilder, Source source) {
         this.frameDescriptorBuilder = frameDescriptorBuilder;
         this.scope = lexicalScope;
         this.language = parent.language;
         this.parent = parent;
+        this.source = source;
     }
 
     //Global
-    public ParsingContext(SchemeTruffleLanguage language) {
+    public ParsingContext(SchemeTruffleLanguage language, Source source) {
         this.frameDescriptorBuilder = FrameDescriptor.newBuilder();
         this.scope = LexicalScope.GLOBAL;
         this.language = language;
+        this.source = source;
         this.parent = null;
-
-        //reserved for TCO arguments and CallTarget
-        //Argument slot = 0
-        //TailCall CallTarget slot = 1
-        //TailRecursive CallTarget slot = 2
-        this.frameDescriptorBuilder.addSlot(FrameSlotKind.Object, "TCO Arguments", null);
-        this.frameDescriptorBuilder.addSlot(FrameSlotKind.Object, "TCO CallTarget", null);
-        this.frameDescriptorBuilder.addSlot(FrameSlotKind.Object, "Jump Frame", null);
     }
 
     /**
@@ -174,6 +164,10 @@ public class ParsingContext {
             throw InterpreterException.shouldNotReachHere("Converter error: selfTailRecursionArgumentIndex should be set only once!");
         }
         this.selfTailRecursionArgumentIndex = Optional.of(selfTailRecursionArgumentIndex);
+    }
+
+    public Source getSource() {
+        return source;
     }
 
     public int getQuasiquoteNestedLevel() {

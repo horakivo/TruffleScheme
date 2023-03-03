@@ -6,6 +6,7 @@ import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.nodes.RootNode;
+import com.oracle.truffle.api.source.SourceSection;
 
 import java.util.List;
 
@@ -16,9 +17,12 @@ public class SchemeRootNode extends RootNode {
 
     private final SchemeSymbol name;
 
-    public SchemeRootNode(SchemeTruffleLanguage language, FrameDescriptor frameDescriptor, List<SchemeExpression> schemeExpressions, SchemeSymbol name) {
+    private final SourceSection sourceSection;
+
+    public SchemeRootNode(SchemeTruffleLanguage language, FrameDescriptor frameDescriptor, List<SchemeExpression> schemeExpressions, SchemeSymbol name, SourceSection sourceSection) {
         super(language, frameDescriptor);
         this.name = name;
+        this.sourceSection = sourceSection;
         this.schemeExpressions = schemeExpressions.toArray(SchemeExpression[]::new);
     }
 
@@ -30,6 +34,11 @@ public class SchemeRootNode extends RootNode {
         }
         //return last element
         return schemeExpressions[schemeExpressions.length - 1].executeGeneric(frame);
+    }
+
+    @Override
+    public SourceSection getSourceSection() {
+        return sourceSection;
     }
 
     @Override

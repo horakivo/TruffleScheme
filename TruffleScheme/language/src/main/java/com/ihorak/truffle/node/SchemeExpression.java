@@ -18,7 +18,7 @@ public abstract class SchemeExpression extends SchemeNode {
     private static final int NO_SOURCE = -1;
     private static final int UNAVAILABLE_SOURCE = -2;
 
-    private int sourceCharIndex = NO_SOURCE;
+    private int sourceStartIndex = NO_SOURCE;
     private int sourceLength;
 
     private boolean hasRootTag = false;
@@ -57,7 +57,7 @@ public abstract class SchemeExpression extends SchemeNode {
     @Override
     @TruffleBoundary
     public final SourceSection getSourceSection() {
-        if (sourceCharIndex == NO_SOURCE) {
+        if (sourceStartIndex == NO_SOURCE) {
             // AST node without source
             return null;
         }
@@ -71,26 +71,34 @@ public abstract class SchemeExpression extends SchemeNode {
             return null;
         }
         Source source = rootSourceSection.getSource();
-        if (sourceCharIndex == UNAVAILABLE_SOURCE) {
+        if (sourceStartIndex == UNAVAILABLE_SOURCE) {
             if (hasRootTag && !rootSourceSection.isAvailable()) {
                 return rootSourceSection;
             } else {
                 return source.createUnavailableSection();
             }
         } else {
-            return source.createSection(sourceCharIndex, sourceLength);
+            return source.createSection(sourceStartIndex, sourceLength);
         }
     }
 
     // invoked by the parser to set the source
     public final void setSourceSection(int charIndex, int length) {
-        assert sourceCharIndex == NO_SOURCE : "source must only be set once";
+        assert sourceStartIndex == NO_SOURCE : "source must only be set once";
         if (charIndex < 0) {
             throw new IllegalArgumentException("charIndex < 0");
         } else if (length < 0) {
             throw new IllegalArgumentException("length < 0");
         }
-        this.sourceCharIndex = charIndex;
+        this.sourceStartIndex = charIndex;
         this.sourceLength = length;
+    }
+
+    public final int getSourceEndIndex() {
+        return sourceStartIndex + sourceLength;
+    }
+
+    public int getSourceStartIndex() {
+        return sourceStartIndex;
     }
 }

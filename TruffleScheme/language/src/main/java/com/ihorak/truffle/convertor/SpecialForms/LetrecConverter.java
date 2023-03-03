@@ -24,7 +24,7 @@ public class LetrecConverter extends AbstractLetConverter {
     //TODO solve code duplication
     public static LetExprNode convert(SchemeList letList, ParsingContext context, ParserRuleContext letrecCtx) {
         validate(letList);
-        ParsingContext letContext = new ParsingContext(context, LexicalScope.LETREC, context.getFrameDescriptorBuilder());
+        ParsingContext letContext = new ParsingContext(context, LexicalScope.LETREC, context.getFrameDescriptorBuilder(), context.getSource());
 
         SchemeList localBindings = (SchemeList) letList.get(1);
         SchemeList body = letList.cdr().cdr();

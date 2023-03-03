@@ -1,5 +1,6 @@
 package com.ihorak.truffle.convertor.SpecialForms;
 
+import com.ihorak.truffle.convertor.SourceSectionUtil;
 import com.ihorak.truffle.convertor.context.LexicalScope;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.util.CreateWriteExprNode;
@@ -34,7 +35,7 @@ public class LambdaConverter {
 
     public static LambdaExprNode convert(SchemeList lambdaList, ParsingContext context, SchemeSymbol name, ParserRuleContext lambdaCtx) {
         validate(lambdaList);
-        ParsingContext lambdaContext = new ParsingContext(context, LexicalScope.LAMBDA);
+        ParsingContext lambdaContext = new ParsingContext(context, LexicalScope.LAMBDA, context.getSource());
         if (!name.getValue().equals("anonymous_procedure")) {
             lambdaContext.setFunctionDefinitionName(name);
         }
@@ -58,7 +59,8 @@ public class LambdaConverter {
         int argumentsIndex = lambdaContext.getSelfTailRecursionArgumentIndex()
                 .orElseGet(() -> lambdaContext.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null));
         var frameDescriptor = lambdaContext.buildAndGetFrameDescriptor();
-        var rootNode = new SelfTailProcedureRootNode(name, context.getLanguage(), frameDescriptor, allExpr, argumentsIndex);
+        var sourceSection = SourceSectionUtil.createSourceSection(allExpr, lambdaContext.getSource());
+        var rootNode = new SelfTailProcedureRootNode(name, context.getLanguage(), frameDescriptor, allExpr, argumentsIndex, sourceSection);
         //var rootNode = new SchemeRootNode(context.getLanguage(), frameDescriptor, allExpr, name);
         var hasOptionalArgs = params instanceof SchemePair;
         return new LambdaExprNode(rootNode.getCallTarget(), writeLocalVariableExpr.size(), hasOptionalArgs);

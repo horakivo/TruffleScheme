@@ -22,7 +22,7 @@ public class LetConverter extends AbstractLetConverter {
 
     public static LetExprNode convert(SchemeList letList, ParsingContext context, ParserRuleContext letCtx) {
         validate(letList);
-        ParsingContext letContext = new ParsingContext(context, LexicalScope.LET, context.getFrameDescriptorBuilder());
+        ParsingContext letContext = new ParsingContext(context, LexicalScope.LET, context.getFrameDescriptorBuilder(), context.getSource());
 
         SchemeList localBindings = (SchemeList) letList.get(1);
         SchemeList body = letList.cdr().cdr();

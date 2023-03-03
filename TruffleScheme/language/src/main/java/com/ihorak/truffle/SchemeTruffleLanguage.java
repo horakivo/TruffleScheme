@@ -1,9 +1,14 @@
 package com.ihorak.truffle;
 
 import java.io.IOException;
+import java.util.List;
 
+import com.ihorak.truffle.convertor.SourceSectionUtil;
+import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.parser.AntlrToAST;
 import com.ihorak.truffle.type.SchemeSymbol;
+import com.oracle.truffle.api.source.Source;
+import com.oracle.truffle.api.source.SourceSection;
 import org.antlr.v4.runtime.CharStreams;
 
 import com.ihorak.truffle.convertor.context.ParsingContext;
@@ -27,11 +32,12 @@ public class SchemeTruffleLanguage extends TruffleLanguage<SchemeLanguageContext
 
     @Override
     protected CallTarget parse(ParsingRequest request) throws IOException {
-        var globalContext = new ParsingContext(this);
+        var source = request.getSource();
+        var globalContext = new ParsingContext(this, source);
         var charStream = CharStreams.fromReader(request.getSource().getReader());
         var schemeExprs = AntlrToAST.convert(charStream, globalContext);
-        var rootNode = new SchemeRootNode(this, globalContext.buildAndGetFrameDescriptor(), schemeExprs, new SchemeSymbol("ROOT"));
-        var ss = rootNode.getSourceSection();
+        var sourceSection = SourceSectionUtil.createSourceSection(schemeExprs, source);
+        var rootNode = new SchemeRootNode(this, globalContext.buildAndGetFrameDescriptor(), schemeExprs, new SchemeSymbol("ROOT"), sourceSection);
         return rootNode.getCallTarget();
     }
 

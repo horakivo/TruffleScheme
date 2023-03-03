@@ -13,6 +13,7 @@ import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.*;
+import com.oracle.truffle.api.source.SourceSection;
 
 public class SelfTailProcedureRootNode extends SchemeRootNode {
 
@@ -22,8 +23,8 @@ public class SelfTailProcedureRootNode extends SchemeRootNode {
     private final int argumentsIndex;
 
     public SelfTailProcedureRootNode(SchemeSymbol name, SchemeTruffleLanguage language, FrameDescriptor frameDescriptor,
-                                     List<SchemeExpression> schemeExpressions, int argumentsIndex) {
-        super(language, frameDescriptor, schemeExpressions, name);
+                                     List<SchemeExpression> schemeExpressions, int argumentsIndex, SourceSection sourceSection) {
+        super(language, frameDescriptor, schemeExpressions, name, sourceSection);
         this.argumentsIndex = argumentsIndex;
         this.loop = Truffle.getRuntime().createLoopNode(new TailRecursiveCallLoopNode(this.schemeExpressions, argumentsIndex, getFrameDescriptor(), getCallTarget()));
     }
