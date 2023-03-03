@@ -3,6 +3,7 @@ package com.ihorak.truffle;
 import java.io.IOException;
 
 import com.ihorak.truffle.parser.AntlrToAST;
+import com.ihorak.truffle.type.SchemeSymbol;
 import org.antlr.v4.runtime.CharStreams;
 
 import com.ihorak.truffle.convertor.context.ParsingContext;
@@ -29,7 +30,8 @@ public class SchemeTruffleLanguage extends TruffleLanguage<SchemeLanguageContext
         var globalContext = new ParsingContext(this);
         var charStream = CharStreams.fromReader(request.getSource().getReader());
         var schemeExprs = AntlrToAST.convert(charStream, globalContext);
-        var rootNode = new SchemeRootNode(this, globalContext.buildAndGetFrameDescriptor(), schemeExprs);
+        var rootNode = new SchemeRootNode(this, globalContext.buildAndGetFrameDescriptor(), schemeExprs, new SchemeSymbol("ROOT"));
+        var ss = rootNode.getSourceSection();
         return rootNode.getCallTarget();
     }
 

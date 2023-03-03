@@ -1,6 +1,7 @@
 package com.ihorak.truffle.node;
 
 import com.ihorak.truffle.SchemeTruffleLanguage;
+import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
@@ -10,10 +11,14 @@ import java.util.List;
 
 public class SchemeRootNode extends RootNode {
 
-    @Children public final SchemeExpression[] schemeExpressions;
+    @Children
+    public final SchemeExpression[] schemeExpressions;
 
-    public SchemeRootNode(SchemeTruffleLanguage language, FrameDescriptor frameDescriptor, List<SchemeExpression> schemeExpressions) {
+    private final SchemeSymbol name;
+
+    public SchemeRootNode(SchemeTruffleLanguage language, FrameDescriptor frameDescriptor, List<SchemeExpression> schemeExpressions, SchemeSymbol name) {
         super(language, frameDescriptor);
+        this.name = name;
         this.schemeExpressions = schemeExpressions.toArray(SchemeExpression[]::new);
     }
 
@@ -29,11 +34,11 @@ public class SchemeRootNode extends RootNode {
 
     @Override
     public String getName() {
-        return "main root";
+        return name.getValue();
     }
 
     @Override
     public String toString() {
-        return "main root";
+        return name.getValue();
     }
 }

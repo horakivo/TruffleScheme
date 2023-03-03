@@ -2,8 +2,10 @@ package com.ihorak.truffle.node.callable.TCO;
 
 import java.util.List;
 
+import com.ihorak.truffle.SchemeTruffleLanguage;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.SchemeNode;
+import com.ihorak.truffle.node.SchemeRootNode;
 import com.ihorak.truffle.node.callable.TCO.loop_nodes.TailRecursiveCallLoopNode;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.Truffle;
@@ -12,40 +14,23 @@ import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.*;
 
-public class SelfTailProcedureRootNode extends RootNode {
+public class SelfTailProcedureRootNode extends SchemeRootNode {
 
-    @Children
-    private final SchemeExpression[] expressions;
-    private final SchemeSymbol name;
     @Child
     private LoopNode loop;
 
     private final int argumentsIndex;
 
-    public SelfTailProcedureRootNode(SchemeSymbol name, TruffleLanguage<?> language, FrameDescriptor frameDescriptor,
+    public SelfTailProcedureRootNode(SchemeSymbol name, SchemeTruffleLanguage language, FrameDescriptor frameDescriptor,
                                      List<SchemeExpression> schemeExpressions, int argumentsIndex) {
-        super(language, frameDescriptor);
-        this.expressions = schemeExpressions.toArray(SchemeExpression[]::new);
-        this.name = name;
+        super(language, frameDescriptor, schemeExpressions, name);
         this.argumentsIndex = argumentsIndex;
-        this.loop = Truffle.getRuntime().createLoopNode(new TailRecursiveCallLoopNode(expressions, argumentsIndex, getFrameDescriptor(), getCallTarget()));
+        this.loop = Truffle.getRuntime().createLoopNode(new TailRecursiveCallLoopNode(this.schemeExpressions, argumentsIndex, getFrameDescriptor(), getCallTarget()));
     }
 
     @Override
     public Object execute(VirtualFrame frame) {
         frame.setObject(argumentsIndex, frame.getArguments());
         return loop.execute(frame);
-    }
-
-    @Override
-    public String getName() {
-        return name.getValue();
-    }
-
-
-
-    @Override
-    public String toString() {
-        return name.getValue();
     }
 }
