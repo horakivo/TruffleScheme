@@ -7,8 +7,9 @@ import com.ihorak.truffle.convertor.util.TailCallUtil;
 import com.ihorak.truffle.exceptions.InterpreterException;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.callable.ProcedureRootNode;
 import com.ihorak.truffle.node.callable.TCO.SelfTailProcedureRootNode;
-import com.ihorak.truffle.node.scope.ReadLocalProcedureArgExprNode;
+import com.ihorak.truffle.node.scope.ReadProcedureArgExprNode;
 import com.ihorak.truffle.node.special_form.LambdaExprNode;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemePair;
@@ -52,8 +53,8 @@ public class LambdaConverter {
 
         int argumentsIndex = lambdaContext.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
         var frameDescriptor = lambdaContext.buildAndGetFrameDescriptor();
-        var rootNode = new SelfTailProcedureRootNode(name, context.getLanguage(), frameDescriptor, allExpr, argumentsIndex);
-        //var rootNode = new ProcedureRootNode(name, context.getLanguage(), frameDescriptor, allExpr);
+        //var rootNode = new SelfTailProcedureRootNode(name, context.getLanguage(), frameDescriptor, allExpr, argumentsIndex);
+        var rootNode = new ProcedureRootNode(name, context.getLanguage(), frameDescriptor, allExpr);
         var hasOptionalArgs = params instanceof SchemePair;
         return new LambdaExprNode(rootNode.getCallTarget(), writeLocalVariableExpr.size(), hasOptionalArgs);
     }
