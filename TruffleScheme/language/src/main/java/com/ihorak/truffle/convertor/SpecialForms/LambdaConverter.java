@@ -8,6 +8,7 @@ import com.ihorak.truffle.convertor.util.TailCallUtil;
 import com.ihorak.truffle.exceptions.InterpreterException;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.SchemeRootNode;
 import com.ihorak.truffle.node.callable.TCO.SelfTailProcedureRootNode;
 import com.ihorak.truffle.node.scope.ReadProcedureArgExprNode;
 import com.ihorak.truffle.node.scope.ReadSlotProcedureArgExprNode;
@@ -36,7 +37,7 @@ public class LambdaConverter {
     private static final int CTX_PARAMS_OFFSET = 1;
 
 
-    public static LambdaExprNode convert(SchemeList lambdaList, ParsingContext context, SchemeSymbol name, ParserRuleContext lambdaCtx) {
+    public static SchemeExpression convert(SchemeList lambdaList, ParsingContext context, SchemeSymbol name, ParserRuleContext lambdaCtx) {
         validate(lambdaList);
         ParsingContext lambdaContext = new ParsingContext(context, LexicalScope.LAMBDA, context.getSource());
         if (!name.getValue().equals("anonymous_procedure")) {
@@ -54,21 +55,26 @@ public class LambdaConverter {
 
         var callTarget = creatCallTarget(allExprs, name, lambdaContext);
         var hasOptionalArgs = parametersIR instanceof SchemePair;
-        return new LambdaExprNode(callTarget, writeLocalVariableExpr.size(), hasOptionalArgs);
+        var lambdaExpr = new LambdaExprNode(callTarget, writeLocalVariableExpr.size(), hasOptionalArgs);
+        return SourceSectionUtil.setSourceSectionAndReturnExpr(lambdaExpr, lambdaCtx);
     }
 
 
     private static RootCallTarget creatCallTarget(List<SchemeExpression> expressions, SchemeSymbol name, ParsingContext lambdaContext) {
-        //TODO maybe create SeltTailProcedureRootNode only when we detect there is a self-tail call? Using the lambdaContext.getSelfTailRecursionArgumentInde
-        int argumentsIndex = lambdaContext.getSelfTailRecursionArgumentIndex()
-                .orElseGet(() -> lambdaContext.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null));
         var frameDescriptor = lambdaContext.buildAndGetFrameDescriptor();
         var sourceSection = SourceSectionUtil.createSourceSection(expressions, lambdaContext.getSource());
-        var rootNode = new SelfTailProcedureRootNode(name, lambdaContext.getLanguage(), frameDescriptor, expressions, argumentsIndex, sourceSection);
-        //var rootNode = new SchemeRootNode(context.getLanguage(), frameDescriptor, allExpr, name, sourceSection);
 
+        var isSelfTailCall = lambdaContext.getSelfTailRecursionArgumentIndex().isPresent();
+        SchemeRootNode rootNode;
+        if (isSelfTailCall) {
+            int argumentsIndex = lambdaContext.getSelfTailRecursionArgumentIndex().get();
+            rootNode = new SelfTailProcedureRootNode(name, lambdaContext.getLanguage(), frameDescriptor, expressions, argumentsIndex, sourceSection);
+        } else {
+            rootNode = new SchemeRootNode(lambdaContext.getLanguage(), frameDescriptor, expressions, name, sourceSection);
+        }
         return rootNode.getCallTarget();
     }
+
 
     /*
      * We need to add those first because we can convert lambdaBodyIR to SchemeExprs first to determine whether there is

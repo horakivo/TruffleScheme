@@ -16,6 +16,7 @@ import com.ihorak.truffle.node.literals.BooleanLiteralNode;
 import com.ihorak.truffle.node.literals.LongLiteralNode;
 import org.antlr.v4.runtime.ParserRuleContext;
 
+import javax.xml.transform.Source;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,10 +72,14 @@ public class BuiltinFactory {
         }
     }
 
-    public static SchemeExpression createMultipleBuiltin(List<SchemeExpression> arguments) {
-        if (arguments.size() == 0) return new LongLiteralNode(1);
-        if (arguments.size() == 1) return OneArgumentExprNodeGen.create(arguments.get(0));
-        return reduceMultiply(arguments);
+    public static SchemeExpression createMultipleBuiltin(List<SchemeExpression> arguments, ParserRuleContext multiplyCtx) {
+        if (arguments.size() == 0) {
+            return SourceSectionUtil.setSourceSectionAndReturnExpr(new LongLiteralNode(1), multiplyCtx);
+        }
+        if (arguments.size() == 1) {
+            return SourceSectionUtil.setSourceSectionAndReturnExpr(OneArgumentExprNodeGen.create(arguments.get(0)), multiplyCtx);
+        }
+        return SourceSectionUtil.setSourceSectionAndReturnExpr(reduceMultiply(arguments), multiplyCtx);
     }
 
     private static SchemeExpression reduceMultiply(List<SchemeExpression> arguments) {
@@ -101,10 +106,11 @@ public class BuiltinFactory {
         return ListExprNodeFactory.create(new ConvertSchemeExprsArgumentsNode(arguments.toArray(SchemeExpression[]::new)));
     }
 
-    public static SchemeExpression createConsBuiltin(List<SchemeExpression> arguments) {
+    public static SchemeExpression createConsBuiltin(List<SchemeExpression> arguments, ParserRuleContext consCtx) {
         int expectedSize = ConsExprNodeFactory.getInstance().getExecutionSignature().size();
         if (arguments.size() == expectedSize) {
-            return ConsExprNodeFactory.create(arguments.toArray(SchemeExpression[]::new));
+            var consExpr = ConsExprNodeFactory.create(arguments.toArray(SchemeExpression[]::new));
+            return SourceSectionUtil.setSourceSectionAndReturnExpr(consExpr, consCtx);
         } else {
             throw new SchemeException(
                     "cons: arity mismatch; Expected number of arguments does not match the given number\nexpected: " + expectedSize + "\ngiven: " + arguments.size(),
@@ -193,13 +199,21 @@ public class BuiltinFactory {
         return result;
     }
 
-    public static SchemeExpression createEqualNumbers(List<SchemeExpression> arguments) {
+    public static SchemeExpression createEqualNumbers(List<SchemeExpression> arguments, ParserRuleContext equalCtx) {
         if (arguments.size() == 0)
             throw new SchemeException(
                     "=: arity mismatch; Expected number of argument does not match the given number\nexpected: at least 1\ngiven: 0", null);
-        if (arguments.size() == 1) return new BooleanLiteralNode(true);
-        if (arguments.size() == 2) new EqualNumbersExprNode(arguments.get(0), arguments.get(1));
-        return new ReduceComparisonExprNode(reduceEqual(arguments));
+        if (arguments.size() == 1) {
+            var booleanExpr = new BooleanLiteralNode(true);
+            return SourceSectionUtil.setSourceSectionAndReturnExpr(booleanExpr, equalCtx);
+        }
+        if (arguments.size() == 2) {
+            var equalExpr = new EqualNumbersExprNode(arguments.get(0), arguments.get(1));
+            return SourceSectionUtil.setSourceSectionAndReturnExpr(equalExpr, equalCtx);
+        }
+
+        var reducedEqualExpr = new ReduceComparisonExprNode(reduceEqual(arguments));
+        return SourceSectionUtil.setSourceSectionAndReturnExpr(reducedEqualExpr, equalCtx);
     }
 
     private static List<SchemeExpression> reduceEqual(List<SchemeExpression> arguments) {
@@ -266,9 +280,9 @@ public class BuiltinFactory {
         return result;
     }
 
-    public static SchemeExpression createCurrentMillisBuiltin(List<SchemeExpression> arguments) {
+    public static SchemeExpression createCurrentMillisBuiltin(List<SchemeExpression> arguments, ParserRuleContext ctx) {
         if (arguments.size() == 0) {
-            return CurrentMillisecondsExprNodeGen.create();
+            return SourceSectionUtil.setSourceSectionAndReturnExpr(CurrentMillisecondsExprNodeGen.create(), ctx);
         }
         throw new SchemeException(
                 "current-milliseconds: arity mismatch; Expected number of arguments does not match the given number\nExpected: 0\nGiven: " + arguments.size(),
@@ -329,9 +343,10 @@ public class BuiltinFactory {
                 "null: arity mismatch; Expected number of arguments does not match the given number\nExpected: 1\nGiven: " + arguments.size(), null);
     }
 
-    public static SchemeExpression createModulo(List<SchemeExpression> arguments) {
+    public static SchemeExpression createModulo(List<SchemeExpression> arguments, ParserRuleContext moduleCtx) {
         if (arguments.size() == 2) {
-            return ModuloExprNodeGen.create(arguments.get(0), arguments.get(1));
+            var moduloExpr = ModuloExprNodeGen.create(arguments.get(0), arguments.get(1));
+            return SourceSectionUtil.setSourceSectionAndReturnExpr(moduloExpr, moduleCtx);
         }
 
         throw new SchemeException(

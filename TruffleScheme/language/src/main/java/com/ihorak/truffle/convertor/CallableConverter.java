@@ -86,7 +86,7 @@ public class CallableConverter {
         List<SchemeExpression> arguments = getProcedureArguments(callableList.cdr(), context, procedureCtx);
         var callableCtx = (ParserRuleContext) procedureCtx.getChild(CTX_CALLABLE_INDEX);
         var callableExpr = InternalRepresentationConverter.convert(operand, context, false, false, callableCtx);
-        //var callNode = new CallableExprNode(arguments, callable);
+        //var callNode = new CallableExprNode(arguments, callableExpr);
 //
 
         if (isTailCall) {
@@ -95,16 +95,17 @@ public class CallableConverter {
                 context.setSelfTailRecursionArgumentIndex(tailRecursiveArgumentSlot);
                 return SelfRecursiveTailCallThrowerNodeGen.create(arguments, tailRecursiveArgumentSlot);
             }
-            return TailCallThrowerNodeGen.create(arguments, callableExpr);
+            var throwerNode = TailCallThrowerNodeGen.create(arguments, callableExpr);
+            return SourceSectionUtil.setSourceSectionAndReturnExpr(throwerNode, procedureCtx);
         } else {
             int tailCallArgumentsSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
             int tailCallTargetSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
-            var catcherNode = new TailCallCatcherNode(arguments, callableExpr, tailCallArgumentsSlot, tailCallTargetSlot);
-            return SourceSectionUtil.setSourceSectionAndReturnExpr(catcherNode, procedureCtx);
+            var tailCallCatcherNode = new TailCallCatcherNode(arguments, callableExpr, tailCallArgumentsSlot, tailCallTargetSlot);
+            return SourceSectionUtil.setSourceSectionAndReturnExpr(tailCallCatcherNode, procedureCtx);
             //return  new CallableExprNode(arguments, callableExpr);
         }
 
-        // return callNode;
+       //return SourceSectionUtil.setSourceSectionAndReturnExpr(callNode, procedureCtx);
     }
 
     private static List<SchemeExpression> getProcedureArguments(SchemeList argumentList, ParsingContext context, ParserRuleContext procedureCtx) {
