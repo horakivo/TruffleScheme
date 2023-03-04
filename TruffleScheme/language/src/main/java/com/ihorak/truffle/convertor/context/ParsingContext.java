@@ -25,7 +25,7 @@ public class ParsingContext {
 
     // This can be used to determine whether in lambda body self-tail recursion occur
     private Integer selfTailRecursionArgumentIndex;
-    private boolean isProcedureTailCall = false;
+    private boolean isTailCallProcedureBeingDefined = false;
 
     private final ParsingContext parent;
     private final SchemeTruffleLanguage language;
@@ -172,11 +172,14 @@ public class ParsingContext {
     }
 
     public boolean isTailCallProcedureBeingDefined() {
-        return isProcedureTailCall;
+        return isTailCallProcedureBeingDefined;
     }
 
-    public void setProcedureTailCall(boolean procedureTailCall) {
-        isProcedureTailCall = procedureTailCall;
+    public void setDefiningProcedureAsTailCall() {
+        if (isTailCallProcedureBeingDefined) {
+            throw InterpreterException.shouldNotReachHere("Converter error: isTailCallProcedureBeingDefined flag is already true");
+        }
+        isTailCallProcedureBeingDefined = true;
     }
 
     public void addTailCallProcedure(SchemeSymbol nameOfProcedure) {

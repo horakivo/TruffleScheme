@@ -91,7 +91,7 @@ public class CallableConverter {
                 context.setSelfTailRecursionArgumentIndex(tailRecursiveArgumentSlot);
                 return SelfRecursiveTailCallThrowerNodeGen.create(arguments, tailRecursiveArgumentSlot);
             }
-            context.setProcedureTailCall(true);
+            context.setDefiningProcedureAsTailCall();
             var throwerNode = TailCallThrowerNodeGen.create(arguments, operandExpr);
             return SourceSectionUtil.setSourceSectionAndReturnExpr(throwerNode, procedureCtx);
         } else {
