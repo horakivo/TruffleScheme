@@ -4,6 +4,7 @@ import com.ihorak.truffle.SchemeTruffleLanguage;
 import com.ihorak.truffle.exceptions.InterpreterException;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.type.SchemeSymbol;
+import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlotKind;
 import com.oracle.truffle.api.source.Source;
@@ -15,6 +16,7 @@ public class ParsingContext {
 
     private final Set<SchemeSymbol> macroIndex = new HashSet<>();
     private final Map<SchemeSymbol, LocalVariableInfo> localVariableIndex = new HashMap<>();
+    private final Set<SchemeSymbol> tailCallProceduresSet = new HashSet<>();
 
     private final Source source;
 
@@ -22,7 +24,8 @@ public class ParsingContext {
 
 
     // This can be used to determine whether in lambda body self-tail recursion occur
-    private Optional<Integer> selfTailRecursionArgumentIndex = Optional.empty();
+    private Integer selfTailRecursionArgumentIndex;
+    private boolean isProcedureTailCall = false;
 
     private final ParsingContext parent;
     private final SchemeTruffleLanguage language;
@@ -146,24 +149,51 @@ public class ParsingContext {
         }
     }
 
-    @Nullable
-    public SchemeSymbol getFunctionDefinitionName() {
-        return functionDefinitionName;
+    public Optional<SchemeSymbol> getFunctionDefinitionName() {
+        return Optional.of(functionDefinitionName);
     }
 
     public void setFunctionDefinitionName(final SchemeSymbol functionDefinitionName) {
+        if (this.functionDefinitionName != null) {
+            throw InterpreterException.shouldNotReachHere("Converter error: functionDefinitionName should be set only once!");
+        }
         this.functionDefinitionName = functionDefinitionName;
     }
 
     public Optional<Integer> getSelfTailRecursionArgumentIndex() {
-        return selfTailRecursionArgumentIndex;
+        return Optional.ofNullable(selfTailRecursionArgumentIndex);
     }
 
     public void setSelfTailRecursionArgumentIndex(int selfTailRecursionArgumentIndex) {
-        if (this.selfTailRecursionArgumentIndex.isPresent()) {
+        if (this.selfTailRecursionArgumentIndex != null) {
             throw InterpreterException.shouldNotReachHere("Converter error: selfTailRecursionArgumentIndex should be set only once!");
         }
-        this.selfTailRecursionArgumentIndex = Optional.of(selfTailRecursionArgumentIndex);
+        this.selfTailRecursionArgumentIndex = selfTailRecursionArgumentIndex;
+    }
+
+    public boolean isTailCallProcedureBeingDefined() {
+        return isProcedureTailCall;
+    }
+
+    public void setProcedureTailCall(boolean procedureTailCall) {
+        isProcedureTailCall = procedureTailCall;
+    }
+
+    public void addTailCallProcedure(SchemeSymbol nameOfProcedure) {
+        tailCallProceduresSet.add(nameOfProcedure);
+    }
+
+    public boolean isProcedureTailCall(SchemeSymbol name) {
+        return isProcedureTailCall(name, this);
+    }
+
+    private boolean isProcedureTailCall(SchemeSymbol name, ParsingContext context) {
+        if (context == null) return false;
+        if (context.tailCallProceduresSet.contains(name)) return true;
+
+        return isProcedureTailCall(name, context.parent);
+
+
     }
 
     public Source getSource() {

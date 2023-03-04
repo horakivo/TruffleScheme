@@ -24,20 +24,21 @@ public class TailCallUtil {
      * ctxBodyStartIndex - since the body is defined as follows: <definitions>+ <expressions>* we don't know where in the
      * lambda, or we should start. This index is the starting point
      */
-    public static List<SchemeExpression> convertBodyToSchemeExpressionsWithTCO(SchemeList body, ParsingContext context, ParserRuleContext ctx, int ctxBodyStartIndex) {
+    public static List<SchemeExpression> convertBodyToSchemeExpressionsWithTCO(SchemeList bodyIR, ParsingContext context, ParserRuleContext ctx, int ctxBodyStartIndex) {
         List<SchemeExpression> result = new ArrayList<>();
-        var size = body.size;
+        var size = bodyIR.size;
         for (int i = 0; i < size - 1; i++) {
             var currentCtx = (ParserRuleContext) ctx.getChild(ctxBodyStartIndex + i);
-            result.add(InternalRepresentationConverter.convert(body.get(i), context, false, true, currentCtx));
+            result.add(InternalRepresentationConverter.convert(bodyIR.get(i), context, false, true, currentCtx));
         }
 
         //TCO: (or <expression>* <tail expression>)
         if (size > 0) {
             var lastIndex = size - 1;
             var currentCtx = (ParserRuleContext) ctx.getChild(ctxBodyStartIndex + lastIndex);
-            result.add(InternalRepresentationConverter.convert(body.get(size - 1), context, true, false, currentCtx));
 
+            //pokud tohle je volani metody pak vraceni z lambdy musi vytvorit Catcher a pokud ne tak nemusi
+            result.add(InternalRepresentationConverter.convert(bodyIR.get(size - 1), context, true, false, currentCtx));
         }
 
         return result;

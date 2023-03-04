@@ -545,11 +545,15 @@ public class ProgramTest {
     @Test
     public void asdasd() {
         var program = """   
-                (if 5 4 3)
+                (define TCO
+                  (lambda (a)
+                    ((lambda () a))))
+                                
+                (TCO 10)
                 """;
 
 
-        var result = context.eval("scm", program).asLong();
-        System.out.println(result);
+        var result = context.eval("scm", program);
+        assertEquals(10L, result.asLong());
     }
 }

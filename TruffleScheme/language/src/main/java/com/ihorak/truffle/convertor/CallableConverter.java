@@ -44,10 +44,8 @@ public class CallableConverter {
     }
 
     private static boolean isSelfTailRecursive(Object operand, ParsingContext context) {
-        var currentlyDefiningMethod = context.getFunctionDefinitionName();
-        if (currentlyDefiningMethod == null) return false;
-
-        return operand instanceof SchemeSymbol symbol && symbol.equals(currentlyDefiningMethod);
+        if (context.getFunctionDefinitionName().isEmpty()) return false;
+        return operand instanceof SchemeSymbol symbol && symbol.equals(context.getFunctionDefinitionName().get());
     }
 
     private static boolean isUnquote(SchemeSymbol schemeSymbol) {
@@ -82,30 +80,40 @@ public class CallableConverter {
     }
 
     private static SchemeExpression createProcedureCall(SchemeList callableList, boolean isTailCall, ParsingContext context, ParserRuleContext procedureCtx) {
-        var operand = callableList.car();
+        var operandIR = callableList.car();
         List<SchemeExpression> arguments = getProcedureArguments(callableList.cdr(), context, procedureCtx);
         var callableCtx = (ParserRuleContext) procedureCtx.getChild(CTX_CALLABLE_INDEX);
-        var callableExpr = InternalRepresentationConverter.convert(operand, context, false, false, callableCtx);
-        //var callNode = new CallableExprNode(arguments, callableExpr);
-//
+        var operandExpr = InternalRepresentationConverter.convert(operandIR, context, false, false, callableCtx);
 
         if (isTailCall) {
-            if (isSelfTailRecursive(operand, context)) {
+            if (isSelfTailRecursive(operandIR, context)) {
                 int tailRecursiveArgumentSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
                 context.setSelfTailRecursionArgumentIndex(tailRecursiveArgumentSlot);
                 return SelfRecursiveTailCallThrowerNodeGen.create(arguments, tailRecursiveArgumentSlot);
             }
-            var throwerNode = TailCallThrowerNodeGen.create(arguments, callableExpr);
+            context.setProcedureTailCall(true);
+            var throwerNode = TailCallThrowerNodeGen.create(arguments, operandExpr);
             return SourceSectionUtil.setSourceSectionAndReturnExpr(throwerNode, procedureCtx);
         } else {
-            int tailCallArgumentsSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
-            int tailCallTargetSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
-            var tailCallCatcherNode = new TailCallCatcherNode(arguments, callableExpr, tailCallArgumentsSlot, tailCallTargetSlot);
-            return SourceSectionUtil.setSourceSectionAndReturnExpr(tailCallCatcherNode, procedureCtx);
-            //return  new CallableExprNode(arguments, callableExpr);
+            if (isCallableTailCallProcedure(operandIR, context)) {
+                int tailCallArgumentsSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
+                int tailCallTargetSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
+                var tailCallCatcherNode = new TailCallCatcherNode(arguments, operandExpr, tailCallArgumentsSlot, tailCallTargetSlot);
+                return SourceSectionUtil.setSourceSectionAndReturnExpr(tailCallCatcherNode, procedureCtx);
+            }
+
+            var callableExpr = new CallableExprNode(arguments, operandExpr);
+            return SourceSectionUtil.setSourceSectionAndReturnExpr(callableExpr, procedureCtx);
+        }
+    }
+
+
+    private static boolean isCallableTailCallProcedure(Object operand, ParsingContext context) {
+        if (operand instanceof SchemeSymbol symbol) {
+            return context.isProcedureTailCall(symbol);
         }
 
-       //return SourceSectionUtil.setSourceSectionAndReturnExpr(callNode, procedureCtx);
+        return false;
     }
 
     private static List<SchemeExpression> getProcedureArguments(SchemeList argumentList, ParsingContext context, ParserRuleContext procedureCtx) {

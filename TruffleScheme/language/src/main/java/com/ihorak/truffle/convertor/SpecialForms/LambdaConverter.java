@@ -37,20 +37,25 @@ public class LambdaConverter {
     private static final int CTX_PARAMS_OFFSET = 1;
 
 
-    public static SchemeExpression convert(SchemeList lambdaList, ParsingContext context, SchemeSymbol name, ParserRuleContext lambdaCtx) {
-        validate(lambdaList);
+    public static SchemeExpression convert(SchemeList lambdaListIR, ParsingContext context, SchemeSymbol name, ParserRuleContext lambdaCtx) {
+        validate(lambdaListIR);
         ParsingContext lambdaContext = new ParsingContext(context, LexicalScope.LAMBDA, context.getSource());
-        if (!name.getValue().equals("anonymous_procedure")) {
+        var isProcedureBeingDefined = !name.getValue().equals("anonymous_procedure");
+        if (isProcedureBeingDefined) {
             lambdaContext.setFunctionDefinitionName(name);
         }
 
-        var parametersIR = lambdaList.cdr().car();
-        var lambdaBodyIR = lambdaList.cdr().cdr();
+        var parametersIR = lambdaListIR.cdr().car();
+        var lambdaBodyIR = lambdaListIR.cdr().cdr();
 
         addLocalVariablesToParsingContext(parametersIR, lambdaContext);
         var bodyExprs = TailCallUtil.convertBodyToSchemeExpressionsWithTCO(lambdaBodyIR, lambdaContext, lambdaCtx, CTX_LAMBDA_BODY_INDEX);
         var writeLocalVariableExpr = createWriteLocalVariableNodes(parametersIR, lambdaContext, lambdaCtx);
         var allExprs = Stream.concat(writeLocalVariableExpr.stream(), bodyExprs.stream()).toList();
+
+        if (isProcedureBeingDefined && lambdaContext.isTailCallProcedureBeingDefined()) {
+            context.addTailCallProcedure(name);
+        }
 
 
         var callTarget = creatCallTarget(allExprs, name, lambdaContext);
