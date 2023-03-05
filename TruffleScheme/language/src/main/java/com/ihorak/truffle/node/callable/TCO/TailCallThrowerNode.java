@@ -21,10 +21,14 @@ public abstract class TailCallThrowerNode extends SchemeExpression {
     @Executed
     protected SchemeExpression callable;
 
+    //This can be either name or e.g. list which will evaluate to procedure
+    private final Object operand;
 
-    public TailCallThrowerNode(final List<SchemeExpression> arguments, final SchemeExpression callable) {
+
+    public TailCallThrowerNode(final List<SchemeExpression> arguments, final SchemeExpression callable, Object operand) {
         this.arguments = arguments.toArray(SchemeExpression[]::new);
         this.callable = callable;
+        this.operand = operand;
     }
 
     @Specialization
@@ -56,5 +60,11 @@ public abstract class TailCallThrowerNode extends SchemeExpression {
         }
 
         return args;
+    }
+
+
+    @Override
+    public String toString() {
+        return operand.toString();
     }
 }

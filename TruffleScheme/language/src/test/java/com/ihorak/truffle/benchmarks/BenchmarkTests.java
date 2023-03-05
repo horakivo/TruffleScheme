@@ -81,6 +81,37 @@ public class BenchmarkTests {
         assertEquals("(256 1531 1410 81 9)", result.toString());
     }
 
+
+    @Test
+    public void random_list_3_fun() {
+        var program = """
+                (define random-list
+                  (lambda (len)
+                    (generate len 101 17 3 '())))
+                                
+                                
+                (define generate
+                  (lambda (len p q s result)
+                    (if (= len 0)
+                        result
+                        (tmp  (modulo (* s s) (* p q)) len p q result)
+                              )))
+                                
+                                
+                (define tmp
+                  (lambda (value len p q result)
+                           (generate (- len 1) p q value (cons value result))))
+
+                (random-list 5)
+                """;
+
+        var result = context.eval("scm", program);
+
+        assertTrue(result.hasArrayElements());
+        assertEquals(5L, result.getArraySize());
+        assertEquals("(256 1531 1410 81 9)", result.toString());
+    }
+
     @Test
     public void quicksort() {
         var program = """

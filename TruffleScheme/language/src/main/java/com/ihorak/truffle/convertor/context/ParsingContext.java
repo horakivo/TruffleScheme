@@ -26,11 +26,9 @@ public class ParsingContext {
     // This can be used to determine whether in lambda body self-tail recursion occur
     private Integer selfTailRecursionArgumentIndex;
     private boolean isTailCallProcedureBeingDefined = false;
-
     private final ParsingContext parent;
     private final SchemeTruffleLanguage language;
     private final LexicalScope scope;
-
     private int quasiquoteNestedLevel = 0;
     private final FrameDescriptor.Builder frameDescriptorBuilder;
 
@@ -150,7 +148,7 @@ public class ParsingContext {
     }
 
     public Optional<SchemeSymbol> getFunctionDefinitionName() {
-        return Optional.of(functionDefinitionName);
+        return Optional.ofNullable(functionDefinitionName);
     }
 
     public void setFunctionDefinitionName(final SchemeSymbol functionDefinitionName) {

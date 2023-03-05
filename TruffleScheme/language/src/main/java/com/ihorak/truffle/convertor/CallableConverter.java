@@ -92,7 +92,7 @@ public class CallableConverter {
                 return SelfRecursiveTailCallThrowerNodeGen.create(arguments, tailRecursiveArgumentSlot);
             }
             context.setDefiningProcedureAsTailCall();
-            var throwerNode = TailCallThrowerNodeGen.create(arguments, operandExpr);
+            var throwerNode = TailCallThrowerNodeGen.create(arguments, operandExpr, operandIR);
             return SourceSectionUtil.setSourceSectionAndReturnExpr(throwerNode, procedureCtx);
         } else {
             if (isCallableTailCallProcedure(operandIR, context)) {
@@ -105,6 +105,8 @@ public class CallableConverter {
             var callableExpr = new CallableExprNode(arguments, operandExpr);
             return SourceSectionUtil.setSourceSectionAndReturnExpr(callableExpr, procedureCtx);
         }
+
+        //return SourceSectionUtil.setSourceSectionAndReturnExpr(new CallableExprNode(arguments, operandExpr), procedureCtx);
     }
 
 
