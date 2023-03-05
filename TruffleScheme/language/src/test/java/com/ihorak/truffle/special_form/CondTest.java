@@ -57,6 +57,21 @@ public class CondTest {
     }
 
     @Test
+    public void givenCondWithOneBranch_whenEval_thenCorrectResultIsReturned() {
+        var program = """
+                (define pivot
+                  (lambda (l)
+                    (cond (#t (car l)))))
+                  
+                (pivot '(1 2 3))
+                """;
+
+        var result = context.eval("scm", program);
+
+        assertEquals(1L, result.asLong());
+    }
+
+    @Test
     public void givenCondWithoutElse_whenEvaluated_thenCorrectResultIsReturned() {
         var program = "(cond ((= 1 2) 20) ((= 2 2) 20))";
 

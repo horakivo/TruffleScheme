@@ -27,11 +27,14 @@ public class CondConverter {
         if (condExpressions.size == 0)
             return SourceSectionUtil.setSourceSectionAndReturnExpr(new UndefinedLiteralNode(), condCtx);
         if (condExpressions.size == 1) {
-            var condExpr = (SchemeList) condExpressions.get(0);
-            var conditionCtx = (ParserRuleContext) condCtx.getChild(3);
-            var thenCtx = (ParserRuleContext) condCtx.getChild(4);
-            var conditionExpr = InternalRepresentationConverter.convert(condExpr.get(0), context, false, false, conditionCtx);
-            var thenExpr = InternalRepresentationConverter.convert(condExpr.get(1), context, true, false, thenCtx);
+            var condIR = (SchemeList) condExpressions.get(0);
+            var currCondCtx = (ParserRuleContext) condCtx.getChild(2).getChild(0);
+
+            var conditionCtx = (ParserRuleContext) currCondCtx.getChild(1);
+            var conditionExpr = InternalRepresentationConverter.convert(condIR.get(0), context, false, false, conditionCtx);
+
+            var thenCtx = (ParserRuleContext) condCtx.getChild(2);
+            var thenExpr = InternalRepresentationConverter.convert(condIR.get(1), context, true, false, thenCtx);
 
             var ifExpr = new IfExprNode(BooleanCastExprNodeGen.create(conditionExpr), thenExpr);
             return SourceSectionUtil.setSourceSectionAndReturnExpr(ifExpr, condCtx);
@@ -67,7 +70,7 @@ public class CondConverter {
         var firstConditionCtx = (ParserRuleContext) firstCondCtx.getChild(1);
         var firstConditionExpr = InternalRepresentationConverter.convert(firstCondIR.get(0), context, false, false, firstConditionCtx);
 
-        var firstThenCtx =  (ParserRuleContext) firstCondCtx.getChild(2);
+        var firstThenCtx = (ParserRuleContext) firstCondCtx.getChild(2);
         var firstThenExpr = InternalRepresentationConverter.convert(firstCondIR.get(1), context, true, false, firstThenCtx);
 
         var secondThenCtx = (ParserRuleContext) secondCondCtx.getChild(2);
