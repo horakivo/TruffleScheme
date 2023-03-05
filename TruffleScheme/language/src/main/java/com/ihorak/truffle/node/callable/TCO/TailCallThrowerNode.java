@@ -33,19 +33,11 @@ public abstract class TailCallThrowerNode extends SchemeExpression {
 
     @Specialization
     protected Object doThrow(VirtualFrame frame, UserDefinedProcedure procedure) {
-
-//        var parentMaterializedFrame = (MaterializedFrame) frame.getArguments()[1];
-//        var args = getArguments(procedure, frame);
-//        var callTarget = procedure.getCallTarget();
-//        parentMaterializedFrame.setObject(TCO_ARGUMENT_SLOT, args);
-//        parentMaterializedFrame.setObject(TCO_CALLTARGET_SLOT, callTarget);
-
-
-        SchemeTruffleLanguage.TCOTarget target = SchemeTruffleLanguage.getTCOTarget(this);
-        target.target = procedure.getCallTarget();
-        target.arguments = getArguments(procedure, frame);
-        throw TailCallException.INSTANCE;
-//        throw new TailCallException(procedure.getCallTarget(), getArguments(procedure, frame));
+//        SchemeTruffleLanguage.TCOTarget target = SchemeTruffleLanguage.getTCOTarget(this);
+//        target.target = procedure.getCallTarget();
+//        target.arguments = getArguments(procedure, frame);
+//        throw TailCallException.INSTANCE;
+        throw new TailCallException(procedure.getCallTarget(), getArguments(procedure, frame));
     }
 
     @ExplodeLoop

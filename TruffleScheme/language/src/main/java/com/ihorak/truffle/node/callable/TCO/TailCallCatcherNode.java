@@ -20,7 +20,8 @@ public class TailCallCatcherNode extends CallableExprNode {
     //    @Child private CallableExprNode callNode;
 //    @Child private DispatchNode dispatchNode = DispatchNodeGen.create();
 //
-    @Child private LoopNode loopNode;
+    @Child
+    private LoopNode loopNode;
     
     private final int tailCallArgumentsSlot;
     private final int tailCallTargetSlot;
