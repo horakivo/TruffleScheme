@@ -1,6 +1,7 @@
 package com.ihorak.truffle.convertor.SpecialForms;
 
 import com.ihorak.truffle.convertor.InternalRepresentationConverter;
+import com.ihorak.truffle.convertor.SourceSectionUtil;
 import com.ihorak.truffle.convertor.context.LexicalScope;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.util.CreateWriteExprNode;
@@ -20,7 +21,7 @@ public class LetConverter extends AbstractLetConverter {
     private LetConverter() {
     }
 
-    public static LetExprNode convert(SchemeList letList, ParsingContext context, ParserRuleContext letCtx) {
+    public static SchemeExpression convert(SchemeList letList, ParsingContext context, ParserRuleContext letCtx) {
         validate(letList);
         ParsingContext letContext = new ParsingContext(context, LexicalScope.LET, context.getFrameDescriptorBuilder(), context.getSource());
 
@@ -34,7 +35,7 @@ public class LetConverter extends AbstractLetConverter {
         bindingsAndBodyExpressions.addAll(bindingExpressions);
         bindingsAndBodyExpressions.addAll(bodyExpressions);
 
-        return new LetExprNode(bindingsAndBodyExpressions);
+        return SourceSectionUtil.setSourceSectionAndReturnExpr(new LetExprNode(bindingsAndBodyExpressions), letCtx);
 
     }
 

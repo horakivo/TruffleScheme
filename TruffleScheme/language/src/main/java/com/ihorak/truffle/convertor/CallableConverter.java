@@ -87,8 +87,12 @@ public class CallableConverter {
 
         if (isTailCall) {
             if (isSelfTailRecursive(operandIR, context)) {
-                int tailRecursiveArgumentSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
-                context.setSelfTailRecursionArgumentIndex(tailRecursiveArgumentSlot);
+                int tailRecursiveArgumentSlot = context.getSelfTailRecursionArgumentIndex()
+                        .orElseGet(() -> {
+                            var slotIndex = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
+                            context.setSelfTailRecursionArgumentIndex(slotIndex);
+                            return slotIndex;
+                        });
                 return SelfRecursiveTailCallThrowerNodeGen.create(arguments, tailRecursiveArgumentSlot);
             }
             context.setDefiningProcedureAsTailCall();
