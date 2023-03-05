@@ -26,7 +26,7 @@ public class SelfTailProcedureRootNode extends SchemeRootNode {
                                      List<SchemeExpression> schemeExpressions, int argumentsIndex, SourceSection sourceSection) {
         super(language, frameDescriptor, schemeExpressions, name, sourceSection);
         this.argumentsIndex = argumentsIndex;
-        this.loop = Truffle.getRuntime().createLoopNode(new TailRecursiveCallLoopNode(this.schemeExpressions, argumentsIndex, getFrameDescriptor(), getCallTarget()));
+        this.loop = Truffle.getRuntime().createLoopNode(new TailRecursiveCallLoopNode(this.schemeExpressions));
     }
 
     @Override

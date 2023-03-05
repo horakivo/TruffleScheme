@@ -174,9 +174,6 @@ public class ParsingContext {
     }
 
     public void setDefiningProcedureAsTailCall() {
-        if (isTailCallProcedureBeingDefined) {
-            throw InterpreterException.shouldNotReachHere("Converter error: isTailCallProcedureBeingDefined flag is already true");
-        }
         isTailCallProcedureBeingDefined = true;
     }
 

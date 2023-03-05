@@ -19,17 +19,10 @@ public class TailRecursiveCallLoopNode extends SchemeNode implements RepeatingNo
 
     @Children
     private final SchemeExpression[] bodyExpressions;
-    private final int argumentsIndex;
-    private final ConditionProfile tailRecursion = ConditionProfile.create();
 
-    private final CallTarget callTarget;
-    private final FrameDescriptor frameDescriptor;
 
-    public TailRecursiveCallLoopNode(SchemeExpression[] bodyExpressions, int argumentsIndex, FrameDescriptor frameDescriptor, CallTarget callTarget) {
+    public TailRecursiveCallLoopNode(SchemeExpression[] bodyExpressions) {
         this.bodyExpressions = bodyExpressions;
-        this.argumentsIndex = argumentsIndex;
-        this.frameDescriptor = frameDescriptor;
-        this.callTarget = callTarget;
     }
 
     @ExplodeLoop

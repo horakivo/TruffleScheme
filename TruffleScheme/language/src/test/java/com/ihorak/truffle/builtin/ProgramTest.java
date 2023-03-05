@@ -541,19 +541,4 @@ public class ProgramTest {
         var result = context.eval("scm", program).asLong();
         System.out.println(result);
     }
-
-    @Test
-    public void asdasd() {
-        var program = """   
-                (define TCO
-                  (lambda (a)
-                    ((lambda () a))))
-                                
-                (TCO 10)
-                """;
-
-
-        var result = context.eval("scm", program);
-        assertEquals(10L, result.asLong());
-    }
 }
