@@ -32,7 +32,7 @@ public abstract class EqualBinaryNode extends BinaryBooleanOperationNode {
 
     @Fallback
     protected boolean fallback(Object left, Object right) {
-        System.out.println("left: " + left + " right: " + right);
+       // System.out.println("left: " + left + " right: " + right);
         return false;
     }
 }

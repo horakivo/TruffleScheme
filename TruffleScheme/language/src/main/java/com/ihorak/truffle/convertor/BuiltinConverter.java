@@ -30,8 +30,8 @@ public class BuiltinConverter {
             case "map" -> BuiltinFactory.createMapBuiltin(convertedArguments);
             case "<=" -> BuiltinFactory.createLessThenOrEqual(convertedArguments);
             case "current-milliseconds" -> BuiltinFactory.createCurrentMillisBuiltin(convertedArguments, ctx);
-            case "display" -> BuiltinFactory.createDisplayBuiltin(convertedArguments);
-            case "newline" -> BuiltinFactory.createNewlineBuiltin(convertedArguments);
+            //case "display" -> BuiltinFactory.createDisplayBuiltin(convertedArguments);
+            //case "newline" -> BuiltinFactory.createNewlineBuiltin(convertedArguments);
             case "=" -> BuiltinFactory.createEqualNumbers(convertedArguments, ctx);
             case "<" -> BuiltinFactory.createLessThen(convertedArguments, ctx);
             case ">" -> BuiltinFactory.createMoreThen(convertedArguments);

@@ -28,6 +28,6 @@ public abstract class CdrExprNode extends LimitedBuiltin {
 
     @Fallback
     protected Object fallback(Object value) {
-        throw new SchemeException("cdr: contract violation\nexpected: pair? or list?\ngiven: " + value, this);
+        throw SchemeException.contractViolation(this, "cdr", "pair? or list?", value);
     }
 }

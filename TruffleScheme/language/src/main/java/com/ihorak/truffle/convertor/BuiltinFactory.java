@@ -295,23 +295,23 @@ public class BuiltinFactory {
                 null);
     }
 
-    public static SchemeExpression createDisplayBuiltin(List<SchemeExpression> arguments) {
-        if (arguments.size() == 1) {
-            return DisplayExprNodeGen.create(arguments.get(0));
-        }
-        throw new SchemeException(
-                "display: arity mismatch; Expected number of arguments does not match the given number\nExpected: 1\nGiven: " + arguments.size(),
-                null);
-    }
+//    public static SchemeExpression createDisplayBuiltin(List<SchemeExpression> arguments) {
+//        if (arguments.size() == 1) {
+//            return DisplayExprNodeGen.create(arguments.get(0));
+//        }
+//        throw new SchemeException(
+//                "display: arity mismatch; Expected number of arguments does not match the given number\nExpected: 1\nGiven: " + arguments.size(),
+//                null);
+//    }
 
-    public static SchemeExpression createNewlineBuiltin(List<SchemeExpression> arguments) {
-        if (arguments.size() == 0) {
-            return new NewlineExprNode();
-        }
-        throw new SchemeException(
-                "newline: arity mismatch; Expected number of arguments does not match the given number\nExpected: 0\nGiven: " + arguments.size(),
-                null);
-    }
+//    public static SchemeExpression createNewlineBuiltin(List<SchemeExpression> arguments) {
+//        if (arguments.size() == 0) {
+//            return new NewlineExprNode();
+//        }
+//        throw new SchemeException(
+//                "newline: arity mismatch; Expected number of arguments does not match the given number\nExpected: 0\nGiven: " + arguments.size(),
+//                null);
+//    }
 
     public static SchemeExpression createLoop(List<SchemeExpression> arguments) {
         var number = (LongLiteralNode) arguments.get(0);

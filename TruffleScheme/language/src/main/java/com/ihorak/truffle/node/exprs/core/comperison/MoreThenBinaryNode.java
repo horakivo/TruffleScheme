@@ -29,6 +29,6 @@ public abstract class MoreThenBinaryNode extends BinaryBooleanOperationNode {
     @TruffleBoundary
     @Fallback
     protected boolean fallback(Object left, Object right) {
-        throw new SchemeException(">: contract violation\nexpected: real?\ngiven left: " + left + "\ngiven right: " + right, this);
+        throw SchemeException.contractViolation(this, ">", "real?", left, right);
     }
 }

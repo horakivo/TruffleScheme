@@ -21,14 +21,14 @@ public abstract class LessThenBinaryNode extends BinaryBooleanOperationNode {
      * 1: if the value of this BigInteger is greater than that of the BigInteger object passed as a parameter.
      * -1: if the value of this BigInteger is less than that of the BigInteger object passed as a parameter/
      */
+    @TruffleBoundary
     @Specialization
     protected boolean lessThenBigInts(BigInteger left, BigInteger right) {
         return left.compareTo(right) < 0;
     }
 
-    @TruffleBoundary
     @Fallback
     protected boolean fallback(Object left, Object right) {
-        throw new SchemeException("<: contract violation\nexpected: real?\ngiven left: " + left + "\ngiven right: " + right, this);
+        throw SchemeException.contractViolation(this, "<", "real?", left, right);
     }
 }

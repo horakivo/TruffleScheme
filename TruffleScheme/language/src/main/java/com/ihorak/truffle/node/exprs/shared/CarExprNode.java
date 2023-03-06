@@ -23,7 +23,7 @@ public abstract class CarExprNode extends LimitedBuiltin {
 
     @Fallback
     protected Object fallback(Object object) {
-        throw new SchemeException("car: contract violation\nexpected: pair? or list?\ngiven: " + object, this);
+        throw SchemeException.contractViolation(this, "car", "pair? or list?", object);
     }
 
 
