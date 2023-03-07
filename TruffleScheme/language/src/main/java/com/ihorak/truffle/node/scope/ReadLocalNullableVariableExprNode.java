@@ -44,7 +44,7 @@ public abstract class ReadLocalNullableVariableExprNode extends SchemeExpression
     }
 
     @Fallback
-    protected Object fallback(VirtualFrame frame) {
-        throw new SchemeException(symbol + ": undefined\ncannot reference an identifier before its definition. FrameSlotKind: " + frame.getFrameDescriptor().getSlotKind(frameSlotIndex), this);
+    protected Object fallback() {
+        throw SchemeException.undefinedIdentifier(this, symbol);
     }
 }

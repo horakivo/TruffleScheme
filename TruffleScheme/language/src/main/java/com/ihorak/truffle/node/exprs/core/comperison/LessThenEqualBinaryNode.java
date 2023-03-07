@@ -20,11 +20,11 @@ public abstract class LessThenEqualBinaryNode extends BinaryBooleanOperationNode
      * 1: if the value of this BigInteger is greater than that of the BigInteger object passed as a parameter.
      * -1: if the value of this BigInteger is less than that of the BigInteger object passed as a parameter/
      */
-    @Specialization
-    protected boolean lessThenEqualBigInts(BigInteger left, BigInteger right) {
-        var result = left.compareTo(right);
-        return result <= 0;
-    }
+//    @Specialization
+//    protected boolean lessThenEqualBigInts(BigInteger left, BigInteger right) {
+//        var result = left.compareTo(right);
+//        return result <= 0;
+//    }
 
     @TruffleBoundary
     @Fallback

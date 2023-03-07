@@ -31,6 +31,7 @@ public record SchemePair(
     }
 
     @ExportMessage
+    @TruffleBoundary
     Object toDisplayString(@SuppressWarnings("unused") boolean allowSideEffects) {
         return "(" + first + " . " + second + ")";
     }

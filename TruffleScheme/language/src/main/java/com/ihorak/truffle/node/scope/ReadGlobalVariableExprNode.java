@@ -31,16 +31,16 @@ public class ReadGlobalVariableExprNode extends SchemeExpression {
             if (cachedValue != null) {
                 return cachedValue;
             } else {
-                return retrieveAndUpdateCachedValueFromLanguageContext();
+                return retrieveAndCachedTheValue();
             }
         } else {
-            //TODO Do I need here CompilerDirectives.transferToInterpreterAndInvalidate()?
+            CompilerDirectives.transferToInterpreterAndInvalidate();
             cachedAssumption = notRedefinedAssumption.getAssumption();
-            return retrieveAndUpdateCachedValueFromLanguageContext();
+            return retrieveAndCachedTheValue();
         }
     }
 
-    private Object retrieveAndUpdateCachedValueFromLanguageContext() {
+    private Object retrieveAndCachedTheValue() {
         CompilerDirectives.transferToInterpreterAndInvalidate();
         cachedValue = getContext().getVariable(symbol);
         return cachedValue;

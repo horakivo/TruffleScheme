@@ -1,0 +1,3 @@
+[EXECUTABLE]
+scm_native
+

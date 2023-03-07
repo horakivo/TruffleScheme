@@ -21,10 +21,10 @@ public abstract class MoreThenBinaryNode extends BinaryBooleanOperationNode {
      * 1: if the value of this BigInteger is greater than that of the BigInteger object passed as a parameter.
      * -1: if the value of this BigInteger is less than that of the BigInteger object passed as a parameter/
      */
-    @Specialization
-    protected boolean moreThenBigInts(BigInteger left, BigInteger right) {
-        return left.compareTo(right) > 0;
-    }
+//    @Specialization
+//    protected boolean moreThenBigInts(BigInteger left, BigInteger right) {
+//        return left.compareTo(right) > 0;
+//    }
 
     @TruffleBoundary
     @Fallback

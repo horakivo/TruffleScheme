@@ -14,8 +14,8 @@ public abstract class NegateNumberExprNode extends SchemeExpression {
         return -value;
     }
 
-    @Specialization
-    protected BigInteger negateBigInt(BigInteger value) {
-        return value.negate();
-    }
+//    @Specialization
+//    protected BigInteger negateBigInt(BigInteger value) {
+//        return value.negate();
+//    }
 }

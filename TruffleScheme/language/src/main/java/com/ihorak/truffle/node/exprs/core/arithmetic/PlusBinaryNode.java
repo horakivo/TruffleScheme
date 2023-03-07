@@ -28,7 +28,7 @@ public abstract class PlusBinaryNode extends BinaryOperationNode {
 
     @Fallback
     protected Object fallback(Object left, Object right) {
-        throw new SchemeException("+: contract violation;\nexpected: number?\ngiven: [" + left + "," + right + "]", this);
+        throw SchemeException.contractViolation(this, "+", "number?", left, right);
     }
 
     @Override
