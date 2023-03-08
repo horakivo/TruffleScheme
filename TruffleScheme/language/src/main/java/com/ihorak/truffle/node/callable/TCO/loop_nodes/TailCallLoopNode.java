@@ -32,16 +32,18 @@ public class TailCallLoopNode extends SchemeNode implements RepeatingNode {
     @Override
     public Object executeRepeatingWithValue(final VirtualFrame frame) {
         try {
-//            TCOTarget target = SchemeTruffleLanguage.getTCOTarget(this);
-//            return dispatchNode.executeDispatch(target.target, target.arguments);
 
             Object[] arguments = (Object[]) frame.getObject(tailCallArgumentsSlot);
             CallTarget callTarget = (CallTarget) frame.getObject(tailCallTargetSlot);
             return dispatchNode.executeDispatch(callTarget, arguments);
         } catch (TailCallException e) {
-//            SchemeTruffleLanguage.TCOTarget target = SchemeTruffleLanguage.getTCOTarget(this);
-            frame.setObject(tailCallTargetSlot, e.getCallTarget());
-            frame.setObject(tailCallArgumentsSlot, e.getArguments());
+//            frame.setObject(tailCallTargetSlot, e.getCallTarget());
+//            frame.setObject(tailCallArgumentsSlot, e.getArguments());
+
+            SchemeTruffleLanguage.TCOTarget target = SchemeTruffleLanguage.getTCOTarget(this);
+            frame.setObject(tailCallTargetSlot, target.target);
+            frame.setObject(tailCallArgumentsSlot, target.arguments);
+
             return CONTINUE_LOOP_STATUS;
         }
     }
