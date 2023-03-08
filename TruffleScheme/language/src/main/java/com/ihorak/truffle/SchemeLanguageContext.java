@@ -3,18 +3,22 @@ package com.ihorak.truffle;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.scope.ReadGlobalVariableExprNode;
 import com.ihorak.truffle.type.SchemeSymbol;
+import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.nodes.Node;
+import com.oracle.truffle.api.source.Source;
 
 import java.util.Map;
 
 public class SchemeLanguageContext {
 
     private final Map<SchemeSymbol, Object> globalVariableStorage;
+    private final TruffleLanguage.Env env;
 
-    public SchemeLanguageContext(SchemeTruffleLanguage language) {
+    public SchemeLanguageContext(SchemeTruffleLanguage language, TruffleLanguage.Env env) {
         this.globalVariableStorage = PrimitiveProcedureGenerator.generate(language);
+        this.env = env;
     }
 
     private static final TruffleLanguage.ContextReference<SchemeLanguageContext> REFERENCE =
@@ -30,6 +34,10 @@ public class SchemeLanguageContext {
             throw new SchemeException(symbol + ": undefined\ncannot reference an identifier before its definition", null);
         }
         return value;
+    }
+
+    public CallTarget parse(Source source) {
+        return this.env.parsePublic(source);
     }
 
     public void addVariable(SchemeSymbol symbol, Object valueToStore) {

@@ -45,6 +45,7 @@ public class BuiltinConverter {
             case "cadr" -> BuiltinFactory.createCadr(convertedArguments, ctx);
             case "infinite" -> BuiltinFactory.createInfinite(convertedArguments);
             case "equal?" -> BuiltinFactory.createEqual(convertedArguments, ctx);
+            case "eval-source" -> BuiltinFactory.createEvalSource(convertedArguments, ctx);
             default ->
                     throw new RuntimeException("Unable to convert builtin procedure from list to AST. Builtin: " + operand);
         };

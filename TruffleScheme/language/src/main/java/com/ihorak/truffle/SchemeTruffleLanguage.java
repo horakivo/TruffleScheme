@@ -9,6 +9,7 @@ import com.ihorak.truffle.parser.AntlrToAST;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.source.Source;
 import com.oracle.truffle.api.source.SourceSection;
+import com.oracle.truffle.api.strings.TruffleString;
 import org.antlr.v4.runtime.CharStreams;
 
 import com.ihorak.truffle.convertor.context.ParsingContext;
@@ -20,6 +21,8 @@ import com.oracle.truffle.api.nodes.Node;
 
 @TruffleLanguage.Registration(id = "scm", name = "Scheme")
 public class SchemeTruffleLanguage extends TruffleLanguage<SchemeLanguageContext> {
+
+    public static final TruffleString.Encoding STRING_ENCODING = TruffleString.Encoding.UTF_16;
 
     private static final LanguageReference<SchemeTruffleLanguage> REFERENCE =
             LanguageReference.create(SchemeTruffleLanguage.class);
@@ -43,7 +46,7 @@ public class SchemeTruffleLanguage extends TruffleLanguage<SchemeLanguageContext
 
     @Override
     protected SchemeLanguageContext createContext(Env env) {
-        return new SchemeLanguageContext(this);
+        return new SchemeLanguageContext(this, env);
     }
 
     public static TCOTarget getTCOTarget(Node node) {

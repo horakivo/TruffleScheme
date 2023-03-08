@@ -39,6 +39,7 @@ public class BuiltinUtils {
                 case "cadr":
                 case "equal?":
                 case "infinite":
+                case "eval-source":
                     return true;
                 default:
                     return false;

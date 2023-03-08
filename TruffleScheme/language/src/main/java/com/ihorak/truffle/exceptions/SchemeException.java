@@ -26,6 +26,11 @@ public class SchemeException extends AbstractTruffleException {
     }
 
     @TruffleBoundary
+    public static SchemeException exception(Node node, String message) {
+        return new SchemeException(message, node);
+    }
+
+    @TruffleBoundary
     public static SchemeException contractViolation(Node node, String operationName, String expected, Object left, Object right) {
         StringBuilder sb = new StringBuilder();
 

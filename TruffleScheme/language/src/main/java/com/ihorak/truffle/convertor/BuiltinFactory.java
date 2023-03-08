@@ -388,4 +388,15 @@ public class BuiltinFactory {
                 null);
     }
 
+    public static SchemeExpression createEvalSource(List<SchemeExpression> arguments, ParserRuleContext evalSourceCtx) {
+        if (arguments.size() == 2) {
+            var evalSourceExpr = EvalSourceNodeGen.create(arguments.get(0), arguments.get(1));
+            return SourceSectionUtil.setSourceSectionAndReturnExpr(evalSourceExpr, evalSourceCtx);
+        }
+
+        throw new SchemeException(
+                "eval-source: arity mismatch; Expected number of arguments does not match the given number\nExpected: 2\nGiven: " + arguments.size(),
+                null);
+    }
+
 }

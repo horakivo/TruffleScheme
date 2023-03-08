@@ -4,6 +4,7 @@ import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.Assumption;
 import com.oracle.truffle.api.Truffle;
+import com.oracle.truffle.api.profiles.ConditionProfile;
 import com.oracle.truffle.api.utilities.CyclicAssumption;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
@@ -19,6 +20,9 @@ public class ReadGlobalVariableExprNode extends SchemeExpression {
     @CompilationFinal
     private Assumption cachedAssumption;
 
+    private final ConditionProfile validProfile = ConditionProfile.createBinaryProfile();
+    private final ConditionProfile cachedProfile = ConditionProfile.createCountingProfile();
+
 
     public ReadGlobalVariableExprNode(SchemeSymbol symbol) {
         this.symbol = symbol;
@@ -27,8 +31,8 @@ public class ReadGlobalVariableExprNode extends SchemeExpression {
 
     @Override
     public Object executeGeneric(final VirtualFrame virtualFrame) {
-        if (cachedAssumption.isValid()) {
-            if (cachedValue != null) {
+        if (validProfile.profile(cachedAssumption.isValid())) {
+            if (cachedProfile.profile(cachedValue != null)) {
                 return cachedValue;
             } else {
                 return retrieveAndCachedTheValue();

@@ -1,5 +1,6 @@
 package com.ihorak.truffle.parser;
 
+import com.ihorak.truffle.SchemeTruffleLanguage;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemePair;
 import com.ihorak.truffle.type.SchemeSymbol;
@@ -12,7 +13,7 @@ import java.util.List;
 
 public class AntlrToIR extends R5RSBaseVisitor<Object> {
 
-    private static final TruffleString.Encoding STRING_ENCODING = TruffleString.Encoding.UTF_16;
+    public static final TruffleString.Encoding STRING_ENCODING = TruffleString.Encoding.UTF_16;
 
     @Override
     public Object visitForm(R5RSParser.FormContext ctx) {
@@ -57,7 +58,7 @@ public class AntlrToIR extends R5RSBaseVisitor<Object> {
     public TruffleString visitString(R5RSParser.StringContext ctx) {
         var stringWithDoubleQuotes = ctx.STRING().getText();
         var trimmedString = stringWithDoubleQuotes.substring(1, stringWithDoubleQuotes.length() - 1);
-        return TruffleString.fromJavaStringUncached(trimmedString, STRING_ENCODING);
+        return TruffleString.fromJavaStringUncached(trimmedString, SchemeTruffleLanguage.STRING_ENCODING);
     }
 
     @Override
