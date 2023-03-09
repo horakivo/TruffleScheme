@@ -20,29 +20,29 @@ public abstract class WriteLocalVariableExprNode extends SchemeExpression {
         this.symbol = symbol;
     }
 
-//    @Specialization(guards = "isLongOrIllegal(frame)")
-//    protected UndefinedValue writeLong(VirtualFrame frame, long value) {
-//        /* No-on if already long */
-//        frame.getFrameDescriptor().setSlotKind(frameIndex, FrameSlotKind.Long);
-//        frame.setLong(frameIndex, value);
-//        return UndefinedValue.SINGLETON;
-//    }
-//
-//    @Specialization(guards = "isBooleanOrIllegal(frame)")
-//    protected Object writeBoolean(VirtualFrame frame, boolean value) {
-//        /* No-on if already boolean */
-//        frame.getFrameDescriptor().setSlotKind(frameIndex, FrameSlotKind.Boolean);
-//        frame.setBoolean(frameIndex, value);
-//        return UndefinedValue.SINGLETON;
-//    }
-//
-//    @Specialization(guards = "isDoubleOrIllegal(frame)")
-//    protected Object writeDouble(VirtualFrame frame, double value) {
-//        /* No-on if already double */
-//        frame.getFrameDescriptor().setSlotKind(frameIndex, FrameSlotKind.Double);
-//        frame.setDouble(frameIndex, value);
-//        return UndefinedValue.SINGLETON;
-//    }
+    @Specialization(guards = "isLongOrIllegal(frame)")
+    protected UndefinedValue writeLong(VirtualFrame frame, long value) {
+        /* No-on if already long */
+        frame.getFrameDescriptor().setSlotKind(frameIndex, FrameSlotKind.Long);
+        frame.setLong(frameIndex, value);
+        return UndefinedValue.SINGLETON;
+    }
+
+    @Specialization(guards = "isBooleanOrIllegal(frame)")
+    protected Object writeBoolean(VirtualFrame frame, boolean value) {
+        /* No-on if already boolean */
+        frame.getFrameDescriptor().setSlotKind(frameIndex, FrameSlotKind.Boolean);
+        frame.setBoolean(frameIndex, value);
+        return UndefinedValue.SINGLETON;
+    }
+
+    @Specialization(guards = "isDoubleOrIllegal(frame)")
+    protected Object writeDouble(VirtualFrame frame, double value) {
+        /* No-on if already double */
+        frame.getFrameDescriptor().setSlotKind(frameIndex, FrameSlotKind.Double);
+        frame.setDouble(frameIndex, value);
+        return UndefinedValue.SINGLETON;
+    }
 
 
     /**

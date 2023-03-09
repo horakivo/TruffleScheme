@@ -31,7 +31,7 @@ public class SelfTailProcedureRootNode extends SchemeRootNode {
 
     @Override
     public Object execute(VirtualFrame frame) {
-        frame.setObject(argumentsIndex, frame.getArguments());
+        frame.setObject(argumentsIndex, frame.getArguments().clone());
         return loop.execute(frame);
     }
 }

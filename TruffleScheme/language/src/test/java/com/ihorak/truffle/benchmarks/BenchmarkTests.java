@@ -36,6 +36,51 @@ public class BenchmarkTests {
         assertEquals(6765, result.asLong());
     }
 
+    //TODO is this bug? Tak call in the loop should be for sure catcher but it isn't
+    //TODO this assumption that we can know from parse time whether function is TCO or not is valid only because
+    //TODO we don't allow redefinition of function (is that true tho?)
+    @Test
+    public void asdasd() {
+        var program = """
+
+                (define tak
+                  (lambda (x y z)
+                    (if (not (< y x))
+                        z
+                        (tak (tak (- x 1) y z)
+                           (tak (- y 1) z x)
+                           (tak (- z 1) x y)))))
+
+
+                (define loop
+                  (lambda (n)
+                    (tak 18 12 6)
+                    (if (> n 0) (loop (- n 1)))))
+
+
+                (loop 100)
+                (loop 100)
+                (loop 100)
+                (loop 100)
+                (loop 100)
+                (loop 100)
+
+
+
+                (define start (current-milliseconds))
+
+                (loop 100)
+
+                (define end (current-milliseconds))
+                (- end start)
+
+                                """;
+
+        var result = context.eval("scm", program);
+
+        assertEquals(6765, result.asLong());
+    }
+
 
     @Test
     public void tak() {

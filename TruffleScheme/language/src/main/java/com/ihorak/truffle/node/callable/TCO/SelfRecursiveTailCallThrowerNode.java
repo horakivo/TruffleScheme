@@ -19,43 +19,26 @@ public abstract class SelfRecursiveTailCallThrowerNode extends SchemeExpression 
     private final SchemeExpression[] arguments;
     private final int tailRecursiveArgumentSlot;
 
-//    @Child
-//    @Executed
-//    protected SchemeExpression callable;
-
 
     public SelfRecursiveTailCallThrowerNode(List<SchemeExpression> arguments, int tailRecursiveArgumentSlot) {
         this.arguments = arguments.toArray(SchemeExpression[]::new);
         this.tailRecursiveArgumentSlot = tailRecursiveArgumentSlot;
-//        this.callable = callable;
     }
 
     @Specialization
     protected Object doThrow(VirtualFrame frame) {
-//        var parentMaterializedFrame = (MaterializedFrame) frame.getArguments()[2];
-//        var args = getArguments(procedure, frame);
-//        var callTarget = procedure.getCallTarget();
-//        parentMaterializedFrame.setObject(TCO_ARGUMENT_SLOT, args);
-//        parentMaterializedFrame.setObject(TCO_CALLTARGET_SLOT, callTarget);
-
-
-        //target.target = procedure.getCallTarget();
-//        SchemeTruffleLanguage.TCOTarget target = SchemeTruffleLanguage.getTCOTarget(this);
-//        target.arguments = getArguments(frame);
-
-        frame.setObject(tailRecursiveArgumentSlot, getArguments(frame));
+        prepareArgumentsForNextCall(frame);
         throw SelfRecursiveTailCallException.INSTANCE;
     }
 
 
     @ExplodeLoop
-    private Object[] getArguments(VirtualFrame parentFrame) {
-        Object[] args = new Object[arguments.length + 1];
-        args[0] = parentFrame.getArguments()[0];
+    private Object[] prepareArgumentsForNextCall(VirtualFrame frame) {
+        Object[] args = (Object[]) frame.getObject(tailRecursiveArgumentSlot);
 
         int index = 1;
         for (SchemeExpression expression : arguments) {
-            args[index] = expression.executeGeneric(parentFrame);
+            args[index] = expression.executeGeneric(frame);
             index++;
         }
 
