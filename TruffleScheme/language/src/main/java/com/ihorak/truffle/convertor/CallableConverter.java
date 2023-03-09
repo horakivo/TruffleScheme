@@ -87,12 +87,30 @@ public class CallableConverter {
 
         if (isTailCall) {
             if (isSelfTailRecursive(operandIR, context)) {
+
+                /**
+                 * This is needed because there can be multiple Self Tail calls
+                 * e.g.
+                 *
+                 * (define partition
+                 *   (lambda (piv l p1 p2)
+                 *     (if (null? l)
+                 *         (list p1 p2)
+                 *         (if (< (car l) piv)
+                 *             (partition piv (cdr l) (cons (car l) p1) p2)
+                 *             (partition piv (cdr l) p1 (cons (car l) p2))))))
+                 *
+                 *
+                 * */
                 int tailRecursiveArgumentSlot = context.getSelfTailRecursionArgumentIndex()
                         .orElseGet(() -> {
-                            var slotIndex = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
-                            context.setSelfTailRecursionArgumentIndex(slotIndex);
-                            return slotIndex;
+                            var argumentsSlotIndex = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
+                            var resultSlotIndex = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
+                            context.setSelfTailRecursionArgumentIndex(argumentsSlotIndex);
+                            context.setSelfTailRecursionResultIndex(resultSlotIndex);
+                            return argumentsSlotIndex;
                         });
+
                 return SelfRecursiveTailCallThrowerNodeGen.create(arguments, tailRecursiveArgumentSlot);
             }
             context.setDefiningProcedureAsTailCall();

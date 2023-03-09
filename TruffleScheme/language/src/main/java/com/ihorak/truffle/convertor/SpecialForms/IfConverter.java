@@ -5,6 +5,7 @@ import com.ihorak.truffle.convertor.SourceSectionUtil;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.callable.TCO.SelfRecursiveTailCallThrowerNode;
 import com.ihorak.truffle.node.cast.BooleanCastExprNodeGen;
 import com.ihorak.truffle.node.special_form.IfElseExprNode;
 import com.ihorak.truffle.node.special_form.IfExprNode;
@@ -54,6 +55,10 @@ public class IfConverter {
         var conditionExpr = InternalRepresentationConverter.convert(ifList.get(1), context, false, false, conditionCtx);
         var thenExpr = InternalRepresentationConverter.convert(ifList.get(2), context, true, false, thenCtx);
         var elseExpr = InternalRepresentationConverter.convert(ifList.get(3), context, true, false, elseCtx);
+
+        if (thenExpr instanceof SelfRecursiveTailCallThrowerNode || elseExpr instanceof SelfRecursiveTailCallThrowerNode) {
+
+        }
 
         var expr =  new IfElseExprNode(BooleanCastExprNodeGen.create(conditionExpr), thenExpr, elseExpr);
         SourceSectionUtil.setSourceSection(expr, ifCtx);

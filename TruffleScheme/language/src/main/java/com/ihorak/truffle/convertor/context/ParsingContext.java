@@ -25,6 +25,7 @@ public class ParsingContext {
 
     // This can be used to determine whether in lambda body self-tail recursion occur
     private Integer selfTailRecursionArgumentIndex;
+    private Integer selfTailRecursionResultIndex;
     private boolean isTailCallProcedureBeingDefined = false;
     private final ParsingContext parent;
     private final SchemeTruffleLanguage language;
@@ -167,6 +168,17 @@ public class ParsingContext {
             throw InterpreterException.shouldNotReachHere("Converter error: selfTailRecursionArgumentIndex should be set only once!");
         }
         this.selfTailRecursionArgumentIndex = selfTailRecursionArgumentIndex;
+    }
+
+    public void setSelfTailRecursionResultIndex(int selfTailRecursionResultIndex) {
+        if (this.selfTailRecursionResultIndex != null) {
+            throw InterpreterException.shouldNotReachHere("Converter error: selfTailRecursionResultIndex should be set only once!");
+        }
+        this.selfTailRecursionResultIndex = selfTailRecursionResultIndex;
+    }
+
+    public Optional<Integer> getSelfTailRecursionResultIndex() {
+        return Optional.ofNullable(selfTailRecursionResultIndex);
     }
 
     public boolean isTailCallProcedureBeingDefined() {
