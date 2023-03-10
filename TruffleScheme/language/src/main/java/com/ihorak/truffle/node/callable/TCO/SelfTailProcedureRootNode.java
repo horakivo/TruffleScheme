@@ -7,6 +7,8 @@ import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.SchemeNode;
 import com.ihorak.truffle.node.SchemeRootNode;
 import com.ihorak.truffle.node.callable.TCO.loop_nodes.TailRecursiveCallLoopNode;
+import com.ihorak.truffle.node.exprs.ReadProcedureArgsExprNode;
+import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.TruffleLanguage;
@@ -20,18 +22,31 @@ public class SelfTailProcedureRootNode extends SchemeRootNode {
     @Child
     private LoopNode loop;
 
-    private final int argumentsIndex;
+    @Children
+    private final WriteLocalVariableExprNode[] writeArgumentsExprs;
+
+    private final int resultIndex;
 
     public SelfTailProcedureRootNode(SchemeSymbol name, SchemeTruffleLanguage language, FrameDescriptor frameDescriptor,
-                                     List<SchemeExpression> schemeExpressions, int argumentsIndex, SourceSection sourceSection) {
+                                     List<SchemeExpression> schemeExpressions, List<WriteLocalVariableExprNode> writeArgumentsExprs, int resultIndex, SourceSection sourceSection) {
         super(language, frameDescriptor, schemeExpressions, name, sourceSection);
-        this.argumentsIndex = argumentsIndex;
+        this.writeArgumentsExprs = writeArgumentsExprs.toArray(WriteLocalVariableExprNode[]::new);
+        this.resultIndex = resultIndex;
         this.loop = Truffle.getRuntime().createLoopNode(new TailRecursiveCallLoopNode(this.schemeExpressions));
     }
 
     @Override
     public Object execute(VirtualFrame frame) {
-        frame.setObject(argumentsIndex, frame.getArguments().clone());
-        return loop.execute(frame);
+        prepareArgumentsForSelfTCO(frame);
+        loop.execute(frame);
+
+        return frame.getObject(resultIndex);
+    }
+
+    @ExplodeLoop
+    private void prepareArgumentsForSelfTCO(VirtualFrame frame) {
+        for (var expr : writeArgumentsExprs) {
+            expr.executeGeneric(frame);
+        }
     }
 }

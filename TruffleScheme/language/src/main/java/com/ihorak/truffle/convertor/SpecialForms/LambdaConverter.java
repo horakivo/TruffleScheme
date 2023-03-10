@@ -12,6 +12,8 @@ import com.ihorak.truffle.node.SchemeRootNode;
 import com.ihorak.truffle.node.callable.TCO.SelfTailProcedureRootNode;
 import com.ihorak.truffle.node.scope.ReadProcedureArgExprNode;
 import com.ihorak.truffle.node.scope.ReadSlotProcedureArgExprNode;
+import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
+import com.ihorak.truffle.node.scope.WriteLocalVariableExprNodeGen;
 import com.ihorak.truffle.node.special_form.LambdaExprNode;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemePair;
@@ -40,17 +42,20 @@ public class LambdaConverter {
     public static SchemeExpression convert(SchemeList lambdaListIR, ParsingContext context, SchemeSymbol name, ParserRuleContext lambdaCtx) {
         validate(lambdaListIR);
         ParsingContext lambdaContext = new ParsingContext(context, LexicalScope.LAMBDA, context.getSource());
+        var argumentsIR = lambdaListIR.cdr().car();
+        var lambdaBodyIR = lambdaListIR.cdr().cdr();
+        var numberOfArguments = numberOfArguments(argumentsIR);
+
         var isProcedureBeingDefined = !name.getValue().equals("anonymous_procedure");
         if (isProcedureBeingDefined) {
             lambdaContext.setFunctionDefinitionName(name);
+            lambdaContext.setFunctionNumberOfArgument(numberOfArguments);
         }
 
-        var parametersIR = lambdaListIR.cdr().car();
-        var lambdaBodyIR = lambdaListIR.cdr().cdr();
 
-        addLocalVariablesToParsingContext(parametersIR, lambdaContext);
+        addLocalVariablesToParsingContext(argumentsIR, lambdaContext);
         var bodyExprs = TailCallUtil.convertBodyToSchemeExpressionsWithTCO(lambdaBodyIR, lambdaContext, lambdaCtx, CTX_LAMBDA_BODY_INDEX);
-        var writeLocalVariableExpr = createWriteLocalVariableNodes(parametersIR, lambdaContext, lambdaCtx);
+        var writeLocalVariableExpr = createWriteLocalVariableNodes(argumentsIR, lambdaContext, lambdaCtx);
         var allExprs = Stream.concat(writeLocalVariableExpr.stream(), bodyExprs.stream()).toList();
 
         if (isProcedureBeingDefined && lambdaContext.isTailCallProcedureBeingDefined()) {
@@ -59,8 +64,8 @@ public class LambdaConverter {
 
 
         var callTarget = creatCallTarget(allExprs, name, lambdaContext);
-        var hasOptionalArgs = parametersIR instanceof SchemePair;
-        var lambdaExpr = new LambdaExprNode(callTarget, writeLocalVariableExpr.size(), hasOptionalArgs);
+        var hasOptionalArgs = argumentsIR instanceof SchemePair;
+        var lambdaExpr = new LambdaExprNode(callTarget, numberOfArguments, hasOptionalArgs);
         return SourceSectionUtil.setSourceSectionAndReturnExpr(lambdaExpr, lambdaCtx);
     }
 
@@ -69,15 +74,27 @@ public class LambdaConverter {
         var frameDescriptor = lambdaContext.buildAndGetFrameDescriptor();
         var sourceSection = SourceSectionUtil.createSourceSection(expressions, lambdaContext.getSource());
 
-        var isSelfTailCall = lambdaContext.getSelfTailRecursionArgumentIndex().isPresent();
+        var isSelfTailCall = lambdaContext.getSelfTailRecursionArgumentsSlotIndexes().isPresent();
         SchemeRootNode rootNode;
         if (isSelfTailCall) {
-            int argumentsIndex = lambdaContext.getSelfTailRecursionArgumentIndex().get();
-            rootNode = new SelfTailProcedureRootNode(name, lambdaContext.getLanguage(), frameDescriptor, expressions, argumentsIndex, sourceSection);
+            List<Integer> argumentsIndexes = lambdaContext.getSelfTailRecursionArgumentsSlotIndexes().get();
+            var writeArgumentsToFrameSlots = createWriteArgumentsToFrameSlots(argumentsIndexes);
+            int resultIndex = lambdaContext.getSelfTailRecursionResultIndex().orElseThrow(InterpreterException::shouldNotReachHere);
+            rootNode = new SelfTailProcedureRootNode(name, lambdaContext.getLanguage(), frameDescriptor, expressions, writeArgumentsToFrameSlots, resultIndex, sourceSection);
         } else {
             rootNode = new SchemeRootNode(lambdaContext.getLanguage(), frameDescriptor, expressions, name, sourceSection);
         }
         return rootNode.getCallTarget();
+    }
+
+    private static List<WriteLocalVariableExprNode> createWriteArgumentsToFrameSlots(List<Integer> argumentsIndexes) {
+        List<WriteLocalVariableExprNode> result = new ArrayList<>();
+        for (int i = 0; i < argumentsIndexes.size(); i++) {
+            var slotIndex = argumentsIndexes.get(i);
+            var readProcArgExpr = new ReadProcedureArgExprNode(i);
+            result.add(WriteLocalVariableExprNodeGen.create(slotIndex, readProcArgExpr));
+        }
+        return result;
     }
 
 
@@ -101,7 +118,7 @@ public class LambdaConverter {
         }
     }
 
-    private static List<SchemeExpression> createWriteLocalVariableNodes(Object params, ParsingContext context, ParserRuleContext lambdaCtx) {
+    private static List<SchemeExpression> createWriteLocalVariableNodes(Object params, ParsingContext context, ParserRuleContext lambdaCtx) {g
         var paramsCtx = (ParserRuleContext) lambdaCtx.getChild(CTX_LAMBDA_PARAMS).getChild(0);
         if (params instanceof SchemeList list) {
             return createLocalVariableForSchemeList(list, context, paramsCtx);
@@ -129,6 +146,13 @@ public class LambdaConverter {
             }
         }
         return result;
+    }
+
+    private static int numberOfArguments(Object parametersIR) {
+        if (parametersIR instanceof SchemeList list) return list.size;
+        if (parametersIR instanceof SchemePair pair) return pair.size();
+
+        throw InterpreterException.shouldNotReachHere();
     }
 
     private static List<SchemeExpression> createLocalVariableForSchemePair(SchemePair pair, ParsingContext context, ParserRuleContext paramsCtx) {

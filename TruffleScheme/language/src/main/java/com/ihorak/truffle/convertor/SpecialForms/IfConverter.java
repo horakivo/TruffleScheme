@@ -3,10 +3,13 @@ package com.ihorak.truffle.convertor.SpecialForms;
 import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.SourceSectionUtil;
 import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.exceptions.InterpreterException;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.callable.TCO.SelfRecursiveTailCallThrowerNode;
 import com.ihorak.truffle.node.cast.BooleanCastExprNodeGen;
+import com.ihorak.truffle.node.scope.StoreAndReturnValueExprNode;
+import com.ihorak.truffle.node.scope.StoreAndReturnValueExprNodeGen;
 import com.ihorak.truffle.node.special_form.IfElseExprNode;
 import com.ihorak.truffle.node.special_form.IfExprNode;
 import com.ihorak.truffle.parser.R5RSParser;
@@ -56,14 +59,25 @@ public class IfConverter {
         var thenExpr = InternalRepresentationConverter.convert(ifList.get(2), context, true, false, thenCtx);
         var elseExpr = InternalRepresentationConverter.convert(ifList.get(3), context, true, false, elseCtx);
 
+        //TODO we need to do that recursively (of thenExpr or elseExpr is If then again)
         if (thenExpr instanceof SelfRecursiveTailCallThrowerNode || elseExpr instanceof SelfRecursiveTailCallThrowerNode) {
-
+            var bothSelfTCO = thenExpr instanceof SelfRecursiveTailCallThrowerNode && elseExpr instanceof SelfRecursiveTailCallThrowerNode;
+            if (!bothSelfTCO) {
+                int resultIndex = context.getSelfTailRecursionResultIndex().orElseThrow(InterpreterException::shouldNotReachHere);
+                if (thenExpr instanceof SelfRecursiveTailCallThrowerNode) {
+                    elseExpr = StoreAndReturnValueExprNodeGen.create(resultIndex, elseExpr);
+                }
+                if (elseExpr instanceof SelfRecursiveTailCallThrowerNode) {
+                    thenExpr = StoreAndReturnValueExprNodeGen.create(resultIndex, thenExpr);
+                }
+            }
         }
 
         var expr =  new IfElseExprNode(BooleanCastExprNodeGen.create(conditionExpr), thenExpr, elseExpr);
         SourceSectionUtil.setSourceSection(expr, ifCtx);
         return expr;
     }
+
 
 
     private static void validate(SchemeList ifList) {

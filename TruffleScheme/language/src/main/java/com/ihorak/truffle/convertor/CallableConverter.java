@@ -2,6 +2,7 @@ package com.ihorak.truffle.convertor;
 
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.util.BuiltinUtils;
+import com.ihorak.truffle.exceptions.InterpreterException;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.callable.CallableExprNode;
@@ -9,6 +10,8 @@ import com.ihorak.truffle.node.callable.MacroCallableExprNode;
 import com.ihorak.truffle.node.callable.TCO.SelfRecursiveTailCallThrowerNodeGen;
 import com.ihorak.truffle.node.callable.TCO.TailCallCatcherNode;
 import com.ihorak.truffle.node.callable.TCO.TailCallThrowerNodeGen;
+import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
+import com.ihorak.truffle.node.scope.WriteLocalVariableExprNodeGen;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.frame.FrameSlotKind;
@@ -87,11 +90,12 @@ public class CallableConverter {
 
         if (isTailCall) {
             if (isSelfTailRecursive(operandIR, context)) {
+                int numberOfArguments = context.getFunctionNumberOfArguments().orElseThrow(InterpreterException::shouldNotReachHere);
 
-                /**
+
+                /*
                  * This is needed because there can be multiple Self Tail calls
                  * e.g.
-                 *
                  * (define partition
                  *   (lambda (piv l p1 p2)
                  *     (if (null? l)
@@ -100,18 +104,18 @@ public class CallableConverter {
                  *             (partition piv (cdr l) (cons (car l) p1) p2)
                  *             (partition piv (cdr l) p1 (cons (car l) p2))))))
                  *
-                 *
                  * */
-                int tailRecursiveArgumentSlot = context.getSelfTailRecursionArgumentIndex()
+                List<Integer> argumentsSlotIndexes = context.getSelfTailRecursionArgumentsSlotIndexes()
                         .orElseGet(() -> {
-                            var argumentsSlotIndex = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
+                            var argsSlotIndexes = getArgumentsSlotIndexes(numberOfArguments, context);
                             var resultSlotIndex = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
-                            context.setSelfTailRecursionArgumentIndex(argumentsSlotIndex);
+                            context.setSelfTailRecursionArgumentIndexes(argsSlotIndexes);
                             context.setSelfTailRecursionResultIndex(resultSlotIndex);
-                            return argumentsSlotIndex;
+                            return argsSlotIndexes;
                         });
 
-                return SelfRecursiveTailCallThrowerNodeGen.create(arguments, tailRecursiveArgumentSlot);
+                if (argumentsSlotIndexes.size() != numberOfArguments) InterpreterException.shouldNotReachHere("Horribly wrong! Converter bug during Self TCO analysis");
+                return SelfRecursiveTailCallThrowerNodeGen.create(createWriteArgumentsExprs(argumentsSlotIndexes, arguments));
             }
             context.setDefiningProcedureAsTailCall();
             var throwerNode = TailCallThrowerNodeGen.create(arguments, operandExpr, operandIR);
@@ -129,6 +133,29 @@ public class CallableConverter {
         }
 
         //return SourceSectionUtil.setSourceSectionAndReturnExpr(new CallableExprNode(arguments, operandExpr), procedureCtx);
+    }
+
+
+    private static List<Integer> getArgumentsSlotIndexes(int numberOfArguments, ParsingContext context) {
+        List<Integer> result = new ArrayList<>();
+        for (int i = 0; i < numberOfArguments; i++) {
+            result.add(context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Illegal, null, null));
+        }
+
+        return result;
+    }
+
+    private static List<WriteLocalVariableExprNode> createWriteArgumentsExprs(List<Integer> argumentsSlotIndexes, List<SchemeExpression> arguments) {
+        if (arguments.size() != argumentsSlotIndexes.size()) throw InterpreterException.shouldNotReachHere();
+
+        List<WriteLocalVariableExprNode> result = new ArrayList<>();
+        for (int i = 0; i < argumentsSlotIndexes.size(); i++) {
+            var index = argumentsSlotIndexes.get(i);
+            var expr = arguments.get(i);
+            result.add(WriteLocalVariableExprNodeGen.create(index, expr));
+        }
+
+        return result;
     }
 
 

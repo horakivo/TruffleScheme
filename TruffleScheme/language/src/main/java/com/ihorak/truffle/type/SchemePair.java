@@ -1,6 +1,8 @@
 package com.ihorak.truffle.type;
 
 import com.ihorak.truffle.SchemeTruffleLanguage;
+import com.oracle.truffle.api.CompilerAsserts;
+import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.interop.InteropLibrary;
@@ -18,6 +20,21 @@ import java.util.Iterator;
 public record SchemePair(
         Object first,
         Object second) implements TruffleObject {
+
+
+    @TruffleBoundary
+    public int size() {
+        CompilerAsserts.neverPartOfCompilation();
+        var currentPair = this;
+        int size = 0;
+        while (currentPair.second instanceof SchemePair pair) {
+            size++;
+            currentPair = pair;
+        }
+
+        //+2 since the last pair is doesn't have in second cell pair -> we need to count first + second
+        return size + 2;
+    }
 
     @Override
     public String toString() {

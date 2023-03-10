@@ -36,25 +36,30 @@ public class TailRecursiveCallLoopNode extends SchemeNode implements RepeatingNo
 
     @Override
     public boolean executeRepeating(final VirtualFrame frame) {
-        throw CompilerDirectives.shouldNotReachHere();
-    }
-
-    @Override
-    public Object executeRepeatingWithValue(final VirtualFrame frame) {
         try {
-//            Object[] arguments = (Object[]) frame.getObject(argumentsIndex);
-//            var virtualFrame = Truffle.getRuntime().createVirtualFrame(arguments, frameDescriptor);
-            return executeImpl(frame);
+            executeImpl(frame);
+            return false;
         } catch (SelfRecursiveTailCallException e) {
-//            SchemeTruffleLanguage.TCOTarget target = SchemeTruffleLanguage.getTCOTarget(this);
-//            frame.setObject(argumentsIndex, target.arguments);
-            return CONTINUE_LOOP_STATUS;
+            return true;
         }
     }
 
-    @Override
-    public boolean shouldContinue(final Object returnValue) {
-        return returnValue == CONTINUE_LOOP_STATUS;
-    }
+//    @Override
+//    public Object executeRepeatingWithValue(final VirtualFrame frame) {
+//        try {
+////            Object[] arguments = (Object[]) frame.getObject(argumentsIndex);
+////            var virtualFrame = Truffle.getRuntime().createVirtualFrame(arguments, frameDescriptor);
+//            return executeImpl(frame);
+//        } catch (SelfRecursiveTailCallException e) {
+////            SchemeTruffleLanguage.TCOTarget target = SchemeTruffleLanguage.getTCOTarget(this);
+////            frame.setObject(argumentsIndex, target.arguments);
+//            return CONTINUE_LOOP_STATUS;
+//        }
+//    }
+
+//    @Override
+//    public boolean shouldContinue(final Object returnValue) {
+//        return returnValue == CONTINUE_LOOP_STATUS;
+//    }
 
 }

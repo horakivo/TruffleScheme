@@ -10,8 +10,7 @@ public abstract class ReadProcedureArgsExprNode extends SchemeExpression {
 
     @ExplodeLoop
     @Specialization(guards = "cachedLength == frame.getArguments().length", limit = "5")
-    protected Object getProceduresArgumentsFast(VirtualFrame frame,
-                                                  @Cached("frame.getArguments().length") int cachedLength) {
+    protected Object getProceduresArgumentsFast(VirtualFrame frame, @Cached("frame.getArguments().length") int cachedLength) {
         var frameArguments = frame.getArguments();
         Object[] arguments = new Object[cachedLength - 1];
 

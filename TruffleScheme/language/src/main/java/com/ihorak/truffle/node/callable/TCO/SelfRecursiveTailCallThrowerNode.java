@@ -4,6 +4,7 @@ import com.ihorak.truffle.SchemeTruffleLanguage;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.callable.TCO.exceptions.SelfRecursiveTailCallException;
 import com.ihorak.truffle.node.callable.TCO.exceptions.TailCallException;
+import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
 import com.ihorak.truffle.type.UserDefinedProcedure;
 import com.oracle.truffle.api.dsl.Executed;
 import com.oracle.truffle.api.dsl.Specialization;
@@ -16,13 +17,11 @@ import java.util.List;
 public abstract class SelfRecursiveTailCallThrowerNode extends SchemeExpression {
 
     @Children
-    private final SchemeExpression[] arguments;
-    private final int tailRecursiveArgumentSlot;
+    private final WriteLocalVariableExprNode[] writeArguments;
 
 
-    public SelfRecursiveTailCallThrowerNode(List<SchemeExpression> arguments, int tailRecursiveArgumentSlot) {
-        this.arguments = arguments.toArray(SchemeExpression[]::new);
-        this.tailRecursiveArgumentSlot = tailRecursiveArgumentSlot;
+    public SelfRecursiveTailCallThrowerNode(List<WriteLocalVariableExprNode> writeLocalVariableExprNodes) {
+        this.writeArguments = writeLocalVariableExprNodes.toArray(WriteLocalVariableExprNode[]::new);
     }
 
     @Specialization
@@ -33,15 +32,9 @@ public abstract class SelfRecursiveTailCallThrowerNode extends SchemeExpression 
 
 
     @ExplodeLoop
-    private Object[] prepareArgumentsForNextCall(VirtualFrame frame) {
-        Object[] args = (Object[]) frame.getObject(tailRecursiveArgumentSlot);
-
-        int index = 1;
-        for (SchemeExpression expression : arguments) {
-            args[index] = expression.executeGeneric(frame);
-            index++;
+    private void prepareArgumentsForNextCall(VirtualFrame frame) {
+        for (var expr : writeArguments) {
+            expr.executeGeneric(frame);
         }
-
-        return args;
     }
 }
