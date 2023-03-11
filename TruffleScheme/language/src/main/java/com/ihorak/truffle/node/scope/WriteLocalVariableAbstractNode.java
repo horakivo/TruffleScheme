@@ -6,7 +6,7 @@ import com.oracle.truffle.api.frame.VirtualFrame;
 
 public abstract class WriteLocalVariableAbstractNode extends SchemeExpression {
 
-    protected final int frameIndex;
+    public final int frameIndex;
 
     protected WriteLocalVariableAbstractNode(int frameIndex) {
         this.frameIndex = frameIndex;

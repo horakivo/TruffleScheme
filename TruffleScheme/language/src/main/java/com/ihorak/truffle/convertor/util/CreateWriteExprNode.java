@@ -19,7 +19,7 @@ public class CreateWriteExprNode {
 
     public static WriteLocalVariableExprNode createWriteLocalVariableExprNode(SchemeSymbol name, SchemeExpression valueToWrite, ParsingContext context, ParserRuleContext symbolCtx) {
         var index = context.findOrAddLocalSymbol(name);
-        var expr =  WriteLocalVariableExprNodeGen.create(index, name, valueToWrite);
+        var expr =  WriteLocalVariableExprNodeGen.create(index, valueToWrite);
         SourceSectionUtil.setSourceSection(expr, symbolCtx);
 
         return expr;

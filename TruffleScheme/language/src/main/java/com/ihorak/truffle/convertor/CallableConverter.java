@@ -90,11 +90,8 @@ public class CallableConverter {
 
         if (isTailCall) {
             if (isSelfTailRecursive(operandIR, context)) {
-                int numberOfArguments = context.getFunctionNumberOfArguments().orElseThrow(InterpreterException::shouldNotReachHere);
-
-
                 /*
-                 * This is needed because there can be multiple Self Tail calls
+                 * This setFunctionAsSelfTailRecursive can be called twice in the example below
                  * e.g.
                  * (define partition
                  *   (lambda (piv l p1 p2)
@@ -105,16 +102,12 @@ public class CallableConverter {
                  *             (partition piv (cdr l) p1 (cons (car l) p2))))))
                  *
                  * */
-                List<Integer> argumentsSlotIndexes = context.getSelfTailRecursionArgumentsSlotIndexes()
-                        .orElseGet(() -> {
-                            var argsSlotIndexes = getArgumentsSlotIndexes(numberOfArguments, context);
-                            var resultSlotIndex = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
-                            context.setSelfTailRecursionArgumentIndexes(argsSlotIndexes);
-                            context.setSelfTailRecursionResultIndex(resultSlotIndex);
-                            return argsSlotIndexes;
-                        });
-
-                if (argumentsSlotIndexes.size() != numberOfArguments) InterpreterException.shouldNotReachHere("Horribly wrong! Converter bug during Self TCO analysis");
+                context.setFunctionAsSelfTailRecursive();
+                if (context.getSelfTailRecursionResultIndex().isEmpty()) {
+                    var resultIndex = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
+                    context.setSelfTailRecursionResultIndex(resultIndex);
+                }
+                var argumentsSlotIndexes = context.getFunctionArgumentSlotIndexes();
                 return SelfRecursiveTailCallThrowerNodeGen.create(createWriteArgumentsExprs(argumentsSlotIndexes, arguments));
             }
             context.setDefiningProcedureAsTailCall();

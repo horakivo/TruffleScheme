@@ -26,10 +26,8 @@ public class ParsingContext {
 
     private SchemeSymbol functionDefinitionName;
 
-    private Integer numberOfArguments;
-
-    // This can be used to determine whether in lambda body self-tail recursion occur
-    private List<Integer> selfTailRecursionArgumentsIndexes;
+    private boolean isFunctionSelfTailRecursive = false;
+    private List<Integer> functionArgumentSlotIndexes;
     private Integer selfTailRecursionResultIndex;
     private boolean isTailCallProcedureBeingDefined = false;
     private final ParsingContext parent;
@@ -157,18 +155,6 @@ public class ParsingContext {
         return Optional.ofNullable(functionDefinitionName);
     }
 
-    public Optional<Integer> getFunctionNumberOfArguments() {
-        return Optional.ofNullable(numberOfArguments);
-    }
-
-    public void setFunctionNumberOfArgument(int numberOfArguments) {
-        if (this.numberOfArguments != null) {
-            throw InterpreterException.shouldNotReachHere("Converter error: numberOfArguments should be set only once!");
-        }
-
-        this.numberOfArguments = numberOfArguments;
-    }
-
     public void setFunctionDefinitionName(final SchemeSymbol functionDefinitionName) {
         if (this.functionDefinitionName != null) {
             throw InterpreterException.shouldNotReachHere("Converter error: functionDefinitionName should be set only once!");
@@ -176,15 +162,23 @@ public class ParsingContext {
         this.functionDefinitionName = functionDefinitionName;
     }
 
-    public Optional<List<Integer>> getSelfTailRecursionArgumentsSlotIndexes() {
-        return Optional.ofNullable(selfTailRecursionArgumentsIndexes);
+    public List<Integer> getFunctionArgumentSlotIndexes() {
+        return functionArgumentSlotIndexes;
     }
 
-    public void setSelfTailRecursionArgumentIndexes(List<Integer> selfTailRecursionArgumentsIndexes) {
-        if (this.selfTailRecursionArgumentsIndexes != null) {
-            throw InterpreterException.shouldNotReachHere("Converter error: selfTailRecursionArgumentsIndex should be set only once!");
+    public void setFunctionArgumentSlotIndexes(List<Integer> functionArgumentSlotIndexes) {
+        if (this.functionArgumentSlotIndexes != null) {
+            throw InterpreterException.shouldNotReachHere("Converter error: functionArgumentSlotIndexes should be set only once!");
         }
-        this.selfTailRecursionArgumentsIndexes = selfTailRecursionArgumentsIndexes;
+        this.functionArgumentSlotIndexes = functionArgumentSlotIndexes;
+    }
+
+    public boolean isFunctionSelfTailRecursive() {
+        return isFunctionSelfTailRecursive;
+    }
+
+    public void setFunctionAsSelfTailRecursive() {
+        isFunctionSelfTailRecursive = true;
     }
 
     public void setSelfTailRecursionResultIndex(int selfTailRecursionResultIndex) {
