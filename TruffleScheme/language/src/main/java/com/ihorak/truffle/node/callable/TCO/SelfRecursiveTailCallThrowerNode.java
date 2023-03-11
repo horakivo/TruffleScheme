@@ -17,23 +17,35 @@ import java.util.List;
 public abstract class SelfRecursiveTailCallThrowerNode extends SchemeExpression {
 
     @Children
-    private final WriteLocalVariableExprNode[] writeArguments;
+    private final WriteLocalVariableExprNode[] writeArgumentsToTemporalSlots;
+
+    @Children
+    private final WriteLocalVariableExprNode[] writeArgumentsFromTemporalSlot;
 
 
-    public SelfRecursiveTailCallThrowerNode(List<WriteLocalVariableExprNode> writeLocalVariableExprNodes) {
-        this.writeArguments = writeLocalVariableExprNodes.toArray(WriteLocalVariableExprNode[]::new);
+    public SelfRecursiveTailCallThrowerNode(List<WriteLocalVariableExprNode> writeArgumentsToTemporalSlots, List<WriteLocalVariableExprNode> writeArgumentsFromTemporalSlot) {
+        this.writeArgumentsToTemporalSlots = writeArgumentsToTemporalSlots.toArray(WriteLocalVariableExprNode[]::new);
+        this.writeArgumentsFromTemporalSlot = writeArgumentsFromTemporalSlot.toArray(WriteLocalVariableExprNode[]::new);
     }
 
     @Specialization
     protected Object doThrow(VirtualFrame frame) {
-        prepareArgumentsForNextCall(frame);
+        storeArgumentsInTempSlots(frame);
+        writeArgsFromTempSlotsToRealSlots(frame);
         throw SelfRecursiveTailCallException.INSTANCE;
     }
 
 
     @ExplodeLoop
-    private void prepareArgumentsForNextCall(VirtualFrame frame) {
-        for (var expr : writeArguments) {
+    private void storeArgumentsInTempSlots(VirtualFrame frame) {
+        for (var expr : writeArgumentsToTemporalSlots) {
+            expr.executeGeneric(frame);
+        }
+    }
+
+    @ExplodeLoop
+    private void writeArgsFromTempSlotsToRealSlots(VirtualFrame frame) {
+        for (var expr : writeArgumentsFromTemporalSlot) {
             expr.executeGeneric(frame);
         }
     }

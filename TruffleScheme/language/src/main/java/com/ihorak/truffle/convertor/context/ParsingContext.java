@@ -28,6 +28,7 @@ public class ParsingContext {
 
     private boolean isFunctionSelfTailRecursive = false;
     private List<Integer> functionArgumentSlotIndexes;
+    private List<Integer> selfTailTemporalArgumentSlotIndexes;
     private Integer selfTailRecursionResultIndex;
     private boolean isTailCallProcedureBeingDefined = false;
     private final ParsingContext parent;
@@ -171,6 +172,18 @@ public class ParsingContext {
             throw InterpreterException.shouldNotReachHere("Converter error: functionArgumentSlotIndexes should be set only once!");
         }
         this.functionArgumentSlotIndexes = functionArgumentSlotIndexes;
+    }
+
+    public Optional<List<Integer>> getSelfTailTemporalArgumentSlotIndexes() {
+        return Optional.ofNullable(selfTailTemporalArgumentSlotIndexes);
+    }
+
+    public void setSelfTailTemporalArgumentSlotIndexes(List<Integer> selfTailTemporalArgumentSlotIndexes) {
+        if (this.selfTailTemporalArgumentSlotIndexes != null) {
+            throw InterpreterException.shouldNotReachHere("Converter error: selfTailTemporalArgumentSlotIndexes should be set only once!");
+        }
+
+        this.selfTailTemporalArgumentSlotIndexes = selfTailTemporalArgumentSlotIndexes;
     }
 
     public boolean isFunctionSelfTailRecursive() {
