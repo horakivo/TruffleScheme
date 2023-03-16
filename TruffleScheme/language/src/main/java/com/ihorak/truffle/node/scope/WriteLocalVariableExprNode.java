@@ -1,6 +1,7 @@
 package com.ihorak.truffle.node.scope;
 
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.SchemeNode;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.ihorak.truffle.type.UndefinedValue;
 import com.oracle.truffle.api.CompilerDirectives;
@@ -14,25 +15,34 @@ import com.oracle.truffle.api.frame.FrameSlotKind;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 
-@ImportStatic(FrameSlotKind.class)
-@NodeChild(value = "valueToStore")
-public abstract class WriteLocalVariableExprNode extends SchemeExpression {
+
+public class WriteLocalVariableExprNode extends SchemeExpression {
+
+    @Child private WriteFrameSlotNode writeFrameSlotNode;
+    @Child protected SchemeExpression valueNode;
 
 
-
-    @CompilationFinal
-    private FrameDescriptor cachedDescriptor;
     public final int frameIndex;
 
-    public WriteLocalVariableExprNode(int frameIndex) {
+    public WriteLocalVariableExprNode(int frameIndex, SchemeExpression valueToStore) {
         this.frameIndex = frameIndex;
+        this.valueNode = valueToStore;
+    }
+
+    @Override
+    public Object executeGeneric(VirtualFrame frame) {
+        final Object value = valueNode.executeGeneric(frame);
+
+        if (writeFrameSlotNode == null) {
+            CompilerDirectives.transferToInterpreterAndInvalidate();
+            writeFrameSlotNode = insert(WriteFrameSlotNodeGen.create(frameIndex));
+        }
+
+        writeFrameSlotNode.executeWrite(frame, value);
+        return UndefinedValue.SINGLETON;
     }
 //
-//    @Specialization(guards = "isExpectedOrIllegal(frame, Long)")
-//    protected Object writeLong(VirtualFrame frame, long value) {
-//        frame.setLong(frameIndex, value);
-//        return UndefinedValue.SINGLETON;
-//    }
+
 //
 //    @Specialization(guards = "isExpectedOrIllegal(frame, Double)")
 //    protected Object writeDouble(VirtualFrame frame, double value) {
@@ -57,14 +67,15 @@ public abstract class WriteLocalVariableExprNode extends SchemeExpression {
      * node will never be re-specialized.
      */
     //@Specialization(replaces = { "writeBoolean", "writeLong", "writeDouble" })
-    protected Object writeObject(VirtualFrame frame, Object value) {
-        /* No-op if kind is already Object. */
-        final FrameDescriptor descriptor = getFrameDescriptor(frame);
-        descriptor.setSlotKind(frameIndex, FrameSlotKind.Object);
-
-        frame.setObject(frameIndex, value);
-        return UndefinedValue.SINGLETON;
-    }
+//    @Specialization
+//    protected Object writeObject(VirtualFrame frame, Object value) {
+//        /* No-op if kind is already Object. */
+//        final FrameDescriptor descriptor = getFrameDescriptor(frame);
+//        descriptor.setSlotKind(frameIndex, FrameSlotKind.Object);
+//
+//        frame.setObject(frameIndex, value);
+//        return UndefinedValue.SINGLETON;
+//    }
     //@Specialization
 //    @Specialization(replaces = {"writeLong", "writeBoolean", "writeDouble"})
 //    protected Object write(VirtualFrame frame, Object value) {
@@ -80,26 +91,6 @@ public abstract class WriteLocalVariableExprNode extends SchemeExpression {
 //    }
 
 
-    protected boolean isExpectedOrIllegal(Frame frame, FrameSlotKind expectedKind) {
-        final FrameDescriptor descriptor = getFrameDescriptor(frame);
 
-        final FrameSlotKind kind = descriptor.getSlotKind(frameIndex);
-        if (kind == expectedKind) {
-            return true;
-        } else if (kind == FrameSlotKind.Illegal) {
-            descriptor.setSlotKind(frameIndex, expectedKind);
-            return true;
-        }
-        return false;
-    }
-
-    private FrameDescriptor getFrameDescriptor(Frame frame) {
-        if (cachedDescriptor == null) {
-            CompilerDirectives.transferToInterpreterAndInvalidate();
-            cachedDescriptor = frame.getFrameDescriptor();
-        }
-
-        return cachedDescriptor;
-    }
 
 }

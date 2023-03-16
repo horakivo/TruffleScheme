@@ -5,7 +5,6 @@ import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.scope.WriteGlobalVariableExprNode;
 import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
-import com.ihorak.truffle.node.scope.WriteLocalVariableExprNodeGen;
 import com.ihorak.truffle.type.SchemeSymbol;
 import org.antlr.v4.runtime.ParserRuleContext;
 
@@ -19,7 +18,7 @@ public class CreateWriteExprNode {
 
     public static WriteLocalVariableExprNode createWriteLocalVariableExprNode(SchemeSymbol name, SchemeExpression valueToWrite, ParsingContext context, ParserRuleContext symbolCtx) {
         var index = context.findOrAddLocalSymbol(name);
-        var expr =  WriteLocalVariableExprNodeGen.create(index, valueToWrite);
+        var expr = new WriteLocalVariableExprNode(index, valueToWrite);
         SourceSectionUtil.setSourceSection(expr, symbolCtx);
 
         return expr;

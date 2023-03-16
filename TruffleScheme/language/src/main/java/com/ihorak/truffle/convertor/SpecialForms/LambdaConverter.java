@@ -13,7 +13,6 @@ import com.ihorak.truffle.node.callable.TCO.SelfTailProcedureRootNode;
 import com.ihorak.truffle.node.scope.ReadProcedureArgExprNode;
 import com.ihorak.truffle.node.scope.ReadSlotProcedureArgExprNode;
 import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
-import com.ihorak.truffle.node.scope.WriteLocalVariableExprNodeGen;
 import com.ihorak.truffle.node.special_form.LambdaExprNode;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemePair;
@@ -98,7 +97,7 @@ public class LambdaConverter {
         for (int i = 0; i < argumentsIndexes.size(); i++) {
             var slotIndex = argumentsIndexes.get(i);
             var readProcArgExpr = new ReadProcedureArgExprNode(i);
-            result.add(WriteLocalVariableExprNodeGen.create(slotIndex, readProcArgExpr));
+            result.add(new WriteLocalVariableExprNode(slotIndex, readProcArgExpr));
         }
         return result;
     }

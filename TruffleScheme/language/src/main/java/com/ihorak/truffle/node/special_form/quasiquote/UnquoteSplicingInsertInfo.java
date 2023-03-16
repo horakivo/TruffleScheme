@@ -1,4 +1,4 @@
-package com.ihorak.truffle.node.special_form;
+package com.ihorak.truffle.node.special_form.quasiquote;
 
 import com.ihorak.truffle.type.SchemeCell;
 

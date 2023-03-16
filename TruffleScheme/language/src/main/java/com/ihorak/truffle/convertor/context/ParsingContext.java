@@ -8,13 +8,14 @@ import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlotKind;
 import com.oracle.truffle.api.source.Source;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 public class ParsingContext {
 
-    private final Set<SchemeSymbol> macroIndex = new HashSet<>();
+    private final Map<SchemeSymbol, CallTarget> macroIndex = new HashMap<>();
     private final Map<SchemeSymbol, LocalVariableInfo> localVariableIndex = new HashMap<>();
     private final Set<SchemeSymbol> tailCallProceduresSet = new HashSet<>();
 
@@ -121,19 +122,32 @@ public class ParsingContext {
         return language;
     }
 
-    public void addMacro(SchemeSymbol schemeSymbol) {
-        macroIndex.add(schemeSymbol);
+    public void addMacro(SchemeSymbol schemeSymbol, CallTarget transformationProcedure) {
+        macroIndex.put(schemeSymbol, transformationProcedure);
     }
 
     public boolean isMacro(SchemeSymbol schemeSymbol) {
-        return isMacro(schemeSymbol, this);
+        var callTarget = getMacroCallTarget(schemeSymbol, this);
+        return callTarget != null;
     }
 
-    private boolean isMacro(SchemeSymbol schemeSymbol, ParsingContext parsingContext) {
-        if (parsingContext.macroIndex.contains(schemeSymbol)) return true;
-        if (parsingContext.scope == LexicalScope.GLOBAL) return false;
+    private CallTarget getMacroCallTarget(SchemeSymbol schemeSymbol, ParsingContext parsingContext) {
+        var callTarget = parsingContext.macroIndex.get(schemeSymbol);
+        if (callTarget != null) return callTarget;
+        if (parsingContext.scope == LexicalScope.GLOBAL) return null;
 
-        return isMacro(schemeSymbol, parsingContext.parent);
+        return getMacroCallTarget(schemeSymbol, parsingContext.parent);
+    }
+
+    /*
+     * Should be called only when we know that the macro exists
+     */
+    @NotNull
+    public CallTarget getMacroTransformationCallTarget(SchemeSymbol symbol) {
+        var callTarget = getMacroCallTarget(symbol, this);
+        if (callTarget != null) return callTarget;
+
+        throw InterpreterException.shouldNotReachHere();
     }
 
     public void makeLocalVariablesNullable(List<SchemeSymbol> names) {

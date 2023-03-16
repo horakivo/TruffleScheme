@@ -15,6 +15,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 public class SchemeMacroDefinitionConverter {
 
     private static final int CTX_IDENTIFIER = 2;
+    private static final int CTX_TRANSFORMATION_BODY = 3;
 
     private SchemeMacroDefinitionConverter() {
     }
@@ -23,13 +24,14 @@ public class SchemeMacroDefinitionConverter {
         validate(macroList);
 
         var name = (SchemeSymbol) macroList.get(1);
-        var transformationProcedureExpr = InternalRepresentationConverter.convert(macroList.get(2), context, false, false);
+        var transformationProcedureCtx = (ParserRuleContext) macroCtx.getChild(CTX_TRANSFORMATION_BODY);
+        var transformationProcedureExpr = InternalRepresentationConverter.convert(macroList.get(2), context, false, false, transformationProcedureCtx);
 
         if (!(transformationProcedureExpr instanceof LambdaExprNode lambdaExprNode)) {
             throw new ParserException("define-marco: contract violation\nExpected: <procedure>\nGiven: " + transformationProcedureExpr);
         }
 
-        context.addMacro(name);
+        context.addMacro(name, lambdaExprNode.callTarget);
         var symbolCtx = (ParserRuleContext) macroCtx.getChild(CTX_IDENTIFIER);
         if (context.getLexicalScope() == LexicalScope.GLOBAL) {
             return CreateWriteExprNode.createWriteGlobalVariableExprNode(name, new DefineMacroExprNode(lambdaExprNode), symbolCtx);

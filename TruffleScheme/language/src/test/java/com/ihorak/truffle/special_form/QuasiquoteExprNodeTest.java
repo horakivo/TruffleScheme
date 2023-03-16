@@ -121,8 +121,8 @@ public class QuasiquoteExprNodeTest {
     }
 
     @Test
-    public void givenUnquote_whenExecuted_thenUnquoteIsCorrectlyEvaluated() {
-        var program = "`(list 1 ,(+ 1 2) 3)";
+    public void givenUnquoteAsSyntacticSugar_whenExecuted_thenUnquoteIsCorrectlyEvaluated() {
+        var program = "`(list 1 ,(+ 1 1) 3)";
 
         var result = context.eval("scm", program);
 
@@ -130,7 +130,21 @@ public class QuasiquoteExprNodeTest {
         assertEquals(4L, result.getArraySize());
         assertEquals("list", result.getArrayElement(0).asString());
         assertEquals(1L, result.getArrayElement(1).asLong());
-        assertEquals(3L, result.getArrayElement(2).asLong());
+        assertEquals(2L, result.getArrayElement(2).asLong());
+        assertEquals(3L, result.getArrayElement(3).asLong());
+    }
+
+    @Test
+    public void givenUnquote_whenExecuted_thenUnquoteIsCorrectlyEvaluated() {
+        var program = "`(list 1 ,(+ 1 1) 3)";
+
+        var result = context.eval("scm", program);
+
+        assertTrue(result.hasArrayElements());
+        assertEquals(4L, result.getArraySize());
+        assertEquals("list", result.getArrayElement(0).asString());
+        assertEquals(1L, result.getArrayElement(1).asLong());
+        assertEquals(2L, result.getArrayElement(2).asLong());
         assertEquals(3L, result.getArrayElement(3).asLong());
     }
 

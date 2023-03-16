@@ -1,5 +1,6 @@
 package com.ihorak.truffle.type;
 
+import com.ihorak.truffle.parser.R5RSParser;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 import com.oracle.truffle.api.dsl.Cached;
@@ -9,6 +10,7 @@ import com.oracle.truffle.api.interop.TruffleObject;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
 import com.oracle.truffle.api.profiles.BranchProfile;
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,6 +24,7 @@ public class SchemeList implements Iterable<Object>, TruffleObject {
     public SchemeCell bindingCell;
     public int size;
     public final boolean isEmpty;
+//    public final R5RSParser.ListContext ctx;
 
     public SchemeList(final SchemeCell list, final @Nullable SchemeCell bindingCell, final int size, final boolean isEmpty) {
         this.list = list;

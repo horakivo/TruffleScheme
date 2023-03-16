@@ -5,8 +5,7 @@ import org.graalvm.polyglot.PolyglotException;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.*;
 
 public class DefineMacroExprNodeTest {
 
@@ -24,7 +23,7 @@ public class DefineMacroExprNodeTest {
 
         var result = context.eval("scm", program);
 
-        assertEquals(true, result.isNull());
+        assertTrue(result.isNull());
         assertEquals("undefined", result.toString());
     }
 
@@ -34,7 +33,7 @@ public class DefineMacroExprNodeTest {
 
         var result = context.eval("scm", program);
 
-        assertEquals(true, result.isNull());
+        assertTrue(result.isNull());
         assertEquals("undefined", result.toString());
     }
 
@@ -44,7 +43,7 @@ public class DefineMacroExprNodeTest {
 
         var result = context.eval("scm", program);
 
-        assertEquals(false, result.asBoolean());
+        assertFalse(result.asBoolean());
     }
 
 

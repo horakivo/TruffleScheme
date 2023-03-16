@@ -10,10 +10,8 @@ import com.ihorak.truffle.node.callable.MacroCallableExprNode;
 import com.ihorak.truffle.node.callable.TCO.SelfRecursiveTailCallThrowerNodeGen;
 import com.ihorak.truffle.node.callable.TCO.TailCallCatcherNode;
 import com.ihorak.truffle.node.callable.TCO.TailCallThrowerNodeGen;
-import com.ihorak.truffle.node.scope.ReadLocalVariableExprNode;
 import com.ihorak.truffle.node.scope.ReadLocalVariableExprNodeGen;
 import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
-import com.ihorak.truffle.node.scope.WriteLocalVariableExprNodeGen;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.frame.FrameSlotKind;
@@ -34,16 +32,16 @@ public class CallableConverter {
      *  --> (operand argExpr1 ... argExprN)
      * procedureCtx is coming without form
      * */
-    public static SchemeExpression convertListToProcedureCall(SchemeList callableList, ParsingContext context, boolean isTailCall, ParserRuleContext procedureCtx) {
+    public static SchemeExpression convertListToProcedureCall(SchemeList callableList, ParsingContext context, boolean isTailCall, ParserRuleContext callableCtx) {
         validate(callableList);
 
         if (isBuiltin(callableList)) {
-            return createBuiltin(callableList, context, procedureCtx);
+            return createBuiltin(callableList, context, callableCtx);
         } else if (isMacro(callableList, context)) {
-            return createMacro(callableList, context);
+            return createMacro(callableList, context, callableCtx);
         } else {
             //some callable procedure or potential runtime error
-            return createProcedureCall(callableList, isTailCall, context, procedureCtx);
+            return createProcedureCall(callableList, isTailCall, context, callableCtx);
         }
 
     }
@@ -76,12 +74,12 @@ public class CallableConverter {
         return BuiltinConverter.createBuiltin(symbol, arguments, context, procedureCtx);
     }
 
-    private static SchemeExpression createMacro(SchemeList callableList, ParsingContext context) {
+    private static SchemeExpression createMacro(SchemeList callableList, ParsingContext context, ParserRuleContext macroCtx) {
         var symbol = (SchemeSymbol) callableList.car();
+        var transformationCallTarget = context.getMacroTransformationCallTarget(symbol);
         List<Object> notEvaluatedArgs = new ArrayList<>();
         callableList.cdr().forEach(notEvaluatedArgs::add);
-        var macroExpr = InternalRepresentationConverter.convert(symbol, context, false, false);
-        return new MacroCallableExprNode(macroExpr, notEvaluatedArgs, context);
+        return new MacroCallableExprNode(transformationCallTarget, notEvaluatedArgs, context, macroCtx);
     }
 
     private static SchemeExpression createProcedureCall(SchemeList callableList, boolean isTailCall, ParsingContext context, ParserRuleContext procedureCtx) {
@@ -155,7 +153,7 @@ public class CallableConverter {
         for (int i = 0; i < temporalSlotsIndexes.size(); i++) {
             var index = temporalSlotsIndexes.get(i);
             var expr = arguments.get(i);
-            result.add(WriteLocalVariableExprNodeGen.create(index, expr));
+            result.add(new WriteLocalVariableExprNode(index, expr));
         }
 
         return result;
@@ -167,7 +165,7 @@ public class CallableConverter {
             var temporalSlot = temporalSlotsIndexes.get(i);
             var realSlot = realArgumentSlotIndexes.get(i);
             var readValueFromTemporalSlotExpr = ReadLocalVariableExprNodeGen.create(temporalSlot, new SchemeSymbol("SelfTCOTempSlot"));
-            result.add(WriteLocalVariableExprNodeGen.create(realSlot, readValueFromTemporalSlotExpr));
+            result.add(new WriteLocalVariableExprNode(realSlot, readValueFromTemporalSlotExpr));
         }
 
         return result;

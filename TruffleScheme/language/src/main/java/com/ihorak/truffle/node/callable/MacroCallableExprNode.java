@@ -4,11 +4,14 @@ import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
+import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.nodes.DirectCallNode;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.nodes.UnexpectedResultException;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.List;
 
@@ -17,40 +20,35 @@ public class MacroCallableExprNode extends SchemeExpression {
     private final Object[] notEvaluatedArgs;
     private final ParsingContext parsingContext;
 
+    private final ParserRuleContext macroCtx;
+
+
     @SuppressWarnings("FieldMayBeFinal")
     @Child
-    private SchemeExpression macroExpr;
-    @SuppressWarnings("FieldMayBeFinal")
-    @Child
-    private DispatchNode dispatchNode = DispatchNodeGen.create();
+    private DirectCallNode directDispatchNode;
     @CompilationFinal
     private SchemeExpression macroExpandedTree;
 
-    public MacroCallableExprNode(SchemeExpression macroExpr, List<Object> notEvaluatedArgs, ParsingContext parsingContext) {
-        this.macroExpr = macroExpr;
+    public MacroCallableExprNode(CallTarget transformationProcedure, List<Object> notEvaluatedArgs, ParsingContext parsingContext, ParserRuleContext macroCtx) {
         this.notEvaluatedArgs = notEvaluatedArgs.toArray();
         this.parsingContext = parsingContext;
+        this.directDispatchNode = DirectCallNode.create(transformationProcedure);
+        this.macroCtx = macroCtx;
     }
 
     //TODO zde mozna udelat insert (nebo neco jako replace, kdy expandovane makro nahradim proste)
     @Override
     public Object executeGeneric(final VirtualFrame virtualFrame) {
-        try {
-            var macro = macroExpr.executeMacro(virtualFrame);
 
-            if (macroExpandedTree == null) {
-                CompilerDirectives.transferToInterpreterAndInvalidate();
-                var transformationCallTarget = macro.transformationProcedure().getCallTarget();
-                var notEvalArgs = getNotEvaluatedArguments(virtualFrame);
-                var transformedData = dispatchNode.executeDispatch(transformationCallTarget, notEvalArgs);
-                macroExpandedTree = InternalRepresentationConverter.convert(transformedData, parsingContext, false, false);
-            }
-
-            return macroExpandedTree.executeGeneric(virtualFrame);
-
-        } catch (UnexpectedResultException e) {
-            throw new SchemeException("Fatal error: This should never happen. Problem with converter", this);
+        if (macroExpandedTree == null) {
+            CompilerDirectives.transferToInterpreterAndInvalidate();
+            var notEvalArgs = getNotEvaluatedArguments(virtualFrame);
+            var transformedData = directDispatchNode.call(notEvalArgs);
+            //TODO try replace
+            macroExpandedTree = InternalRepresentationConverter.convert(transformedData, parsingContext, false, false);
         }
+
+        return macroExpandedTree.executeGeneric(virtualFrame);
     }
 
     @ExplodeLoop
