@@ -41,6 +41,7 @@ public abstract class SelfRecursiveTailCallThrowerNode extends SchemeExpression 
         for (var expr : writeArgumentsToTemporalSlots) {
             expr.executeGeneric(frame);
         }
+        //read the args from Obejct[]
     }
 
     @ExplodeLoop

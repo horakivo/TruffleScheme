@@ -295,14 +295,14 @@ public class BuiltinFactory {
                 null);
     }
 
-//    public static SchemeExpression createDisplayBuiltin(List<SchemeExpression> arguments) {
-//        if (arguments.size() == 1) {
-//            return DisplayExprNodeGen.create(arguments.get(0));
-//        }
-//        throw new SchemeException(
-//                "display: arity mismatch; Expected number of arguments does not match the given number\nExpected: 1\nGiven: " + arguments.size(),
-//                null);
-//    }
+    public static SchemeExpression createDisplayBuiltin(List<SchemeExpression> arguments) {
+        if (arguments.size() == 1) {
+            return DisplayExprNodeGen.create(arguments.get(0));
+        }
+        throw new SchemeException(
+                "display: arity mismatch; Expected number of arguments does not match the given number\nExpected: 1\nGiven: " + arguments.size(),
+                null);
+    }
 
 //    public static SchemeExpression createNewlineBuiltin(List<SchemeExpression> arguments) {
 //        if (arguments.size() == 0) {
