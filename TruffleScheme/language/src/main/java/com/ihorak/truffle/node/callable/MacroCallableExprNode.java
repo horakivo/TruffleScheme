@@ -30,7 +30,13 @@ public class MacroCallableExprNode extends SchemeExpression {
     private SchemeExpression macroExpandedTree;
 
     public MacroCallableExprNode(CallTarget transformationProcedure, List<Object> notEvaluatedArgs, ParsingContext parsingContext, ParserRuleContext macroCtx) {
-        this.notEvaluatedArgs = notEvaluatedArgs.toArray();
+        this.notEvaluatedArgs = new Object[notEvaluatedArgs.size() + 1];
+        int index = 1;
+        for (Object obj : notEvaluatedArgs) {
+            this.notEvaluatedArgs[index] = obj;
+            index++;
+        }
+
         this.parsingContext = parsingContext;
         this.directDispatchNode = DirectCallNode.create(transformationProcedure);
         this.macroCtx = macroCtx;
@@ -38,30 +44,16 @@ public class MacroCallableExprNode extends SchemeExpression {
 
     //TODO zde mozna udelat insert (nebo neco jako replace, kdy expandovane makro nahradim proste)
     @Override
-    public Object executeGeneric(final VirtualFrame virtualFrame) {
+    public Object executeGeneric(final VirtualFrame frame) {
 
         if (macroExpandedTree == null) {
             CompilerDirectives.transferToInterpreterAndInvalidate();
-            var notEvalArgs = getNotEvaluatedArguments(virtualFrame);
-            var transformedData = directDispatchNode.call(notEvalArgs);
+            notEvaluatedArgs[0] = frame.materialize();
+            var transformedData = directDispatchNode.call(notEvaluatedArgs);
             //TODO try replace
             macroExpandedTree = InternalRepresentationConverter.convert(transformedData, parsingContext, false, false);
         }
 
-        return macroExpandedTree.executeGeneric(virtualFrame);
-    }
-
-    @ExplodeLoop
-    private Object[] getNotEvaluatedArguments(VirtualFrame frame) {
-        var args = new Object[notEvaluatedArgs.length + 1];
-        args[0] = frame.materialize();
-
-        int index = 1;
-        for (Object arg : notEvaluatedArgs) {
-            args[index] = arg;
-            index++;
-        }
-
-        return args;
+        return macroExpandedTree.executeGeneric(frame);
     }
 }

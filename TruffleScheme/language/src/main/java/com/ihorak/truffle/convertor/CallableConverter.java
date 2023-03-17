@@ -79,7 +79,9 @@ public class CallableConverter {
         var transformationCallTarget = context.getMacroTransformationCallTarget(symbol);
         List<Object> notEvaluatedArgs = new ArrayList<>();
         callableList.cdr().forEach(notEvaluatedArgs::add);
-        return new MacroCallableExprNode(transformationCallTarget, notEvaluatedArgs, context, macroCtx);
+
+        var macroExpr = new MacroCallableExprNode(transformationCallTarget, notEvaluatedArgs, context, macroCtx);
+        return SourceSectionUtil.setSourceSectionAndReturnExpr(macroExpr, macroCtx);
     }
 
     private static SchemeExpression createProcedureCall(SchemeList callableList, boolean isTailCall, ParsingContext context, ParserRuleContext procedureCtx) {

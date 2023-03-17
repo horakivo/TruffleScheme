@@ -39,7 +39,7 @@ public class DefineMacroExprNodeTest {
 
     @Test
     public void givenDefineMacro_whenCalled_thenCorrectResultShouldBeReturned() {
-        var program = "(define-macro macro (lambda (test first) `(if ,test ,first #f))) (macro (= 10 5) 5)";
+        var program = "(define-macro macro (lambda (condition then) `(if ,condition ,then #f))) (macro (= 10 5) 5)";
 
         var result = context.eval("scm", program);
 
