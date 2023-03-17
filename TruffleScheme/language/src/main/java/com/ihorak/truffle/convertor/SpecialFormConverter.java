@@ -10,13 +10,15 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 public class SpecialFormConverter {
 
+    public static final String ANONYMOUS_PROCEDURE = "anonymous_procedure";
+
     public static SchemeExpression convertListToSpecialForm(SchemeList specialFormList, ParsingContext context, boolean isDefinitionAllowed, ParserRuleContext ctx) {
         var operationSymbol = (SchemeSymbol) specialFormList.get(0);
         return switch (operationSymbol.getValue()) {
             case "if" -> IfConverter.convert(specialFormList, context, ctx);
             case "define" -> DefineConverter.convert(specialFormList, context, isDefinitionAllowed, ctx);
             case "lambda" ->
-                    LambdaConverter.convert(specialFormList, context, new SchemeSymbol("anonymous_procedure"), ctx);
+                    LambdaConverter.convert(specialFormList, context, new SchemeSymbol(ANONYMOUS_PROCEDURE), ctx);
             case "quote" -> QuoteConverter.convert(specialFormList, ctx);
             case "quasiquote" -> QuasiquoteConverter.convert(specialFormList, context, ctx);
             case "let" -> LetConverter.convert(specialFormList, context, ctx);

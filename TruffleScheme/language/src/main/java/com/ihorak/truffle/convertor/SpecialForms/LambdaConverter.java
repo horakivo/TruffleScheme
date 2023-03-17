@@ -1,6 +1,7 @@
 package com.ihorak.truffle.convertor.SpecialForms;
 
 import com.ihorak.truffle.convertor.SourceSectionUtil;
+import com.ihorak.truffle.convertor.SpecialFormConverter;
 import com.ihorak.truffle.convertor.context.LexicalScope;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.util.CreateWriteExprNode;
@@ -56,8 +57,9 @@ public class LambdaConverter {
         var writeLocalVariableExpr = createWriteLocalVariableNodes(argumentsIR, lambdaContext, lambdaCtx);
         var bodyExprs = TailCallUtil.convertBodyToSchemeExpressionsWithTCO(lambdaBodyIR, lambdaContext, lambdaCtx, CTX_LAMBDA_BODY_INDEX);
 
-        if (isProcedureBeingDefined && lambdaContext.isTailCallProcedureBeingDefined()) {
-            context.addTailCallProcedure(name);
+        if (lambdaContext.isTailCallProcedureBeingDefined()) {
+            var nameToStore = name.getValue().equals(SpecialFormConverter.ANONYMOUS_PROCEDURE) ? new SchemeSymbol(lambdaListIR.toString()) : name;
+            context.addTailCallProcedure(nameToStore);
         }
 
 

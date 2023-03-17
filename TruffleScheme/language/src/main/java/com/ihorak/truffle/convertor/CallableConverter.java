@@ -177,6 +177,8 @@ public class CallableConverter {
     private static boolean isCallableTailCallProcedure(Object operand, ParsingContext context) {
         if (operand instanceof SchemeSymbol symbol) {
             return context.isProcedureTailCall(symbol);
+        } else if (operand instanceof SchemeList list) {
+            return context.isProcedureTailCall(new SchemeSymbol(list.toString()));
         }
 
         return false;
