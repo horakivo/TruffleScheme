@@ -136,7 +136,7 @@ public class QuasiquoteExprNodeTest {
 
     @Test
     public void givenUnquote_whenExecuted_thenUnquoteIsCorrectlyEvaluated() {
-        var program = "`(list 1 ,(+ 1 1) 3)";
+        var program = "`(list 1 (unquote (+ 1 1)) 3)";
 
         var result = context.eval("scm", program);
 
@@ -201,7 +201,7 @@ public class QuasiquoteExprNodeTest {
 
         var result = context.eval("scm", program);
 
-        assertEquals("(1 ('quasiquote ('unquote 3)) 4)",result.toString());
+        assertEquals("(1 ('quasiquote ('unquote 3)) 4)", result.toString());
         assertTrue(result.hasArrayElements());
         assertEquals(3L, result.getArraySize());
         assertEquals(1L, result.getArrayElement(0).asLong());
@@ -221,7 +221,7 @@ public class QuasiquoteExprNodeTest {
     }
 
     @Test
-    public void givenUnquoteSplicingDirectlyAfterQuasiQuote_whenExecuted_thenUnquoteSplicingIsNotActioned() {
+    public void givenUnquoteSplicingAsAFirstElement_whenExecuted_thenUnquoteSplicingIsNotActioned() {
         var program = "`,@(list 1 2)";
 
         var result = context.eval("scm", program);
@@ -230,11 +230,11 @@ public class QuasiquoteExprNodeTest {
     }
 
     @Test
-    public void dsad() {
-        var program = "`(,@(list 1 2))";
+    public void givenUnquoteSplicingAsFirstElementInList_whenExecuted_thenCorrectResultIsReturned() {
+        var program = "`(,@(list 1 2) 3)";
 
         var result = context.eval("scm", program);
 
-        assertEquals("('unquote-splicing ('list 1 2))", result.toString());
+        assertEquals("(1 2 3)", result.toString());
     }
 }

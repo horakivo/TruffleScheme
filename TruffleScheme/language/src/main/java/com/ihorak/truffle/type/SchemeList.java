@@ -24,7 +24,6 @@ public class SchemeList implements Iterable<Object>, TruffleObject {
     public SchemeCell bindingCell;
     public int size;
     public final boolean isEmpty;
-//    public final R5RSParser.ListContext ctx;
 
     public SchemeList(final SchemeCell list, final @Nullable SchemeCell bindingCell, final int size, final boolean isEmpty) {
         this.list = list;
