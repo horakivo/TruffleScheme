@@ -11,6 +11,8 @@ import com.ihorak.truffle.node.callable.TCO.SelfRecursiveTailCallThrowerNodeGen;
 import com.ihorak.truffle.node.callable.TCO.TailCallCatcherNode;
 import com.ihorak.truffle.node.callable.TCO.TailCallThrowerNodeGen;
 import com.ihorak.truffle.node.scope.ReadLocalVariableExprNodeGen;
+import com.ihorak.truffle.node.scope.WriteFrameSlotNode;
+import com.ihorak.truffle.node.scope.WriteFrameSlotNodeGen;
 import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
 import com.ihorak.truffle.node.special_form.LambdaExprNode;
 import com.ihorak.truffle.type.SchemeList;
@@ -111,16 +113,10 @@ public class CallableConverter {
                     context.setSelfTailRecursionResultIndex(resultIndex);
                 }
 
-                var selfTailTemporalArgumentIndexes = context.getSelfTailTemporalArgumentSlotIndexes().orElseGet(() -> {
-                    var newTemporalIndexes = createTemporalSlotIndexes(context);
-                    context.setSelfTailTemporalArgumentSlotIndexes(newTemporalIndexes);
-                    return newTemporalIndexes;
-                });
 
-                var writeArgsToTemporalSlots = createWriteArgumentsToTemporalSlots(selfTailTemporalArgumentIndexes, arguments);
-                var realArgumentsSlotIndexes = context.getFunctionArgumentSlotIndexes();
-                var writeArgsFromTempSlotsToRealSlots = createWriteArgumentsFromTemporalSlots(realArgumentsSlotIndexes, selfTailTemporalArgumentIndexes);
-                return SelfRecursiveTailCallThrowerNodeGen.create(writeArgsToTemporalSlots, writeArgsFromTempSlotsToRealSlots);
+                var writeSlotNodes = createWriteFrameSlotsNodes(context);
+                if (writeSlotNodes.size() != arguments.size()) InterpreterException.shouldNotReachHere();
+                return SelfRecursiveTailCallThrowerNodeGen.create(arguments, writeSlotNodes);
             }
             context.setDefiningProcedureAsTailCall();
             var throwerNode = TailCallThrowerNodeGen.create(arguments, operandExpr, operandIR);
@@ -140,40 +136,10 @@ public class CallableConverter {
         //return SourceSectionUtil.setSourceSectionAndReturnExpr(new CallableExprNode(arguments, operandExpr), procedureCtx);
     }
 
-    private static List<Integer> createTemporalSlotIndexes(ParsingContext context) {
-        List<Integer> temporalSlotIndexes = new ArrayList<>();
-        for (var originalIndex : context.getFunctionArgumentSlotIndexes()) {
-            temporalSlotIndexes.add(context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null));
-        }
-
-        return temporalSlotIndexes;
+    private static List<WriteFrameSlotNode> createWriteFrameSlotsNodes(ParsingContext context) {
+        var frameSlotIndexes = context.getFunctionArgumentSlotIndexes();
+        return frameSlotIndexes.stream().map(WriteFrameSlotNodeGen::create).toList();
     }
-
-    private static List<WriteLocalVariableExprNode> createWriteArgumentsToTemporalSlots(List<Integer> temporalSlotsIndexes, List<SchemeExpression> arguments) {
-        if (arguments.size() != temporalSlotsIndexes.size()) throw InterpreterException.shouldNotReachHere();
-
-        List<WriteLocalVariableExprNode> result = new ArrayList<>();
-        for (int i = 0; i < temporalSlotsIndexes.size(); i++) {
-            var index = temporalSlotsIndexes.get(i);
-            var expr = arguments.get(i);
-            result.add(new WriteLocalVariableExprNode(index, expr));
-        }
-
-        return result;
-    }
-
-    private static List<WriteLocalVariableExprNode> createWriteArgumentsFromTemporalSlots(List<Integer> realArgumentSlotIndexes, List<Integer> temporalSlotsIndexes) {
-        List<WriteLocalVariableExprNode> result = new ArrayList<>();
-        for (int i = 0; i < realArgumentSlotIndexes.size(); i++) {
-            var temporalSlot = temporalSlotsIndexes.get(i);
-            var realSlot = realArgumentSlotIndexes.get(i);
-            var readValueFromTemporalSlotExpr = ReadLocalVariableExprNodeGen.create(temporalSlot, new SchemeSymbol("SelfTCOTempSlot"));
-            result.add(new WriteLocalVariableExprNode(realSlot, readValueFromTemporalSlotExpr));
-        }
-
-        return result;
-    }
-
 
     private static boolean isCallableTailCallProcedure(Object operand, SchemeExpression operandExpr, ParsingContext context) {
         if (operand instanceof SchemeSymbol symbol) {

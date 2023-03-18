@@ -89,37 +89,6 @@ public class LambdaConverter {
         return source.createSection(startIndex, length);
     }
 
-    private static List<WriteLocalVariableExprNode> createWriteArgumentsToFrameSlots(List<Integer> argumentsIndexes) {
-        List<WriteLocalVariableExprNode> result = new ArrayList<>();
-        for (int i = 0; i < argumentsIndexes.size(); i++) {
-            var slotIndex = argumentsIndexes.get(i);
-            var readProcArgExpr = new ReadProcedureArgExprNode(i);
-            result.add(new WriteLocalVariableExprNode(slotIndex, readProcArgExpr));
-        }
-        return result;
-    }
-
-
-//    /*
-//     * We need to add those first because we can convert lambdaBodyIR to SchemeExprs first to determine whether there is
-//     * Self Tail recursion or not. Without those parameters in Parsing context we wouldn't be able to convert bodyIR to SchemeExprs.
-//     *
-//     * If there is Self Tail recursion the lambda context will have getSelfTailRecursionArgumentIndex which is used in
-//     * method createWriteLocalVariableNodes.
-//     */
-//    private static void addLocalVariablesToParsingContext(Object parametersIR, ParsingContext context) {
-//        if (parametersIR instanceof SchemeList list) {
-//            for (Object obj : list) {
-//                var symbol = (SchemeSymbol) obj;
-//                context.findOrAddLocalSymbol(symbol);
-//            }
-//        } else if (parametersIR instanceof SchemePair pair) {
-//            //TODO implement
-//        } else {
-//            throw InterpreterException.shouldNotReachHere();
-//        }
-//    }
-
     private static List<WriteLocalVariableExprNode> createWriteLocalVariableNodes(Object params, ParsingContext context, ParserRuleContext lambdaCtx) {
         var paramsCtx = (ParserRuleContext) lambdaCtx.getChild(CTX_LAMBDA_PARAMS).getChild(0);
         if (params instanceof SchemeList list) {
