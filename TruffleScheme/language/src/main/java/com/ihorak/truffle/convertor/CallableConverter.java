@@ -177,6 +177,11 @@ public class CallableConverter {
 
     private static boolean isCallableTailCallProcedure(Object operand, SchemeExpression operandExpr, ParsingContext context) {
         if (operand instanceof SchemeSymbol symbol) {
+            if (context.getFunctionDefinitionName().isPresent() && symbol.equals(context.getFunctionDefinitionName().get())) {
+                // TODO is this valid assumption?
+                // calling self in non-tail call position - does it have to be catcher?
+                return false;
+            }
             return context.isProcedureTailCall(symbol);
         }
 
@@ -184,7 +189,7 @@ public class CallableConverter {
             return lambdaExpr.isTailCall;
         }
 
-        return false;
+        throw InterpreterException.shouldNotReachHere();
     }
 
     private static List<SchemeExpression> getProcedureArguments(SchemeList argumentList, ParsingContext context, ParserRuleContext procedureCtx) {
