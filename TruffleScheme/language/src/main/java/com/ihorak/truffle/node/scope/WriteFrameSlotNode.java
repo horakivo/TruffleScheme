@@ -20,22 +20,22 @@ public abstract class WriteFrameSlotNode extends SchemeNode {
         this.frameSlot = frameSlot;
     }
 
-//    @Specialization(guards = "isExpectedOrIllegal(frame, Long)")
-//    protected void writeLong(Frame frame, long value) {
-//        frame.setLong(frameSlot, value);
-//    }
-//    @Specialization(guards = "isExpectedOrIllegal(frame, Boolean)")
-//    protected void writeBoolean(Frame frame, boolean value) {
-//        frame.setBoolean(frameSlot, value);
-//    }
-//
-//    @Specialization(guards = "isExpectedOrIllegal(frame, Double)")
-//    protected void writeDouble(Frame frame, double value) {
-//        frame.setDouble(frameSlot, value);
-//    }
+    @Specialization(guards = "isExpectedOrIllegal(frame, Long)")
+    protected void writeLong(Frame frame, long value) {
+        frame.setLong(frameSlot, value);
+    }
+    @Specialization(guards = "isExpectedOrIllegal(frame, Boolean)")
+    protected void writeBoolean(Frame frame, boolean value) {
+        frame.setBoolean(frameSlot, value);
+    }
 
-    //@Specialization(replaces = { "writeBoolean", "writeLong", "writeDouble" })
-    @Specialization
+    @Specialization(guards = "isExpectedOrIllegal(frame, Double)")
+    protected void writeDouble(Frame frame, double value) {
+        frame.setDouble(frameSlot, value);
+    }
+
+    @Specialization(replaces = { "writeBoolean", "writeLong", "writeDouble" })
+    //@Specialization
     protected void writeObject(Frame frame, Object value) {
         /* No-op if kind is already Object. */
         final FrameDescriptor descriptor = getFrameDescriptor(frame);
