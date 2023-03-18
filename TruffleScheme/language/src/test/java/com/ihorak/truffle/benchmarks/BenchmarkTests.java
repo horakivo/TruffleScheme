@@ -57,24 +57,9 @@ public class BenchmarkTests {
                     (tak 18 12 6)
                     (if (> n 0) (loop (- n 1)))))
 
-
-                (loop 100)
-                (loop 100)
-                (loop 100)
-                (loop 100)
-                (loop 100)
                 (loop 100)
 
-
-
-                (define start (current-milliseconds))
-
-                (loop 100)
-
-                (define end (current-milliseconds))
-                (- end start)
-
-                                """;
+               """;
 
         var result = context.eval("scm", program);
 

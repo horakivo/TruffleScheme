@@ -41,7 +41,7 @@ public class LambdaConverter {
     private static final int CTX_PARAMS_OFFSET = 1;
 
 
-    public static SchemeExpression convert(SchemeList lambdaListIR, ParsingContext context, SchemeSymbol name, ParserRuleContext lambdaCtx) {
+    public static LambdaExprNode convert(SchemeList lambdaListIR, ParsingContext context, SchemeSymbol name, ParserRuleContext lambdaCtx) {
         validate(lambdaListIR);
         ParsingContext lambdaContext = new ParsingContext(context, LexicalScope.LAMBDA, context.getSource());
         var argumentsIR = lambdaListIR.cdr().car();
@@ -53,20 +53,15 @@ public class LambdaConverter {
             lambdaContext.setFunctionDefinitionName(name);
         }
 
-
         var writeLocalVariableExpr = createWriteLocalVariableNodes(argumentsIR, lambdaContext, lambdaCtx);
         var bodyExprs = TailCallUtil.convertBodyToSchemeExpressionsWithTCO(lambdaBodyIR, lambdaContext, lambdaCtx, CTX_LAMBDA_BODY_INDEX);
 
-        if (lambdaContext.isTailCallProcedureBeingDefined()) {
-            var nameToStore = name.getValue().equals(SpecialFormConverter.ANONYMOUS_PROCEDURE) ? new SchemeSymbol(lambdaListIR.toString()) : name;
-            context.addTailCallProcedure(nameToStore);
-        }
-
-
         var callTarget = creatCallTarget(writeLocalVariableExpr, bodyExprs, name, lambdaContext, lambdaCtx);
         var hasOptionalArgs = argumentsIR instanceof SchemePair;
-        var lambdaExpr = new LambdaExprNode(callTarget, numberOfArguments, hasOptionalArgs);
-        return SourceSectionUtil.setSourceSectionAndReturnExpr(lambdaExpr, lambdaCtx);
+        //TODO simplify when I get rid of this ctx
+        var lambdaExpr = new LambdaExprNode(callTarget, numberOfArguments, hasOptionalArgs, lambdaContext.isTailCallProcedureBeingDefined());
+        SourceSectionUtil.setSourceSection(lambdaExpr, lambdaCtx);
+        return lambdaExpr;
     }
 
 

@@ -12,6 +12,7 @@ import com.ihorak.truffle.node.callable.TCO.TailCallCatcherNode;
 import com.ihorak.truffle.node.callable.TCO.TailCallThrowerNodeGen;
 import com.ihorak.truffle.node.scope.ReadLocalVariableExprNodeGen;
 import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
+import com.ihorak.truffle.node.special_form.LambdaExprNode;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.frame.FrameSlotKind;
@@ -125,7 +126,7 @@ public class CallableConverter {
             var throwerNode = TailCallThrowerNodeGen.create(arguments, operandExpr, operandIR);
             return SourceSectionUtil.setSourceSectionAndReturnExpr(throwerNode, procedureCtx);
         } else {
-            if (isCallableTailCallProcedure(operandIR, context)) {
+            if (isCallableTailCallProcedure(operandIR, operandExpr, context)) {
                 int tailCallArgumentsSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
                 int tailCallTargetSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
                 var tailCallCatcherNode = new TailCallCatcherNode(arguments, operandExpr, tailCallArgumentsSlot, tailCallTargetSlot);
@@ -174,11 +175,13 @@ public class CallableConverter {
     }
 
 
-    private static boolean isCallableTailCallProcedure(Object operand, ParsingContext context) {
+    private static boolean isCallableTailCallProcedure(Object operand, SchemeExpression operandExpr, ParsingContext context) {
         if (operand instanceof SchemeSymbol symbol) {
             return context.isProcedureTailCall(symbol);
-        } else if (operand instanceof SchemeList list) {
-            return context.isProcedureTailCall(new SchemeSymbol(list.toString()));
+        }
+
+        if (operandExpr instanceof LambdaExprNode lambdaExpr) {
+            return lambdaExpr.isTailCall;
         }
 
         return false;

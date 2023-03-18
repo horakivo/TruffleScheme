@@ -17,10 +17,9 @@ public class ParsingContext {
 
     private final Map<SchemeSymbol, CallTarget> macroIndex = new HashMap<>();
     private final Map<SchemeSymbol, LocalVariableInfo> localVariableIndex = new HashMap<>();
-    private final Set<SchemeSymbol> tailCallProceduresSet = new HashSet<>();
+    private final Map<SchemeSymbol, Boolean> tailCallProceduresMap = new HashMap<>();
 
     private final Source source;
-
 
 
     //Method information
@@ -87,7 +86,8 @@ public class ParsingContext {
 
         LocalVariableInfo localVariableInfo = context.localVariableIndex.get(symbol);
         //we found local variable
-        if (localVariableInfo != null) return new FrameIndexResult(localVariableInfo.getIndex(), localVariableInfo.isNullable(), depth);
+        if (localVariableInfo != null)
+            return new FrameIndexResult(localVariableInfo.getIndex(), localVariableInfo.isNullable(), depth);
 
         //recursive call
         if (context.scope == LexicalScope.LET || context.scope == LexicalScope.LETREC) {
@@ -153,7 +153,8 @@ public class ParsingContext {
     public void makeLocalVariablesNullable(List<SchemeSymbol> names) {
         for (SchemeSymbol name : names) {
             var localVarInfo = localVariableIndex.get(name);
-            if (localVarInfo == null) throw new SchemeException("CONVERTER ERROR: Unable to update local variable to nullable type. Name: " + names, null);
+            if (localVarInfo == null)
+                throw new SchemeException("CONVERTER ERROR: Unable to update local variable to nullable type. Name: " + names, null);
             localVarInfo.setNullable(true);
         }
     }
@@ -161,7 +162,8 @@ public class ParsingContext {
     public void makeLocalVariablesNonNullable(List<SchemeSymbol> names) {
         for (SchemeSymbol name : names) {
             var localVarInfo = localVariableIndex.get(name);
-            if (localVarInfo == null) throw new SchemeException("CONVERTER ERROR: Unable to update local variable to non-nullable type. Name: " + names, null);
+            if (localVarInfo == null)
+                throw new SchemeException("CONVERTER ERROR: Unable to update local variable to non-nullable type. Name: " + names, null);
             localVarInfo.setNullable(false);
         }
     }
@@ -228,8 +230,8 @@ public class ParsingContext {
         isTailCallProcedureBeingDefined = true;
     }
 
-    public void addTailCallProcedure(SchemeSymbol nameOfProcedure) {
-        tailCallProceduresSet.add(nameOfProcedure);
+    public void addProcedure(SchemeSymbol nameOfProcedure, boolean isTailCall) {
+        tailCallProceduresMap.put(nameOfProcedure, isTailCall);
     }
 
     public boolean isProcedureTailCall(SchemeSymbol name) {
@@ -237,8 +239,14 @@ public class ParsingContext {
     }
 
     private boolean isProcedureTailCall(SchemeSymbol name, ParsingContext context) {
-        if (context == null) return false;
-        if (context.tailCallProceduresSet.contains(name)) return true;
+        if (context == null) {
+            // since we didn't find anything, it means that the function is not defined yet
+            // we have to assume that it is TCO. Look givenTCOProcedureDefinedAfterItsUsage_whenCalled_thenExceptionIsNotEscaping
+            return true;
+        }
+        if (context.tailCallProceduresMap.containsKey(name)) {
+            return context.tailCallProceduresMap.get(name);
+        }
 
         return isProcedureTailCall(name, context.parent);
 

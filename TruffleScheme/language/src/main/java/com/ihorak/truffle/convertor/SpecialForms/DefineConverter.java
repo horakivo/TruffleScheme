@@ -49,15 +49,14 @@ public class DefineConverter {
 
     private static SchemeExpression convertDefineBodyToSchemeExpr(SchemeList defineList, Object defineBody, ParsingContext context, SchemeSymbol identifier, ParserRuleContext defineCtx) {
         var bodyFormCtx = (ParserRuleContext) defineCtx.children.get(CTX_DEFINE_BODY);
-        SchemeExpression bodyExpr;
         if (isDefun(defineList)) {
             var lambdaCtx = (ParserRuleContext) bodyFormCtx.getChild(0);
-            bodyExpr = LambdaConverter.convert((SchemeList) defineBody, context, identifier, lambdaCtx);
+            var lambdaExpr = LambdaConverter.convert((SchemeList) defineBody, context, identifier, lambdaCtx);
+            context.addProcedure(identifier, lambdaExpr.isTailCall);
+            return lambdaExpr;
         } else {
-            bodyExpr = InternalRepresentationConverter.convert(defineBody, context, false, false, bodyFormCtx);
+            return InternalRepresentationConverter.convert(defineBody, context, false, false, bodyFormCtx);
         }
-
-        return bodyExpr;
     }
 
     private static void validate(SchemeList defineList, boolean isDefinitionAllowed) {
