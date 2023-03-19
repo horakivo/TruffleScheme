@@ -82,6 +82,11 @@ public abstract class SchemeExpression extends SchemeNode {
         }
     }
 
+    public final void setUnavailableSourceSection() {
+        assert sourceStartIndex == NO_SOURCE : "source must only be set once";
+        this.sourceStartIndex = UNAVAILABLE_SOURCE;
+    }
+
     // invoked by the parser to set the source
     public final void setSourceSection(int charIndex, int length) {
         assert sourceStartIndex == NO_SOURCE : "source must only be set once";

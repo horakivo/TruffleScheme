@@ -7,6 +7,8 @@ import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,5 +44,20 @@ public abstract class AbstractLetConverter {
                 allIdentifiers.add(symbol);
             }
         }
+    }
+
+
+    protected static ParserRuleContext getParameterExprCtx(@Nullable ParserRuleContext letParamCtx, int index) {
+        if (letParamCtx == null) return null;
+
+        var currentParamCtx = letParamCtx.getChild(index + CTX_PARAMS_OFFSET).getChild(0);
+        return (ParserRuleContext) currentParamCtx.getChild(2);
+    }
+
+    protected static ParserRuleContext getIdentifierCtx(@Nullable ParserRuleContext letParamCtx, int index) {
+        if (letParamCtx == null) return null;
+
+        var currentParamCtx = letParamCtx.getChild(index + CTX_PARAMS_OFFSET).getChild(0);
+        return (ParserRuleContext) currentParamCtx.getChild(1);
     }
 }

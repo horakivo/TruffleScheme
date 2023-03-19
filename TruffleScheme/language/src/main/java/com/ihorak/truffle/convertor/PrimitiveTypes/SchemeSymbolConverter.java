@@ -10,18 +10,17 @@ import com.ihorak.truffle.type.SchemeSymbol;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class SchemeSymbolConverter {
 
     private SchemeSymbolConverter() {
     }
 
-    public static SchemeExpression convert(SchemeSymbol symbol, ParsingContext context, ParserRuleContext ctx) {
+    public static SchemeExpression convert(SchemeSymbol symbol, ParsingContext context, @Nullable ParserRuleContext ctx) {
         var indexPair = context.findClosureSymbol(symbol);
         var expr = indexPair == null ? new ReadGlobalVariableExprNode(symbol) : createReadVariableExpr(indexPair, symbol);
-        SourceSectionUtil.setSourceSection(expr, ctx);
-
-        return expr;
+        return SourceSectionUtil.setSourceSectionAndReturnExpr(expr, ctx);
     }
 
     private static SchemeExpression createReadVariableExpr(@NotNull FrameIndexResult indexFrameIndexResult, SchemeSymbol symbol) {

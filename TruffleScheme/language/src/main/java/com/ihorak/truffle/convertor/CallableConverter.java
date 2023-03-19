@@ -19,6 +19,7 @@ import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.frame.FrameSlotKind;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,7 @@ public class CallableConverter {
      *  --> (operand argExpr1 ... argExprN)
      * procedureCtx is coming without form
      * */
-    public static SchemeExpression convertListToProcedureCall(SchemeList callableList, ParsingContext context, boolean isTailCall, ParserRuleContext callableCtx) {
+    public static SchemeExpression convertListToProcedureCall(SchemeList callableList, ParsingContext context, boolean isTailCall, @Nullable ParserRuleContext callableCtx) {
         validate(callableList);
 
         if (isBuiltin(callableList)) {
@@ -71,26 +72,26 @@ public class CallableConverter {
 
     }
 
-    private static SchemeExpression createBuiltin(SchemeList callableList, ParsingContext context, ParserRuleContext procedureCtx) {
+    private static SchemeExpression createBuiltin(SchemeList callableList, ParsingContext context, @Nullable ParserRuleContext procedureCtx) {
         var symbol = (SchemeSymbol) callableList.car();
         List<SchemeExpression> arguments = getProcedureArguments(callableList.cdr(), context, procedureCtx);
         return BuiltinConverter.createBuiltin(symbol, arguments, context, procedureCtx);
     }
 
-    private static SchemeExpression createMacro(SchemeList callableList, ParsingContext context, ParserRuleContext macroCtx) {
+    private static SchemeExpression createMacro(SchemeList callableList, ParsingContext context, @Nullable ParserRuleContext macroCtx) {
         var symbol = (SchemeSymbol) callableList.car();
         var transformationCallTarget = context.getMacroTransformationCallTarget(symbol);
         List<Object> notEvaluatedArgs = new ArrayList<>();
         callableList.cdr().forEach(notEvaluatedArgs::add);
 
-        var macroExpr = new MacroCallableExprNode(transformationCallTarget, notEvaluatedArgs, context, macroCtx);
+        var macroExpr = new MacroCallableExprNode(transformationCallTarget, notEvaluatedArgs, context);
         return SourceSectionUtil.setSourceSectionAndReturnExpr(macroExpr, macroCtx);
     }
 
-    private static SchemeExpression createProcedureCall(SchemeList callableList, boolean isTailCall, ParsingContext context, ParserRuleContext procedureCtx) {
+    private static SchemeExpression createProcedureCall(SchemeList callableList, boolean isTailCall, ParsingContext context, @Nullable ParserRuleContext procedureCtx) {
         var operandIR = callableList.car();
         List<SchemeExpression> arguments = getProcedureArguments(callableList.cdr(), context, procedureCtx);
-        var callableCtx = (ParserRuleContext) procedureCtx.getChild(CTX_CALLABLE_INDEX);
+        var callableCtx = procedureCtx != null ? (ParserRuleContext) procedureCtx.getChild(CTX_CALLABLE_INDEX) : null;
         var operandExpr = InternalRepresentationConverter.convert(operandIR, context, false, false, callableCtx);
 
         if (isTailCall) {
@@ -158,11 +159,11 @@ public class CallableConverter {
         throw InterpreterException.shouldNotReachHere();
     }
 
-    private static List<SchemeExpression> getProcedureArguments(SchemeList argumentList, ParsingContext context, ParserRuleContext procedureCtx) {
+    private static List<SchemeExpression> getProcedureArguments(SchemeList argumentList, ParsingContext context, @Nullable ParserRuleContext procedureCtx) {
         List<SchemeExpression> result = new ArrayList<>();
 
         for (int i = 0; i < argumentList.size; i++) {
-            var currentCtx = (ParserRuleContext) procedureCtx.getChild(i + CTX_ARGUMENT_OFFSET);
+            var currentCtx = procedureCtx != null ? (ParserRuleContext) procedureCtx.getChild(i + CTX_ARGUMENT_OFFSET) : null;
             result.add(InternalRepresentationConverter.convert(argumentList.get(i), context, false, false, currentCtx));
         }
         return result;

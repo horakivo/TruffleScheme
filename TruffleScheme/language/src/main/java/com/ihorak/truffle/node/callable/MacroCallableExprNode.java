@@ -20,16 +20,13 @@ public class MacroCallableExprNode extends SchemeExpression {
     private final Object[] notEvaluatedArgs;
     private final ParsingContext parsingContext;
 
-    private final ParserRuleContext macroCtx;
-
-
     @SuppressWarnings("FieldMayBeFinal")
     @Child
     private DirectCallNode directDispatchNode;
     @CompilationFinal
     private SchemeExpression macroExpandedTree;
 
-    public MacroCallableExprNode(CallTarget transformationProcedure, List<Object> notEvaluatedArgs, ParsingContext parsingContext, ParserRuleContext macroCtx) {
+    public MacroCallableExprNode(CallTarget transformationProcedure, List<Object> notEvaluatedArgs, ParsingContext parsingContext) {
         this.notEvaluatedArgs = new Object[notEvaluatedArgs.size() + 1];
         int index = 1;
         for (Object obj : notEvaluatedArgs) {
@@ -39,7 +36,6 @@ public class MacroCallableExprNode extends SchemeExpression {
 
         this.parsingContext = parsingContext;
         this.directDispatchNode = DirectCallNode.create(transformationProcedure);
-        this.macroCtx = macroCtx;
     }
 
     //TODO zde mozna udelat insert (nebo neco jako replace, kdy expandovane makro nahradim proste)
@@ -51,7 +47,7 @@ public class MacroCallableExprNode extends SchemeExpression {
             notEvaluatedArgs[0] = frame.materialize();
             var transformedData = directDispatchNode.call(notEvaluatedArgs);
             //TODO try replace
-            macroExpandedTree = InternalRepresentationConverter.convert(transformedData, parsingContext, false, false);
+            macroExpandedTree = InternalRepresentationConverter.convert(transformedData, parsingContext, false, false, null);
         }
 
         return macroExpandedTree.executeGeneric(frame);

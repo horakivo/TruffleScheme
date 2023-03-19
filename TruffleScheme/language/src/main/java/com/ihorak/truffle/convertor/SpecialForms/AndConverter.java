@@ -11,6 +11,7 @@ import com.ihorak.truffle.node.special_form.AndExprNode;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeList;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -20,24 +21,18 @@ public class AndConverter {
 
     private AndConverter() {}
 
-    public static SchemeExpression convert(SchemeList andList, ParsingContext context, ParserRuleContext andCtx) {
+    public static SchemeExpression convert(SchemeList andList, ParsingContext context, @Nullable ParserRuleContext andCtx) {
         var schemeExprs = TailCallUtil.convertExpressionsToSchemeExpressionsWithTCO(andList.cdr(), context, andCtx, CTX_BODY_INDEX);
         if (schemeExprs.isEmpty()) {
             var expr = new BooleanLiteralNode(true);
-            SourceSectionUtil.setSourceSection(expr, andCtx);
-
-            return expr;
+            return SourceSectionUtil.setSourceSectionAndReturnExpr(expr, andCtx);
         }
         if (schemeExprs.size() == 1) {
             var expr = OneArgumentExprNodeGen.create(schemeExprs.get(0));
-            SourceSectionUtil.setSourceSection(expr, andCtx);
-
-            return expr;
+            return SourceSectionUtil.setSourceSectionAndReturnExpr(expr, andCtx);
         }
         var andExpr = reduceAnd(schemeExprs);
-        SourceSectionUtil.setSourceSection(andExpr, andCtx);
-
-        return andExpr;
+        return SourceSectionUtil.setSourceSectionAndReturnExpr(andExpr, andCtx);
     }
 
     //TODO is it a problem that those doesn't have Source section?

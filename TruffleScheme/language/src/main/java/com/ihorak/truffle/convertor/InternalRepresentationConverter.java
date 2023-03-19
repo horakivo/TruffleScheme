@@ -15,26 +15,6 @@ public class InternalRepresentationConverter {
 
     private InternalRepresentationConverter() {}
 
-    public static SchemeExpression convert(Object obj, ParsingContext context, boolean isTailCall, boolean isDefinitionAllowed) {
-        if (obj instanceof Long longValue) {
-            return LongConverter.convert(longValue, null);
-        } else if (obj instanceof SchemeSymbol schemeSymbol) {
-            return SchemeSymbolConverter.convert(schemeSymbol, context, null);
-        } else if (obj instanceof Boolean bool) {
-            return BooleanConverter.convert(bool, null);
-        } else if (obj instanceof SchemeList schemeList) {
-            return SchemeListConverter.convert(schemeList, context, isTailCall, isDefinitionAllowed, null);
-        } else if (obj instanceof BigInteger bigInt) {
-            return BigIntConverter.convert(bigInt, null);
-        } else if (obj instanceof Double doubleValue) {
-            return DoubleConverter.convert(doubleValue, null);
-        } else if (obj instanceof TruffleString truffleString) {
-            return TruffleStringConverter.convert(truffleString, null);
-        } else {
-            throw new IllegalArgumentException("ListToExpressionConverter: Unexpected type during conversion. Type: " + obj);
-        }
-    }
-
     public static SchemeExpression convert(Object obj, ParsingContext context, boolean isTailCall, boolean isDefinitionAllowed, ParserRuleContext ctx) {
         if (obj instanceof Long longValue) {
             return LongConverter.convert(longValue, ctx);
@@ -54,7 +34,4 @@ public class InternalRepresentationConverter {
             throw new IllegalArgumentException("ListToExpressionConverter: Unexpected type during conversion. Type: " + obj);
         }
     }
-
-
-
 }

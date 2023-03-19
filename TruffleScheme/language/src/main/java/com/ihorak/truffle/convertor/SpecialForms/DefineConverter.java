@@ -9,12 +9,12 @@ import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public class DefineConverter {
 
-    private static final int CTX_DEFINE_IDENTIFIER = 2;
     private static final int CTX_DEFINE_BODY = 3;
 
     private DefineConverter() {
@@ -47,10 +47,10 @@ public class DefineConverter {
     }
 
 
-    private static SchemeExpression convertDefineBodyToSchemeExpr(SchemeList defineList, Object defineBody, ParsingContext context, SchemeSymbol identifier, ParserRuleContext defineCtx) {
-        var bodyFormCtx = (ParserRuleContext) defineCtx.children.get(CTX_DEFINE_BODY);
+    private static SchemeExpression convertDefineBodyToSchemeExpr(SchemeList defineList, Object defineBody, ParsingContext context, SchemeSymbol identifier, @Nullable ParserRuleContext defineCtx) {
+        var bodyFormCtx = defineCtx != null ? (ParserRuleContext) defineCtx.children.get(CTX_DEFINE_BODY) : null;
         if (isDefun(defineList)) {
-            var lambdaCtx = (ParserRuleContext) bodyFormCtx.getChild(0);
+            var lambdaCtx = bodyFormCtx != null ? (ParserRuleContext) bodyFormCtx.getChild(0) : null;
             var lambdaExpr = LambdaConverter.convert((SchemeList) defineBody, context, identifier, lambdaCtx);
             context.addProcedure(identifier, lambdaExpr.isTailCall);
             return lambdaExpr;

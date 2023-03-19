@@ -11,20 +11,22 @@ import com.ihorak.truffle.node.special_form.LambdaExprNode;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.jetbrains.annotations.Nullable;
 
 public class SchemeMacroDefinitionConverter {
 
     private static final int CTX_IDENTIFIER = 2;
     private static final int CTX_TRANSFORMATION_BODY = 3;
 
+    //TODO podivat se jestli tohle je potreba
     private SchemeMacroDefinitionConverter() {
     }
 
-    public static SchemeExpression convertMarco(SchemeList macroList, ParsingContext context, ParserRuleContext macroCtx) {
+    public static SchemeExpression convertMarco(SchemeList macroList, ParsingContext context, @Nullable ParserRuleContext macroCtx) {
         validate(macroList);
 
         var name = (SchemeSymbol) macroList.get(1);
-        var transformationProcedureCtx = (ParserRuleContext) macroCtx.getChild(CTX_TRANSFORMATION_BODY);
+        var transformationProcedureCtx = macroCtx != null ? (ParserRuleContext) macroCtx.getChild(CTX_TRANSFORMATION_BODY) : null;
         var transformationProcedureExpr = InternalRepresentationConverter.convert(macroList.get(2), context, false, false, transformationProcedureCtx);
 
         if (!(transformationProcedureExpr instanceof LambdaExprNode lambdaExprNode)) {
@@ -32,7 +34,7 @@ public class SchemeMacroDefinitionConverter {
         }
 
         context.addMacro(name, lambdaExprNode.callTarget);
-        var symbolCtx = (ParserRuleContext) macroCtx.getChild(CTX_IDENTIFIER);
+        var symbolCtx = macroCtx != null ? (ParserRuleContext) macroCtx.getChild(CTX_IDENTIFIER) : null;
         if (context.getLexicalScope() == LexicalScope.GLOBAL) {
             return CreateWriteExprNode.createWriteGlobalVariableExprNode(name, new DefineMacroExprNode(lambdaExprNode), symbolCtx);
         } else {

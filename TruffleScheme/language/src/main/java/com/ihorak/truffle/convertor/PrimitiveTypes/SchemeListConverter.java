@@ -2,6 +2,7 @@ package com.ihorak.truffle.convertor.PrimitiveTypes;
 
 import com.ihorak.truffle.convertor.CallableConverter;
 import com.ihorak.truffle.convertor.SchemeMacroDefinitionConverter;
+import com.ihorak.truffle.convertor.SourceSectionUtil;
 import com.ihorak.truffle.convertor.SpecialFormConverter;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.util.SpecialFormUtils;
@@ -9,6 +10,7 @@ import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.jetbrains.annotations.Nullable;
 
 public class SchemeListConverter {
 
@@ -16,9 +18,9 @@ public class SchemeListConverter {
     }
 
 
-    public static SchemeExpression convert(SchemeList list, ParsingContext context, boolean isTailCall, boolean isDefinitionAllowed, ParserRuleContext ctx) {
+    public static SchemeExpression convert(SchemeList list, ParsingContext context, boolean isTailCall, boolean isDefinitionAllowed, @Nullable ParserRuleContext ctx) {
         var firstElement = list.get(0);
-        var ctxWithoutForm = (ParserRuleContext) ctx.getChild(0);
+        var ctxWithoutForm = ctx != null ? (ParserRuleContext) ctx.getChild(0) : null;
 
         if (isSpecialForm(firstElement)) {
             return SpecialFormConverter.convertListToSpecialForm(list, context, isDefinitionAllowed, ctxWithoutForm);

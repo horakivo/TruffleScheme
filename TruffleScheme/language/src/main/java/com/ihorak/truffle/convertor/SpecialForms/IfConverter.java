@@ -17,6 +17,7 @@ import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeList;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RuleContext;
+import org.jetbrains.annotations.Nullable;
 
 public class IfConverter {
 
@@ -39,8 +40,8 @@ public class IfConverter {
     }
 
     private static IfExprNode covertIfNode(SchemeList ifList, ParsingContext context, ParserRuleContext ifCtx) {
-        var conditionCtx = (ParserRuleContext) ifCtx.children.get(CTX_CONDITION_INDEX);
-        var thenCtx = (ParserRuleContext) ifCtx.children.get(CTX_THEN_INDEX);
+        var conditionCtx = getConditionCtxOrNull(ifCtx);
+        var thenCtx = getThenCtxOrNull(ifCtx);
 
         var conditionExpr = InternalRepresentationConverter.convert(ifList.get(1), context, false, false, conditionCtx);
         var thenExpr = InternalRepresentationConverter.convert(ifList.get(2), context, true, false, thenCtx);
@@ -51,9 +52,9 @@ public class IfConverter {
     }
 
     private static IfElseExprNode covertIfElseNode(SchemeList ifList, ParsingContext context, ParserRuleContext ifCtx) {
-        var conditionCtx = (ParserRuleContext) ifCtx.children.get(CTX_CONDITION_INDEX);
-        var thenCtx = (ParserRuleContext) ifCtx.children.get(CTX_THEN_INDEX);
-        var elseCtx = (ParserRuleContext) ifCtx.children.get(CTX_ELSE_INDEX);
+        var conditionCtx = getConditionCtxOrNull(ifCtx);
+        var thenCtx = getThenCtxOrNull(ifCtx);
+        var elseCtx = getElseCtxOrNull(ifCtx);
 
         var conditionExpr = InternalRepresentationConverter.convert(ifList.get(1), context, false, false, conditionCtx);
         var thenExpr = InternalRepresentationConverter.convert(ifList.get(2), context, true, false, thenCtx);
@@ -73,11 +74,25 @@ public class IfConverter {
             }
         }
 
-        var expr =  new IfElseExprNode(BooleanCastExprNodeGen.create(conditionExpr), thenExpr, elseExpr);
+        var expr = new IfElseExprNode(BooleanCastExprNodeGen.create(conditionExpr), thenExpr, elseExpr);
         SourceSectionUtil.setSourceSection(expr, ifCtx);
         return expr;
     }
 
+    private static ParserRuleContext getConditionCtxOrNull(@Nullable ParserRuleContext ifCtx) {
+        if (ifCtx == null) return null;
+        return (ParserRuleContext) ifCtx.getChild(CTX_CONDITION_INDEX);
+    }
+
+    private static ParserRuleContext getThenCtxOrNull(@Nullable ParserRuleContext ifCtx) {
+        if (ifCtx == null) return null;
+        return (ParserRuleContext) ifCtx.getChild(CTX_THEN_INDEX);
+    }
+
+    private static ParserRuleContext getElseCtxOrNull(@Nullable ParserRuleContext ifCtx) {
+        if (ifCtx == null) return null;
+        return (ParserRuleContext) ifCtx.getChild(CTX_ELSE_INDEX);
+    }
 
 
     private static void validate(SchemeList ifList) {

@@ -1,9 +1,11 @@
 package com.ihorak.truffle.convertor.PrimitiveTypes;
 
 import com.ihorak.truffle.convertor.SourceSectionUtil;
+import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.literals.LongLiteralNode;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
+import org.jetbrains.annotations.Nullable;
 
 
 public class LongConverter {
@@ -11,11 +13,9 @@ public class LongConverter {
     private LongConverter() {
     }
 
-    public static LongLiteralNode convert(long value, ParserRuleContext ctx) {
+    public static SchemeExpression convert(long value, @Nullable ParserRuleContext ctx) {
         var node =  new LongLiteralNode(value);
-        SourceSectionUtil.setSourceSection(node, ctx);
-
-        return node;
+        return SourceSectionUtil.setSourceSectionAndReturnExpr(node, ctx);
     }
 
 }

@@ -13,6 +13,7 @@ import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,7 @@ public class LetrecConverter extends AbstractLetConverter {
     }
 
     //TODO solve code duplication
-    public static SchemeExpression convert(SchemeList letList, ParsingContext context, ParserRuleContext letrecCtx) {
+    public static SchemeExpression convert(SchemeList letList, ParsingContext context, @Nullable ParserRuleContext letrecCtx) {
         validate(letList);
         ParsingContext letContext = new ParsingContext(context, LexicalScope.LETREC, context.getFrameDescriptorBuilder(), context.getSource());
 
@@ -42,7 +43,7 @@ public class LetrecConverter extends AbstractLetConverter {
 
     // (letrec ((x 1) (y 2)) <body>)
     // 0  1         2
-    private static List<WriteLocalVariableExprNode> createWriteLocalVariables(SchemeList localBindings, ParsingContext letContext, ParserRuleContext letrecCtx) {
+    private static List<WriteLocalVariableExprNode> createWriteLocalVariables(SchemeList localBindings, ParsingContext letContext, @Nullable ParserRuleContext letrecCtx) {
         List<WriteLocalVariableExprNode> result = new ArrayList<>();
         List<SchemeSymbol> symbols = new ArrayList<>();
         List<Object> dataExpressions = new ArrayList<>();
@@ -56,11 +57,10 @@ public class LetrecConverter extends AbstractLetConverter {
 
         letContext.makeLocalVariablesNullable(symbols);
 
-        var letrecParamsCtx = (ParserRuleContext) letrecCtx.getChild(2).getChild(0);
+        var letrecParamsCtx = letrecCtx != null ? (ParserRuleContext) letrecCtx.getChild(2).getChild(0) : null;
         for (int i = 0; i < symbols.size(); i++) {
-            var currentParamCtx = letrecParamsCtx.getChild(i + CTX_PARAMS_OFFSET).getChild(0);
-            var identifierCtx = (ParserRuleContext)currentParamCtx.getChild(1);
-            var exprCtx = (ParserRuleContext)currentParamCtx.getChild(2);
+            var identifierCtx = getIdentifierCtx(letrecParamsCtx, i);
+            var exprCtx = getParameterExprCtx(letrecParamsCtx, i);
             var expression = InternalRepresentationConverter.convert(dataExpressions.get(i), letContext, false, false, exprCtx);
             result.add(CreateWriteExprNode.createWriteLocalVariableExprNode(symbols.get(i), expression, letContext, identifierCtx));
         }

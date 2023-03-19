@@ -13,6 +13,7 @@ import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.jetbrains.annotations.Nullable;
 
 public class CondConverter {
 
@@ -21,19 +22,19 @@ public class CondConverter {
     private CondConverter() {
     }
 
-    public static SchemeExpression convertCond(SchemeList condList, ParsingContext context, ParserRuleContext condCtx) {
+    public static SchemeExpression convertCond(SchemeList condList, ParsingContext context, @Nullable ParserRuleContext condCtx) {
         validate(condList);
         var condExpressions = condList.cdr();
         if (condExpressions.size == 0)
             return SourceSectionUtil.setSourceSectionAndReturnExpr(new UndefinedLiteralNode(), condCtx);
         if (condExpressions.size == 1) {
             var condIR = (SchemeList) condExpressions.get(0);
-            var currCondCtx = (ParserRuleContext) condCtx.getChild(2).getChild(0);
+            var currCondCtx = condCtx != null ? (ParserRuleContext) condCtx.getChild(2).getChild(0) : null;
 
-            var conditionCtx = (ParserRuleContext) currCondCtx.getChild(1);
+            var conditionCtx = getConditionCtx(currCondCtx);
             var conditionExpr = InternalRepresentationConverter.convert(condIR.get(0), context, false, false, conditionCtx);
 
-            var thenCtx = (ParserRuleContext) condCtx.getChild(2);
+            var thenCtx = getThenCtx(currCondCtx);
             var thenExpr = InternalRepresentationConverter.convert(condIR.get(1), context, true, false, thenCtx);
 
             var ifExpr = new IfExprNode(BooleanCastExprNodeGen.create(conditionExpr), thenExpr);
@@ -44,15 +45,15 @@ public class CondConverter {
     }
 
     //TODO is it a problem that those doesn't have Source section?
-    private static SchemeExpression reduceCond(SchemeList condExpressions, ParsingContext context, ParserRuleContext condCtx, int startCondCtxIndex) {
+    private static SchemeExpression reduceCond(SchemeList condExpressions, ParsingContext context, @Nullable ParserRuleContext condCtx, int startCondCtxIndex) {
         if (condExpressions.size > 2) {
             var condExpr = (SchemeList) condExpressions.get(0);
-            var currCondCtx = (ParserRuleContext) condCtx.getChild(startCondCtxIndex).getChild(0);
+            var currCondCtx = condCtx != null ? (ParserRuleContext) condCtx.getChild(startCondCtxIndex).getChild(0) : null;
 
-            var conditionCtx = (ParserRuleContext) currCondCtx.getChild(1);
+            var conditionCtx = getConditionCtx(currCondCtx);
             var conditionExpr = InternalRepresentationConverter.convert(condExpr.get(0), context, false, false, conditionCtx);
 
-            var thenCtx = (ParserRuleContext) currCondCtx.getChild(2);
+            var thenCtx = getThenCtx(currCondCtx);
             var thenExpr = InternalRepresentationConverter.convert(condExpr.get(1), context, true, false, thenCtx);
 
             return new IfElseExprNode(BooleanCastExprNodeGen.create(conditionExpr), thenExpr, reduceCond(condExpressions.cdr(), context, condCtx, startCondCtxIndex + 1));
@@ -61,29 +62,39 @@ public class CondConverter {
         }
     }
 
-    private static SchemeExpression convertCondWithTwoConditions(SchemeList condExpressions, ParsingContext context, ParserRuleContext condCtx, int startCondCtxIndex) {
-        var firstCondCtx = (ParserRuleContext) condCtx.getChild(startCondCtxIndex).getChild(0);
+    private static SchemeExpression convertCondWithTwoConditions(SchemeList condExpressions, ParsingContext context, @Nullable ParserRuleContext condCtx, int startCondCtxIndex) {
+        var firstCondCtx = condCtx != null ? (ParserRuleContext) condCtx.getChild(startCondCtxIndex).getChild(0): null;
         var firstCondIR = (SchemeList) condExpressions.get(0);
-        var secondCondCtx = (ParserRuleContext) condCtx.getChild(startCondCtxIndex + 1).getChild(0);
+        var secondCondCtx = condCtx != null ? (ParserRuleContext) condCtx.getChild(startCondCtxIndex + 1).getChild(0) : null;
         var secondCondIR = (SchemeList) condExpressions.get(1);
 
-        var firstConditionCtx = (ParserRuleContext) firstCondCtx.getChild(1);
+        var firstConditionCtx = getConditionCtx(firstCondCtx);
         var firstConditionExpr = InternalRepresentationConverter.convert(firstCondIR.get(0), context, false, false, firstConditionCtx);
 
-        var firstThenCtx = (ParserRuleContext) firstCondCtx.getChild(2);
+        var firstThenCtx = getThenCtx(firstCondCtx);
         var firstThenExpr = InternalRepresentationConverter.convert(firstCondIR.get(1), context, true, false, firstThenCtx);
 
-        var secondThenCtx = (ParserRuleContext) secondCondCtx.getChild(2);
+        var secondThenCtx = getThenCtx(secondCondCtx);
         var secondThenExpr = InternalRepresentationConverter.convert(secondCondIR.get(1), context, true, false, secondThenCtx);
 
         if (secondCondIR.get(0).equals(new SchemeSymbol("else"))) {
             return new IfElseExprNode(BooleanCastExprNodeGen.create(firstConditionExpr), firstThenExpr, secondThenExpr);
         } else {
-            var secondConditionCtx = (ParserRuleContext) secondCondCtx.getChild(1);
+            var secondConditionCtx = getConditionCtx(secondCondCtx);
             var secondConditionExpr = InternalRepresentationConverter.convert(secondCondIR.get(0), context, false, false, secondConditionCtx);
             return new IfElseExprNode(BooleanCastExprNodeGen.create(firstConditionExpr), firstThenExpr,
                     new IfExprNode(BooleanCastExprNodeGen.create(secondConditionExpr), secondThenExpr));
         }
+    }
+
+    private static ParserRuleContext getConditionCtx(@Nullable ParserRuleContext condCtx) {
+        if (condCtx == null) return null;
+        return (ParserRuleContext) condCtx.getChild(1);
+    }
+
+    private static ParserRuleContext getThenCtx(@Nullable ParserRuleContext condCtx) {
+        if (condCtx == null) return null;
+        return (ParserRuleContext) condCtx.getChild(2);
     }
 
 

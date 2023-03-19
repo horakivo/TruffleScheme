@@ -16,6 +16,7 @@ import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -26,12 +27,10 @@ public class QuasiquoteConverter {
     }
 
     // (quasiquote <body>)
-    public static SchemeExpression convert(SchemeList quasiquoteListIR, ParsingContext context, ParserRuleContext quasiquoteCtx) {
+    public static SchemeExpression convert(SchemeList quasiquoteListIR, ParsingContext context, @Nullable ParserRuleContext quasiquoteCtx) {
         validate(quasiquoteListIR);
         var bodyIR = quasiquoteListIR.get(1);
-        //removing formContext
-        var ctxBodyIndex = quasiquoteCtx.getChild(0).getText().equals("(") ? 2 : 1;
-        var bodyCtx = (ParserRuleContext) quasiquoteCtx.getChild(ctxBodyIndex).getChild(0);
+        var bodyCtx = getQuasiquoteBodyCtx(quasiquoteCtx);
         if (bodyIR instanceof SchemeList listIR) {
             var holder = convertSchemeList(listIR, context, bodyCtx);
             return convertQuasiquoteHolderToSchemeExpr(holder, listIR, quasiquoteCtx);
@@ -42,25 +41,32 @@ public class QuasiquoteConverter {
         }
     }
 
+    private static ParserRuleContext getQuasiquoteBodyCtx(@Nullable ParserRuleContext quasiquoteCtx) {
+        if (quasiquoteCtx == null) return null;
 
-    private static QuasiquoteHolder convertSchemeList(SchemeList schemeList, ParsingContext context, ParserRuleContext listCtx) {
+        var ctxBodyIndex = quasiquoteCtx.getChild(0).getText().equals("(") ? 2 : 1;
+        return (ParserRuleContext) quasiquoteCtx.getChild(ctxBodyIndex).getChild(0);
+    }
+
+
+    private static QuasiquoteHolder convertSchemeList(SchemeList schemeList, ParsingContext context, @Nullable ParserRuleContext listCtx) {
         var quasiquoteHolderResult = new QuasiquoteHolder(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         SchemeCell currentCell = schemeList.list;
         //special case when we ,@ or , represent in the IR as (unquote/unquote-splicing ...) so we don't want to remove the '('
         //see test givenUnquoteSplicingDirectlyAfterQuasiquote_whenExecuted_thenUnquoteSplicingIsNotActioned
-        int ctxIndex = listCtx.getChild(0).getText().equals("(") ? 1 : 0;
+        int ctxIndex = listCtx != null ? (listCtx.getChild(0).getText().equals("(") ? 1 : 0) : Integer.MIN_VALUE;
         SchemeCell previousCell = null;
         while (currentCell != SchemeCell.EMPTY_LIST) {
             if (currentCell.car instanceof SchemeList list) {
                 if (shouldUnquoteBeDone(list, context)) {
-                    var unquoteCtx = (ParserRuleContext) listCtx.getChild(ctxIndex).getChild(0);
+                    var unquoteCtx = listCtx != null ? (ParserRuleContext) listCtx.getChild(ctxIndex).getChild(0) : null;
                     handleUnquote(list, currentCell, quasiquoteHolderResult, context, unquoteCtx);
                 } else if (shouldUnquoteSplicingBeDone(list, context)) {
-                    var unquoteSplicingCtx = (ParserRuleContext) listCtx.getChild(ctxIndex).getChild(0);
+                    var unquoteSplicingCtx = listCtx != null ? (ParserRuleContext) listCtx.getChild(ctxIndex).getChild(0) : null;
                     handleUnquoteSplicing(list, quasiquoteHolderResult, previousCell, currentCell, context, unquoteSplicingCtx);
                 } else {
                     // again removing form
-                    var newListCtx = (ParserRuleContext) listCtx.getChild(ctxIndex).getChild(0);
+                    var newListCtx = listCtx != null ? (ParserRuleContext) listCtx.getChild(ctxIndex).getChild(0) : null;
                     handleList(list, quasiquoteHolderResult, context, newListCtx);
                 }
             }
@@ -72,7 +78,7 @@ public class QuasiquoteConverter {
         return quasiquoteHolderResult;
     }
 
-    private static SchemeExpression convertQuasiquoteHolderToSchemeExpr(QuasiquoteHolder holder, SchemeList listIR, ParserRuleContext quasiquoteCtx) {
+    private static SchemeExpression convertQuasiquoteHolderToSchemeExpr(QuasiquoteHolder holder, SchemeList listIR, @Nullable ParserRuleContext quasiquoteCtx) {
         if (holder.unquoteToEval().isEmpty() && holder.unquoteSplicingToEval().isEmpty()) {
             return SourceSectionUtil.setSourceSectionAndReturnExpr(new ReturnGivenObjectNode(listIR), quasiquoteCtx);
         }
@@ -92,7 +98,7 @@ public class QuasiquoteConverter {
     }
 
 
-    private static void handleUnquote(SchemeList unquoteListIR, SchemeCell currentCell, QuasiquoteHolder holder, ParsingContext context, ParserRuleContext unquoteCtx) {
+    private static void handleUnquote(SchemeList unquoteListIR, SchemeCell currentCell, QuasiquoteHolder holder, ParsingContext context, @Nullable ParserRuleContext unquoteCtx) {
         var parameterFormCtx = getUnquoteParserCtx(unquoteCtx);
         var expr = InternalRepresentationConverter.convert(unquoteListIR.get(1), context, false, false, parameterFormCtx);
 
@@ -100,7 +106,7 @@ public class QuasiquoteConverter {
         holder.unquoteToInsert().add(currentCell);
     }
 
-    private static void handleUnquoteSplicing(SchemeList unquoteSplicingListIR, QuasiquoteHolder holder, SchemeCell previousCell, SchemeCell currentCell, ParsingContext context, ParserRuleContext unquoteSplicingCtx) {
+    private static void handleUnquoteSplicing(SchemeList unquoteSplicingListIR, QuasiquoteHolder holder, SchemeCell previousCell, SchemeCell currentCell, ParsingContext context, @Nullable ParserRuleContext unquoteSplicingCtx) {
         var parameterFormCtx = getUnquoteSplicingParserCtx(unquoteSplicingCtx);
         var expr = InternalRepresentationConverter.convert(unquoteSplicingListIR.get(1), context, false, false, parameterFormCtx);
 
@@ -108,7 +114,7 @@ public class QuasiquoteConverter {
         holder.unquoteSplicingToInsert().add(new UnquoteSplicingInsertInfo(previousCell, currentCell));
     }
 
-    private static void handleList(SchemeList list, QuasiquoteHolder holder, ParsingContext context, ParserRuleContext listCtx) {
+    private static void handleList(SchemeList list, QuasiquoteHolder holder, ParsingContext context, @Nullable ParserRuleContext listCtx) {
         var isQuasiquote = isQuasiquote(list);
         var isUnquoteOrUnquoteSplicing = isUnquote(list) || isUnquoteSplicing(list);
 
@@ -127,7 +133,10 @@ public class QuasiquoteConverter {
 
     }
 
-    private static ParserRuleContext getUnquoteParserCtx(ParserRuleContext unquoteCtx) {
+    @Nullable
+    private static ParserRuleContext getUnquoteParserCtx(@Nullable ParserRuleContext unquoteCtx) {
+        if (unquoteCtx == null) return null;
+
         if (unquoteCtx.getChild(0).getText().equals(",")) {
             // ,<expr>
             return (ParserRuleContext) unquoteCtx.getChild(1);
@@ -139,7 +148,10 @@ public class QuasiquoteConverter {
         }
     }
 
-    private static ParserRuleContext getUnquoteSplicingParserCtx(ParserRuleContext unquoteSplicingCtx) {
+    @Nullable
+    private static ParserRuleContext getUnquoteSplicingParserCtx(@Nullable ParserRuleContext unquoteSplicingCtx) {
+        if (unquoteSplicingCtx == null) return null;
+
         if (unquoteSplicingCtx.getChild(0).getText().equals(",@")) {
             // ,@<expr>
             return (ParserRuleContext) unquoteSplicingCtx.getChild(1);

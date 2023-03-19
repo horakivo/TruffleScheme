@@ -7,12 +7,13 @@ import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.jetbrains.annotations.Nullable;
 
 public class SpecialFormConverter {
 
     public static final String ANONYMOUS_PROCEDURE = "anonymous_procedure";
 
-    public static SchemeExpression convertListToSpecialForm(SchemeList specialFormList, ParsingContext context, boolean isDefinitionAllowed, ParserRuleContext ctx) {
+    public static SchemeExpression convertListToSpecialForm(SchemeList specialFormList, ParsingContext context, boolean isDefinitionAllowed, @Nullable ParserRuleContext ctx) {
         var operationSymbol = (SchemeSymbol) specialFormList.get(0);
         return switch (operationSymbol.getValue()) {
             case "if" -> IfConverter.convert(specialFormList, context, ctx);

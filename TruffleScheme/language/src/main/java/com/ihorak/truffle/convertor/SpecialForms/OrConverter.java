@@ -10,6 +10,7 @@ import com.ihorak.truffle.node.special_form.OrExprNode;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeList;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class OrConverter {
     private OrConverter() {
     }
 
-    public static SchemeExpression convert(SchemeList orList, ParsingContext context, ParserRuleContext orCtx) {
+    public static SchemeExpression convert(SchemeList orList, ParsingContext context, @Nullable ParserRuleContext orCtx) {
         var schemeExprs = TailCallUtil.convertExpressionsToSchemeExpressionsWithTCO(orList.cdr(), context, orCtx, CTX_BODY_INDEX);
         if (schemeExprs.isEmpty())
             return SourceSectionUtil.setSourceSectionAndReturnExpr(new BooleanLiteralNode(false), orCtx);
@@ -28,7 +29,6 @@ public class OrConverter {
             return SourceSectionUtil.setSourceSectionAndReturnExpr(OneArgumentExprNodeGen.create(schemeExprs.get(0)), orCtx);
         return SourceSectionUtil.setSourceSectionAndReturnExpr(reduceOr(schemeExprs), orCtx);
     }
-
 
 
     //TODO is it a problem that those doesn't have Source section?
