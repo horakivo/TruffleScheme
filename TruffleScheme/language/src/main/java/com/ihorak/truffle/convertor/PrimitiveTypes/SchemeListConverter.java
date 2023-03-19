@@ -25,7 +25,7 @@ public class SchemeListConverter {
         if (isSpecialForm(firstElement)) {
             return SpecialFormConverter.convertListToSpecialForm(list, context, isDefinitionAllowed, ctxWithoutForm);
         } else if (isMacroDefinition(firstElement)) {
-            return SchemeMacroDefinitionConverter.convertMarco(list, context, ctxWithoutForm);
+            return SchemeMacroDefinitionConverter.convertMarco(list, context, isDefinitionAllowed, ctxWithoutForm);
         } else {
             return CallableConverter.convertListToProcedureCall(list, context, isTailCall, ctxWithoutForm);
         }

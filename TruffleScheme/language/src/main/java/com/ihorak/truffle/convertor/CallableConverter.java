@@ -79,12 +79,22 @@ public class CallableConverter {
     }
 
     private static SchemeExpression createMacro(SchemeList callableList, ParsingContext context, @Nullable ParserRuleContext macroCtx) {
-        var symbol = (SchemeSymbol) callableList.car();
-        var transformationCallTarget = context.getMacroTransformationCallTarget(symbol);
-        List<Object> notEvaluatedArgs = new ArrayList<>();
-        callableList.cdr().forEach(notEvaluatedArgs::add);
+        var symbolIR = (SchemeSymbol) callableList.car();
+        var argumentListIR = callableList.cdr();
+        var macroTransformationInfoInfo = context.getMacroTransformationInfo(symbolIR);
 
-        var macroExpr = new MacroCallableExprNode(transformationCallTarget, notEvaluatedArgs, context);
+        if (argumentListIR.size != macroTransformationInfoInfo.amountOfArgs()) {
+            throw new SchemeException("""
+                    macro %s was called with wrong number of arguments
+                    expected: %d
+                    given: %d
+                    """.formatted(symbolIR, macroTransformationInfoInfo.amountOfArgs(), argumentListIR.size), null);
+        }
+
+        List<Object> notEvaluatedArgs = new ArrayList<>();
+        argumentListIR.forEach(notEvaluatedArgs::add);
+
+        var macroExpr = new MacroCallableExprNode(macroTransformationInfoInfo.callTarget(), notEvaluatedArgs, context);
         return SourceSectionUtil.setSourceSectionAndReturnExpr(macroExpr, macroCtx);
     }
 

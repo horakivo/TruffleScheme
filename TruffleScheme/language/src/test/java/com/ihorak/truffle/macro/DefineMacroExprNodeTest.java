@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class DefineMacroExprNodeTest {
 
@@ -28,22 +29,25 @@ public class DefineMacroExprNodeTest {
     }
 
     @Test
-    public void aaa() {
-        var program = "(define-macro macro (lambda (test first) `(if ,test ,first #f)))";
-
-        var result = context.eval("scm", program);
-
-        assertTrue(result.isNull());
-        assertEquals("undefined", result.toString());
-    }
-
-    @Test
     public void givenDefineMacro_whenCalled_thenCorrectResultShouldBeReturned() {
-        var program = "(define-macro macro (lambda (condition then) `(if ,condition ,then #f))) (macro (= 10 5) 5)";
+        var program = "(define-macro new-if (lambda (condition then) `(if ,condition ,then #f))) (new-if (= 10 5) 5)";
 
         var result = context.eval("scm", program);
 
         assertFalse(result.asBoolean());
+    }
+
+    @Test
+    public void givenMacroWithWrongNumberOfArguments_whenCalled_thenExceptionIsRaised() {
+        var program = "(define-macro new-if (lambda (condition then) `(if ,condition ,then #f))) (new-if (= 10 5) 5 #f)";
+
+        var result = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+
+        assertEquals("""
+                macro 'new-if was called with wrong number of arguments
+                expected: 2
+                given: 3
+                """, result);
     }
 
 
@@ -54,7 +58,7 @@ public class DefineMacroExprNodeTest {
         var result = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
         assertEquals("""
-                             'ivo: undefined
-                             cannot reference an identifier before its definition""", result);
+                'ivo: undefined
+                cannot reference an identifier before its definition""", result);
     }
 }

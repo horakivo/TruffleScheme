@@ -12,7 +12,7 @@ public class LambdaExprNode extends SchemeExpression {
 
     public final CallTarget callTarget;
     public final boolean isTailCall;
-    private final int amountOfArguments;
+    public final int amountOfArguments;
     private final boolean hasOptionalArgs;
 
     public LambdaExprNode(CallTarget callTarget, int amountOfArguments, boolean hasOptionalArgs, boolean isTailCall) {

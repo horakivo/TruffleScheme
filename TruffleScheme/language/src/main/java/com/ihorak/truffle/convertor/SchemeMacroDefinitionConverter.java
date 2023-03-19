@@ -6,10 +6,12 @@ import com.ihorak.truffle.convertor.util.CreateWriteExprNode;
 import com.ihorak.truffle.exceptions.ParserException;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.literals.UndefinedLiteralNode;
 import com.ihorak.truffle.node.macro.DefineMacroExprNode;
 import com.ihorak.truffle.node.special_form.LambdaExprNode;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
+import com.ihorak.truffle.type.UndefinedValueGen;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,8 +24,8 @@ public class SchemeMacroDefinitionConverter {
     private SchemeMacroDefinitionConverter() {
     }
 
-    public static SchemeExpression convertMarco(SchemeList macroList, ParsingContext context, @Nullable ParserRuleContext macroCtx) {
-        validate(macroList);
+    public static SchemeExpression convertMarco(SchemeList macroList, ParsingContext context, boolean isDefinitionAllowed, @Nullable ParserRuleContext macroCtx) {
+        validate(macroList, isDefinitionAllowed);
 
         var name = (SchemeSymbol) macroList.get(1);
         var transformationProcedureCtx = macroCtx != null ? (ParserRuleContext) macroCtx.getChild(CTX_TRANSFORMATION_BODY) : null;
@@ -33,19 +35,13 @@ public class SchemeMacroDefinitionConverter {
             throw new ParserException("define-marco: contract violation\nExpected: <procedure>\nGiven: " + transformationProcedureExpr);
         }
 
-        context.addMacro(name, lambdaExprNode.callTarget);
-        var symbolCtx = macroCtx != null ? (ParserRuleContext) macroCtx.getChild(CTX_IDENTIFIER) : null;
-        if (context.getLexicalScope() == LexicalScope.GLOBAL) {
-            return CreateWriteExprNode.createWriteGlobalVariableExprNode(name, new DefineMacroExprNode(lambdaExprNode), symbolCtx);
-        } else {
-            return CreateWriteExprNode.createWriteLocalVariableExprNode(name, new DefineMacroExprNode(lambdaExprNode), context, symbolCtx);
-        }
-
-
+        context.addMacro(name, lambdaExprNode.callTarget, lambdaExprNode.amountOfArguments);
+        return SourceSectionUtil.setSourceSectionAndReturnExpr(new UndefinedLiteralNode(), macroCtx);
     }
 
 
-    private static void validate(SchemeList macroList) {
+    private static void validate(SchemeList macroList, boolean isDefinitionAllowed) {
+        if (!isDefinitionAllowed) throw new SchemeException("define-macro: not allowed in an expression context", null);
         if (macroList.size != 3) {
             throw new SchemeException("define-macro: contract violation. Wrong number of arguments\nExpected: 3 \nGiven: " + macroList.size, null);
         }

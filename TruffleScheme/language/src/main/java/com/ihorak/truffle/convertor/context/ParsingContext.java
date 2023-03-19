@@ -15,7 +15,7 @@ import java.util.*;
 
 public class ParsingContext {
 
-    private final Map<SchemeSymbol, CallTarget> macroIndex = new HashMap<>();
+    private final Map<SchemeSymbol, MacroInfo> macroIndex = new HashMap<>();
     private final Map<SchemeSymbol, LocalVariableInfo> localVariableIndex = new HashMap<>();
     private final Map<SchemeSymbol, Boolean> tailCallProceduresMap = new HashMap<>();
 
@@ -121,30 +121,30 @@ public class ParsingContext {
         return language;
     }
 
-    public void addMacro(SchemeSymbol schemeSymbol, CallTarget transformationProcedure) {
-        macroIndex.put(schemeSymbol, transformationProcedure);
+    public void addMacro(SchemeSymbol schemeSymbol, CallTarget transformationProcedure, int amountOfArgs) {
+        macroIndex.put(schemeSymbol, new MacroInfo(transformationProcedure, amountOfArgs));
     }
 
     public boolean isMacro(SchemeSymbol schemeSymbol) {
-        var callTarget = getMacroCallTarget(schemeSymbol, this);
-        return callTarget != null;
+        var macroInfo = getMacroInfo(schemeSymbol, this);
+        return macroInfo != null;
     }
 
-    private CallTarget getMacroCallTarget(SchemeSymbol schemeSymbol, ParsingContext parsingContext) {
-        var callTarget = parsingContext.macroIndex.get(schemeSymbol);
-        if (callTarget != null) return callTarget;
+    private MacroInfo getMacroInfo(SchemeSymbol schemeSymbol, ParsingContext parsingContext) {
+        var macroInfo = parsingContext.macroIndex.get(schemeSymbol);
+        if (macroInfo != null) return macroInfo;
         if (parsingContext.scope == LexicalScope.GLOBAL) return null;
 
-        return getMacroCallTarget(schemeSymbol, parsingContext.parent);
+        return getMacroInfo(schemeSymbol, parsingContext.parent);
     }
 
     /*
      * Should be called only when we know that the macro exists
      */
     @NotNull
-    public CallTarget getMacroTransformationCallTarget(SchemeSymbol symbol) {
-        var callTarget = getMacroCallTarget(symbol, this);
-        if (callTarget != null) return callTarget;
+    public MacroInfo getMacroTransformationInfo(SchemeSymbol symbol) {
+        var macroInfo = getMacroInfo(symbol, this);
+        if (macroInfo != null) return macroInfo;
 
         throw InterpreterException.shouldNotReachHere();
     }

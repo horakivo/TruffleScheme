@@ -77,7 +77,9 @@ public class DefineExprNodeTest {
                            (list 1 2 generate))))
                         
                       (generate len 101 17 3 '()))))
-                (random-list4 10)""";
+                      
+                (random-list4 10)
+                """;
 
         var result = context.eval("scm", program);
 
