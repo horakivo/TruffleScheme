@@ -29,6 +29,28 @@ public class LambdaExprNodeTest {
         assertFalse(procedureResult.asBoolean());
     }
 
+
+    @Test
+    public void givenNestedLambdaWithTCO_whenExecuted_thenTCOCatcherIsCreated() {
+        var program = """
+                (define test
+                  (lambda (len)
+                    (lambda (x)
+                      (define generate
+                        (lambda (q w e r y)
+                          (let ((xxx 100))
+                            (list 1 2 generate))))
+                      (generate len 101 17 3 '()))))
+                      
+                ((test 5) 5)
+                
+                """;
+
+        var result = context.eval("scm", program);
+
+        assertEquals("(1 2 #<user_procedure>)", result.toString());
+    }
+
     @Test
     public void givenLambdaExpr_whenApplied_thenShouldCorrectResult() {
         var program = "((lambda (x) x) 5)";

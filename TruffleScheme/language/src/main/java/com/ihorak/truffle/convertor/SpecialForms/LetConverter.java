@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class LetConverter extends AbstractLetConverter {
 
@@ -26,18 +27,19 @@ public class LetConverter extends AbstractLetConverter {
         validate(letList);
         ParsingContext letContext = new ParsingContext(context, LexicalScope.LET, context.getFrameDescriptorBuilder(), context.getSource());
 
-        SchemeList localBindings = (SchemeList) letList.get(1);
-        SchemeList body = letList.cdr().cdr();
+        var localBindingsIR = (SchemeList) letList.get(1);
+        var bodyIR = letList.cdr().cdr();
 
-        List<WriteLocalVariableExprNode> bindingExpressions = createWriteLocalVariables(localBindings, letContext, letCtx);
-        List<SchemeExpression> bodyExpressions = TailCallUtil.convertBodyToSchemeExpressionsWithTCO(body, letContext, letCtx, CTX_BODY_INDEX);
+        var writeLocalVariableExpr = createWriteLocalVariables(localBindingsIR, letContext, letCtx);
+        var bodyExprs = TailCallUtil.convertBodyToSchemeExpressionsWithTCO(bodyIR, letContext, letCtx, CTX_BODY_INDEX);
+        var allExprs = Stream.concat(writeLocalVariableExpr.stream(), bodyExprs.stream()).toList();
 
-        List<SchemeExpression> bindingsAndBodyExpressions = new ArrayList<>(bindingExpressions.size() + bodyExpressions.size());
-        bindingsAndBodyExpressions.addAll(bindingExpressions);
-        bindingsAndBodyExpressions.addAll(bodyExpressions);
+        if (letContext.isTailCallProcedureBeingDefined()) {
+            // we need to set the parent context also as tail
+            context.setDefiningProcedureAsTailCall();
+        }
 
-        return SourceSectionUtil.setSourceSectionAndReturnExpr(new LetExprNode(bindingsAndBodyExpressions), letCtx);
-
+        return SourceSectionUtil.setSourceSectionAndReturnExpr(new LetExprNode(allExprs), letCtx);
     }
 
     private static List<WriteLocalVariableExprNode> createWriteLocalVariables(SchemeList localBindings, ParsingContext context, @Nullable ParserRuleContext letCtx) {

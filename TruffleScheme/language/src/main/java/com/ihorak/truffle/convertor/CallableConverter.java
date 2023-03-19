@@ -166,7 +166,8 @@ public class CallableConverter {
             return lambdaExpr.isTailCall;
         }
 
-        throw InterpreterException.shouldNotReachHere();
+        // we have to assume that it is a catcher
+        return true;
     }
 
     private static List<SchemeExpression> getProcedureArguments(SchemeList argumentList, ParsingContext context, @Nullable ParserRuleContext procedureCtx) {

@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class LetrecConverter extends AbstractLetConverter {
 
@@ -28,17 +29,14 @@ public class LetrecConverter extends AbstractLetConverter {
         validate(letList);
         ParsingContext letContext = new ParsingContext(context, LexicalScope.LETREC, context.getFrameDescriptorBuilder(), context.getSource());
 
-        SchemeList localBindings = (SchemeList) letList.get(1);
-        SchemeList body = letList.cdr().cdr();
+        var localBindingsIR = (SchemeList) letList.get(1);
+        var bodyIR = letList.cdr().cdr();
 
-        List<WriteLocalVariableExprNode> bindingExpressions = createWriteLocalVariables(localBindings, letContext, letrecCtx);
-        List<SchemeExpression> bodyExpressions = TailCallUtil.convertBodyToSchemeExpressionsWithTCO(body, letContext, letrecCtx, CTX_BODY_INDEX);
+        var writeLocalVariableExpr = createWriteLocalVariables(localBindingsIR, letContext, letrecCtx);
+        var bodyExprs = TailCallUtil.convertBodyToSchemeExpressionsWithTCO(bodyIR, letContext, letrecCtx, CTX_BODY_INDEX);
+        var allExprs = Stream.concat(writeLocalVariableExpr.stream(), bodyExprs.stream()).toList();
 
-        List<SchemeExpression> bindingsAndBodyExpressions = new ArrayList<>(bindingExpressions.size() + bodyExpressions.size());
-        bindingsAndBodyExpressions.addAll(bindingExpressions);
-        bindingsAndBodyExpressions.addAll(bodyExpressions);
-
-        return SourceSectionUtil.setSourceSectionAndReturnExpr(new LetExprNode(bindingsAndBodyExpressions), letrecCtx);
+        return SourceSectionUtil.setSourceSectionAndReturnExpr(new LetExprNode(allExprs), letrecCtx);
     }
 
     // (letrec ((x 1) (y 2)) <body>)
