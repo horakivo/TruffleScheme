@@ -24,19 +24,23 @@ public class LetrecConverter extends AbstractLetConverter {
     private LetrecConverter() {
     }
 
-    //TODO solve code duplication
-    public static SchemeExpression convert(SchemeList letList, ParsingContext context, @Nullable ParserRuleContext letrecCtx) {
+    public static SchemeExpression convert(SchemeList letList, ParsingContext context, @Nullable ParserRuleContext letCtx) {
         validate(letList);
-        ParsingContext letContext = new ParsingContext(context, LexicalScope.LETREC, context.getFrameDescriptorBuilder(), context.getSource());
+        ParsingContext letContext = new ParsingContext(context, LexicalScope.LET, context.getFrameDescriptorBuilder(), context.getSource());
 
         var localBindingsIR = (SchemeList) letList.get(1);
         var bodyIR = letList.cdr().cdr();
 
-        var writeLocalVariableExpr = createWriteLocalVariables(localBindingsIR, letContext, letrecCtx);
-        var bodyExprs = TailCallUtil.convertBodyToSchemeExpressionsWithTCO(bodyIR, letContext, letrecCtx, CTX_BODY_INDEX);
+        var writeLocalVariableExpr = createWriteLocalVariables(localBindingsIR, letContext, letCtx);
+        var bodyExprs = TailCallUtil.convertBodyToSchemeExpressionsWithTCO(bodyIR, letContext, letCtx, CTX_BODY_INDEX);
         var allExprs = Stream.concat(writeLocalVariableExpr.stream(), bodyExprs.stream()).toList();
 
-        return SourceSectionUtil.setSourceSectionAndReturnExpr(new LetExprNode(allExprs), letrecCtx);
+        if (letContext.isTailCallProcedureBeingDefined()) {
+            // we need to set the parent context also as tail
+            context.setDefiningProcedureAsTailCall();
+        }
+
+        return SourceSectionUtil.setSourceSectionAndReturnExpr(new LetExprNode(allExprs), letCtx);
     }
 
     // (letrec ((x 1) (y 2)) <body>)

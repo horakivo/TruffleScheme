@@ -5,6 +5,7 @@ import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.oracle.truffle.api.CallTarget;
+import com.oracle.truffle.api.CompilerAsserts;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 import com.oracle.truffle.api.frame.VirtualFrame;
@@ -23,8 +24,6 @@ public class MacroCallableExprNode extends SchemeExpression {
     @SuppressWarnings("FieldMayBeFinal")
     @Child
     private DirectCallNode directDispatchNode;
-    @CompilationFinal
-    private SchemeExpression macroExpandedTree;
 
     public MacroCallableExprNode(CallTarget transformationProcedure, List<Object> notEvaluatedArgs, ParsingContext parsingContext) {
         this.notEvaluatedArgs = new Object[notEvaluatedArgs.size() + 1];
@@ -38,18 +37,12 @@ public class MacroCallableExprNode extends SchemeExpression {
         this.directDispatchNode = DirectCallNode.create(transformationProcedure);
     }
 
-    //TODO zde mozna udelat insert (nebo neco jako replace, kdy expandovane makro nahradim proste)
     @Override
     public Object executeGeneric(final VirtualFrame frame) {
-
-        if (macroExpandedTree == null) {
-            CompilerDirectives.transferToInterpreterAndInvalidate();
-            notEvaluatedArgs[0] = frame.materialize();
-            var transformedData = directDispatchNode.call(notEvaluatedArgs);
-            //TODO try replace
-            macroExpandedTree = InternalRepresentationConverter.convert(transformedData, parsingContext, false, false, null);
-        }
-
-        return macroExpandedTree.executeGeneric(frame);
+        CompilerAsserts.neverPartOfCompilation();
+        notEvaluatedArgs[0] = frame.materialize();
+        var macroExpandedData = directDispatchNode.call(notEvaluatedArgs);
+        var macroExpandedTruffleAST = InternalRepresentationConverter.convert(macroExpandedData, parsingContext, false, false, null);
+        return replace(macroExpandedTruffleAST).executeGeneric(frame);
     }
 }

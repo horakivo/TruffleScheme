@@ -103,9 +103,10 @@ public class LetExprNodeTest {
         var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
         assertEquals("""
-                             +: contract violation;
-                             expected: number?
-                             given: [20,true]""", msg);
+                +: contract violation
+                expected: number?
+                given left: 20
+                given right: true""", msg);
     }
 
     @Test
@@ -124,8 +125,8 @@ public class LetExprNodeTest {
         var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
         assertEquals("""
-                             'x: undefined
-                             cannot reference an identifier before its definition""", msg);
+                'x: undefined
+                cannot reference an identifier before its definition""", msg);
     }
 
     @Test
@@ -183,8 +184,8 @@ public class LetExprNodeTest {
         var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
         assertEquals("""
-                             'generate: undefined
-                             cannot reference an identifier before its definition""", msg);
+                'generate: undefined
+                cannot reference an identifier before its definition""", msg);
     }
 
     @Test
@@ -194,8 +195,8 @@ public class LetExprNodeTest {
         var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
         assertEquals("""
-                             let: bad syntax
-                             expected size of binding is 2
-                             given: 3""", msg);
+                let: bad syntax
+                expected size of binding is 2
+                given: 3""", msg);
     }
 }

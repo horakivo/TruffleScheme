@@ -38,6 +38,29 @@ public class DefineMacroExprNodeTest {
     }
 
     @Test
+    public void givenMacro_whenCalledMultipleTimesInFunction_thenMacroTreeIsExpandedCorrectlyAndCorrectResultIsReturned() {
+        var program = """
+                        (define-macro new-if
+                          (lambda (condition then)
+                            `(if ,condition
+                                 ,then
+                                 #f)))
+                                 
+                        (define call-macro
+                          (lambda (condition then)
+                            (new-if condition then)))
+                        
+                        (call-macro #f 5)
+                        (call-macro #t 11)
+                        (call-macro (= 5 5) 10)
+                        """;
+
+        var result = context.eval("scm", program);
+
+        assertEquals(10L, result.asLong());
+    }
+
+    @Test
     public void givenMacroWithWrongNumberOfArguments_whenCalled_thenExceptionIsRaised() {
         var program = "(define-macro new-if (lambda (condition then) `(if ,condition ,then #f))) (new-if (= 10 5) 5 #f)";
 

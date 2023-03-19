@@ -89,7 +89,7 @@ public class ParsingContext {
             return new FrameIndexResult(localVariableInfo.getIndex(), localVariableInfo.isNullable(), depth);
 
         //recursive call
-        if (context.scope == LexicalScope.LET || context.scope == LexicalScope.LETREC) {
+        if (context.scope == LexicalScope.LET) {
             return findSymbol(context.parent, symbol, depth);
         }
         return findSymbol(context.parent, symbol, depth + 1);
