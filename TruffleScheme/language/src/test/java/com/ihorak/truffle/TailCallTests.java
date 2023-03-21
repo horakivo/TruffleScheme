@@ -120,4 +120,25 @@ public class TailCallTests {
         assertEquals(5L, result.asLong());
     }
 
+    @Test
+    public void tailCallRecursionIsCorrectlyRecognizedInAndExpression() {
+        var program = """
+                (define ivo
+                  (lambda (n)
+                    (and 5 4 (return-t))
+                      n))
+                               
+                (define return-t
+                  (lambda ()
+                    #t))
+                                
+                        
+                (ivo 10)
+                """;
+
+        var result = context.eval("scm", program);
+
+        assertEquals(10L, result.asLong());
+    }
+
 }
