@@ -51,16 +51,16 @@ public class TailCallTests {
                     (if (<= n 0)
                         n
                         (some-proc (- n 1)))))
-                
+                                
                 (define some-proc
                   (lambda (n)
                     (tco-procedure n)
                     (+ 1 1)))
                     
-                
+                                
                         
                 (some-proc 10)
-                
+                                
                 """;
 
         var result = context.eval("scm", program);
@@ -77,7 +77,7 @@ public class TailCallTests {
                   (lambda (n)
                     (tco-procedure n)
                     (+ 1 1)))
-                
+                                
                         
                 (define tco-procedure
                   (lambda (n)
@@ -86,12 +86,38 @@ public class TailCallTests {
                         (some-proc (- n 1)))))
                         
                 (some-proc 10)
-                
+                                
                 """;
 
         var result = context.eval("scm", program);
 
         assertEquals(2L, result.asLong());
+    }
+
+    @Test
+    public void tailCallRecursionIsCorrectlyRecognized() {
+        var program = """
+                (define ivo
+                  (lambda (n)
+                    (let ((x (if (< n 0) (return-t) (return-f))))
+                      5)))
+                                
+                (define return-f
+                  (lambda ()
+                    #f))
+                                
+                                
+                (define return-t
+                  (lambda ()
+                    #t))
+                                
+                        
+                (ivo 10)
+                """;
+
+        var result = context.eval("scm", program);
+
+        assertEquals(5L, result.asLong());
     }
 
 }
