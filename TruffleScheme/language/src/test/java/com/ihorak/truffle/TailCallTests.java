@@ -141,4 +141,49 @@ public class TailCallTests {
         assertEquals(10L, result.asLong());
     }
 
+    @Test
+    public void tailCallRecursionIsCorrectlyRecognizedInOrExpression() {
+        var program = """
+                (define ivo
+                  (lambda (n)
+                    (or #f (return-t))
+                      n))
+                               
+                (define return-t
+                  (lambda ()
+                    #t))
+                                
+                        
+                (ivo 10)
+                """;
+
+        var result = context.eval("scm", program);
+
+        assertEquals(10L, result.asLong());
+    }
+
+    @Test
+    public void tailCallRecursionIsCorrectlyRecognizedInCondExpression() {
+        var program = """
+                                
+                (define ivo
+                  (lambda (n)
+                    (cond (#f (return-t))
+                          (#t (return-t)))
+                    n))
+                                
+                               
+                (define return-t
+                  (lambda ()
+                    #t))
+                                
+                        
+                (ivo 10)
+                """;
+
+        var result = context.eval("scm", program);
+
+        assertEquals(10L, result.asLong());
+    }
+
 }
