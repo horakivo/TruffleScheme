@@ -3,6 +3,7 @@ package com.ihorak.truffle.convertor.util;
 import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.special_form.IfElseExprNode;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeList;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -39,7 +40,8 @@ public class TailCallUtil {
             var currentCtx = getCurrentBodyCtx(ctx, ctxBodyStartIndex, lastIndex);
 
             //pokud tohle je volani metody pak vraceni z lambdy musi vytvorit Catcher a pokud ne tak nemusi
-            result.add(InternalRepresentationConverter.convert(bodyIR.get(size - 1), context, true, false, currentCtx));
+            var lastExpr = InternalRepresentationConverter.convert(bodyIR.get(size - 1), context, true, false, currentCtx);
+            result.add(lastExpr);
         }
 
         return result;
@@ -47,19 +49,29 @@ public class TailCallUtil {
 
 
     //TCO: (or <expression>* <tail expression>)
-    public static List<SchemeExpression> convertExpressionsToSchemeExpressionsWithTCO(SchemeList expressions, ParsingContext context, @Nullable ParserRuleContext ctx, int ctxBodyStartIndex) {
+    public static List<SchemeExpression> convertExpressionsToSchemeExpressionsWithTCO(SchemeList expressionsIR, ParsingContext context, @Nullable ParserRuleContext ctx, int ctxBodyStartIndex) {
         List<SchemeExpression> result = new ArrayList<>();
-        var size = expressions.size;
+        var size = expressionsIR.size;
         for (int i = 0; i < size - 1; i++) {
             var currentCtx = getCurrentBodyCtx(ctx, ctxBodyStartIndex, i);
-            result.add(InternalRepresentationConverter.convert(expressions.get(i), context, false, false, currentCtx));
+            result.add(InternalRepresentationConverter.convert(expressionsIR.get(i), context, false, false, currentCtx));
         }
 
         if (size > 0) {
             var lastIndex = size - 1;
             var currentCtx = getCurrentBodyCtx(ctx, ctxBodyStartIndex, lastIndex);
-            result.add(InternalRepresentationConverter.convert(expressions.get(lastIndex), context, true, false, currentCtx));
+            result.add(InternalRepresentationConverter.convert(expressionsIR.get(lastIndex), context, true, false, currentCtx));
 
+        }
+
+        return result;
+    }
+
+    public static List<SchemeExpression> convertListIRToSchemeExpressions(SchemeList listIR, ParsingContext context, @Nullable ParserRuleContext ctx, int ctxBodyStartIndex) {
+        List<SchemeExpression> result = new ArrayList<>();
+        for (int i = 0; i < listIR.size; i++) {
+            var currentCtx = getCurrentBodyCtx(ctx, ctxBodyStartIndex, i);
+            result.add(InternalRepresentationConverter.convert(listIR.get(i), context, false, false, currentCtx));
         }
 
         return result;
@@ -71,4 +83,14 @@ public class TailCallUtil {
 
         return (ParserRuleContext) ctx.getChild(ctxBodyStartIndex + index);
     }
+
+//    private static SchemeExpression handlePotentialSelfTailRecursion(SchemeExpression lastExpr) {
+//        if (lastExpr instanceof IfElseExprNode) {
+//
+//        }
+//    }
+//
+//    private static boolean isIfElseExprSelfTCO(IfElseExprNode ifElseExprNode) {
+//
+//    }
 }

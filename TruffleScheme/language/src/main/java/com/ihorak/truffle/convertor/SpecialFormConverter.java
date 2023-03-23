@@ -13,10 +13,10 @@ public class SpecialFormConverter {
 
     public static final String ANONYMOUS_PROCEDURE = "anonymous_procedure";
 
-    public static SchemeExpression convertListToSpecialForm(SchemeList specialFormList, ParsingContext context, boolean isDefinitionAllowed, @Nullable ParserRuleContext ctx) {
+    public static SchemeExpression convertListToSpecialForm(SchemeList specialFormList, ParsingContext context, boolean isTailCallPosition, boolean isDefinitionAllowed, @Nullable ParserRuleContext ctx) {
         var operationSymbol = (SchemeSymbol) specialFormList.get(0);
         return switch (operationSymbol.getValue()) {
-            case "if" -> IfConverter.convert(specialFormList, context, ctx);
+            case "if" -> IfConverter.convert(specialFormList, isTailCallPosition, context, ctx);
             case "define" -> DefineConverter.convert(specialFormList, context, isDefinitionAllowed, ctx);
             case "lambda" ->
                     LambdaConverter.convert(specialFormList, context, new SchemeSymbol(ANONYMOUS_PROCEDURE), ctx);
@@ -26,9 +26,9 @@ public class SpecialFormConverter {
 //            case "let*":
 //                return convertLetStar(specialFormList, context);
             case "letrec" -> LetrecConverter.convert(specialFormList, context, ctx);
-            case "and" -> AndConverter.convert(specialFormList, context, ctx);
-            case "or" -> OrConverter.convert(specialFormList, context, ctx);
-            case "cond" -> CondConverter.convertCond(specialFormList, context, ctx);
+            case "and" -> AndConverter.convert(specialFormList, isTailCallPosition, context, ctx);
+            case "or" -> OrConverter.convert(specialFormList, isTailCallPosition, context, ctx);
+            case "cond" -> CondConverter.convertCond(specialFormList, isTailCallPosition, context, ctx);
             default -> throw new IllegalArgumentException("Unknown special form");
         };
     }

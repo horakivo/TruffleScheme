@@ -22,7 +22,7 @@ public class CondConverter {
     private CondConverter() {
     }
 
-    public static SchemeExpression convertCond(SchemeList condList, ParsingContext context, @Nullable ParserRuleContext condCtx) {
+    public static SchemeExpression convertCond(SchemeList condList, boolean isTailCallPosition, ParsingContext context, @Nullable ParserRuleContext condCtx) {
         validate(condList);
         var condExpressions = condList.cdr();
         if (condExpressions.size == 0)
@@ -35,17 +35,17 @@ public class CondConverter {
             var conditionExpr = InternalRepresentationConverter.convert(condIR.get(0), context, false, false, conditionCtx);
 
             var thenCtx = getThenCtx(currCondCtx);
-            var thenExpr = InternalRepresentationConverter.convert(condIR.get(1), context, true, false, thenCtx);
+            var thenExpr = InternalRepresentationConverter.convert(condIR.get(1), context, isTailCallPosition, false, thenCtx);
 
             var ifExpr = new IfExprNode(BooleanCastExprNodeGen.create(conditionExpr), thenExpr);
             return SourceSectionUtil.setSourceSectionAndReturnExpr(ifExpr, condCtx);
         }
 
-        return SourceSectionUtil.setSourceSectionAndReturnExpr(reduceCond(condExpressions, context, condCtx, COND_START_INDEX), condCtx);
+        return SourceSectionUtil.setSourceSectionAndReturnExpr(reduceCond(condExpressions, isTailCallPosition, context, condCtx, COND_START_INDEX), condCtx);
     }
 
     //TODO is it a problem that those doesn't have Source section?
-    private static SchemeExpression reduceCond(SchemeList condExpressions, ParsingContext context, @Nullable ParserRuleContext condCtx, int startCondCtxIndex) {
+    private static SchemeExpression reduceCond(SchemeList condExpressions, boolean isTailCallPosition, ParsingContext context, @Nullable ParserRuleContext condCtx, int startCondCtxIndex) {
         if (condExpressions.size > 2) {
             var condExpr = (SchemeList) condExpressions.get(0);
             var currCondCtx = condCtx != null ? (ParserRuleContext) condCtx.getChild(startCondCtxIndex).getChild(0) : null;
@@ -54,16 +54,16 @@ public class CondConverter {
             var conditionExpr = InternalRepresentationConverter.convert(condExpr.get(0), context, false, false, conditionCtx);
 
             var thenCtx = getThenCtx(currCondCtx);
-            var thenExpr = InternalRepresentationConverter.convert(condExpr.get(1), context, true, false, thenCtx);
+            var thenExpr = InternalRepresentationConverter.convert(condExpr.get(1), context, isTailCallPosition, false, thenCtx);
 
-            return new IfElseExprNode(BooleanCastExprNodeGen.create(conditionExpr), thenExpr, reduceCond(condExpressions.cdr(), context, condCtx, startCondCtxIndex + 1));
+            return new IfElseExprNode(BooleanCastExprNodeGen.create(conditionExpr), thenExpr, reduceCond(condExpressions.cdr(), isTailCallPosition, context, condCtx, startCondCtxIndex + 1));
         } else {
-            return convertCondWithTwoConditions(condExpressions, context, condCtx, startCondCtxIndex);
+            return convertCondWithTwoConditions(condExpressions, isTailCallPosition, context, condCtx, startCondCtxIndex);
         }
     }
 
-    private static SchemeExpression convertCondWithTwoConditions(SchemeList condExpressions, ParsingContext context, @Nullable ParserRuleContext condCtx, int startCondCtxIndex) {
-        var firstCondCtx = condCtx != null ? (ParserRuleContext) condCtx.getChild(startCondCtxIndex).getChild(0): null;
+    private static SchemeExpression convertCondWithTwoConditions(SchemeList condExpressions, boolean isTailCallPosition, ParsingContext context, @Nullable ParserRuleContext condCtx, int startCondCtxIndex) {
+        var firstCondCtx = condCtx != null ? (ParserRuleContext) condCtx.getChild(startCondCtxIndex).getChild(0) : null;
         var firstCondIR = (SchemeList) condExpressions.get(0);
         var secondCondCtx = condCtx != null ? (ParserRuleContext) condCtx.getChild(startCondCtxIndex + 1).getChild(0) : null;
         var secondCondIR = (SchemeList) condExpressions.get(1);
@@ -72,10 +72,10 @@ public class CondConverter {
         var firstConditionExpr = InternalRepresentationConverter.convert(firstCondIR.get(0), context, false, false, firstConditionCtx);
 
         var firstThenCtx = getThenCtx(firstCondCtx);
-        var firstThenExpr = InternalRepresentationConverter.convert(firstCondIR.get(1), context, true, false, firstThenCtx);
+        var firstThenExpr = InternalRepresentationConverter.convert(firstCondIR.get(1), context, isTailCallPosition, false, firstThenCtx);
 
         var secondThenCtx = getThenCtx(secondCondCtx);
-        var secondThenExpr = InternalRepresentationConverter.convert(secondCondIR.get(1), context, true, false, secondThenCtx);
+        var secondThenExpr = InternalRepresentationConverter.convert(secondCondIR.get(1), context, isTailCallPosition, false, secondThenCtx);
 
         if (secondCondIR.get(0).equals(new SchemeSymbol("else"))) {
             return new IfElseExprNode(BooleanCastExprNodeGen.create(firstConditionExpr), firstThenExpr, secondThenExpr);

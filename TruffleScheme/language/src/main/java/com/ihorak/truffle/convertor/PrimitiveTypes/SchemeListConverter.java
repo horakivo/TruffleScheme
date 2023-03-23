@@ -18,16 +18,16 @@ public class SchemeListConverter {
     }
 
 
-    public static SchemeExpression convert(SchemeList list, ParsingContext context, boolean isTailCall, boolean isDefinitionAllowed, @Nullable ParserRuleContext ctx) {
+    public static SchemeExpression convert(SchemeList list, ParsingContext context, boolean isTailCallPosition, boolean isDefinitionAllowed, @Nullable ParserRuleContext ctx) {
         var firstElement = list.get(0);
         var ctxWithoutForm = ctx != null ? (ParserRuleContext) ctx.getChild(0) : null;
 
         if (isSpecialForm(firstElement)) {
-            return SpecialFormConverter.convertListToSpecialForm(list, context, isDefinitionAllowed, ctxWithoutForm);
+            return SpecialFormConverter.convertListToSpecialForm(list, context, isTailCallPosition, isDefinitionAllowed, ctxWithoutForm);
         } else if (isMacroDefinition(firstElement)) {
             return SchemeMacroDefinitionConverter.convertMarco(list, context, isDefinitionAllowed, ctxWithoutForm);
         } else {
-            return CallableConverter.convertListToProcedureCall(list, context, isTailCall, ctxWithoutForm);
+            return CallableConverter.convertListToProcedureCall(list, context, isTailCallPosition, ctxWithoutForm);
         }
     }
 

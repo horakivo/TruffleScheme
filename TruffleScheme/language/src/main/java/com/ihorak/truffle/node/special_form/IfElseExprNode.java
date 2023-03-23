@@ -2,15 +2,17 @@ package com.ihorak.truffle.node.special_form;
 
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.cast.BooleanCastExprNode;
+import com.oracle.truffle.api.CompilerAsserts;
+import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.profiles.ConditionProfile;
 
 public class IfElseExprNode extends SchemeExpression {
 
 
-    @Child private BooleanCastExprNode condition;
-    @Child private SchemeExpression thenExpr;
-    @Child private SchemeExpression elseExpr;
+    @Child public BooleanCastExprNode condition;
+    @Child public SchemeExpression thenExpr;
+    @Child public SchemeExpression elseExpr;
 
     public IfElseExprNode(final BooleanCastExprNode condition, final SchemeExpression thenExpr, final SchemeExpression elseExpr) {
         this.condition = condition;

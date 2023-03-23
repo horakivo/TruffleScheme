@@ -28,51 +28,51 @@ public class IfConverter {
     private IfConverter() {
     }
 
-    public static SchemeExpression convert(SchemeList ifList, ParsingContext context, ParserRuleContext ifCtx) {
+    public static SchemeExpression convert(SchemeList ifList, boolean isTailCallPosition, ParsingContext context, ParserRuleContext ifCtx) {
         validate(ifList);
 
 
         if (ifList.size == 3) {
-            return covertIfNode(ifList, context, ifCtx);
+            return covertIfNode(ifList, isTailCallPosition, context, ifCtx);
         } else {
-            return covertIfElseNode(ifList, context, ifCtx);
+            return covertIfElseNode(ifList, isTailCallPosition, context, ifCtx);
         }
     }
 
-    private static IfExprNode covertIfNode(SchemeList ifList, ParsingContext context, ParserRuleContext ifCtx) {
+    private static IfExprNode covertIfNode(SchemeList ifList, boolean isTailCallPosition, ParsingContext context, ParserRuleContext ifCtx) {
         var conditionCtx = getConditionCtxOrNull(ifCtx);
         var thenCtx = getThenCtxOrNull(ifCtx);
 
         var conditionExpr = InternalRepresentationConverter.convert(ifList.get(1), context, false, false, conditionCtx);
-        var thenExpr = InternalRepresentationConverter.convert(ifList.get(2), context, true, false, thenCtx);
+        var thenExpr = InternalRepresentationConverter.convert(ifList.get(2), context, isTailCallPosition, false, thenCtx);
 
         var expr = new IfExprNode(BooleanCastExprNodeGen.create(conditionExpr), thenExpr);
         SourceSectionUtil.setSourceSection(expr, ifCtx);
         return expr;
     }
 
-    private static IfElseExprNode covertIfElseNode(SchemeList ifList, ParsingContext context, ParserRuleContext ifCtx) {
+    private static IfElseExprNode covertIfElseNode(SchemeList ifList, boolean isTailCallPosition, ParsingContext context, ParserRuleContext ifCtx) {
         var conditionCtx = getConditionCtxOrNull(ifCtx);
         var thenCtx = getThenCtxOrNull(ifCtx);
         var elseCtx = getElseCtxOrNull(ifCtx);
 
         var conditionExpr = InternalRepresentationConverter.convert(ifList.get(1), context, false, false, conditionCtx);
-        var thenExpr = InternalRepresentationConverter.convert(ifList.get(2), context, true, false, thenCtx);
-        var elseExpr = InternalRepresentationConverter.convert(ifList.get(3), context, true, false, elseCtx);
+        var thenExpr = InternalRepresentationConverter.convert(ifList.get(2), context, isTailCallPosition, false, thenCtx);
+        var elseExpr = InternalRepresentationConverter.convert(ifList.get(3), context, isTailCallPosition, false, elseCtx);
 
-        //TODO we need to do that recursively (of thenExpr or elseExpr is If then again)
-        if (thenExpr instanceof SelfRecursiveTailCallThrowerNode || elseExpr instanceof SelfRecursiveTailCallThrowerNode) {
-            var bothSelfTCO = thenExpr instanceof SelfRecursiveTailCallThrowerNode && elseExpr instanceof SelfRecursiveTailCallThrowerNode;
-            if (!bothSelfTCO) {
-                int resultIndex = context.getSelfTailRecursionResultIndex().orElseThrow(InterpreterException::shouldNotReachHere);
-                if (thenExpr instanceof SelfRecursiveTailCallThrowerNode) {
-                    elseExpr = StoreAndReturnValueExprNodeGen.create(resultIndex, elseExpr);
-                }
-                if (elseExpr instanceof SelfRecursiveTailCallThrowerNode) {
-                    thenExpr = StoreAndReturnValueExprNodeGen.create(resultIndex, thenExpr);
-                }
-            }
-        }
+//        //TODO we need to do that recursively (of thenExpr or elseExpr is If then again)
+//        if (thenExpr instanceof SelfRecursiveTailCallThrowerNode || elseExpr instanceof SelfRecursiveTailCallThrowerNode) {
+//            var bothSelfTCO = thenExpr instanceof SelfRecursiveTailCallThrowerNode && elseExpr instanceof SelfRecursiveTailCallThrowerNode;
+//            if (!bothSelfTCO) {
+//                int resultIndex = context.getSelfTailRecursionResultIndex().orElseThrow(InterpreterException::shouldNotReachHere);
+//                if (thenExpr instanceof SelfRecursiveTailCallThrowerNode) {
+//                    elseExpr = StoreAndReturnValueExprNodeGen.create(resultIndex, elseExpr);
+//                }
+//                if (elseExpr instanceof SelfRecursiveTailCallThrowerNode) {
+//                    thenExpr = StoreAndReturnValueExprNodeGen.create(resultIndex, thenExpr);
+//                }
+//            }
+//        }
 
         var expr = new IfElseExprNode(BooleanCastExprNodeGen.create(conditionExpr), thenExpr, elseExpr);
         SourceSectionUtil.setSourceSection(expr, ifCtx);

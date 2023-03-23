@@ -15,27 +15,27 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class AndConverter {
+public class AndConverter extends AndOrAbstractConverter {
 
-    private static final int CTX_BODY_INDEX = 2;
 
-    private AndConverter() {}
+    private AndConverter() {
+    }
 
-    public static SchemeExpression convert(SchemeList andList, ParsingContext context, @Nullable ParserRuleContext andCtx) {
-        var schemeExprs = TailCallUtil.convertExpressionsToSchemeExpressionsWithTCO(andList.cdr(), context, andCtx, CTX_BODY_INDEX);
-        if (schemeExprs.isEmpty()) {
+    public static SchemeExpression convert(SchemeList andList, boolean isTailCallPosition, ParsingContext context, @Nullable ParserRuleContext andCtx) {
+        List<SchemeExpression> bodyExprs = getBodyExpr(andList.cdr(), isTailCallPosition, context, andCtx);
+
+        if (bodyExprs.isEmpty()) {
             var expr = new BooleanLiteralNode(true);
             return SourceSectionUtil.setSourceSectionAndReturnExpr(expr, andCtx);
         }
-        if (schemeExprs.size() == 1) {
-            var expr = OneArgumentExprNodeGen.create(schemeExprs.get(0));
+        if (bodyExprs.size() == 1) {
+            var expr = OneArgumentExprNodeGen.create(bodyExprs.get(0));
             return SourceSectionUtil.setSourceSectionAndReturnExpr(expr, andCtx);
         }
-        var andExpr = reduceAnd(schemeExprs);
+        var andExpr = reduceAnd(bodyExprs);
         return SourceSectionUtil.setSourceSectionAndReturnExpr(andExpr, andCtx);
     }
 
-    //TODO is it a problem that those doesn't have Source section?
     private static AndExprNode reduceAnd(List<SchemeExpression> arguments) {
         if (arguments.size() > 2) {
             return new AndExprNode(BooleanCastExprNodeGen.create(arguments.remove(0)), reduceAnd(arguments));

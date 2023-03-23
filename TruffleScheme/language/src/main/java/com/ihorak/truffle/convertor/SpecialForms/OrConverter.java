@@ -1,5 +1,6 @@
 package com.ihorak.truffle.convertor.SpecialForms;
 
+import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.SourceSectionUtil;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.util.TailCallUtil;
@@ -12,26 +13,24 @@ import com.ihorak.truffle.type.SchemeList;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class OrConverter {
+public class OrConverter extends AndOrAbstractConverter{
 
-    private static final int CTX_BODY_INDEX = 2;
 
     private OrConverter() {
     }
 
-    public static SchemeExpression convert(SchemeList orList, ParsingContext context, @Nullable ParserRuleContext orCtx) {
-        var schemeExprs = TailCallUtil.convertExpressionsToSchemeExpressionsWithTCO(orList.cdr(), context, orCtx, CTX_BODY_INDEX);
-        if (schemeExprs.isEmpty())
+    public static SchemeExpression convert(SchemeList orList, boolean isTailCallPosition, ParsingContext context, @Nullable ParserRuleContext orCtx) {
+        List<SchemeExpression> bodyExprs = getBodyExpr(orList.cdr(), isTailCallPosition, context, orCtx);
+        if (bodyExprs.isEmpty())
             return SourceSectionUtil.setSourceSectionAndReturnExpr(new BooleanLiteralNode(false), orCtx);
-        if (schemeExprs.size() == 1)
-            return SourceSectionUtil.setSourceSectionAndReturnExpr(OneArgumentExprNodeGen.create(schemeExprs.get(0)), orCtx);
-        return SourceSectionUtil.setSourceSectionAndReturnExpr(reduceOr(schemeExprs), orCtx);
+        if (bodyExprs.size() == 1)
+            return SourceSectionUtil.setSourceSectionAndReturnExpr(OneArgumentExprNodeGen.create(bodyExprs.get(0)), orCtx);
+        return SourceSectionUtil.setSourceSectionAndReturnExpr(reduceOr(bodyExprs), orCtx);
     }
 
-
-    //TODO is it a problem that those doesn't have Source section?
     private static OrExprNode reduceOr(List<SchemeExpression> arguments) {
         if (arguments.size() > 2) {
             return new OrExprNode(arguments.remove(0), reduceOr(arguments));
