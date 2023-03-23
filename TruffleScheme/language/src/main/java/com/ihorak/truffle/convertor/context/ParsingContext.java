@@ -204,7 +204,7 @@ public class ParsingContext {
         this.selfTailRecursionResultIndex = selfTailRecursionResultIndex;
     }
 
-    public Optional<Integer> getSelfTailRecursionResultIndex() {
+    public Optional<Integer> getSelfTCOResultFrameSlot() {
         return Optional.ofNullable(selfTailRecursionResultIndex);
     }
 

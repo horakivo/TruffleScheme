@@ -72,7 +72,7 @@ public class LambdaConverter {
         var isSelfTailCall = lambdaContext.isFunctionSelfTailRecursive();
         SchemeRootNode rootNode;
         if (isSelfTailCall) {
-            int resultIndex = lambdaContext.getSelfTailRecursionResultIndex().orElseThrow(InterpreterException::shouldNotReachHere);
+            int resultIndex = lambdaContext.getSelfTCOResultFrameSlot().orElseThrow(InterpreterException::shouldNotReachHere);
             rootNode = new SelfTailProcedureRootNode(name, lambdaContext.getLanguage(), frameDescriptor, bodyExprs, writeArgsExprs, resultIndex, sourceSection);
         } else {
             var allExprs = Stream.concat(writeArgsExprs.stream(), bodyExprs.stream()).toList();

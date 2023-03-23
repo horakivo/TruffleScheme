@@ -26,18 +26,16 @@ public class TailRecursiveCallLoopNode extends SchemeNode implements RepeatingNo
     }
 
     @ExplodeLoop
-    private Object executeImpl(VirtualFrame frame) {
-        for (int i = 0; i < bodyExpressions.length - 1; i++) {
-            bodyExpressions[i].executeGeneric(frame);
+    private void executeBody(VirtualFrame frame) {
+        for (SchemeExpression bodyExpression : bodyExpressions) {
+            bodyExpression.executeGeneric(frame);
         }
-        // return last element
-        return bodyExpressions[bodyExpressions.length - 1].executeGeneric(frame);
     }
 
     @Override
     public boolean executeRepeating(final VirtualFrame frame) {
         try {
-            executeImpl(frame);
+            executeBody(frame);
             return false;
         } catch (SelfRecursiveTailCallException e) {
             return true;

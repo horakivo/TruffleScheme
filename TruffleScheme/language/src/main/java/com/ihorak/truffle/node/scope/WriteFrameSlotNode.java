@@ -4,16 +4,20 @@ import com.ihorak.truffle.node.SchemeNode;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.dsl.ImportStatic;
 import com.oracle.truffle.api.dsl.Specialization;
-import com.oracle.truffle.api.frame.Frame;
+import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlotKind;
+import com.oracle.truffle.api.frame.VirtualFrame;
 
 @ImportStatic(FrameSlotKind.class)
 public abstract class WriteFrameSlotNode extends SchemeNode {
-    @CompilerDirectives.CompilationFinal private FrameDescriptor cachedDescriptor;
+
+    @CompilationFinal
+    private FrameDescriptor cachedDescriptor;
+
     private final int frameSlot;
 
-    public abstract void executeWrite(Frame frame, Object value);
+    public abstract void executeWrite(VirtualFrame frame, Object value);
 
     public WriteFrameSlotNode(int frameSlot) {
         assert frameSlot >= 0;
@@ -21,22 +25,22 @@ public abstract class WriteFrameSlotNode extends SchemeNode {
     }
 
     @Specialization(guards = "isExpectedOrIllegal(frame, Long)")
-    protected void writeLong(Frame frame, long value) {
+    protected void writeLong(VirtualFrame frame, long value) {
         frame.setLong(frameSlot, value);
     }
     @Specialization(guards = "isExpectedOrIllegal(frame, Boolean)")
-    protected void writeBoolean(Frame frame, boolean value) {
+    protected void writeBoolean(VirtualFrame frame, boolean value) {
         frame.setBoolean(frameSlot, value);
     }
 
     @Specialization(guards = "isExpectedOrIllegal(frame, Double)")
-    protected void writeDouble(Frame frame, double value) {
+    protected void writeDouble(VirtualFrame frame, double value) {
         frame.setDouble(frameSlot, value);
     }
 
     @Specialization(replaces = { "writeBoolean", "writeLong", "writeDouble" })
     //@Specialization
-    protected void writeObject(Frame frame, Object value) {
+    protected void writeObject(VirtualFrame frame, Object value) {
         /* No-op if kind is already Object. */
         final FrameDescriptor descriptor = getFrameDescriptor(frame);
         descriptor.setSlotKind(frameSlot, FrameSlotKind.Object);
@@ -44,7 +48,7 @@ public abstract class WriteFrameSlotNode extends SchemeNode {
         frame.setObject(frameSlot, value);
     }
 
-    protected boolean isExpectedOrIllegal(Frame frame, FrameSlotKind expectedKind) {
+    protected boolean isExpectedOrIllegal(VirtualFrame frame, FrameSlotKind expectedKind) {
         final FrameDescriptor descriptor = getFrameDescriptor(frame);
 
         final FrameSlotKind kind = descriptor.getSlotKind(frameSlot);
@@ -57,13 +61,12 @@ public abstract class WriteFrameSlotNode extends SchemeNode {
         return false;
     }
 
-    private FrameDescriptor getFrameDescriptor(Frame frame) {
+    private FrameDescriptor getFrameDescriptor(VirtualFrame frame) {
         if (cachedDescriptor == null) {
             CompilerDirectives.transferToInterpreterAndInvalidate();
             cachedDescriptor = frame.getFrameDescriptor();
         }
 
-        assert frame.getFrameDescriptor() == cachedDescriptor;
         return cachedDescriptor;
     }
 }

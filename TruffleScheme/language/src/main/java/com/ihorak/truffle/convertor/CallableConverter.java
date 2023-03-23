@@ -119,7 +119,7 @@ public class CallableConverter {
                  *
                  * */
                 context.setFunctionAsSelfTailRecursive();
-                if (context.getSelfTailRecursionResultIndex().isEmpty()) {
+                if (context.getSelfTCOResultFrameSlot().isEmpty()) {
                     var resultIndex = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
                     context.setSelfTailRecursionResultIndex(resultIndex);
                 }

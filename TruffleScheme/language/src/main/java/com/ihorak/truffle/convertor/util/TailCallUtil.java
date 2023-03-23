@@ -2,9 +2,9 @@ package com.ihorak.truffle.convertor.util;
 
 import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.exceptions.InterpreterException;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.special_form.IfElseExprNode;
-import com.ihorak.truffle.type.SchemeCell;
+import com.ihorak.truffle.node.scope.StoreSelfTailCallResultInFrame;
 import com.ihorak.truffle.type.SchemeList;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.jetbrains.annotations.Nullable;
@@ -14,8 +14,7 @@ import java.util.List;
 
 public class TailCallUtil {
 
-    private TailCallUtil() {
-    }
+    private TailCallUtil() {}
 
 
     //body is e.g. body of lambda or let where definitions+ are allowed
@@ -41,6 +40,10 @@ public class TailCallUtil {
 
             //pokud tohle je volani metody pak vraceni z lambdy musi vytvorit Catcher a pokud ne tak nemusi
             var lastExpr = InternalRepresentationConverter.convert(bodyIR.get(size - 1), context, true, false, currentCtx);
+            if (context.isFunctionSelfTailRecursive()) {
+                var resultFrameIndex = context.getSelfTCOResultFrameSlot().orElseThrow(InterpreterException::shouldNotReachHere);
+                lastExpr = new StoreSelfTailCallResultInFrame(lastExpr, resultFrameIndex);
+            }
             result.add(lastExpr);
         }
 
@@ -60,12 +63,18 @@ public class TailCallUtil {
         if (size > 0) {
             var lastIndex = size - 1;
             var currentCtx = getCurrentBodyCtx(ctx, ctxBodyStartIndex, lastIndex);
+            var lastExpr = InternalRepresentationConverter.convert(expressionsIR.get(lastIndex), context, true, false, currentCtx);
+            if (context.isFunctionSelfTailRecursive()) {
+
+            }
             result.add(InternalRepresentationConverter.convert(expressionsIR.get(lastIndex), context, true, false, currentCtx));
 
         }
 
         return result;
     }
+
+//    private static SchemeExpression wrapExprTo
 
     public static List<SchemeExpression> convertListIRToSchemeExpressions(SchemeList listIR, ParsingContext context, @Nullable ParserRuleContext ctx, int ctxBodyStartIndex) {
         List<SchemeExpression> result = new ArrayList<>();
