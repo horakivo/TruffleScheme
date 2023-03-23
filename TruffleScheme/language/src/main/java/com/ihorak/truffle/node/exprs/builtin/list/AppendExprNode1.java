@@ -1,6 +1,7 @@
 package com.ihorak.truffle.node.exprs.builtin.list;
 
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeList;
 import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.Specialization;
@@ -11,20 +12,29 @@ import com.oracle.truffle.api.dsl.Specialization;
 public abstract class AppendExprNode1 extends SchemeExpression {
 
 
-    @Specialization(guards = {"!left.isEmpty", "!right.isEmpty"})
+    @Specialization(guards = "!left.isEmpty")
     protected SchemeList bothNoEmpty(SchemeList left, SchemeList right) {
-        left.bindingCell.cdr = right.list;
-        return new SchemeList(left.list, right.bindingCell, left.size + right.size, false);
+        var head = new SchemeCell(left.car(), null);
+        var tail = head;
+        var currentList = left.cdr();
+        while (!currentList.isEmpty) {
+            var cell = new SchemeCell(currentList.car(), null);
+            tail.cdr = cell;
+            tail = cell;
+            currentList = currentList.cdr();
+        }
+
+        tail.cdr = right.list;
+
+
+        return new SchemeList(head, null, left.size + right.size, false);
     }
 
     @Specialization(guards = "left.isEmpty")
-    protected SchemeList leftIsEmpty(SchemeList left, SchemeList right) {
+    protected SchemeList leftEmpty(SchemeList left, SchemeList right) {
         return right;
     }
 
-    @Specialization(guards = "right.isEmpty")
-    protected SchemeList rightIsEmpty(SchemeList left, SchemeList right) {
-        return left;
-    }
+
 
 }
