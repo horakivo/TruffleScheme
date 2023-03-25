@@ -16,8 +16,6 @@ import com.oracle.truffle.api.frame.VirtualFrame;
 public abstract class WriteGlobalVariableExprNode extends SchemeExpression {
 
     private final SchemeSymbol symbol;
-    @SuppressWarnings("FieldMayBeFinal")
-
 
     public WriteGlobalVariableExprNode(SchemeSymbol symbol) {
         this.symbol = symbol;
