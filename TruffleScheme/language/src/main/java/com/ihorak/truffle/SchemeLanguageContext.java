@@ -3,11 +3,13 @@ package com.ihorak.truffle;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.scope.ReadGlobalVariableExprNode;
 import com.ihorak.truffle.type.SchemeSymbol;
+import com.ihorak.truffle.type.UserDefinedProcedure;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.source.Source;
+import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 
 import java.util.Map;
 
@@ -40,10 +42,23 @@ public class SchemeLanguageContext {
         return this.env.parsePublic(source);
     }
 
+    @TruffleBoundary
     public void addVariable(SchemeSymbol symbol, Object valueToStore) {
         var shouldInvalidate = globalVariableStorage.containsKey(symbol);
         globalVariableStorage.put(symbol, valueToStore);
-        if (shouldInvalidate) ReadGlobalVariableExprNode.notRedefinedAssumption.invalidate();
+        if (shouldInvalidate) {
+            ReadGlobalVariableExprNode.notRedefinedAssumption.invalidate();
+        }
+    }
+
+    @TruffleBoundary
+    public void addUserDefinedProcedure(SchemeSymbol symbol, UserDefinedProcedure userDefinedProcedure) {
+        var storedObject = globalVariableStorage.get(symbol);
+        if (storedObject instanceof UserDefinedProcedure procedure) {
+            procedure.redefine(userDefinedProcedure.getCallTarget(), userDefinedProcedure.getExpectedNumberOfArgs());
+        } else {
+            addVariable(symbol, userDefinedProcedure);
+        }
 
     }
 }

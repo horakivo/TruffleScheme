@@ -5,7 +5,7 @@ import com.oracle.truffle.api.frame.VirtualFrame;
 
 public class QuoteExprNode extends SchemeExpression {
 
-    private Object datum;
+    private final Object datum;
 
     public QuoteExprNode(Object internalDataRepresentation) {
         this.datum = internalDataRepresentation;

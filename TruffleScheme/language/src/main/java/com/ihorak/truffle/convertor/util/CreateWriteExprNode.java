@@ -4,6 +4,7 @@ import com.ihorak.truffle.convertor.SourceSectionUtil;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.scope.WriteGlobalVariableExprNode;
+import com.ihorak.truffle.node.scope.WriteGlobalVariableExprNodeGen;
 import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
 import com.ihorak.truffle.type.SchemeSymbol;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -27,7 +28,7 @@ public class CreateWriteExprNode {
     }
 
     public static SchemeExpression createWriteGlobalVariableExprNode(SchemeSymbol name, SchemeExpression valueToStore, @Nullable ParserRuleContext symbolCtx) {
-        var expr = new WriteGlobalVariableExprNode(valueToStore, name);
+        var expr = WriteGlobalVariableExprNodeGen.create(name, valueToStore);
         SourceSectionUtil.setSourceSection(expr, symbolCtx);
 
         return expr;

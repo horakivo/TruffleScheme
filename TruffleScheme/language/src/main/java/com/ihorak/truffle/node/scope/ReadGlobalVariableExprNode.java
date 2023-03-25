@@ -16,7 +16,6 @@ public class ReadGlobalVariableExprNode extends SchemeExpression {
     @CompilationFinal
     private Object cachedValue;
     public static final CyclicAssumption notRedefinedAssumption = new CyclicAssumption("global variable not redefined");
-    //TODO do I need this?
     @CompilationFinal
     private Assumption cachedAssumption;
 

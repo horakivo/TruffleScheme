@@ -4,36 +4,66 @@ import com.ihorak.truffle.SchemeTruffleLanguage;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.callable.DispatchNode;
 import com.ihorak.truffle.node.callable.DispatchNodeGen;
+import com.oracle.truffle.api.Assumption;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerDirectives;
+import com.oracle.truffle.api.RootCallTarget;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.frame.MaterializedFrame;
 import com.oracle.truffle.api.interop.TruffleObject;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
+import com.oracle.truffle.api.utilities.CyclicAssumption;
 
 import java.math.BigInteger;
 
 //@ExportLibrary(InteropLibrary.class)
-public class UserDefinedProcedure extends AbstractProcedure implements TruffleObject {
+public class UserDefinedProcedure implements TruffleObject {
 
-    private final int expectedNumberOfArgs;
+    private int expectedNumberOfArgs;
+    private CallTarget callTarget;
     private final boolean optionalArgs;
     private final MaterializedFrame parentFrame;
+
+    /**
+     * Manages the assumption that the {@link #callTarget} is stable.
+     */
+    private final CyclicAssumption callTargetStable;
     //Because of the Interop library
 //    private final DispatchNode dispatchNode = DispatchNodeGen.create();
 
+
+    public CallTarget getCallTarget() {
+        return callTarget;
+    }
+
     public UserDefinedProcedure(CallTarget callTarget, int expectedNumberOfArgs, final boolean hasOptionalArgs, MaterializedFrame frame) {
-        super(callTarget);
+        this.callTarget = callTarget;
         this.parentFrame = frame;
         this.expectedNumberOfArgs = expectedNumberOfArgs;
+        this.callTargetStable = new CyclicAssumption("user procedure not redefined assumption");
 //        if (hasOptionalArgs) {
 //            this.expectedNumberOfArgs = expectedNumberOfArgs - 1;
 //        } else {
 //            this.expectedNumberOfArgs = expectedNumberOfArgs;
 //        }
         this.optionalArgs = hasOptionalArgs;
+    }
+
+    public void redefine(CallTarget callTarget, int expectedNumberOfArgs) {
+        boolean wasNull = this.callTarget == null;
+        this.callTarget = callTarget;
+        this.expectedNumberOfArgs = expectedNumberOfArgs;
+
+        if (!wasNull) {
+            callTargetStable.invalidate();
+        }
+    }
+
+    // result of this method should be cached!
+    public Assumption isCallTargetStableAssumption() {
+        return callTargetStable.getAssumption();
     }
 
 

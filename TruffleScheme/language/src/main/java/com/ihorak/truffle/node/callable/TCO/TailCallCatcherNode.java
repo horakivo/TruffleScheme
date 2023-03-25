@@ -6,75 +6,68 @@ import java.util.List;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.callable.CallableExprNode;
 import com.ihorak.truffle.node.callable.TCO.loop_nodes.TailCallLoopNode;
+import com.ihorak.truffle.type.UserDefinedProcedure;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.nodes.LoopNode;
 
 /**
  * Put in place of every non-tail call
  */
-public class TailCallCatcherNode extends CallableExprNode {
+public class TailCallCatcherNode extends SchemeExpression {
 
-
-    //    @Child private CallableExprNode callNode;
-//    @Child private DispatchNode dispatchNode = DispatchNodeGen.create();
-//
     @Child
     private LoopNode loopNode;
-    
+
+
+    @Children
+    private final SchemeExpression[] arguments;
+    @Child
+    private SchemeExpression callable;
+
+
     private final int tailCallArgumentsSlot;
     private final int tailCallTargetSlot;
 
     public TailCallCatcherNode(List<SchemeExpression> arguments, SchemeExpression callable, int tailCallArgumentsSlot, int tailCallTargetSlot) {
-        super(arguments, callable);
+        this.arguments = arguments.toArray(SchemeExpression[]::new);
+        this.callable = callable;
         this.tailCallArgumentsSlot = tailCallArgumentsSlot;
         this.tailCallTargetSlot = tailCallTargetSlot;
         this.loopNode = Truffle.getRuntime().createLoopNode(new TailCallLoopNode(tailCallArgumentsSlot, tailCallTargetSlot));
     }
 
-//    @Override
-//    protected Object call(CallTarget callTarget, Object[] arguments) {
-//        while (true) {
-//            try {
-//                return super.call(callTarget, arguments);
-//            } catch (TailCallException e) {
-//                callTarget = e.getCallTarget();
-//                arguments = e.getArguments();
-//            }
-//        }
-//    }
 
     @Override
-    protected Object call(CallTarget callTarget, Object[] arguments, VirtualFrame frame) {
-//        TCOTarget target = SchemeTruffleLanguage.getTCOTarget(this);
-//        target.arguments = arguments;
-//        target.target = callTarget;
-
-
-
-    	frame.setObject(tailCallTargetSlot, callTarget);
-    	frame.setObject(tailCallArgumentsSlot, arguments);
-
-
-
-		// seen a tail call can repeat that.
-		return loopNode.execute(frame);
+    public Object executeGeneric(VirtualFrame frame) {
+        var procedure = (UserDefinedProcedure) callable.executeGeneric(frame);
+        var args = getArguments(procedure, frame);
+        return call(procedure.getCallTarget(), args, frame);
     }
 
-//        @Override
-//    public Object executeGeneric(final VirtualFrame frame) {
-//        try {
-//            return callNode.executeGeneric(frame);
-//        } catch (TailCallException e) {
-//            if (loopNode == null) {
-//                CompilerDirectives.transferToInterpreterAndInvalidate();
-//                loopNode = insert(Truffle.getRuntime().createLoopNode(new TailCallLoopNode(e.getCallTarget(), e.getArguments())));
-//            }
-//
-//            var test = loopNode.execute(frame);
-//
-//            return 0L;
-//        }
-//    }
+    protected Object call(CallTarget callTarget, Object[] arguments, VirtualFrame frame) {
+
+        frame.setObject(tailCallTargetSlot, callTarget);
+        frame.setObject(tailCallArgumentsSlot, arguments);
+
+        return loopNode.execute(frame);
+    }
+
+
+    @ExplodeLoop
+    private Object[] getArguments(UserDefinedProcedure function, VirtualFrame parentFrame) {
+        Object[] args = new Object[arguments.length + 1];
+        args[0] = function.getParentFrame();
+
+        int index = 1;
+        for (SchemeExpression expression : arguments) {
+            args[index] = expression.executeGeneric(parentFrame);
+            index++;
+        }
+
+        return args;
+    }
+
 }

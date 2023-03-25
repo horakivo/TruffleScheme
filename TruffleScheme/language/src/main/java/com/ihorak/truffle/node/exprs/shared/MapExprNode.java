@@ -2,8 +2,6 @@ package com.ihorak.truffle.node.exprs.shared;
 
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.exprs.ArbitraryBuiltin;
-import com.ihorak.truffle.node.exprs.builtin.list.ApplyExprNode;
-import com.ihorak.truffle.node.exprs.builtin.list.ApplyExprNodeGen;
 import com.ihorak.truffle.type.AbstractProcedure;
 import com.ihorak.truffle.type.SchemeCell;
 import com.oracle.truffle.api.dsl.Specialization;
