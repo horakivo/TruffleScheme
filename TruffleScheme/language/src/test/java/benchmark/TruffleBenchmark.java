@@ -15,9 +15,9 @@ import org.openjdk.jmh.annotations.Warmup;
 
 import java.util.concurrent.TimeUnit;
 
-@Warmup(iterations = 10, time = 1)
-@Measurement(iterations = 5, time = 1)
-@Fork(value = 1, jvmArgsAppend = "-Dgraalvm.locatorDisabled=true")
+@Warmup(iterations = 7, time = 1)
+@Measurement(iterations = 10, time = 1)
+@Fork(value = 1, jvmArgsAppend = {"-Dgraalvm.locatorDisabled=true", "-Xss500m"})
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 @State(Scope.Benchmark)

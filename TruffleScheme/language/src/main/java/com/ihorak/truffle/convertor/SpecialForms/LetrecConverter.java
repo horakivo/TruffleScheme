@@ -50,7 +50,7 @@ public class LetrecConverter extends AbstractLetConverter {
         List<SchemeSymbol> symbols = new ArrayList<>();
         List<Object> dataExpressions = new ArrayList<>();
         for (Object obj : localBindings) {
-            var bindingList = (SchemeCell) obj;
+            var bindingList = (SchemeList) obj;
             var name = (SchemeSymbol) bindingList.get(0);
             letContext.findOrAddLocalSymbol(name);
             symbols.add(name);
@@ -63,13 +63,28 @@ public class LetrecConverter extends AbstractLetConverter {
         for (int i = 0; i < symbols.size(); i++) {
             var identifierCtx = getIdentifierCtx(letrecParamsCtx, i);
             var exprCtx = getParameterExprCtx(letrecParamsCtx, i);
-            var expression = InternalRepresentationConverter.convert(dataExpressions.get(i), letContext, false, false, exprCtx);
+            var expressionIR = dataExpressions.get(i);
+            SchemeExpression expression;
+            if (isLambda(expressionIR)) {
+                var name = symbols.get(i);
+                var lambdaCtx = exprCtx != null ? (ParserRuleContext) exprCtx.getChild(0) : null;
+                expression = LambdaConverter.convert((SchemeList) expressionIR, letContext, name, lambdaCtx);
+            } else {
+                expression = InternalRepresentationConverter.convert(expressionIR, letContext, false, false, exprCtx);
+            }
             result.add(CreateWriteExprNode.createWriteLocalVariableExprNode(symbols.get(i), expression, letContext, identifierCtx));
         }
 
         letContext.makeLocalVariablesNonNullable(symbols);
 
         return result;
+    }
+
+    private static boolean isLambda(Object expressionIR) {
+        return expressionIR instanceof SchemeList list &&
+                !list.isEmpty &&
+                list.get(0) instanceof SchemeSymbol symbol &&
+                symbol.getValue().equals("lambda");
     }
 
 }

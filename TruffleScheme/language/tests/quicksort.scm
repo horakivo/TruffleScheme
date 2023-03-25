@@ -24,18 +24,6 @@
             (append (quicksort1 (car parts))
                     (quicksort1 (cadr parts))))))))
 
-(define random-list1
-  (lambda (len)
-    (define generate
-      (lambda (len p q s result)
-        (if (= len 0)
-            result
-            ((lambda (value)
-               (generate (- len 1) p q value (cons value result)))
-             (modulo (* s s) (* p q))))))
-      (generate len 101 17 3 '())))
-
-      
 (define random-list
   (lambda (len)
     (generate len 101 17 3 '())))
@@ -45,8 +33,7 @@
   (lambda (len p q s result)
     (if (= len 0)
         result
-        (tmp  (modulo (* s s) (* p q)) len p q result)
-              )))
+        (tmp (modulo (* s s) (* p q)) len p q result))))
 
 
 (define tmp

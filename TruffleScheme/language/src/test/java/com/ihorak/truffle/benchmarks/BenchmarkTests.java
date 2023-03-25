@@ -171,4 +171,68 @@ public class BenchmarkTests {
         assertEquals(1531L, result.getArrayElement(8).asLong());
         assertEquals(1684L, result.getArrayElement(9).asLong());
     }
+
+
+    @Test
+    public void fak() {
+        var program = """
+                (define fak
+                  (lambda (x)
+                    (define iter
+                      (lambda (n result)
+                        (if (= n 0)
+                          result
+                          (iter (- n 1) (+ n result)))))
+                          
+                    (iter x 1)))
+                    
+                (fak 1000)
+                """;
+
+        var result = context.eval("scm", program);
+
+        assertEquals(500501L, result.asLong());
+    }
+
+    @Test
+    public void primes() {
+        var program = """
+                                
+                (define interval-list
+                  (lambda (m n)
+                    (if (> m n)
+                        '()
+                        (cons m (interval-list (+ 1 m) n)))))
+                                
+                (define sieve
+                  (lambda  (l)
+                    (letrec ((remove-multiples
+                              (lambda (n l)
+                                (if (null? l)
+                                    '()
+                                    (if (= (modulo (car l) n) 0)
+                                        (remove-multiples n (cdr l))
+                                        (cons (car l)
+                                              (remove-multiples n (cdr l))))))))
+                      (if (null? l)
+                          '()
+                          (cons (car l)
+                                (sieve (remove-multiples (car l) (cdr l))))))))
+                                
+                (define primes<=
+                  (lambda (n)
+                    (sieve (interval-list 2 n))))
+                    
+                (primes<= 10)
+                """;
+
+        var result = context.eval("scm", program);
+
+        assertTrue(result.hasArrayElements());
+        assertEquals(4L, result.getArraySize());
+        assertEquals(2L, result.getArrayElement(0).asLong());
+        assertEquals(3L, result.getArrayElement(1).asLong());
+        assertEquals(5L, result.getArrayElement(2).asLong());
+        assertEquals(7L, result.getArrayElement(3).asLong());
+    }
 }

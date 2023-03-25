@@ -11,14 +11,14 @@ import com.oracle.truffle.api.profiles.BranchProfile;
 
 public abstract class CarExprNode extends LimitedBuiltin {
 
-    @Specialization
-    protected Object doPairCar(SchemePair pair) {
-        return pair.first();
-    }
-
     @Specialization(guards = "!list.isEmpty")
     protected Object doSchemeList(SchemeList list) {
         return list.list.car;
+    }
+
+    @Specialization
+    protected Object doPairCar(SchemePair pair) {
+        return pair.first();
     }
 
     @Fallback
