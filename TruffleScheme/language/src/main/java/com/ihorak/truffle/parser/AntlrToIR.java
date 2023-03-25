@@ -1,6 +1,8 @@
 package com.ihorak.truffle.parser;
 
 import com.ihorak.truffle.SchemeTruffleLanguage;
+import com.ihorak.truffle.node.exprs.shared.ListNode;
+import com.ihorak.truffle.node.exprs.shared.ListNodeGen;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemePair;
 import com.ihorak.truffle.type.SchemeSymbol;
@@ -12,8 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AntlrToIR extends R5RSBaseVisitor<Object> {
-
-    public static final TruffleString.Encoding STRING_ENCODING = TruffleString.Encoding.UTF_16;
 
     @Override
     public Object visitForm(R5RSParser.FormContext ctx) {
@@ -30,7 +30,7 @@ public class AntlrToIR extends R5RSBaseVisitor<Object> {
             index++;
         }
 
-        return SchemeListUtil.createList(objects);
+        return ListNodeGen.getUncached().execute(objects);
 
     }
 
@@ -69,25 +69,25 @@ public class AntlrToIR extends R5RSBaseVisitor<Object> {
     @Override
     public SchemeList visitQuote(R5RSParser.QuoteContext ctx) {
         // 'form -> just take second child since the first one is '
-        return SchemeListUtil.createList(new SchemeSymbol("quote"), visit(ctx.getChild(1)));
+        return ListNodeGen.getUncached().execute(new Object[]{new SchemeSymbol("quote"), visit(ctx.getChild(1))});
     }
 
     @Override
     public SchemeList visitQuasiquote(R5RSParser.QuasiquoteContext ctx) {
         // `form -> just take second child since the first one is `
-        return SchemeListUtil.createList(new SchemeSymbol("quasiquote"), visit(ctx.getChild(1)));
+        return ListNodeGen.getUncached().execute(new Object[]{new SchemeSymbol("quasiquote"), visit(ctx.getChild(1))});
     }
 
     @Override
     public SchemeList visitUnquote(R5RSParser.UnquoteContext ctx) {
         // ,form -> just take second child since the first one is ,
-        return SchemeListUtil.createList(new SchemeSymbol("unquote"), visit(ctx.getChild(1)));
+        return ListNodeGen.getUncached().execute(new Object[]{new SchemeSymbol("unquote"), visit(ctx.getChild(1))});
     }
 
     @Override
     public SchemeList visitUnquote_splicing(R5RSParser.Unquote_splicingContext ctx) {
         // ,@form -> just take second child since the first one is ,@
-        return SchemeListUtil.createList(new SchemeSymbol("unquote-splicing"), visit(ctx.getChild(1)));
+        return ListNodeGen.getUncached().execute(new Object[]{new SchemeSymbol("unquote-splicing"), visit(ctx.getChild(1))});
     }
 
     @Override

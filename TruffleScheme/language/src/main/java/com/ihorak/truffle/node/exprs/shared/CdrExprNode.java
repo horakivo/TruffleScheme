@@ -11,8 +11,6 @@ import com.oracle.truffle.api.profiles.BranchProfile;
 
 public abstract class CdrExprNode extends LimitedBuiltin {
 
-    private final BranchProfile emptyListProfile = BranchProfile.create();
-
 
     @Specialization(guards = "!list.isEmpty")
     protected SchemeList doList(SchemeList list) {
