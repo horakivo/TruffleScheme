@@ -37,9 +37,10 @@ public class QuasiquoteOnlyUnquoteSplicingExprNode extends SchemeExpression {
             var listToInsert = getListAtIndex(0, frame);
             var cellToReplace = unquoteSplicingToInsert[0].cellToReplace();
 
-            listToInsert.bindingCell.cdr = cellToReplace.cdr;
-            cellToReplace.car = listToInsert.list.car;
-            cellToReplace.cdr = listToInsert.list.cdr;
+            var listToInsertBindingCell = findBindingCell(listToInsert);
+            listToInsertBindingCell.cdr = cellToReplace.cdr;
+            cellToReplace.car = listToInsert.car;
+            cellToReplace.cdr = listToInsert.cdr;
 
             index++;
         }
@@ -51,11 +52,21 @@ public class QuasiquoteOnlyUnquoteSplicingExprNode extends SchemeExpression {
 
             var previousCell = insertInfo.previousCell();
             var cellTeReplace = insertInfo.cellToReplace();
-            previousCell.cdr = listToInsert.list;
-            listToInsert.bindingCell.cdr = cellTeReplace.cdr;
+            previousCell.cdr = listToInsert;
+            var listToInsertBindingCell = findBindingCell(listToInsert);
+            listToInsertBindingCell.cdr = cellTeReplace.cdr;
         }
 
         return datum;
+    }
+
+    private SchemeList findBindingCell(SchemeList list) {
+        var currentList = list;
+        while (currentList.cdr != SchemeList.EMPTY_LIST) {
+            currentList = currentList.cdr;
+        }
+
+        return currentList;
     }
 
 

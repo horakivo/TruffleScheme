@@ -15,7 +15,7 @@ public class QuasiquoteExprNode extends SchemeExpression {
     @Child private QuasiquoteOnlyUnquoteExprNode unquoteNode;
     @Child private QuasiquoteOnlyUnquoteSplicingExprNode unquoteSplicingNode;
 
-    public QuasiquoteExprNode(SchemeList datum, List<SchemeExpression> unquoteToEval, List<SchemeCell> unquoteToInsert, List<SchemeExpression> unquoteSplicingToEval, List<UnquoteSplicingInsertInfo> unquoteSplicingToInsert, boolean isFirstPreviousCellNull) {
+    public QuasiquoteExprNode(SchemeList datum, List<SchemeExpression> unquoteToEval, List<SchemeList> unquoteToInsert, List<SchemeExpression> unquoteSplicingToEval, List<UnquoteSplicingInsertInfo> unquoteSplicingToInsert, boolean isFirstPreviousCellNull) {
         unquoteNode = new QuasiquoteOnlyUnquoteExprNode(unquoteToEval, unquoteToInsert, datum);
         unquoteSplicingNode = new QuasiquoteOnlyUnquoteSplicingExprNode(datum, unquoteSplicingToEval, unquoteSplicingToInsert, isFirstPreviousCellNull);
     }

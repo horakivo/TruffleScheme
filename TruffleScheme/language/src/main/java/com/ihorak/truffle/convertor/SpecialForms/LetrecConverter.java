@@ -29,7 +29,7 @@ public class LetrecConverter extends AbstractLetConverter {
         ParsingContext letContext = new ParsingContext(context, LexicalScope.LET, context.getFrameDescriptorBuilder(), context.getSource());
 
         var localBindingsIR = (SchemeList) letList.get(1);
-        var bodyIR = letList.cdr().cdr();
+        var bodyIR = letList.cdr.cdr;
 
         var writeLocalVariableExpr = createWriteLocalVariables(localBindingsIR, letContext, letCtx);
         var bodyExprs = TailCallUtil.convertBodyToSchemeExpressionsWithTCO(bodyIR, letContext, letCtx, CTX_BODY_INDEX);

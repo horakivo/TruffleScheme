@@ -24,7 +24,7 @@ public class CondConverter {
 
     public static SchemeExpression convertCond(SchemeList condList, boolean isTailCallPosition, ParsingContext context, @Nullable ParserRuleContext condCtx) {
         validate(condList);
-        var condExpressions = condList.cdr();
+        var condExpressions = condList.cdr;
         if (condExpressions.size == 0)
             return SourceSectionUtil.setSourceSectionAndReturnExpr(new UndefinedLiteralNode(), condCtx);
         if (condExpressions.size == 1) {
@@ -56,7 +56,7 @@ public class CondConverter {
             var thenCtx = getThenCtx(currCondCtx);
             var thenExpr = InternalRepresentationConverter.convert(condExpr.get(1), context, isTailCallPosition, false, thenCtx);
 
-            return new IfElseExprNode(BooleanCastExprNodeGen.create(conditionExpr), thenExpr, reduceCond(condExpressions.cdr(), isTailCallPosition, context, condCtx, startCondCtxIndex + 1));
+            return new IfElseExprNode(BooleanCastExprNodeGen.create(conditionExpr), thenExpr, reduceCond(condExpressions.cdr, isTailCallPosition, context, condCtx, startCondCtxIndex + 1));
         } else {
             return convertCondWithTwoConditions(condExpressions, isTailCallPosition, context, condCtx, startCondCtxIndex);
         }
@@ -99,7 +99,7 @@ public class CondConverter {
 
 
     private static void validate(SchemeList condList) {
-        var condsExpression = condList.cdr();
+        var condsExpression = condList.cdr;
         for (Object obj : condsExpression) {
             if (!(obj instanceof SchemeList list)) {
                 throw new SchemeException("cond: bad syntax\nexpected: list?\ngiven: " + obj, null);

@@ -13,7 +13,7 @@ public abstract class CarExprNode extends LimitedBuiltin {
 
     @Specialization(guards = "!list.isEmpty")
     protected Object doSchemeList(SchemeList list) {
-        return list.list.car;
+        return list.car;
     }
 
     @Specialization

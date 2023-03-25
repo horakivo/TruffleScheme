@@ -51,27 +51,27 @@ public class QuasiquoteConverter {
 
     private static QuasiquoteHolder convertSchemeList(SchemeList schemeList, ParsingContext context, @Nullable ParserRuleContext listCtx) {
         var quasiquoteHolderResult = new QuasiquoteHolder(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-        SchemeCell currentCell = schemeList.list;
+        SchemeList currentList = schemeList;
         //special case when we ,@ or , represent in the IR as (unquote/unquote-splicing ...) so we don't want to remove the '('
         //see test givenUnquoteSplicingDirectlyAfterQuasiquote_whenExecuted_thenUnquoteSplicingIsNotActioned
         int ctxIndex = listCtx != null ? (listCtx.getChild(0).getText().equals("(") ? 1 : 0) : Integer.MIN_VALUE;
-        SchemeCell previousCell = null;
-        while (currentCell != SchemeCell.EMPTY_LIST) {
-            if (currentCell.car instanceof SchemeList list) {
+        SchemeList previousCell = null;
+        while (currentList != SchemeList.EMPTY_LIST) {
+            if (currentList.car instanceof SchemeList list) {
                 if (shouldUnquoteBeDone(list, context)) {
                     var unquoteCtx = listCtx != null ? (ParserRuleContext) listCtx.getChild(ctxIndex).getChild(0) : null;
-                    handleUnquote(list, currentCell, quasiquoteHolderResult, context, unquoteCtx);
+                    handleUnquote(list, currentList, quasiquoteHolderResult, context, unquoteCtx);
                 } else if (shouldUnquoteSplicingBeDone(list, context)) {
                     var unquoteSplicingCtx = listCtx != null ? (ParserRuleContext) listCtx.getChild(ctxIndex).getChild(0) : null;
-                    handleUnquoteSplicing(list, quasiquoteHolderResult, previousCell, currentCell, context, unquoteSplicingCtx);
+                    handleUnquoteSplicing(list, quasiquoteHolderResult, previousCell, currentList, context, unquoteSplicingCtx);
                 } else {
                     // again removing form
                     var newListCtx = listCtx != null ? (ParserRuleContext) listCtx.getChild(ctxIndex).getChild(0) : null;
                     handleList(list, quasiquoteHolderResult, context, newListCtx);
                 }
             }
-            previousCell = currentCell;
-            currentCell = currentCell.cdr;
+            previousCell = currentList;
+            currentList = currentList.cdr;
             ctxIndex++;
         }
 
@@ -98,7 +98,7 @@ public class QuasiquoteConverter {
     }
 
 
-    private static void handleUnquote(SchemeList unquoteListIR, SchemeCell currentCell, QuasiquoteHolder holder, ParsingContext context, @Nullable ParserRuleContext unquoteCtx) {
+    private static void handleUnquote(SchemeList unquoteListIR, SchemeList currentCell, QuasiquoteHolder holder, ParsingContext context, @Nullable ParserRuleContext unquoteCtx) {
         var parameterFormCtx = getUnquoteParserCtx(unquoteCtx);
         var expr = InternalRepresentationConverter.convert(unquoteListIR.get(1), context, false, false, parameterFormCtx);
 
@@ -106,7 +106,7 @@ public class QuasiquoteConverter {
         holder.unquoteToInsert().add(currentCell);
     }
 
-    private static void handleUnquoteSplicing(SchemeList unquoteSplicingListIR, QuasiquoteHolder holder, SchemeCell previousCell, SchemeCell currentCell, ParsingContext context, @Nullable ParserRuleContext unquoteSplicingCtx) {
+    private static void handleUnquoteSplicing(SchemeList unquoteSplicingListIR, QuasiquoteHolder holder, SchemeList previousCell, SchemeList currentCell, ParsingContext context, @Nullable ParserRuleContext unquoteSplicingCtx) {
         var parameterFormCtx = getUnquoteSplicingParserCtx(unquoteSplicingCtx);
         var expr = InternalRepresentationConverter.convert(unquoteSplicingListIR.get(1), context, false, false, parameterFormCtx);
 
@@ -182,15 +182,15 @@ public class QuasiquoteConverter {
     }
 
     private static boolean isUnquote(SchemeList list) {
-        return list.car() instanceof SchemeSymbol symbol && symbol.getValue().equals("unquote");
+        return list.car instanceof SchemeSymbol symbol && symbol.getValue().equals("unquote");
     }
 
     private static boolean isUnquoteSplicing(SchemeList list) {
-        return list.car() instanceof SchemeSymbol symbol && symbol.getValue().equals("unquote-splicing");
+        return list.car instanceof SchemeSymbol symbol && symbol.getValue().equals("unquote-splicing");
     }
 
     private static boolean isQuasiquote(SchemeList list) {
-        return list.car() instanceof SchemeSymbol symbol && symbol.getValue().equals("quasiquote");
+        return list.car instanceof SchemeSymbol symbol && symbol.getValue().equals("quasiquote");
     }
 
     private static void validate(SchemeList quasiquoteList) {

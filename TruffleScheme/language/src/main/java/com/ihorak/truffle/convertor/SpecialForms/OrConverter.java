@@ -23,7 +23,7 @@ public class OrConverter extends AndOrAbstractConverter{
     }
 
     public static SchemeExpression convert(SchemeList orList, boolean isTailCallPosition, ParsingContext context, @Nullable ParserRuleContext orCtx) {
-        List<SchemeExpression> bodyExprs = getBodyExpr(orList.cdr(), isTailCallPosition, context, orCtx);
+        List<SchemeExpression> bodyExprs = getBodyExpr(orList.cdr, isTailCallPosition, context, orCtx);
         if (bodyExprs.isEmpty())
             return SourceSectionUtil.setSourceSectionAndReturnExpr(new BooleanLiteralNode(false), orCtx);
         if (bodyExprs.size() == 1)

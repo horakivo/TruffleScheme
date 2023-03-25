@@ -22,7 +22,7 @@ public class AndConverter extends AndOrAbstractConverter {
     }
 
     public static SchemeExpression convert(SchemeList andList, boolean isTailCallPosition, ParsingContext context, @Nullable ParserRuleContext andCtx) {
-        List<SchemeExpression> bodyExprs = getBodyExpr(andList.cdr(), isTailCallPosition, context, andCtx);
+        List<SchemeExpression> bodyExprs = getBodyExpr(andList.cdr, isTailCallPosition, context, andCtx);
 
         if (bodyExprs.isEmpty()) {
             var expr = new BooleanLiteralNode(true);

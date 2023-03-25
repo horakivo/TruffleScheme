@@ -35,8 +35,8 @@ public abstract class AbstractLetConverter {
                 throw new SchemeException("let: bad syntax\nexpected size of binding is 2\ngiven: " + list.size, null);
             }
 
-            if (!(list.car() instanceof SchemeSymbol symbol)) {
-                throw new SchemeException("let: contract violation\nexpected: identifier\ngiven: " + list.car(), null);
+            if (!(list.car instanceof SchemeSymbol symbol)) {
+                throw new SchemeException("let: contract violation\nexpected: identifier\ngiven: " + list.car, null);
             }
 
             if (allIdentifiers.contains(symbol)) {

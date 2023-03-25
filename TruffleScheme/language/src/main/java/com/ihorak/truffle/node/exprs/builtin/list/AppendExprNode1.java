@@ -14,20 +14,20 @@ public abstract class AppendExprNode1 extends SchemeExpression {
 
     @Specialization(guards = "!left.isEmpty")
     protected SchemeList bothNoEmpty(SchemeList left, SchemeList right) {
-        var head = new SchemeCell(left.car(), null);
+        var head = new SchemeList(left.car, null, left.size + right.size, false);
         var tail = head;
-        var currentList = left.cdr();
+        var currentList = left.cdr;
         while (!currentList.isEmpty) {
-            var cell = new SchemeCell(currentList.car(), null);
+            var cell = new SchemeList(currentList.car, null, tail.size - 1, false);
             tail.cdr = cell;
             tail = cell;
-            currentList = currentList.cdr();
+            currentList = currentList.cdr;
         }
 
-        tail.cdr = right.list;
+        tail.cdr = right;
 
 
-        return new SchemeList(head, null, left.size + right.size, false);
+        return head;
     }
 
     @Specialization(guards = "left.isEmpty")

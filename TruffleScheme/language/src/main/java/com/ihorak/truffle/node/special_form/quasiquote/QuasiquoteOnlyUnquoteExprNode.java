@@ -18,11 +18,11 @@ public class QuasiquoteOnlyUnquoteExprNode extends SchemeExpression {
     private final SchemeExpression[] unquoteToEval;
 
     @CompilationFinal(dimensions = 1)
-    private final SchemeCell[] unquoteToInsert;
+    private final SchemeList[] unquoteToInsert;
 
-    public QuasiquoteOnlyUnquoteExprNode(List<SchemeExpression> unquoteToEval, List<SchemeCell> unquoteToInsert, SchemeList listIR) {
+    public QuasiquoteOnlyUnquoteExprNode(List<SchemeExpression> unquoteToEval, List<SchemeList> unquoteToInsert, SchemeList listIR) {
         this.unquoteToEval = unquoteToEval.toArray(SchemeExpression[]::new);
-        this.unquoteToInsert = unquoteToInsert.toArray(SchemeCell[]::new);
+        this.unquoteToInsert = unquoteToInsert.toArray(SchemeList[]::new);
         this.listIR = listIR;
     }
 

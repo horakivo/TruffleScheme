@@ -16,8 +16,7 @@ public abstract class CdrExprNode extends LimitedBuiltin {
 
     @Specialization(guards = "!list.isEmpty")
     protected SchemeList doList(SchemeList list) {
-        var size = list.size - 1;
-        return new SchemeList(list.list.cdr, list.bindingCell, list.size - 1, size == 0);
+        return list.cdr;
     }
 
     @Specialization

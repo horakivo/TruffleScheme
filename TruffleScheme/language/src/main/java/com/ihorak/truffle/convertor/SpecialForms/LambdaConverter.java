@@ -45,8 +45,8 @@ public class LambdaConverter {
     public static LambdaExprNode convert(SchemeList lambdaListIR, ParsingContext context, SchemeSymbol name, @Nullable ParserRuleContext lambdaCtx) {
         validate(lambdaListIR);
         ParsingContext lambdaContext = new ParsingContext(context, LexicalScope.LAMBDA, context.getSource());
-        var argumentsIR = lambdaListIR.cdr().car();
-        var lambdaBodyIR = lambdaListIR.cdr().cdr();
+        var argumentsIR = lambdaListIR.cdr.car;
+        var lambdaBodyIR = lambdaListIR.cdr.cdr;
         var numberOfArguments = numberOfArguments(argumentsIR);
 
         var isProcedureBeingDefined = !name.getValue().equals("anonymous_procedure");
@@ -140,8 +140,8 @@ public class LambdaConverter {
 
     // (lambda (arg1 ... argN) expr1 ..exprN)
     private static void validate(SchemeList lambdaList) {
-        var params = lambdaList.cdr().car();
-        var body = lambdaList.cdr().cdr();
+        var params = lambdaList.cdr.car;
+        var body = lambdaList.cdr.cdr;
 
         if (params instanceof SchemeList list) {
             for (Object obj : list) {

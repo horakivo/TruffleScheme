@@ -1,7 +1,7 @@
 package com.ihorak.truffle.node.special_form.quasiquote;
 
-import com.ihorak.truffle.type.SchemeCell;
+import com.ihorak.truffle.type.SchemeList;
 
 public record UnquoteSplicingInsertInfo(
-        SchemeCell previousCell,
-        SchemeCell cellToReplace) { }
+        SchemeList previousCell,
+        SchemeList cellToReplace) { }

@@ -6,18 +6,19 @@ import com.ihorak.truffle.type.SchemeList;
 public class SchemeListUtil {
 
     public static SchemeList createList(Object... objects) {
-        if (objects.length == 0) return new SchemeList(SchemeCell.EMPTY_LIST, null, 0, true);
+        if (objects.length == 0) return SchemeList.EMPTY_LIST;
 
-        var initialCell = new SchemeCell(objects[0], SchemeCell.EMPTY_LIST);
-        var schemeList = new SchemeList(initialCell, initialCell, 1, false);
+        var head = new SchemeList(objects[0], null, objects.length, false);
+        var tail = head;
+
         for (int i = 1; i < objects.length; i++) {
-            var toBeAdded = objects[i];
-            var cell = new SchemeCell(toBeAdded, schemeList.bindingCell.cdr);
-            schemeList.bindingCell.cdr = cell;
-            schemeList.bindingCell = cell;
-            schemeList.size++;
+            var cell = new SchemeList(objects[i], null, tail.size - 1, false);
+            tail.cdr = cell;
+            tail = cell;
         }
 
-        return schemeList;
+        tail.cdr = SchemeList.EMPTY_LIST;
+
+        return head;
     }
 }

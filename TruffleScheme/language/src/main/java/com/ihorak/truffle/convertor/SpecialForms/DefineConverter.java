@@ -62,7 +62,7 @@ public class DefineConverter {
     private static void validate(SchemeList defineList, boolean isDefinitionAllowed) {
         if (!isDefinitionAllowed) throw new SchemeException("define: not allowed in an expression context", null);
         var identifier = defineList.get(1);
-        var body = defineList.cdr().cdr();
+        var body = defineList.cdr.cdr;
 
         if (!(identifier instanceof SchemeSymbol)) {
             throw new SchemeException("define: bad syntax. Not an identifier. Given: " + identifier, null);

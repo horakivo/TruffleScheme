@@ -64,23 +64,23 @@ public class CallableConverter {
     }
 
     private static boolean isBuiltin(SchemeList callableList) {
-        return callableList.car() instanceof SchemeSymbol symbol && BuiltinUtils.isBuiltinProcedure(symbol);
+        return callableList.car instanceof SchemeSymbol symbol && BuiltinUtils.isBuiltinProcedure(symbol);
     }
 
     private static boolean isMacro(SchemeList callableList, ParsingContext context) {
-        return callableList.car() instanceof SchemeSymbol symbol && context.isMacro(symbol);
+        return callableList.car instanceof SchemeSymbol symbol && context.isMacro(symbol);
 
     }
 
     private static SchemeExpression createBuiltin(SchemeList callableList, ParsingContext context, @Nullable ParserRuleContext procedureCtx) {
-        var symbol = (SchemeSymbol) callableList.car();
-        List<SchemeExpression> arguments = getProcedureArguments(callableList.cdr(), context, procedureCtx);
+        var symbol = (SchemeSymbol) callableList.car;
+        List<SchemeExpression> arguments = getProcedureArguments(callableList.cdr, context, procedureCtx);
         return BuiltinConverter.createBuiltin(symbol, arguments, context, procedureCtx);
     }
 
     private static SchemeExpression createMacro(SchemeList callableList, ParsingContext context, @Nullable ParserRuleContext macroCtx) {
-        var symbolIR = (SchemeSymbol) callableList.car();
-        var argumentListIR = callableList.cdr();
+        var symbolIR = (SchemeSymbol) callableList.car;
+        var argumentListIR = callableList.cdr;
         var macroTransformationInfoInfo = context.getMacroTransformationInfo(symbolIR);
 
         if (argumentListIR.size != macroTransformationInfoInfo.amountOfArgs()) {
@@ -99,8 +99,8 @@ public class CallableConverter {
     }
 
     private static SchemeExpression createProcedureCall(SchemeList callableList, boolean isTailCall, ParsingContext context, @Nullable ParserRuleContext procedureCtx) {
-        var operandIR = callableList.car();
-        List<SchemeExpression> arguments = getProcedureArguments(callableList.cdr(), context, procedureCtx);
+        var operandIR = callableList.car;
+        List<SchemeExpression> arguments = getProcedureArguments(callableList.cdr, context, procedureCtx);
         var callableCtx = procedureCtx != null ? (ParserRuleContext) procedureCtx.getChild(CTX_CALLABLE_INDEX) : null;
         var operandExpr = InternalRepresentationConverter.convert(operandIR, context, false, false, callableCtx);
 
@@ -181,7 +181,7 @@ public class CallableConverter {
     }
 
     private static void validate(SchemeList callableList) {
-        var operand = callableList.car();
+        var operand = callableList.car;
         if (operand instanceof SchemeSymbol schemeSymbol) {
             if (isUnquote(schemeSymbol))
                 throw new SchemeException("unquote: expression not valid outside of quasiquote in form " + callableList, null);

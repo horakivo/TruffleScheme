@@ -19,41 +19,74 @@ import java.util.Iterator;
 @ExportLibrary(InteropLibrary.class)
 public class SchemeList implements Iterable<Object>, TruffleObject {
 
-    public SchemeCell list;
-    @Nullable
-    public SchemeCell bindingCell;
-    public int size;
+    public static final SchemeList EMPTY_LIST = new SchemeList(null, null, 0, true);
+
+    public Object car;
+    public SchemeList cdr;
+    public final int size;
     public final boolean isEmpty;
 
-    public SchemeList(final SchemeCell list, final @Nullable SchemeCell bindingCell, final int size, final boolean isEmpty) {
-        this.list = list;
-        this.bindingCell = bindingCell;
+    public SchemeList(Object car, SchemeList cdr, final int size, final boolean isEmpty) {
+        this.car = car;
+        this.cdr = cdr;
         this.size = size;
         this.isEmpty = isEmpty;
     }
 
     public Object get(int index) {
-        return list.get(index);
+        if (index >= size) {
+            throw new ArrayIndexOutOfBoundsException("SchemeList out of bounds. Index: " + index + ". Size: " + size);
+        }
+
+        SchemeList currentList = this;
+        for (int i = 0; i < index; i++) {
+            currentList = currentList.cdr;
+        }
+
+        return currentList.car;
     }
 
-    public SchemeList cdr() {
-        var newSize = size - 1;
-        return new SchemeList(list.cdr, bindingCell, newSize, newSize == 0);
-    }
-
-    public Object car() {
-        return list.car;
-    }
 
     @Override
     public String toString() {
-        return list.toString();
+        if (isEmpty) {
+            return "()";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append('(');
+
+
+        var currentList = this;
+        while (!currentList.isEmpty) {
+            sb.append(currentList.car);
+            sb.append(" ");
+            currentList = currentList.cdr;
+        }
+
+        sb.deleteCharAt(sb.length() - 1);
+        sb.append(')');
+
+        return sb.toString();
     }
 
-    @NotNull
     @Override
     public Iterator<Object> iterator() {
-        return list.iterator();
+        return new Iterator<>() {
+            private SchemeList cell = SchemeList.this;
+
+            @Override
+            public boolean hasNext() {
+                return cell != EMPTY_LIST;
+            }
+
+            @Override
+            public Object next() {
+                Object toReturn = cell.car;
+                cell = cell.cdr;
+                return toReturn;
+            }
+        };
     }
 
 
