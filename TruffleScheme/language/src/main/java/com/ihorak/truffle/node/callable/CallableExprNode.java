@@ -2,6 +2,8 @@ package com.ihorak.truffle.node.callable;
 
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.callable.TCO.TailCallCatcherNode;
+import com.ihorak.truffle.node.callable.TCO.exceptions.TailCallException;
 import com.ihorak.truffle.type.UserDefinedProcedure;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerDirectives;
@@ -21,16 +23,24 @@ public class CallableExprNode extends SchemeExpression {
     @Child
     protected DispatchNode dispatchNode;
 
+    private final int tailCallArgumentsSlot;
+    private final int tailCallTargetSlot;
+    private final int tailCallResultSlot;
+    private final BranchProfile tailCallProfile = BranchProfile.create();
 
-    private final BranchProfile userProcedureWrongNumberOfArgsProfile = BranchProfile.create();
-    private final BranchProfile primitiveProcedureWrongNumberOfArgsProfile = BranchProfile.create();
-    private final ConditionProfile conditionProfile = ConditionProfile.createBinaryProfile();
+
+//    private final BranchProfile userProcedureWrongNumberOfArgsProfile = BranchProfile.create();
+//    private final BranchProfile primitiveProcedureWrongNumberOfArgsProfile = BranchProfile.create();
+//    private final ConditionProfile conditionProfile = ConditionProfile.createBinaryProfile();
 
 
-    public CallableExprNode(List<SchemeExpression> arguments, SchemeExpression callable) {
+    public CallableExprNode(List<SchemeExpression> arguments, SchemeExpression callable, int tailCallArgumentsSlot, int tailCallTargetSlot, int tailCallResultSlot) {
         this.arguments = arguments.toArray(SchemeExpression[]::new);
         this.callable = callable;
         this.dispatchNode = DispatchNodeGen.create();
+        this.tailCallArgumentsSlot = tailCallArgumentsSlot;
+        this.tailCallTargetSlot = tailCallTargetSlot;
+        this.tailCallResultSlot = tailCallResultSlot;
         // this.dataOperand = dataOperand;
     }
 
@@ -38,7 +48,13 @@ public class CallableExprNode extends SchemeExpression {
     public Object executeGeneric(final VirtualFrame frame) {
         var procedure = (UserDefinedProcedure) callable.executeGeneric(frame);
         var args = getProcedureOrMacroArgsNoOptional(procedure, frame);
-        return dispatchNode.executeDispatch(procedure, args);
+        try {
+            return dispatchNode.executeDispatch(procedure, args);
+        } catch (TailCallException e) {
+            tailCallProfile.enter();
+            var tailCallCatcher = new TailCallCatcherNode(arguments, callable, tailCallArgumentsSlot, tailCallTargetSlot, tailCallResultSlot);
+            return replace(tailCallCatcher).executeGeneric(frame);
+        }
     }
 
     @ExplodeLoop

@@ -133,15 +133,11 @@ public class CallableConverter {
             var throwerNode = TailCallThrowerNodeGen.create(arguments, operandExpr, operandIR);
             return SourceSectionUtil.setSourceSectionAndReturnExpr(throwerNode, procedureCtx);
         } else {
-            if (isCallableTailCallProcedure(operandIR, operandExpr, context)) {
-                int tailCallArgumentsSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
-                int tailCallTargetSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
-                int tailCallResultSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
-                var tailCallCatcherNode = new TailCallCatcherNode(arguments, operandExpr, tailCallArgumentsSlot, tailCallTargetSlot, tailCallResultSlot);
-                return SourceSectionUtil.setSourceSectionAndReturnExpr(tailCallCatcherNode, procedureCtx);
-            }
+            int tailCallArgumentsSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
+            int tailCallTargetSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
+            int tailCallResultSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
 
-            var callableExpr = new CallableExprNode(arguments, operandExpr);
+            var callableExpr = new CallableExprNode(arguments, operandExpr, tailCallArgumentsSlot, tailCallTargetSlot, tailCallResultSlot);
             return SourceSectionUtil.setSourceSectionAndReturnExpr(callableExpr, procedureCtx);
         }
 

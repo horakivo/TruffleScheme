@@ -7,8 +7,7 @@
   (lambda (len p q s result)
     (if (= len 0)
         result
-        (tmp  (modulo (* s s) (* p q)) len p q result)
-              )))
+        (tmp (modulo (* s s) (* p q)) len p q result))))
 
 
 (define tmp

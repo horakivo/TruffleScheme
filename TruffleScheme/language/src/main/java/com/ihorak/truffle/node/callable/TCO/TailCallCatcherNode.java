@@ -25,8 +25,8 @@ public class TailCallCatcherNode extends SchemeExpression {
     private final int tailCallTargetSlot;
     private final int tailCallResultSlot;
 
-    public TailCallCatcherNode(List<SchemeExpression> arguments, SchemeExpression callable, int tailCallArgumentsSlot, int tailCallTargetSlot, int tailCallResultSlot) {
-        this.arguments = arguments.toArray(SchemeExpression[]::new);
+    public TailCallCatcherNode(SchemeExpression[] arguments, SchemeExpression callable, int tailCallArgumentsSlot, int tailCallTargetSlot, int tailCallResultSlot) {
+        this.arguments = arguments;
         this.callable = callable;
         this.tailCallArgumentsSlot = tailCallArgumentsSlot;
         this.tailCallTargetSlot = tailCallTargetSlot;
