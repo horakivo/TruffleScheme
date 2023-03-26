@@ -136,7 +136,8 @@ public class CallableConverter {
             if (isCallableTailCallProcedure(operandIR, operandExpr, context)) {
                 int tailCallArgumentsSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
                 int tailCallTargetSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
-                var tailCallCatcherNode = new TailCallCatcherNode(arguments, operandExpr, tailCallArgumentsSlot, tailCallTargetSlot);
+                int tailCallResultSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
+                var tailCallCatcherNode = new TailCallCatcherNode(arguments, operandExpr, tailCallArgumentsSlot, tailCallTargetSlot, tailCallResultSlot);
                 return SourceSectionUtil.setSourceSectionAndReturnExpr(tailCallCatcherNode, procedureCtx);
             }
 

@@ -23,13 +23,15 @@ public class TailCallCatcherNode extends SchemeExpression {
     @Child private SchemeExpression callable;
     private final int tailCallArgumentsSlot;
     private final int tailCallTargetSlot;
+    private final int tailCallResultSlot;
 
-    public TailCallCatcherNode(List<SchemeExpression> arguments, SchemeExpression callable, int tailCallArgumentsSlot, int tailCallTargetSlot) {
+    public TailCallCatcherNode(List<SchemeExpression> arguments, SchemeExpression callable, int tailCallArgumentsSlot, int tailCallTargetSlot, int tailCallResultSlot) {
         this.arguments = arguments.toArray(SchemeExpression[]::new);
         this.callable = callable;
         this.tailCallArgumentsSlot = tailCallArgumentsSlot;
         this.tailCallTargetSlot = tailCallTargetSlot;
-        this.loopNode = Truffle.getRuntime().createLoopNode(new TailCallLoopNode(tailCallArgumentsSlot, tailCallTargetSlot));
+        this.tailCallResultSlot = tailCallResultSlot;
+        this.loopNode = Truffle.getRuntime().createLoopNode(new TailCallLoopNode(tailCallArgumentsSlot, tailCallTargetSlot, tailCallResultSlot));
     }
 
 
@@ -45,7 +47,9 @@ public class TailCallCatcherNode extends SchemeExpression {
         frame.setObject(tailCallTargetSlot, userDefinedProcedure);
         frame.setObject(tailCallArgumentsSlot, arguments);
 
-        return loopNode.execute(frame);
+        loopNode.execute(frame);
+
+        return frame.getObject(tailCallResultSlot);
     }
 
 
