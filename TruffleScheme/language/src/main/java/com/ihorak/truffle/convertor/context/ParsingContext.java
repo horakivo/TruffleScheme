@@ -17,7 +17,6 @@ public class ParsingContext {
 
     private final Map<SchemeSymbol, MacroInfo> macroIndex = new HashMap<>();
     private final Map<SchemeSymbol, LocalVariableInfo> localVariableIndex = new HashMap<>();
-    private final Map<SchemeSymbol, Boolean> tailCallProceduresMap = new HashMap<>();
 
     private final Source source;
 
@@ -25,11 +24,10 @@ public class ParsingContext {
     //Method information
 
     private SchemeSymbol functionDefinitionName;
-
     private boolean isFunctionSelfTailRecursive = false;
-    private List<Integer> functionArgumentSlotIndexes;
     private Integer selfTailRecursionResultIndex;
-    private boolean isTailCallProcedureBeingDefined = false;
+    
+    private List<Integer> functionArgumentSlotIndexes;
     private final ParsingContext parent;
     private final SchemeTruffleLanguage language;
     private final LexicalScope scope;
@@ -206,38 +204,6 @@ public class ParsingContext {
 
     public Optional<Integer> getSelfTCOResultFrameSlot() {
         return Optional.ofNullable(selfTailRecursionResultIndex);
-    }
-
-
-    public boolean isTailCallProcedureBeingDefined() {
-        return isTailCallProcedureBeingDefined;
-    }
-
-    public void setDefiningProcedureAsTailCall() {
-        isTailCallProcedureBeingDefined = true;
-    }
-
-    public void addProcedure(SchemeSymbol nameOfProcedure, boolean isTailCall) {
-        tailCallProceduresMap.put(nameOfProcedure, isTailCall);
-    }
-
-    public boolean isProcedureTailCall(SchemeSymbol name) {
-        return isProcedureTailCall(name, this);
-    }
-
-    private boolean isProcedureTailCall(SchemeSymbol name, ParsingContext context) {
-        if (context == null) {
-            // since we didn't find anything, it means that the function is not defined yet
-            // we have to assume that it is TCO. Look givenTCOProcedureDefinedAfterItsUsage_whenCalled_thenExceptionIsNotEscaping
-            return true;
-        }
-        if (context.tailCallProceduresMap.containsKey(name)) {
-            return context.tailCallProceduresMap.get(name);
-        }
-
-        return isProcedureTailCall(name, context.parent);
-
-
     }
 
     public Source getSource() {

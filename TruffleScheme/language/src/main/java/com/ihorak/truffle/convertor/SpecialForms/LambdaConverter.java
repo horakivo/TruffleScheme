@@ -59,7 +59,7 @@ public class LambdaConverter {
 
         var callTarget = creatCallTarget(writeLocalVariableExpr, bodyExprs, name, lambdaContext, lambdaCtx);
         var hasOptionalArgs = argumentsIR instanceof SchemePair;
-        var lambdaExpr = new LambdaExprNode(callTarget, numberOfArguments, hasOptionalArgs, lambdaContext.isTailCallProcedureBeingDefined());
+        var lambdaExpr = new LambdaExprNode(callTarget, numberOfArguments, hasOptionalArgs);
         SourceSectionUtil.setSourceSection(lambdaExpr, lambdaCtx);
         return lambdaExpr;
     }

@@ -11,15 +11,13 @@ public class LambdaExprNode extends SchemeExpression {
 
 
     public final CallTarget callTarget;
-    public final boolean isTailCall;
     public final int amountOfArguments;
     private final boolean hasOptionalArgs;
 
-    public LambdaExprNode(CallTarget callTarget, int amountOfArguments, boolean hasOptionalArgs, boolean isTailCall) {
+    public LambdaExprNode(CallTarget callTarget, int amountOfArguments, boolean hasOptionalArgs) {
         this.callTarget = callTarget;
         this.amountOfArguments = amountOfArguments;
         this.hasOptionalArgs = hasOptionalArgs;
-        this.isTailCall = isTailCall;
     }
 
     @Override

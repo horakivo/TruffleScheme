@@ -38,7 +38,6 @@ public class TailCallUtil {
             var lastIndex = size - 1;
             var currentCtx = getCurrentBodyCtx(ctx, ctxBodyStartIndex, lastIndex);
 
-            //pokud tohle je volani metody pak vraceni z lambdy musi vytvorit Catcher a pokud ne tak nemusi
             var lastExpr = InternalRepresentationConverter.convert(bodyIR.get(size - 1), context, true, false, currentCtx);
             if (context.isFunctionSelfTailRecursive()) {
                 var resultFrameIndex = context.getSelfTCOResultFrameSlot().orElseThrow(InterpreterException::shouldNotReachHere);

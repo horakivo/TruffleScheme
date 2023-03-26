@@ -35,11 +35,6 @@ public class LetrecConverter extends AbstractLetConverter {
         var bodyExprs = TailCallUtil.convertBodyToSchemeExpressionsWithTCO(bodyIR, letContext, letCtx, CTX_BODY_INDEX);
         var allExprs = Stream.concat(writeLocalVariableExpr.stream(), bodyExprs.stream()).toList();
 
-        if (letContext.isTailCallProcedureBeingDefined()) {
-            // we need to set the parent context also as tail
-            context.setDefiningProcedureAsTailCall();
-        }
-
         return SourceSectionUtil.setSourceSectionAndReturnExpr(new LetExprNode(allExprs), letCtx);
     }
 

@@ -129,7 +129,6 @@ public class CallableConverter {
                 if (writeSlotNodes.size() != arguments.size()) InterpreterException.shouldNotReachHere();
                 return SelfRecursiveTailCallThrowerNodeGen.create(arguments, writeSlotNodes);
             }
-            context.setDefiningProcedureAsTailCall();
             var throwerNode = TailCallThrowerNodeGen.create(arguments, operandExpr, operandIR);
             return SourceSectionUtil.setSourceSectionAndReturnExpr(throwerNode, procedureCtx);
         } else {
@@ -147,24 +146,6 @@ public class CallableConverter {
     private static List<WriteFrameSlotNode> createWriteFrameSlotsNodes(ParsingContext context) {
         var frameSlotIndexes = context.getFunctionArgumentSlotIndexes();
         return frameSlotIndexes.stream().map(WriteFrameSlotNodeGen::create).toList();
-    }
-
-    private static boolean isCallableTailCallProcedure(Object operand, SchemeExpression operandExpr, ParsingContext context) {
-        if (operand instanceof SchemeSymbol symbol) {
-            if (context.getFunctionDefinitionName().isPresent() && symbol.equals(context.getFunctionDefinitionName().get())) {
-                // TODO is this valid assumption?
-                // calling self in non-tail call position - does it have to be catcher?
-                return false;
-            }
-            return context.isProcedureTailCall(symbol);
-        }
-
-        if (operandExpr instanceof LambdaExprNode lambdaExpr) {
-            return lambdaExpr.isTailCall;
-        }
-
-        // we have to assume that it is a catcher
-        return true;
     }
 
     private static List<SchemeExpression> getProcedureArguments(SchemeList argumentList, ParsingContext context, @Nullable ParserRuleContext procedureCtx) {

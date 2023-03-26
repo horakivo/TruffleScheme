@@ -51,9 +51,7 @@ public class DefineConverter {
         var bodyFormCtx = defineCtx != null ? (ParserRuleContext) defineCtx.children.get(CTX_DEFINE_BODY) : null;
         if (isDefun(defineList)) {
             var lambdaCtx = bodyFormCtx != null ? (ParserRuleContext) bodyFormCtx.getChild(0) : null;
-            var lambdaExpr = LambdaConverter.convert((SchemeList) defineBody, context, identifier, lambdaCtx);
-            context.addProcedure(identifier, lambdaExpr.isTailCall);
-            return lambdaExpr;
+            return LambdaConverter.convert((SchemeList) defineBody, context, identifier, lambdaCtx);
         } else {
             return InternalRepresentationConverter.convert(defineBody, context, false, false, bodyFormCtx);
         }
