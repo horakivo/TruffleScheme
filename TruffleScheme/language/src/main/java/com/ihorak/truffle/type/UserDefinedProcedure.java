@@ -7,6 +7,7 @@ import com.ihorak.truffle.node.callable.DispatchNodeGen;
 import com.oracle.truffle.api.Assumption;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerDirectives;
+import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 import com.oracle.truffle.api.RootCallTarget;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.frame.MaterializedFrame;
@@ -14,6 +15,7 @@ import com.oracle.truffle.api.interop.TruffleObject;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
+import com.oracle.truffle.api.profiles.BranchProfile;
 import com.oracle.truffle.api.utilities.CyclicAssumption;
 
 import java.math.BigInteger;
@@ -22,7 +24,7 @@ import java.math.BigInteger;
 public class UserDefinedProcedure implements TruffleObject {
 
     private int expectedNumberOfArgs;
-    private CallTarget callTarget;
+    @CompilationFinal private CallTarget callTarget;
     private final boolean optionalArgs;
     private final MaterializedFrame parentFrame;
 
@@ -33,10 +35,6 @@ public class UserDefinedProcedure implements TruffleObject {
     //Because of the Interop library
 //    private final DispatchNode dispatchNode = DispatchNodeGen.create();
 
-
-    public CallTarget getCallTarget() {
-        return callTarget;
-    }
 
     public UserDefinedProcedure(CallTarget callTarget, int expectedNumberOfArgs, final boolean hasOptionalArgs, MaterializedFrame frame) {
         this.callTarget = callTarget;
@@ -52,20 +50,23 @@ public class UserDefinedProcedure implements TruffleObject {
     }
 
     public void redefine(CallTarget callTarget, int expectedNumberOfArgs) {
-        boolean wasNull = this.callTarget == null;
-        this.callTarget = callTarget;
-        this.expectedNumberOfArgs = expectedNumberOfArgs;
-
-        if (!wasNull) {
+        if (this.callTarget != callTarget) {
+            CompilerDirectives.transferToInterpreterAndInvalidate();
+            this.callTarget = callTarget;
+            this.expectedNumberOfArgs = expectedNumberOfArgs;
             callTargetStable.invalidate();
         }
     }
 
     // result of this method should be cached!
-    public Assumption isCallTargetStableAssumption() {
+    public Assumption getCallTargetStableAssumption() {
         return callTargetStable.getAssumption();
     }
 
+
+    public CallTarget getCallTarget() {
+        return callTarget;
+    }
 
     public MaterializedFrame getParentFrame() {
         return parentFrame;
@@ -78,6 +79,7 @@ public class UserDefinedProcedure implements TruffleObject {
     public boolean isOptionalArgs() {
         return optionalArgs;
     }
+
 
     @Override
     public String toString() {

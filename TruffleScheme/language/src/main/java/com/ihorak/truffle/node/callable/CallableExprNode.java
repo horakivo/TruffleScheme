@@ -4,6 +4,7 @@ import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.UserDefinedProcedure;
 import com.oracle.truffle.api.CallTarget;
+import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
@@ -14,13 +15,11 @@ import java.util.List;
 
 public class CallableExprNode extends SchemeExpression {
 
-    @Children
-    private final SchemeExpression[] arguments;
-
+    @Children private final SchemeExpression[] arguments;
     @Child private SchemeExpression callable;
     @SuppressWarnings("FieldMayBeFinal")
-    @Child protected DispatchNode dispatchNode;
-    // public final Object dataOperand;
+    @Child
+    protected DispatchNode dispatchNode;
 
 
     private final BranchProfile userProcedureWrongNumberOfArgsProfile = BranchProfile.create();
@@ -37,9 +36,9 @@ public class CallableExprNode extends SchemeExpression {
 
     @Override
     public Object executeGeneric(final VirtualFrame frame) {
-        var function = (UserDefinedProcedure) callable.executeGeneric(frame);
-        var args = getProcedureOrMacroArgsNoOptional(function, frame);
-        return call(function.getCallTarget(), args, frame);
+        var procedure = (UserDefinedProcedure) callable.executeGeneric(frame);
+        var args = getProcedureOrMacroArgsNoOptional(procedure, frame);
+        return dispatchNode.executeDispatch(procedure, args);
     }
 
     @ExplodeLoop
@@ -54,11 +53,6 @@ public class CallableExprNode extends SchemeExpression {
         }
 
         return args;
-    }
-
-
-    protected Object call(CallTarget callTarget, Object[] arguments, VirtualFrame frame) {
-        return dispatchNode.executeDispatch(callTarget, arguments);
     }
 
 //    @Specialization

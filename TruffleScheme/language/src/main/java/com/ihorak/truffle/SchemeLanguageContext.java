@@ -59,6 +59,5 @@ public class SchemeLanguageContext {
         } else {
             addVariable(symbol, userDefinedProcedure);
         }
-
     }
 }

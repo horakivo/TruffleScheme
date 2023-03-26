@@ -37,7 +37,7 @@ public abstract class TailCallThrowerNode extends SchemeExpression {
 //        target.target = procedure.getCallTarget();
 //        target.arguments = getArguments(procedure, frame);
 //        throw TailCallException.INSTANCE;
-        throw new TailCallException(procedure.getCallTarget(), getArguments(procedure, frame));
+        throw new TailCallException(procedure, getArguments(procedure, frame));
     }
 
     @ExplodeLoop

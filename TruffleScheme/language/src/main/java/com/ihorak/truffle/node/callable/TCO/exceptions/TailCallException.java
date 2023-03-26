@@ -1,22 +1,23 @@
 package com.ihorak.truffle.node.callable.TCO.exceptions;
 
+import com.ihorak.truffle.type.UserDefinedProcedure;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.nodes.ControlFlowException;
 
 public class TailCallException extends ControlFlowException {
 
-	public static final TailCallException INSTANCE = new TailCallException(null, null);
-	
-    private final CallTarget callTarget;
+    public static final TailCallException INSTANCE = new TailCallException(null, null);
+
+    private final UserDefinedProcedure userDefinedProcedure;
     private final Object[] arguments;
 
-    public TailCallException(CallTarget callTarget, Object[] arguments) {
-        this.callTarget = callTarget;
+    public TailCallException(UserDefinedProcedure userDefinedProcedure, Object[] arguments) {
+        this.userDefinedProcedure = userDefinedProcedure;
         this.arguments = arguments;
     }
 
-    public CallTarget getCallTarget() {
-        return callTarget;
+    public UserDefinedProcedure getUserDefinedProcedure() {
+        return userDefinedProcedure;
     }
 
     public Object[] getArguments() {

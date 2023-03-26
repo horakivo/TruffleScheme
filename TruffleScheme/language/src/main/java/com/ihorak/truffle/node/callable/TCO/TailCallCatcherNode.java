@@ -18,16 +18,9 @@ import com.oracle.truffle.api.nodes.LoopNode;
  */
 public class TailCallCatcherNode extends SchemeExpression {
 
-    @Child
-    private LoopNode loopNode;
-
-
-    @Children
-    private final SchemeExpression[] arguments;
-    @Child
-    private SchemeExpression callable;
-
-
+    @Child private LoopNode loopNode;
+    @Children private final SchemeExpression[] arguments;
+    @Child private SchemeExpression callable;
     private final int tailCallArgumentsSlot;
     private final int tailCallTargetSlot;
 
@@ -44,12 +37,12 @@ public class TailCallCatcherNode extends SchemeExpression {
     public Object executeGeneric(VirtualFrame frame) {
         var procedure = (UserDefinedProcedure) callable.executeGeneric(frame);
         var args = getArguments(procedure, frame);
-        return call(procedure.getCallTarget(), args, frame);
+        return call(procedure, args, frame);
     }
 
-    protected Object call(CallTarget callTarget, Object[] arguments, VirtualFrame frame) {
+    protected Object call(UserDefinedProcedure userDefinedProcedure, Object[] arguments, VirtualFrame frame) {
 
-        frame.setObject(tailCallTargetSlot, callTarget);
+        frame.setObject(tailCallTargetSlot, userDefinedProcedure);
         frame.setObject(tailCallArgumentsSlot, arguments);
 
         return loopNode.execute(frame);

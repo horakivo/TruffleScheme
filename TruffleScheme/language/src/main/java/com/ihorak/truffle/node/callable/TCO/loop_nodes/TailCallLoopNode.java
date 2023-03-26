@@ -5,6 +5,7 @@ import com.ihorak.truffle.node.callable.TCO.exceptions.TailCallException;
 import com.ihorak.truffle.node.SchemeNode;
 import com.ihorak.truffle.node.callable.DispatchNode;
 import com.ihorak.truffle.node.callable.DispatchNodeGen;
+import com.ihorak.truffle.type.UserDefinedProcedure;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.frame.VirtualFrame;
@@ -36,11 +37,11 @@ public class TailCallLoopNode extends SchemeNode implements RepeatingNode {
 //            return dispatchNode.executeDispatch(target.target, target.arguments);
 
             Object[] arguments = (Object[]) frame.getObject(tailCallArgumentsSlot);
-            CallTarget callTarget = (CallTarget) frame.getObject(tailCallTargetSlot);
-            return dispatchNode.executeDispatch(callTarget, arguments);
+            UserDefinedProcedure procedure = (UserDefinedProcedure) frame.getObject(tailCallTargetSlot);
+            return dispatchNode.executeDispatch(procedure, arguments);
         } catch (TailCallException e) {
 //            SchemeTruffleLanguage.TCOTarget target = SchemeTruffleLanguage.getTCOTarget(this);
-            frame.setObject(tailCallTargetSlot, e.getCallTarget());
+            frame.setObject(tailCallTargetSlot, e.getUserDefinedProcedure());
             frame.setObject(tailCallArgumentsSlot, e.getArguments());
             return CONTINUE_LOOP_STATUS;
         }
