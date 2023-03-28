@@ -5,16 +5,17 @@ import com.ihorak.truffle.node.callable.DispatchNodeGen;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.ihorak.truffle.type.UserDefinedProcedure;
 import com.oracle.truffle.api.CallTarget;
+import com.oracle.truffle.api.RootCallTarget;
 import com.oracle.truffle.api.frame.VirtualFrame;
 
 public class LambdaExprNode extends SchemeExpression {
 
 
-    public final CallTarget callTarget;
+    public final RootCallTarget callTarget;
     public final int amountOfArguments;
     private final boolean hasOptionalArgs;
 
-    public LambdaExprNode(CallTarget callTarget, int amountOfArguments, boolean hasOptionalArgs) {
+    public LambdaExprNode(RootCallTarget callTarget, int amountOfArguments, boolean hasOptionalArgs) {
         this.callTarget = callTarget;
         this.amountOfArguments = amountOfArguments;
         this.hasOptionalArgs = hasOptionalArgs;

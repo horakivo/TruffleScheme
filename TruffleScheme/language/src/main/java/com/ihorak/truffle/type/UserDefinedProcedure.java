@@ -8,6 +8,7 @@ import com.oracle.truffle.api.Assumption;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
+import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.RootCallTarget;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.frame.MaterializedFrame;
@@ -16,6 +17,7 @@ import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
 import com.oracle.truffle.api.profiles.BranchProfile;
+import com.oracle.truffle.api.source.SourceSection;
 import com.oracle.truffle.api.utilities.CyclicAssumption;
 
 import java.math.BigInteger;
@@ -24,7 +26,7 @@ import java.math.BigInteger;
 public class UserDefinedProcedure implements TruffleObject {
 
     private int expectedNumberOfArgs;
-    @CompilationFinal private CallTarget callTarget;
+    @CompilationFinal private RootCallTarget callTarget;
     private final boolean optionalArgs;
     private final MaterializedFrame parentFrame;
 
@@ -36,7 +38,7 @@ public class UserDefinedProcedure implements TruffleObject {
 //    private final DispatchNode dispatchNode = DispatchNodeGen.create();
 
 
-    public UserDefinedProcedure(CallTarget callTarget, int expectedNumberOfArgs, final boolean hasOptionalArgs, MaterializedFrame frame) {
+    public UserDefinedProcedure(RootCallTarget callTarget, int expectedNumberOfArgs, final boolean hasOptionalArgs, MaterializedFrame frame) {
         this.callTarget = callTarget;
         this.parentFrame = frame;
         this.expectedNumberOfArgs = expectedNumberOfArgs;
@@ -49,7 +51,7 @@ public class UserDefinedProcedure implements TruffleObject {
         this.optionalArgs = hasOptionalArgs;
     }
 
-    public void redefine(CallTarget callTarget, int expectedNumberOfArgs) {
+    public void redefine(RootCallTarget callTarget, int expectedNumberOfArgs) {
         if (this.callTarget != callTarget) {
             CompilerDirectives.transferToInterpreterAndInvalidate();
             this.callTarget = callTarget;
@@ -64,7 +66,7 @@ public class UserDefinedProcedure implements TruffleObject {
     }
 
 
-    public CallTarget getCallTarget() {
+    public RootCallTarget getCallTarget() {
         return callTarget;
     }
 
@@ -87,7 +89,7 @@ public class UserDefinedProcedure implements TruffleObject {
     }
 
     //----------------InteropLibrary messages–----------------------
-//
+
 //    @ExportMessage
 //    boolean hasLanguage() {
 //        return true;
@@ -96,6 +98,12 @@ public class UserDefinedProcedure implements TruffleObject {
 //    @ExportMessage
 //    Class<? extends TruffleLanguage<?>> getLanguage() {
 //        return SchemeTruffleLanguage.class;
+//    }
+
+//    @ExportMessage
+//    @TruffleBoundary
+//    SourceSection getSourceLocation() {
+//        return getCallTarget().getRootNode().getSourceSection();
 //    }
 //
 //    @ExportMessage
