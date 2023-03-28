@@ -1,10 +1,14 @@
 package com.ihorak.truffle.convertor.SpecialForms;
 
 import com.ihorak.truffle.convertor.InternalRepresentationConverter;
+import com.ihorak.truffle.convertor.SourceSectionUtil;
 import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.convertor.util.TailCallUtil;
 import com.ihorak.truffle.exceptions.InterpreterException;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
+import com.ihorak.truffle.node.special_form.LetExprNode;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
@@ -13,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public abstract class AbstractLetConverter {
 
@@ -46,6 +51,17 @@ public abstract class AbstractLetConverter {
                 allIdentifiers.add(symbol);
             }
         }
+    }
+
+    protected static SchemeExpression createLetExpr(SchemeList letList, List<WriteLocalVariableExprNode> writeLocalsExprs, ParsingContext letContext, boolean isTailCallPosition, ParsingContext parentContext, @Nullable ParserRuleContext letCtx) {
+        var bodyIR = letList.cdr.cdr;
+
+        var bodyExprs = TailCallUtil.convertWithDefinitionsAndNoFrameCreation(bodyIR, letContext, isTailCallPosition, letCtx, CTX_BODY_INDEX);
+        var allExprs = Stream.concat(writeLocalsExprs.stream(), bodyExprs.stream()).toList();
+
+        propagateSelfTCOInfoToParentContext(letContext, parentContext);
+
+        return SourceSectionUtil.setSourceSectionAndReturnExpr(new LetExprNode(allExprs), letCtx);
     }
 
     protected static void propagateSelfTCOInfoToParentContext(ParsingContext letContext, ParsingContext parentContext) {

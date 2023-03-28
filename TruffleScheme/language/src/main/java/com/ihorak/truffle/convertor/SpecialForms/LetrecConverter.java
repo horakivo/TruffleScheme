@@ -25,20 +25,14 @@ public class LetrecConverter extends AbstractLetConverter {
     private LetrecConverter() {
     }
 
-    public static SchemeExpression convert(SchemeList letList, ParsingContext context, boolean isTailCallPosition, @Nullable ParserRuleContext letCtx) {
-        validate(letList);
+    public static SchemeExpression convert(SchemeList letrecList, ParsingContext context, boolean isTailCallPosition, @Nullable ParserRuleContext letCtx) {
+        validate(letrecList);
         ParsingContext letContext = ParsingContext.createLetContext(context);
 
-        var localBindingsIR = (SchemeList) letList.get(1);
-        var bodyIR = letList.cdr.cdr;
+        var localBindingsIR = (SchemeList) letrecList.get(1);
 
-        var writeLocalVariableExpr = createWriteLocalVariables(localBindingsIR, letContext, letCtx);
-        var bodyExprs = TailCallUtil.convertWithDefinitionsAndNoFrameCreation(bodyIR, letContext, isTailCallPosition, letCtx, CTX_BODY_INDEX);
-        var allExprs = Stream.concat(writeLocalVariableExpr.stream(), bodyExprs.stream()).toList();
-
-        propagateSelfTCOInfoToParentContext(letContext, context);
-
-        return SourceSectionUtil.setSourceSectionAndReturnExpr(new LetExprNode(allExprs), letCtx);
+        var writeLocalsExprs = createWriteLocalVariables(localBindingsIR, letContext, letCtx);
+        return createLetExpr(letrecList, writeLocalsExprs, letContext, isTailCallPosition, context, letCtx);
     }
 
     // (letrec ((x 1) (y 2)) <body>)

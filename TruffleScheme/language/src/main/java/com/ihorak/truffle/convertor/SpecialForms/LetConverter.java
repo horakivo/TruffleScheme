@@ -23,21 +23,14 @@ public class LetConverter extends AbstractLetConverter {
     private LetConverter() {
     }
 
-    //TODO handle duplication
     public static SchemeExpression convert(SchemeList letList, ParsingContext context, boolean isTailCallPosition, @Nullable ParserRuleContext letCtx) {
         validate(letList);
         ParsingContext letContext = ParsingContext.createLetContext(context);
 
         var localBindingsIR = (SchemeList) letList.get(1);
-        var bodyIR = letList.cdr.cdr;
 
-        var writeLocalVariableExpr = createWriteLocalVariables(localBindingsIR, letContext, letCtx);
-        var bodyExprs = TailCallUtil.convertWithDefinitionsAndNoFrameCreation(bodyIR, letContext, isTailCallPosition, letCtx, CTX_BODY_INDEX);
-        var allExprs = Stream.concat(writeLocalVariableExpr.stream(), bodyExprs.stream()).toList();
-
-        propagateSelfTCOInfoToParentContext(letContext, context);
-
-        return SourceSectionUtil.setSourceSectionAndReturnExpr(new LetExprNode(allExprs), letCtx);
+        var writeLocalsExprs = createWriteLocalVariables(localBindingsIR, letContext, letCtx);
+        return createLetExpr(letList, writeLocalsExprs, letContext, isTailCallPosition, context, letCtx);
     }
 
     private static List<WriteLocalVariableExprNode> createWriteLocalVariables(SchemeList localBindings, ParsingContext context, @Nullable ParserRuleContext letCtx) {
@@ -49,8 +42,8 @@ public class LetConverter extends AbstractLetConverter {
             var exprCtx = getParameterExprCtx(letParamCtx, i);
             var bindingList = (SchemeList) localBindings.get(i);
             var name = (SchemeSymbol) bindingList.get(0);
-            var dataExpr = bindingList.get(1);
-            var expr = InternalRepresentationConverter.convert(dataExpr, context, false, false, exprCtx);
+            var exprIR = bindingList.get(1);
+            var expr = InternalRepresentationConverter.convert(exprIR, context, false, false, exprCtx);
             expressions.add(expr);
             symbols.add(name);
         }
