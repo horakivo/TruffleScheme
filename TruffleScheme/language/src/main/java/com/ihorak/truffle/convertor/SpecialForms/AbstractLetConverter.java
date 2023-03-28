@@ -2,6 +2,7 @@ package com.ihorak.truffle.convertor.SpecialForms;
 
 import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.exceptions.InterpreterException;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeCell;
@@ -44,6 +45,14 @@ public abstract class AbstractLetConverter {
             } else {
                 allIdentifiers.add(symbol);
             }
+        }
+    }
+
+    protected static void propagateSelfTCOInfoToParentContext(ParsingContext letContext, ParsingContext parentContext) {
+        if (letContext.isFunctionSelfTailRecursive()) {
+            var selfTCOResultFrameSlot = letContext.getSelfTCOResultFrameSlot().orElseThrow(InterpreterException::shouldNotReachHere);
+            parentContext.setFunctionAsSelfTailRecursive();
+            parentContext.setSelfTailRecursionResultIndex(selfTCOResultFrameSlot);
         }
     }
 

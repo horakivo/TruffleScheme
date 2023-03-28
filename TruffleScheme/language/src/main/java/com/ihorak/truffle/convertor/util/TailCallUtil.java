@@ -14,7 +14,8 @@ import java.util.List;
 
 public class TailCallUtil {
 
-    private TailCallUtil() {}
+    private TailCallUtil() {
+    }
 
 
     //body is e.g. body of lambda or let where definitions+ are allowed
@@ -25,7 +26,7 @@ public class TailCallUtil {
      * ctxBodyStartIndex - since the body is defined as follows: <definitions>+ <expressions>* we don't know where in the
      * lambda, or we should start. This index is the starting point
      */
-    public static List<SchemeExpression> convertBodyToSchemeExpressionsWithTCO(SchemeList bodyIR, ParsingContext context, @Nullable ParserRuleContext ctx, int ctxBodyStartIndex) {
+    public static List<SchemeExpression> convertWithDefinitionsAndWithFrameCreation(SchemeList bodyIR, ParsingContext context, @Nullable ParserRuleContext ctx, int ctxBodyStartIndex) {
         List<SchemeExpression> result = new ArrayList<>();
         var size = bodyIR.size;
         for (int i = 0; i < size - 1; i++) {
@@ -49,37 +50,29 @@ public class TailCallUtil {
         return result;
     }
 
+    public static List<SchemeExpression> convertWithDefinitionsAndNoFrameCreation(SchemeList expressionsIR, ParsingContext context, boolean isTailCallPosition, @Nullable ParserRuleContext ctx, int ctxBodyStartIndex) {
+        return convertWithNoFrameCreation(expressionsIR, context, isTailCallPosition, ctx, ctxBodyStartIndex, true);
+    }
+
 
     //TCO: (or <expression>* <tail expression>)
-    public static List<SchemeExpression> convertExpressionsToSchemeExpressionsWithTCO(SchemeList expressionsIR, ParsingContext context, @Nullable ParserRuleContext ctx, int ctxBodyStartIndex) {
+    public static List<SchemeExpression> convertWithNoDefinitionsAndNoFrameCreation(SchemeList expressionsIR, ParsingContext context, boolean isTailCallPosition, @Nullable ParserRuleContext ctx, int ctxBodyStartIndex) {
+        return convertWithNoFrameCreation(expressionsIR, context, isTailCallPosition, ctx, ctxBodyStartIndex, false);
+    }
+
+
+    private static List<SchemeExpression> convertWithNoFrameCreation(SchemeList expressionsIR, ParsingContext context, boolean isTailCallPosition, @Nullable ParserRuleContext ctx, int ctxBodyStartIndex, boolean definitionAllowed) {
         List<SchemeExpression> result = new ArrayList<>();
         var size = expressionsIR.size;
         for (int i = 0; i < size - 1; i++) {
             var currentCtx = getCurrentBodyCtx(ctx, ctxBodyStartIndex, i);
-            result.add(InternalRepresentationConverter.convert(expressionsIR.get(i), context, false, false, currentCtx));
+            result.add(InternalRepresentationConverter.convert(expressionsIR.get(i), context, false, definitionAllowed, currentCtx));
         }
 
         if (size > 0) {
             var lastIndex = size - 1;
             var currentCtx = getCurrentBodyCtx(ctx, ctxBodyStartIndex, lastIndex);
-            var lastExpr = InternalRepresentationConverter.convert(expressionsIR.get(lastIndex), context, true, false, currentCtx);
-            if (context.isFunctionSelfTailRecursive()) {
-
-            }
-            result.add(InternalRepresentationConverter.convert(expressionsIR.get(lastIndex), context, true, false, currentCtx));
-
-        }
-
-        return result;
-    }
-
-//    private static SchemeExpression wrapExprTo
-
-    public static List<SchemeExpression> convertListIRToSchemeExpressions(SchemeList listIR, ParsingContext context, @Nullable ParserRuleContext ctx, int ctxBodyStartIndex) {
-        List<SchemeExpression> result = new ArrayList<>();
-        for (int i = 0; i < listIR.size; i++) {
-            var currentCtx = getCurrentBodyCtx(ctx, ctxBodyStartIndex, i);
-            result.add(InternalRepresentationConverter.convert(listIR.get(i), context, false, false, currentCtx));
+            result.add(InternalRepresentationConverter.convert(expressionsIR.get(lastIndex), context, isTailCallPosition, false, currentCtx));
         }
 
         return result;

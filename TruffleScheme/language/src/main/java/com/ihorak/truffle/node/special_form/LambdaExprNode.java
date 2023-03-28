@@ -13,17 +13,16 @@ public class LambdaExprNode extends SchemeExpression {
 
     public final RootCallTarget callTarget;
     public final int amountOfArguments;
-    private final boolean hasOptionalArgs;
+    //private final boolean hasOptionalArgs;
 
-    public LambdaExprNode(RootCallTarget callTarget, int amountOfArguments, boolean hasOptionalArgs) {
+    public LambdaExprNode(RootCallTarget callTarget, int amountOfArguments) {
         this.callTarget = callTarget;
         this.amountOfArguments = amountOfArguments;
-        this.hasOptionalArgs = hasOptionalArgs;
     }
 
     @Override
     public UserDefinedProcedure executeUserDefinedProcedure(VirtualFrame virtualFrame) {
-        return new UserDefinedProcedure(callTarget, amountOfArguments, hasOptionalArgs, virtualFrame.materialize());
+        return new UserDefinedProcedure(callTarget, amountOfArguments, virtualFrame.materialize());
     }
 
     @Override

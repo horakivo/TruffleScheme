@@ -15,10 +15,6 @@ public abstract class AndOrAbstractConverter {
 
 
     protected static List<SchemeExpression> getBodyExpr(SchemeList bodyListIR, boolean isTailCallPosition, ParsingContext context, ParserRuleContext ctx) {
-        if (isTailCallPosition) {
-            return TailCallUtil.convertExpressionsToSchemeExpressionsWithTCO(bodyListIR, context, ctx, CTX_BODY_INDEX);
-        } else {
-            return TailCallUtil.convertListIRToSchemeExpressions(bodyListIR, context, ctx, CTX_BODY_INDEX);
-        }
+        return TailCallUtil.convertWithNoDefinitionsAndNoFrameCreation(bodyListIR, context, isTailCallPosition, ctx, CTX_BODY_INDEX);
     }
 }

@@ -20,7 +20,7 @@ public class WriteLocalVariableExprNode extends SchemeExpression {
 
     @Child private WriteFrameSlotNode writeFrameSlotNode;
     @Child protected SchemeExpression valueNode;
-    public final int frameIndex;
+    private final int frameIndex;
 
     public WriteLocalVariableExprNode(int frameIndex, SchemeExpression valueToStore) {
         this.frameIndex = frameIndex;

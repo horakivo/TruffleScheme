@@ -1,20 +1,27 @@
-package com.ihorak.truffle.convertor;
+package com.ihorak.truffle.convertor.callable;
 
+import com.ihorak.truffle.convertor.BuiltinFactory;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class BuiltinConverter {
+public class BuiltinConverter extends AbstractCallableConverter {
 
-    /*
-     *
-     * --> (operand expr1...exprN)
-     * */
-    public static SchemeExpression createBuiltin(SchemeSymbol operand, List<SchemeExpression> convertedArguments, ParsingContext context, @Nullable ParserRuleContext ctx) {
+    private BuiltinConverter() {
+    }
+
+    public static SchemeExpression convert(SchemeList callableListIR, ParsingContext context, @Nullable ParserRuleContext procedureCtx) {
+        var symbol = (SchemeSymbol) callableListIR.car;
+        List<SchemeExpression> arguments = convertArguments(callableListIR.cdr, context, procedureCtx);
+        return BuiltinConverter.createBuiltin(symbol, arguments, context, procedureCtx);
+    }
+
+    private static SchemeExpression createBuiltin(SchemeSymbol operand, List<SchemeExpression> convertedArguments, ParsingContext context, @Nullable ParserRuleContext ctx) {
 
         return switch (operand.getValue()) {
             case "+" -> BuiltinFactory.createPlusBuiltin(convertedArguments, ctx);

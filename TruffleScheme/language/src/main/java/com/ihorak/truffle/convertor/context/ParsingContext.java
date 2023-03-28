@@ -3,6 +3,7 @@ package com.ihorak.truffle.convertor.context;
 import com.ihorak.truffle.SchemeTruffleLanguage;
 import com.ihorak.truffle.exceptions.InterpreterException;
 import com.ihorak.truffle.exceptions.SchemeException;
+import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.frame.FrameDescriptor;
@@ -15,19 +16,19 @@ import java.util.*;
 
 public class ParsingContext {
 
-    private final Map<SchemeSymbol, MacroInfo> macroIndex = new HashMap<>();
-    private final Map<SchemeSymbol, LocalVariableInfo> localVariableIndex = new HashMap<>();
 
+    private final Map<SchemeSymbol, MacroInfo> macroIndex = new HashMap<>();
+    private final Map<SchemeSymbol, LocalVariableInfo> localVariableIndex;
     private final Source source;
 
 
     //Method information
 
-    private SchemeSymbol functionDefinitionName;
+    private final SchemeSymbol functionDefinitionName;
     private boolean isFunctionSelfTailRecursive = false;
     private Integer selfTailRecursionResultIndex;
-    
-    private List<Integer> functionArgumentSlotIndexes;
+
+    private final List<Integer> procedureArgumentSlotIndexes;
     private final ParsingContext parent;
     private final SchemeTruffleLanguage language;
     private final LexicalScope scope;
@@ -35,28 +36,37 @@ public class ParsingContext {
     private final FrameDescriptor.Builder frameDescriptorBuilder;
 
 
-    //Any other child Parsing Context
-    public ParsingContext(ParsingContext parent, LexicalScope lexicalScope, Source source) {
-        this.frameDescriptorBuilder = FrameDescriptor.newBuilder();
-        this.scope = lexicalScope;
-        this.language = parent.language;
-        this.parent = parent;
-        this.source = source;
-    }
-
-    //For creating LET - we don't want to create a new FrameDescriptor because we are using the parent one.
-    public ParsingContext(ParsingContext parent, LexicalScope lexicalScope, FrameDescriptor.Builder frameDescriptorBuilder, Source source) {
+    // Lambda
+    public ParsingContext(ParsingContext parent, LexicalScope lexicalScope, FrameDescriptor.Builder frameDescriptorBuilder, SchemeSymbol functionDefinitionName, Map<SchemeSymbol, LocalVariableInfo> localVariableIndex, List<Integer> procedureArgumentSlotIndexes) {
         this.frameDescriptorBuilder = frameDescriptorBuilder;
         this.scope = lexicalScope;
+        this.functionDefinitionName = functionDefinitionName;
+        this.procedureArgumentSlotIndexes = procedureArgumentSlotIndexes;
+        this.localVariableIndex = localVariableIndex;
         this.language = parent.language;
         this.parent = parent;
-        this.source = source;
+        this.source = parent.getSource();
     }
 
-    //Global
-    public ParsingContext(SchemeTruffleLanguage language, Source source) {
+    // Let
+    public ParsingContext(ParsingContext parent) {
+        this.frameDescriptorBuilder = parent.getFrameDescriptorBuilder();
+        this.scope = LexicalScope.LET;
+        this.functionDefinitionName = parent.functionDefinitionName;
+        this.procedureArgumentSlotIndexes = parent.procedureArgumentSlotIndexes;
+        this.localVariableIndex = new HashMap<>();
+        this.language = parent.language;
+        this.parent = parent;
+        this.source = parent.getSource();
+    }
+
+    // Global Parsing context
+    private ParsingContext(SchemeTruffleLanguage language, Source source) {
         this.frameDescriptorBuilder = FrameDescriptor.newBuilder();
         this.scope = LexicalScope.GLOBAL;
+        this.functionDefinitionName = null;
+        this.procedureArgumentSlotIndexes = null;
+        this.localVariableIndex = new HashMap<>();
         this.language = language;
         this.source = source;
         this.parent = null;
@@ -169,22 +179,8 @@ public class ParsingContext {
         return Optional.ofNullable(functionDefinitionName);
     }
 
-    public void setFunctionDefinitionName(final SchemeSymbol functionDefinitionName) {
-        if (this.functionDefinitionName != null) {
-            throw InterpreterException.shouldNotReachHere("Converter error: functionDefinitionName should be set only once!");
-        }
-        this.functionDefinitionName = functionDefinitionName;
-    }
-
-    public List<Integer> getFunctionArgumentSlotIndexes() {
-        return functionArgumentSlotIndexes;
-    }
-
-    public void setFunctionArgumentSlotIndexes(List<Integer> functionArgumentSlotIndexes) {
-        if (this.functionArgumentSlotIndexes != null) {
-            throw InterpreterException.shouldNotReachHere("Converter error: functionArgumentSlotIndexes should be set only once!");
-        }
-        this.functionArgumentSlotIndexes = functionArgumentSlotIndexes;
+    public Optional<List<Integer>> getFunctionArgumentSlotIndexes() {
+        return Optional.ofNullable(procedureArgumentSlotIndexes);
     }
 
     public boolean isFunctionSelfTailRecursive() {
@@ -220,5 +216,30 @@ public class ParsingContext {
 
     public void decreaseQuasiquoteNestedLevel() {
         quasiquoteNestedLevel--;
+    }
+
+
+    public static ParsingContext createGlobalParsingContext(SchemeTruffleLanguage language, Source source) {
+        return new ParsingContext(language, source);
+    }
+
+    public static ParsingContext createLetContext(ParsingContext parent) {
+        return new ParsingContext(parent);
+    }
+
+    public static ParsingContext createLambdaContext(ParsingContext parent, SchemeSymbol functionDefinitionName, SchemeList argumentsIR) {
+        var frameDescriptorBuilder = FrameDescriptor.newBuilder();
+        List<Integer> procedureArgumentSlotIndexes = new ArrayList<>();
+        Map<SchemeSymbol, LocalVariableInfo> localVariableIndex = new HashMap<>();
+        for (Object objSymbol : argumentsIR) {
+            var symbol = (SchemeSymbol) objSymbol;
+            var index = frameDescriptorBuilder.addSlot(FrameSlotKind.Illegal, symbol, null);
+            var localVariableInfo = new LocalVariableInfo(index, false);
+
+            procedureArgumentSlotIndexes.add(index);
+            localVariableIndex.put(symbol, localVariableInfo);
+        }
+
+        return new ParsingContext(parent, LexicalScope.LAMBDA, frameDescriptorBuilder, functionDefinitionName, localVariableIndex, procedureArgumentSlotIndexes);
     }
 }

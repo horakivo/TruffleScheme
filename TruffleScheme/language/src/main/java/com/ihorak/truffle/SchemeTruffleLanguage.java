@@ -36,7 +36,7 @@ public class SchemeTruffleLanguage extends TruffleLanguage<SchemeLanguageContext
     @Override
     protected CallTarget parse(ParsingRequest request) throws IOException {
         var source = request.getSource();
-        var globalContext = new ParsingContext(this, source);
+        var globalContext = ParsingContext.createGlobalParsingContext(this, source);
         var charStream = CharStreams.fromReader(request.getSource().getReader());
         var schemeExprs = AntlrToAST.convert(charStream, globalContext);
         var sourceSection = SourceSectionUtil.createSourceSection(schemeExprs, source);

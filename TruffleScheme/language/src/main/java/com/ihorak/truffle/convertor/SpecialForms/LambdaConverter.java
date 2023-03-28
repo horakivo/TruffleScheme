@@ -44,22 +44,16 @@ public class LambdaConverter {
 
     public static LambdaExprNode convert(SchemeList lambdaListIR, ParsingContext context, SchemeSymbol name, @Nullable ParserRuleContext lambdaCtx) {
         validate(lambdaListIR);
-        ParsingContext lambdaContext = new ParsingContext(context, LexicalScope.LAMBDA, context.getSource());
-        var argumentsIR = lambdaListIR.cdr.car;
+        var argumentsIR = (SchemeList) lambdaListIR.cdr.car;
+        ParsingContext lambdaContext = ParsingContext.createLambdaContext(context, name, argumentsIR);
         var lambdaBodyIR = lambdaListIR.cdr.cdr;
         var numberOfArguments = numberOfArguments(argumentsIR);
 
-        var isProcedureBeingDefined = !name.getValue().equals("anonymous_procedure");
-        if (isProcedureBeingDefined) {
-            lambdaContext.setFunctionDefinitionName(name);
-        }
-
         var writeLocalVariableExpr = createWriteLocalVariableNodes(argumentsIR, lambdaContext, lambdaCtx);
-        var bodyExprs = TailCallUtil.convertBodyToSchemeExpressionsWithTCO(lambdaBodyIR, lambdaContext, lambdaCtx, CTX_LAMBDA_BODY_INDEX);
+        var bodyExprs = TailCallUtil.convertWithDefinitionsAndWithFrameCreation(lambdaBodyIR, lambdaContext, lambdaCtx, CTX_LAMBDA_BODY_INDEX);
 
         var callTarget = creatCallTarget(writeLocalVariableExpr, bodyExprs, name, lambdaContext, lambdaCtx);
-        var hasOptionalArgs = argumentsIR instanceof SchemePair;
-        var lambdaExpr = new LambdaExprNode(callTarget, numberOfArguments, hasOptionalArgs);
+        var lambdaExpr = new LambdaExprNode(callTarget, numberOfArguments);
         SourceSectionUtil.setSourceSection(lambdaExpr, lambdaCtx);
         return lambdaExpr;
     }
@@ -92,14 +86,15 @@ public class LambdaConverter {
         return source.createSection(startIndex, length);
     }
 
-    private static List<WriteLocalVariableExprNode> createWriteLocalVariableNodes(Object params, ParsingContext context, @Nullable ParserRuleContext lambdaCtx) {
+    private static List<WriteLocalVariableExprNode> createWriteLocalVariableNodes(SchemeList argumentsIR, ParsingContext context, @Nullable ParserRuleContext lambdaCtx) {
         var paramsCtx = lambdaCtx != null ? (ParserRuleContext) lambdaCtx.getChild(CTX_LAMBDA_PARAMS).getChild(0) : null;
-        if (params instanceof SchemeList list) {
-            return createLocalVariableForSchemeList(list, context, paramsCtx);
-        } else if (params instanceof SchemePair pair) {
-            return createLocalVariableForSchemePair(pair, context, paramsCtx);
-        }
-        throw InterpreterException.shouldNotReachHere();
+        return createLocalVariableForSchemeList(argumentsIR, context, paramsCtx);
+//        if (params instanceof SchemeList list) {
+//            return createLocalVariableForSchemeList(list, context, paramsCtx);
+//        } else if (params instanceof SchemePair pair) {
+//            return createLocalVariableForSchemePair(pair, context, paramsCtx);
+//        }
+//        throw InterpreterException.shouldNotReachHere();
     }
 
     private static List<WriteLocalVariableExprNode> createLocalVariableForSchemeList(SchemeList argumentListIR, ParsingContext context, @Nullable ParserRuleContext paramsCtx) {
@@ -109,8 +104,6 @@ public class LambdaConverter {
             var symbolCtx = paramsCtx != null ? (ParserRuleContext) paramsCtx.getChild(i + CTX_PARAMS_OFFSET) : null;
             result.add(CreateWriteExprNode.createWriteLocalVariableExprNode(symbol, new ReadProcedureArgExprNode(i), context, symbolCtx));
         }
-        var argumentSlotIndexes = result.stream().map(expr -> expr.frameIndex).toList();
-        context.setFunctionArgumentSlotIndexes(argumentSlotIndexes);
         return result;
     }
 
@@ -149,18 +142,19 @@ public class LambdaConverter {
                     throw new SchemeException(NOT_IDENTIFIER_IN_PARAMS, null);
                 }
             }
-        } else if (params instanceof SchemePair currentPair) {
-            while (currentPair.second() instanceof SchemePair) {
-                if (!(currentPair.first() instanceof SchemeSymbol)) {
-                    throw new SchemeException(NOT_IDENTIFIER_IN_PARAMS, null);
-                }
-                currentPair = (SchemePair) currentPair.second();
-            }
-            if (!(currentPair.first() instanceof SchemeSymbol) || !(currentPair.second() instanceof SchemeSymbol)) {
-                throw new SchemeException(NOT_IDENTIFIER_IN_PARAMS, null);
-            }
+//        } else if (params instanceof SchemePair currentPair) {
+//            while (currentPair.second() instanceof SchemePair) {
+//                if (!(currentPair.first() instanceof SchemeSymbol)) {
+//                    throw new SchemeException(NOT_IDENTIFIER_IN_PARAMS, null);
+//                }
+//                currentPair = (SchemePair) currentPair.second();
+//            }
+//            if (!(currentPair.first() instanceof SchemeSymbol) || !(currentPair.second() instanceof SchemeSymbol)) {
+//                throw new SchemeException(NOT_IDENTIFIER_IN_PARAMS, null);
+//            }
         } else {
-            throw new SchemeException("lambda: second element of lambda list has to be a list or pair", null);
+            //throw new SchemeException("lambda: second element of lambda list has to be a list or pair", null);
+            throw new SchemeException("lambda: second element of lambda list has to be a list", null);
 
         }
 

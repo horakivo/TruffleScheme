@@ -6,6 +6,7 @@ import com.ihorak.truffle.convertor.context.LexicalScope;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.util.CreateWriteExprNode;
 import com.ihorak.truffle.convertor.util.TailCallUtil;
+import com.ihorak.truffle.exceptions.InterpreterException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
 import com.ihorak.truffle.node.special_form.LetExprNode;
@@ -24,16 +25,18 @@ public class LetrecConverter extends AbstractLetConverter {
     private LetrecConverter() {
     }
 
-    public static SchemeExpression convert(SchemeList letList, ParsingContext context, @Nullable ParserRuleContext letCtx) {
+    public static SchemeExpression convert(SchemeList letList, ParsingContext context, boolean isTailCallPosition, @Nullable ParserRuleContext letCtx) {
         validate(letList);
-        ParsingContext letContext = new ParsingContext(context, LexicalScope.LET, context.getFrameDescriptorBuilder(), context.getSource());
+        ParsingContext letContext = ParsingContext.createLetContext(context);
 
         var localBindingsIR = (SchemeList) letList.get(1);
         var bodyIR = letList.cdr.cdr;
 
         var writeLocalVariableExpr = createWriteLocalVariables(localBindingsIR, letContext, letCtx);
-        var bodyExprs = TailCallUtil.convertBodyToSchemeExpressionsWithTCO(bodyIR, letContext, letCtx, CTX_BODY_INDEX);
+        var bodyExprs = TailCallUtil.convertWithDefinitionsAndNoFrameCreation(bodyIR, letContext, isTailCallPosition, letCtx, CTX_BODY_INDEX);
         var allExprs = Stream.concat(writeLocalVariableExpr.stream(), bodyExprs.stream()).toList();
+
+        propagateSelfTCOInfoToParentContext(letContext, context);
 
         return SourceSectionUtil.setSourceSectionAndReturnExpr(new LetExprNode(allExprs), letCtx);
     }

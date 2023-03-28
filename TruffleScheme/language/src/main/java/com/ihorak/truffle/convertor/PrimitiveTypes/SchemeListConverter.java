@@ -1,8 +1,7 @@
 package com.ihorak.truffle.convertor.PrimitiveTypes;
 
-import com.ihorak.truffle.convertor.CallableConverter;
+import com.ihorak.truffle.convertor.callable.CallableConverter;
 import com.ihorak.truffle.convertor.SchemeMacroDefinitionConverter;
-import com.ihorak.truffle.convertor.SourceSectionUtil;
 import com.ihorak.truffle.convertor.SpecialFormConverter;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.util.SpecialFormUtils;

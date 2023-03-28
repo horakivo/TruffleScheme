@@ -22,10 +22,10 @@ public class SpecialFormConverter {
                     LambdaConverter.convert(specialFormList, context, new SchemeSymbol(ANONYMOUS_PROCEDURE), ctx);
             case "quote" -> QuoteConverter.convert(specialFormList, ctx);
             case "quasiquote" -> QuasiquoteConverter.convert(specialFormList, context, ctx);
-            case "let" -> LetConverter.convert(specialFormList, context, ctx);
+            case "let" -> LetConverter.convert(specialFormList, context, isTailCallPosition, ctx);
 //            case "let*":
 //                return convertLetStar(specialFormList, context);
-            case "letrec" -> LetrecConverter.convert(specialFormList, context, ctx);
+            case "letrec" -> LetrecConverter.convert(specialFormList, context, isTailCallPosition, ctx);
             case "and" -> AndConverter.convert(specialFormList, isTailCallPosition, context, ctx);
             case "or" -> OrConverter.convert(specialFormList, isTailCallPosition, context, ctx);
             case "cond" -> CondConverter.convertCond(specialFormList, isTailCallPosition, context, ctx);

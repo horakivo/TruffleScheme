@@ -27,7 +27,6 @@ public class UserDefinedProcedure implements TruffleObject {
 
     private int expectedNumberOfArgs;
     @CompilationFinal private RootCallTarget callTarget;
-    private final boolean optionalArgs;
     private final MaterializedFrame parentFrame;
 
     /**
@@ -38,7 +37,7 @@ public class UserDefinedProcedure implements TruffleObject {
 //    private final DispatchNode dispatchNode = DispatchNodeGen.create();
 
 
-    public UserDefinedProcedure(RootCallTarget callTarget, int expectedNumberOfArgs, final boolean hasOptionalArgs, MaterializedFrame frame) {
+    public UserDefinedProcedure(RootCallTarget callTarget, int expectedNumberOfArgs, MaterializedFrame frame) {
         this.callTarget = callTarget;
         this.parentFrame = frame;
         this.expectedNumberOfArgs = expectedNumberOfArgs;
@@ -48,7 +47,6 @@ public class UserDefinedProcedure implements TruffleObject {
 //        } else {
 //            this.expectedNumberOfArgs = expectedNumberOfArgs;
 //        }
-        this.optionalArgs = hasOptionalArgs;
     }
 
     public void redefine(RootCallTarget callTarget, int expectedNumberOfArgs) {
@@ -77,11 +75,6 @@ public class UserDefinedProcedure implements TruffleObject {
     public int getExpectedNumberOfArgs() {
         return expectedNumberOfArgs;
     }
-
-    public boolean isOptionalArgs() {
-        return optionalArgs;
-    }
-
 
     @Override
     public String toString() {
