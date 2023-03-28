@@ -28,6 +28,7 @@ public class DefineConverter {
         var isNonGlobalEnv = context.getLexicalScope() != LexicalScope.GLOBAL;
 
 
+        // TODO this is wrong. We need to detect whether we are in lambda or not. If not then the expr will be evaluated
         if (isNonGlobalEnv) {
             context.findOrAddLocalSymbol(identifier);
             context.makeLocalVariablesNullable(List.of(identifier));
