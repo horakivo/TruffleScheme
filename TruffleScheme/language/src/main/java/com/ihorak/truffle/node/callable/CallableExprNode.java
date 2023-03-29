@@ -51,7 +51,7 @@ public class CallableExprNode extends SchemeExpression {
         try {
             return dispatchNode.executeDispatch(procedure, args);
         } catch (TailCallException e) {
-            tailCallProfile.enter();
+            CompilerDirectives.transferToInterpreterAndInvalidate();
             var tailCallCatcher = new TailCallCatcherNode(arguments, callable, tailCallArgumentsSlot, tailCallTargetSlot, tailCallResultSlot);
             return replace(tailCallCatcher).executeGeneric(frame);
         }
