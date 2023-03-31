@@ -39,7 +39,7 @@ public class MacroCallableExprNode extends SchemeExpression {
 
     @Override
     public Object executeGeneric(final VirtualFrame frame) {
-        CompilerAsserts.neverPartOfCompilation();
+        CompilerDirectives.transferToInterpreterAndInvalidate();
         notEvaluatedArgs[0] = frame.materialize();
         var macroExpandedData = directDispatchNode.call(notEvaluatedArgs);
         var macroExpandedTruffleAST = InternalRepresentationConverter.convert(macroExpandedData, parsingContext, false, false, null);

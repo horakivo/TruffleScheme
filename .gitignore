@@ -31,6 +31,7 @@
 !gradle-wrapper.jar
 target
 TruffleScheme/language/target
+TruffleScheme/native/scm_native
 
 # Cache of project
 .gradletasknamecache

@@ -6,10 +6,12 @@ import com.oracle.truffle.api.Assumption;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.RootCallTarget;
 import com.oracle.truffle.api.dsl.Cached;
+import com.oracle.truffle.api.dsl.GenerateUncached;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.nodes.DirectCallNode;
 import com.oracle.truffle.api.nodes.IndirectCallNode;
 
+@GenerateUncached
 public abstract class DispatchNode extends SchemeNode {
 
     public abstract Object executeDispatch(UserDefinedProcedure userDefinedProcedure, Object[] arguments);

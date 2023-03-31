@@ -11,18 +11,22 @@ import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.RootCallTarget;
 import com.oracle.truffle.api.TruffleLanguage;
+import com.oracle.truffle.api.dsl.Cached;
+import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.MaterializedFrame;
 import com.oracle.truffle.api.interop.TruffleObject;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
+import com.oracle.truffle.api.nodes.DirectCallNode;
+import com.oracle.truffle.api.nodes.IndirectCallNode;
 import com.oracle.truffle.api.profiles.BranchProfile;
 import com.oracle.truffle.api.source.SourceSection;
 import com.oracle.truffle.api.utilities.CyclicAssumption;
 
 import java.math.BigInteger;
 
-//@ExportLibrary(InteropLibrary.class)
+@ExportLibrary(InteropLibrary.class)
 public class UserDefinedProcedure implements TruffleObject {
 
     private int expectedNumberOfArgs;
@@ -83,31 +87,50 @@ public class UserDefinedProcedure implements TruffleObject {
 
     //----------------InteropLibrary messages–----------------------
 
-//    @ExportMessage
-//    boolean hasLanguage() {
-//        return true;
-//    }
-//
-//    @ExportMessage
-//    Class<? extends TruffleLanguage<?>> getLanguage() {
-//        return SchemeTruffleLanguage.class;
-//    }
+    @ExportMessage
+    boolean hasLanguage() {
+        return true;
+    }
+
+    @ExportMessage
+    Class<? extends TruffleLanguage<?>> getLanguage() {
+        return SchemeTruffleLanguage.class;
+    }
+
+    @ExportMessage
+    @TruffleBoundary
+    SourceSection getSourceLocation() {
+        return getCallTarget().getRootNode().getSourceSection();
+    }
+
+    @ExportMessage
+    boolean hasSourceLocation() {
+        return true;
+    }
+
+    @ExportMessage
+    Object toDisplayString(@SuppressWarnings("unused") boolean allowSideEffects) {
+        return "#<procedure>";
+    }
+
+    @ExportMessage
+    boolean isExecutable() {
+        return true;
+    }
 
 //    @ExportMessage
-//    @TruffleBoundary
-//    SourceSection getSourceLocation() {
-//        return getCallTarget().getRootNode().getSourceSection();
+//    abstract static class Execute {
+//        @Specialization
+//        static Object dispatch(UserDefinedProcedure procedure, Object[] arguments, @Cached DispatchNode dispatchNode) {
+//            return dispatchNode.executeDispatch(procedure, arguments);
+//        }
 //    }
-//
-//    @ExportMessage
-//    Object toDisplayString(@SuppressWarnings("unused") boolean allowSideEffects) {
-//        return "#<procedure>";
-//    }
-//
-//    @ExportMessage
-//    boolean isExecutable() {
-//        return true;
-//    }
+
+    @ExportMessage
+    Object execute(Object[] arguments, @Cached DispatchNode dispatchNode) {
+        return dispatchNode.executeDispatch(this, arguments);
+
+    }
 //
 //    @ExportMessage
 //    Object execute(Object[] arguments) {
