@@ -37,25 +37,31 @@ public final class Main {
             source = Source.newBuilder(SCM, new File(file)).build();
         }
 
-        System.exit(executeSource(source, System.in, System.out, options));
+        System.exit(executeSource(source, options));
     }
 
-    private static int executeSource(Source source, InputStream in, PrintStream out, Map<String, String> options) {
+    private static int executeSource(Source source, Map<String, String> options) {
         Context context;
+        var in = System.in;
+        var out = System.out;
         PrintStream err = System.err;
         try {
-            context = Context.newBuilder().in(in).out(out).options(options).allowAllAccess(true).build();
+            context = Context.newBuilder()
+                    .in(in)
+                    .out(out)
+                    .options(options)
+                    .allowAllAccess(true)
+                    .build();
         } catch (IllegalArgumentException e) {
             err.println(e.getMessage());
             return 1;
         }
-        out.println(context.getEngine().getLanguages());
         out.println("== running on " + context.getEngine());
 
         try {
             Value result = context.eval(source);
             if (!result.isNull()) {
-                out.println(result.toString());
+                out.println(result);
             }
             return 0;
         } catch (PolyglotException ex) {
