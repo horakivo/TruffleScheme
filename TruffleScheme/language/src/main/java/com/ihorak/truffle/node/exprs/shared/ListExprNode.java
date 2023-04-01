@@ -10,11 +10,8 @@ import com.oracle.truffle.api.nodes.ExplodeLoop;
 
 public abstract class ListExprNode extends ArbitraryBuiltin {
 
-    @Child ListNode listNode = ListNodeGen.create();
-
     @Specialization
-    protected SchemeList createList(Object[] arguments) {
-
+    protected static SchemeList createList(Object[] arguments, @Cached ListNode listNode) {
         return listNode.execute(arguments);
     }
 

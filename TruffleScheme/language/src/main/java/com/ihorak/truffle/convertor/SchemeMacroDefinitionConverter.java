@@ -7,7 +7,6 @@ import com.ihorak.truffle.exceptions.ParserException;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.literals.UndefinedLiteralNode;
-import com.ihorak.truffle.node.macro.DefineMacroExprNode;
 import com.ihorak.truffle.node.special_form.LambdaExprNode;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;

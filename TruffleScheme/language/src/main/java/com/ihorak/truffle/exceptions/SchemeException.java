@@ -3,6 +3,8 @@ package com.ihorak.truffle.exceptions;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.exception.AbstractTruffleException;
+import com.oracle.truffle.api.interop.InteropException;
+import com.oracle.truffle.api.interop.InvalidArrayIndexException;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 
@@ -23,6 +25,17 @@ public class SchemeException extends AbstractTruffleException {
 
 
         return new SchemeException(sb.toString(), node);
+    }
+
+    @TruffleBoundary
+    public static SchemeException interopException(InteropException exception) {
+        return new SchemeException(exception.getMessage(), null);
+    }
+
+    @TruffleBoundary
+    public static SchemeException interopArrayElementIsNotRemovable() {
+        var msg = "Unable to remove element since the foreign array is immutable or the element doesn't exist";
+        return new SchemeException(msg, null);
     }
 
     @TruffleBoundary

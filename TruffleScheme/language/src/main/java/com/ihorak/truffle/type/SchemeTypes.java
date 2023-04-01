@@ -6,7 +6,7 @@ import com.oracle.truffle.api.strings.TruffleString;
 
 import java.math.BigInteger;
 
-@TypeSystem({long.class, double.class, boolean.class, TruffleString.class, SchemeList.class, UserDefinedProcedure.class, BigInteger.class, SchemeMacro.class})
+@TypeSystem({long.class, double.class, boolean.class, TruffleString.class, SchemeList.class, UserDefinedProcedure.class, BigInteger.class})
 public abstract class SchemeTypes {
 
 //    @ImplicitCast

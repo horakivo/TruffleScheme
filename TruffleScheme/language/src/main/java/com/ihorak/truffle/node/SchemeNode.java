@@ -9,12 +9,16 @@ import com.oracle.truffle.api.nodes.Node;
 @TypeSystemReference(SchemeTypes.class)
 public abstract class SchemeNode extends Node {
 
-    protected SchemeLanguageContext getContext() {
+    protected final SchemeLanguageContext getContext() {
         return SchemeLanguageContext.get(this);
     }
 
-    protected SchemeTruffleLanguage getLanguage() {
+    protected final SchemeTruffleLanguage getLanguage() {
         return SchemeTruffleLanguage.get(this);
+    }
+
+    protected final int getInteropCacheLimit() {
+        return 2;
     }
 
 }

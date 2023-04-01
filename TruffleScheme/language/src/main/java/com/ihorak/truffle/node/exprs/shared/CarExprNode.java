@@ -2,12 +2,16 @@ package com.ihorak.truffle.node.exprs.shared;
 
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.exprs.LimitedBuiltin;
+import com.ihorak.truffle.node.interop.ForeignToSchemeNode;
 import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemePair;
+import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
-import com.oracle.truffle.api.profiles.BranchProfile;
+import com.oracle.truffle.api.interop.InteropException;
+import com.oracle.truffle.api.interop.InteropLibrary;
+import com.oracle.truffle.api.library.CachedLibrary;
 
 public abstract class CarExprNode extends LimitedBuiltin {
 
@@ -21,13 +25,20 @@ public abstract class CarExprNode extends LimitedBuiltin {
         return pair.first();
     }
 
+    @Specialization(guards = "interopLib.hasArrayElements(obj)", limit = "getInteropCacheLimit()")
+    protected Object doForeignObject(Object obj,
+                                     @CachedLibrary("obj") InteropLibrary interopLib,
+                                     @Cached ForeignToSchemeNode foreignToSchemeNode) {
+        try {
+            var foreign = interopLib.readArrayElement(obj, 0);
+            return foreignToSchemeNode.executeConvert(foreign);
+        } catch (InteropException e) {
+            throw SchemeException.interopException(e);
+        }
+    }
+
     @Fallback
     protected Object fallback(Object object) {
         throw SchemeException.contractViolation(this, "car", "pair? or list?", object);
-    }
-
-
-    public boolean isEmpty(SchemeCell list) {
-        return list == SchemeCell.EMPTY_LIST;
     }
 }

@@ -1,4 +1,2 @@
-(eval-source "python" "def fibonacci(n):
-                       if n in {0, 1}:
-                           return n
-                       return fibonacci(n - 1) + fibonacci(n - 2)")
+(cdr (eval-source "js" "a = [1,2,42,4];
+                        Object.freeze(a);"))

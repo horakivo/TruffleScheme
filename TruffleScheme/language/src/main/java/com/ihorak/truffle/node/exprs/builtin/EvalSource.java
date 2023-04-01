@@ -3,7 +3,6 @@ package com.ihorak.truffle.node.exprs.builtin;
 import com.ihorak.truffle.SchemeTruffleLanguage;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.oracle.truffle.api.CallTarget;
-import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.Specialization;
@@ -32,11 +31,11 @@ public abstract class EvalSource extends SchemeExpression {
             "areTruffleStringsEqual(equalNode, sourceCode, cachedSourceCode)"
     }, limit = "2")
     protected Object evalSource(TruffleString id,
-                             TruffleString sourceCode,
-                             @Cached("id") TruffleString cachedId,
-                             @Cached("sourceCode") TruffleString cachedSourceCode,
-                             @Cached("create(parse(cachedId, cachedSourceCode))") DirectCallNode callNode,
-                             @Cached TruffleString.EqualNode equalNode) {
+                                TruffleString sourceCode,
+                                @Cached("id") TruffleString cachedId,
+                                @Cached("sourceCode") TruffleString cachedSourceCode,
+                                @Cached("create(parse(cachedId, cachedSourceCode))") DirectCallNode callNode,
+                                @Cached TruffleString.EqualNode equalNode) {
         return callNode.call();
     }
 

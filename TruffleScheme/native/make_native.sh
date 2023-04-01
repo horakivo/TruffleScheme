@@ -45,7 +45,7 @@ if [[ $SCM_BUILD_NATIVE == "false" ]]; then
     exit 0
 fi
 "$JAVA_HOME"/bin/native-image \
-    --macro:truffle --no-fallback --initialize-at-build-time \
+    --language:js --macro:truffle --no-fallback --initialize-at-build-time \
     -cp ../language/target/truffleScheme.jar:../launcher/target/scm-launcher.jar \
     com.ihorak.truffle.launcher.Main \
     scm_native

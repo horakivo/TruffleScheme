@@ -49,11 +49,6 @@ public abstract class SchemeExpression extends SchemeNode {
         return SchemeTypesGen.expectBigInteger(executeGeneric(virtualFrame));
     }
 
-    public SchemeMacro executeMacro(VirtualFrame virtualFrame) throws UnexpectedResultException {
-        return SchemeTypesGen.expectSchemeMacro(executeGeneric(virtualFrame));
-    }
-
-
     @Override
     @TruffleBoundary
     public final SourceSection getSourceSection() {
