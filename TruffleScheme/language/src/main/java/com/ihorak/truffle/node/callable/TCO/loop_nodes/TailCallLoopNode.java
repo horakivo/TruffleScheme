@@ -31,7 +31,8 @@ public class TailCallLoopNode extends SchemeNode implements RepeatingNode {
         try {
             Object[] arguments = (Object[]) frame.getObject(tailCallArgumentsSlot);
             UserDefinedProcedure procedure = (UserDefinedProcedure) frame.getObject(tailCallTargetSlot);
-            writeFrameSlotNode.executeWrite(frame, dispatchNode.executeDispatch(procedure, arguments));
+            var result = dispatchNode.executeDispatch(procedure, arguments);
+            writeFrameSlotNode.executeWrite(frame, result);
             return false;
         } catch (TailCallException e) {
             frame.setObject(tailCallTargetSlot, e.getUserDefinedProcedure());

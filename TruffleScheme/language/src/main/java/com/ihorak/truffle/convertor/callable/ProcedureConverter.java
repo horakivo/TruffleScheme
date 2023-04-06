@@ -5,6 +5,7 @@ import com.ihorak.truffle.convertor.SourceSectionUtil;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.exceptions.InterpreterException;
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.callable.CallableExprNode;
 import com.ihorak.truffle.node.callable.CallableExprNodeGen;
 import com.ihorak.truffle.node.callable.TCO.throwers.PolyglotTailCallThrowerNodeGen;
 import com.ihorak.truffle.node.callable.TCO.throwers.SelfRecursiveTailCallThrowerNodeGen;
@@ -29,17 +30,18 @@ public class ProcedureConverter extends AbstractCallableConverter {
     private ProcedureConverter() {
     }
 
-    public static SchemeExpression convert(SchemeList callableList, boolean isTailCall, ParsingContext context, @Nullable ParserRuleContext procedureCtx) {
+    public static SchemeExpression convert(SchemeList callableList, boolean isTailCallPosition, ParsingContext context, @Nullable ParserRuleContext procedureCtx) {
         var operandIR = callableList.car;
         List<SchemeExpression> arguments = convertArguments(callableList.cdr, context, procedureCtx);
         var callableCtx = procedureCtx != null ? (ParserRuleContext) procedureCtx.getChild(CTX_CALLABLE_INDEX) : null;
         var operandExpr = InternalRepresentationConverter.convert(operandIR, context, false, false, callableCtx);
 
-        if (isTailCall) {
+        if (isTailCallPosition) {
             if (isSelfTailRecursive(operandIR, context)) {
                 return createSelfTailRecursiveThrower(arguments, context, procedureCtx);
+            } else {
+                return createTailCallThrower(arguments, operandExpr, operandIR, procedureCtx);
             }
-            return createTailCallThrower(arguments, operandExpr, operandIR, procedureCtx);
         } else {
             // we need to allocate those since we detect TCO in runtime! 
             int tailCallArgumentsSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
@@ -81,8 +83,8 @@ public class ProcedureConverter extends AbstractCallableConverter {
 
     private static SchemeExpression createTailCallThrower(List<SchemeExpression> arguments, SchemeExpression operandExpr, Object operandIR, @Nullable ParserRuleContext procedureCtx) {
         if (isPolyglotTailCall(operandExpr)) {
-            var polyglotThrowerNode = PolyglotTailCallThrowerNodeGen.create(arguments, operandExpr, operandIR);
-            return SourceSectionUtil.setSourceSectionAndReturnExpr(polyglotThrowerNode, procedureCtx);
+            var callableExpr = CallableExprNodeGen.create(arguments, operandExpr, 0,0,0);
+            return SourceSectionUtil.setSourceSectionAndReturnExpr(callableExpr, procedureCtx);
         } else {
             var throwerNode = TailCallThrowerNodeGen.create(arguments, operandExpr, operandIR);
             return SourceSectionUtil.setSourceSectionAndReturnExpr(throwerNode, procedureCtx);
