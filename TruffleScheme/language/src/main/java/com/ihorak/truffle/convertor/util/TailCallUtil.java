@@ -5,6 +5,7 @@ import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.exceptions.InterpreterException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.scope.StoreSelfTailCallResultInFrame;
+import com.ihorak.truffle.node.scope.StoreSelfTailCallResultInFrameNodeGen;
 import com.ihorak.truffle.type.SchemeList;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.jetbrains.annotations.Nullable;
@@ -42,7 +43,7 @@ public class TailCallUtil {
             var lastExpr = InternalRepresentationConverter.convert(bodyIR.get(size - 1), context, true, false, currentCtx);
             if (context.isFunctionSelfTailRecursive()) {
                 var resultFrameIndex = context.getSelfTCOResultFrameSlot().orElseThrow(InterpreterException::shouldNotReachHere);
-                lastExpr = new StoreSelfTailCallResultInFrame(lastExpr, resultFrameIndex);
+                lastExpr = StoreSelfTailCallResultInFrameNodeGen.create(lastExpr, resultFrameIndex);
             }
             result.add(lastExpr);
         }

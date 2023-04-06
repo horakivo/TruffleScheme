@@ -11,7 +11,7 @@ import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.nodes.LoopNode;
 
-public class PolyglotTailCallCatcherNode  extends SchemeExpression{
+public class PolyglotTailCallCatcherNode extends SchemeExpression{
 
 
     @Child private LoopNode loopNode;
