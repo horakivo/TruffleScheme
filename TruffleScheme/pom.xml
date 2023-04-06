@@ -11,6 +11,7 @@
     <modules>
         <module>language</module>
         <module>launcher</module>
+        <module>polyglot</module>
         <module>native</module>
         <module>component</module>
     </modules>
