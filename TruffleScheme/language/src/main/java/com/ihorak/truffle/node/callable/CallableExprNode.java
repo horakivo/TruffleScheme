@@ -3,11 +3,8 @@ package com.ihorak.truffle.node.callable;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.callable.TCO.TailCallCatcherNode;
-import com.ihorak.truffle.node.callable.TCO.exceptions.PolyglotTailCallException;
 import com.ihorak.truffle.node.callable.TCO.exceptions.TailCallException;
 import com.ihorak.truffle.node.polyglot.PolyglotException;
-import com.ihorak.truffle.node.polyglot.TCO.PolyglotTailCallCatcherNode;
-import com.ihorak.truffle.node.polyglot.TCO.PolyglotTailCallCatcherNodeGen;
 import com.ihorak.truffle.type.UserDefinedProcedure;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.dsl.Cached;
@@ -18,7 +15,6 @@ import com.oracle.truffle.api.interop.InteropException;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
-import com.oracle.truffle.api.profiles.BranchProfile;
 
 import java.util.List;
 
@@ -52,10 +48,6 @@ public abstract class CallableExprNode extends SchemeExpression {
             CompilerDirectives.transferToInterpreterAndInvalidate();
             var tailCallCatcher = new TailCallCatcherNode(arguments, callable, tailCallArgumentsSlot, tailCallTargetSlot, tailCallResultSlot);
             return replace(tailCallCatcher).executeGeneric(frame);
-        } catch (PolyglotTailCallException e) {
-            CompilerDirectives.transferToInterpreterAndInvalidate();
-            var polyglotTailCallCatcher = PolyglotTailCallCatcherNodeGen.create(callable, arguments, tailCallArgumentsSlot, tailCallTargetSlot, tailCallResultSlot);
-            return replace(polyglotTailCallCatcher).executeGeneric(frame);
         }
     }
 
@@ -68,10 +60,6 @@ public abstract class CallableExprNode extends SchemeExpression {
         try {
             var args = getForeignArgs(frame);
             return interopLib.execute(interopProcedure, args);
-        } catch (PolyglotTailCallException e) {
-            CompilerDirectives.transferToInterpreterAndInvalidate();
-            var polyglotTailCallCatcher = PolyglotTailCallCatcherNodeGen.create(callable, arguments, tailCallArgumentsSlot, tailCallTargetSlot, tailCallResultSlot);
-            return replace(polyglotTailCallCatcher).executeGeneric(frame);
         } catch (InteropException e) {
             throw PolyglotException.executeException(e, interopProcedure, arguments.length, this);
         }
