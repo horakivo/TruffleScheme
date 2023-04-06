@@ -11,7 +11,7 @@ import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.nodes.LoopNode;
 
-public class PolyglotTailCallCatcherNode {
+public class PolyglotTailCallCatcherNode  extends SchemeExpression{
 
 
     @Child private LoopNode loopNode;
@@ -26,6 +26,11 @@ public class PolyglotTailCallCatcherNode {
         this.tailCallArgumentsSlot = tailCallArgumentsSlot;
         this.tailCallTargetSlot = tailCallTargetSlot;
         this.tailCallResultSlot = tailCallResultSlot;
-        this.loopNode = Truffle.getRuntime().createLoopNode(new PolyglotTailCallLoopNode(tailCallArgumentsSlot, tailCallTargetSlot));
+        this.loopNode = Truffle.getRuntime().createLoopNode(new PolyglotTailCallLoopNode(tailCallArgumentsSlot, tailCallTargetSlot, tailCallResultSlot));
+    }
+
+    @Override
+    public Object executeGeneric(VirtualFrame virtualFrame) {
+        return null;
     }
 }

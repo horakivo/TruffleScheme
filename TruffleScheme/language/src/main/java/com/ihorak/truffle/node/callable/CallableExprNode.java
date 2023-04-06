@@ -68,6 +68,8 @@ public abstract class CallableExprNode extends SchemeExpression {
         } catch (InteropException e) {
             throw PolyglotException.executeException(e, interopProcedure, arguments.length, this);
         }
+
+        return null;
     }
 
 

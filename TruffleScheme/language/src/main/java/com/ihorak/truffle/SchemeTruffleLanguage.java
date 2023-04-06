@@ -8,9 +8,11 @@ import com.ihorak.truffle.instruments.GlobalScopeAccess;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.parser.AntlrToAST;
 import com.ihorak.truffle.type.SchemeSymbol;
+import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.source.Source;
 import com.oracle.truffle.api.source.SourceSection;
 import com.oracle.truffle.api.strings.TruffleString;
+import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import org.antlr.v4.runtime.CharStreams;
 
 import com.ihorak.truffle.convertor.context.ParsingContext;
@@ -33,6 +35,7 @@ public class SchemeTruffleLanguage extends TruffleLanguage<SchemeLanguageContext
         return REFERENCE.get(node);
     }
 
+    @TruffleBoundary
     public Object getGlobalScope(Env env, String languageId) {
         var languageInfo = env.getInternalLanguages().get(languageId);
         var globalScopeAccess = env.lookup(env.getInstruments().get(GLOBAL_SCOPE_INSTRUMENT_ID), GlobalScopeAccess.class);

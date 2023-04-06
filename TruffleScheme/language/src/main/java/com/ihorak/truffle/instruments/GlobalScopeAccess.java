@@ -1,8 +1,10 @@
 package com.ihorak.truffle.instruments;
 
+import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.instrumentation.TruffleInstrument;
 import com.oracle.truffle.api.nodes.LanguageInfo;
 import org.jetbrains.annotations.Nullable;
+import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 
 public class GlobalScopeAccess {
 
@@ -13,6 +15,7 @@ public class GlobalScopeAccess {
     }
 
     @Nullable
+    @TruffleBoundary
     public final Object getGlobalScope(LanguageInfo languageInfo) {
         return env.getScope(languageInfo);
     }
