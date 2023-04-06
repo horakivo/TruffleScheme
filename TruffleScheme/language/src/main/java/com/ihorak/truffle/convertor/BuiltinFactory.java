@@ -14,6 +14,7 @@ import com.ihorak.truffle.node.exprs.builtin.list.ListRefExprNodeGen;
 import com.ihorak.truffle.node.exprs.shared.*;
 import com.ihorak.truffle.node.literals.BooleanLiteralNode;
 import com.ihorak.truffle.node.literals.LongLiteralNode;
+import com.ihorak.truffle.node.polyglot.PProcExprNodeGen;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.jetbrains.annotations.Nullable;
 
@@ -409,12 +410,23 @@ public class BuiltinFactory {
 
     public static SchemeExpression createEvalSource(List<SchemeExpression> arguments, @Nullable ParserRuleContext evalSourceCtx) {
         if (arguments.size() == 2) {
-            var evalSourceExpr = EvalSourceNodeGen.create(arguments.get(0), arguments.get(1));
+            var evalSourceExpr = EvalSourceExprNodeGen.create(arguments.get(0), arguments.get(1));
             return SourceSectionUtil.setSourceSectionAndReturnExpr(evalSourceExpr, evalSourceCtx);
         }
 
         throw new SchemeException(
                 "eval-source: arity mismatch; Expected number of arguments does not match the given number\nExpected: 2\nGiven: " + arguments.size(),
+                null);
+    }
+
+    public static SchemeExpression createPolyglotProcedure(List<SchemeExpression> arguments, @Nullable ParserRuleContext evalSourceCtx) {
+        if (arguments.size() == 2) {
+            var polyglotProc = PProcExprNodeGen.create(arguments.get(0), arguments.get(1));
+            return SourceSectionUtil.setSourceSectionAndReturnExpr(polyglotProc, evalSourceCtx);
+        }
+
+        throw new SchemeException(
+                "p-proc: arity mismatch; Expected number of arguments does not match the given number\nExpected: 2\nGiven: " + arguments.size(),
                 null);
     }
 

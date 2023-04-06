@@ -1,6 +1,6 @@
 package com.ihorak.truffle.builtin.list;
 
-import com.ihorak.truffle.convertor.util.BuiltinUtils;
+import com.ihorak.truffle.convertor.callable.BuiltinConverter;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
 import org.junit.AfterClass;
@@ -22,7 +22,7 @@ public class AppendPrimitiveProcedureTest {
 
     @BeforeClass
     public static void before() {
-        BuiltinUtils.isBuiltinEnabled = false;
+        BuiltinConverter.isBuiltinEnabled = false;
     }
 
     @Test
@@ -93,6 +93,6 @@ public class AppendPrimitiveProcedureTest {
 
     @AfterClass
     public static void after() {
-        BuiltinUtils.isBuiltinEnabled = true;
+        BuiltinConverter.isBuiltinEnabled = true;
     }
 }

@@ -3,50 +3,46 @@ package com.ihorak.truffle.node.callable;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.callable.TCO.TailCallCatcherNode;
+import com.ihorak.truffle.node.callable.TCO.exceptions.PolyglotTailCallException;
 import com.ihorak.truffle.node.callable.TCO.exceptions.TailCallException;
+import com.ihorak.truffle.node.polyglot.PolyglotException;
 import com.ihorak.truffle.type.UserDefinedProcedure;
-import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerDirectives;
-import com.oracle.truffle.api.dsl.Fallback;
+import com.oracle.truffle.api.dsl.Cached;
+import com.oracle.truffle.api.dsl.Executed;
+import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.interop.InteropException;
+import com.oracle.truffle.api.interop.InteropLibrary;
+import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.profiles.BranchProfile;
-import com.oracle.truffle.api.profiles.ConditionProfile;
 
 import java.util.List;
 
-public class CallableExprNode extends SchemeExpression {
+public abstract class CallableExprNode extends SchemeExpression {
 
-    @Children private final SchemeExpression[] arguments;
-    @Child private SchemeExpression callable;
-    @SuppressWarnings("FieldMayBeFinal")
+    @Children
+    private final SchemeExpression[] arguments;
     @Child
-    protected DispatchNode dispatchNode;
+    @Executed
+    protected SchemeExpression callable;
 
     private final int tailCallArgumentsSlot;
     private final int tailCallTargetSlot;
     private final int tailCallResultSlot;
-    private final BranchProfile tailCallProfile = BranchProfile.create();
-
-
-//    private final BranchProfile userProcedureWrongNumberOfArgsProfile = BranchProfile.create();
-//    private final BranchProfile primitiveProcedureWrongNumberOfArgsProfile = BranchProfile.create();
-//    private final ConditionProfile conditionProfile = ConditionProfile.createBinaryProfile();
-
 
     public CallableExprNode(List<SchemeExpression> arguments, SchemeExpression callable, int tailCallArgumentsSlot, int tailCallTargetSlot, int tailCallResultSlot) {
         this.arguments = arguments.toArray(SchemeExpression[]::new);
         this.callable = callable;
-        this.dispatchNode = DispatchNodeGen.create();
         this.tailCallArgumentsSlot = tailCallArgumentsSlot;
         this.tailCallTargetSlot = tailCallTargetSlot;
         this.tailCallResultSlot = tailCallResultSlot;
         // this.dataOperand = dataOperand;
     }
 
-    @Override
-    public Object executeGeneric(final VirtualFrame frame) {
-        var procedure = (UserDefinedProcedure) callable.executeGeneric(frame);
+    @Specialization
+    protected Object doUserDefinedProcedure(VirtualFrame frame, UserDefinedProcedure procedure, @Cached DispatchNode dispatchNode) {
         var args = getProcedureOrMacroArgsNoOptional(procedure, frame);
         try {
             return dispatchNode.executeDispatch(procedure, args);
@@ -57,6 +53,24 @@ public class CallableExprNode extends SchemeExpression {
         }
     }
 
+    @Specialization(guards = "interopLib.isExecutable(interopProcedure)", limit = "getInteropCacheLimit()")
+    protected Object doInteropProcedure(VirtualFrame frame,
+                                        Object interopProcedure,
+                                        @CachedLibrary("interopProcedure") InteropLibrary interopLib) {
+
+
+        try {
+            var args = getForeignArgs(frame);
+            return interopLib.execute(interopProcedure, args);
+        } catch (PolyglotTailCallException e) {
+            CompilerDirectives.transferToInterpreterAndInvalidate();
+
+        } catch (InteropException e) {
+            throw PolyglotException.executeException(e, interopProcedure, arguments.length, this);
+        }
+    }
+
+
     @ExplodeLoop
     private Object[] getProcedureOrMacroArgsNoOptional(UserDefinedProcedure function, VirtualFrame parentFrame) {
         Object[] args = new Object[arguments.length + 1];
@@ -66,6 +80,17 @@ public class CallableExprNode extends SchemeExpression {
         for (SchemeExpression expression : arguments) {
             args[index] = expression.executeGeneric(parentFrame);
             index++;
+        }
+
+        return args;
+    }
+
+    @ExplodeLoop
+    private Object[] getForeignArgs(VirtualFrame parentFrame) {
+        Object[] args = new Object[arguments.length];
+
+        for (int i = 0; i < arguments.length; i++) {
+            args[i] = arguments[i].executeGeneric(parentFrame);
         }
 
         return args;

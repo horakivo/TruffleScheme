@@ -16,7 +16,7 @@ import java.util.Map;
 public class SchemeLanguageContext {
 
     private final Map<SchemeSymbol, Object> globalVariableStorage;
-    private final TruffleLanguage.Env env;
+    public final TruffleLanguage.Env env;
 
     public SchemeLanguageContext(SchemeTruffleLanguage language, TruffleLanguage.Env env) {
         this.globalVariableStorage = PrimitiveProcedureGenerator.generate(language);

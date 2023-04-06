@@ -3,24 +3,12 @@ package com.ihorak.truffle.convertor.callable;
 import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.SourceSectionUtil;
 import com.ihorak.truffle.convertor.context.ParsingContext;
-import com.ihorak.truffle.convertor.util.BuiltinUtils;
-import com.ihorak.truffle.exceptions.InterpreterException;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.callable.CallableExprNode;
-import com.ihorak.truffle.node.callable.MacroCallableExprNode;
-import com.ihorak.truffle.node.callable.TCO.SelfRecursiveTailCallThrowerNodeGen;
-import com.ihorak.truffle.node.callable.TCO.TailCallThrowerNodeGen;
-import com.ihorak.truffle.node.scope.WriteFrameSlotNode;
-import com.ihorak.truffle.node.scope.WriteFrameSlotNodeGen;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
-import com.oracle.truffle.api.frame.FrameSlotKind;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class CallableConverter {
 
@@ -44,7 +32,7 @@ public class CallableConverter {
     }
 
     private static boolean isBuiltin(SchemeList callableList) {
-        return callableList.car instanceof SchemeSymbol symbol && BuiltinUtils.isBuiltinProcedure(symbol);
+        return callableList.car instanceof SchemeSymbol symbol && BuiltinConverter.isBuiltinProcedure(symbol);
     }
 
     private static boolean isMacro(SchemeList callableList, ParsingContext context) {

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.ihorak.truffle.convertor.SourceSectionUtil;
+import com.ihorak.truffle.instruments.GlobalScopeAccess;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.parser.AntlrToAST;
 import com.ihorak.truffle.type.SchemeSymbol;
@@ -15,9 +16,10 @@ import org.antlr.v4.runtime.CharStreams;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.node.SchemeRootNode;
 import com.oracle.truffle.api.CallTarget;
-import com.oracle.truffle.api.ContextThreadLocal;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.nodes.Node;
+
+import static com.ihorak.truffle.instruments.GlobalScopeAccessInstrument.GLOBAL_SCOPE_INSTRUMENT_ID;
 
 @TruffleLanguage.Registration(id = "scm", name = "Scheme")
 public class SchemeTruffleLanguage extends TruffleLanguage<SchemeLanguageContext> {
@@ -31,7 +33,13 @@ public class SchemeTruffleLanguage extends TruffleLanguage<SchemeLanguageContext
         return REFERENCE.get(node);
     }
 
-    final ContextThreadLocal<TCOTarget> target = createContextThreadLocal((c, t) -> new TCOTarget());
+    public Object getGlobalScope(Env env, String languageId) {
+        var languageInfo = env.getInternalLanguages().get(languageId);
+        var globalScopeAccess = env.lookup(env.getInstruments().get(GLOBAL_SCOPE_INSTRUMENT_ID), GlobalScopeAccess.class);
+        return globalScopeAccess.getGlobalScope(languageInfo);
+    }
+
+//    final ContextThreadLocal<TCOTarget> target = createContextThreadLocal((c, t) -> new TCOTarget());
 
     @Override
     protected CallTarget parse(ParsingRequest request) throws IOException {
@@ -49,16 +57,14 @@ public class SchemeTruffleLanguage extends TruffleLanguage<SchemeLanguageContext
         return new SchemeLanguageContext(this, env);
     }
 
-    public static TCOTarget getTCOTarget(Node node) {
-        return REFERENCE.get(node).target.get();
-    }
-
-    public static class TCOTarget {
-
-        public CallTarget target;
-        public Object[] arguments;
-
-
-    }
+//    public static TCOTarget getTCOTarget(Node node) {
+//        return REFERENCE.get(node).target.get();
+//    }
+//
+//    public static class TCOTarget {
+//
+//        public CallTarget target;
+//        public Object[] arguments;
+//    }
 
 }

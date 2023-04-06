@@ -12,6 +12,11 @@ import java.util.List;
 
 public class BuiltinConverter extends AbstractCallableConverter {
 
+    public static boolean isBuiltinEnabled = true;
+    public static final String POLYGLOT_EVAL_NAME = "eval-source";
+    public static final String POLYGLOT_RESOLVE_PROC_NAME = "p-proc";
+
+
     private BuiltinConverter() {
     }
 
@@ -22,7 +27,7 @@ public class BuiltinConverter extends AbstractCallableConverter {
     }
 
     private static SchemeExpression createBuiltin(SchemeSymbol operand, List<SchemeExpression> convertedArguments, ParsingContext context, @Nullable ParserRuleContext ctx) {
-
+        String a = "aa";
         return switch (operand.getValue()) {
             case "+" -> BuiltinFactory.createPlusBuiltin(convertedArguments, ctx);
             case "-" -> BuiltinFactory.createMinusBuiltin(convertedArguments, ctx);
@@ -50,10 +55,52 @@ public class BuiltinConverter extends AbstractCallableConverter {
             case "cadr" -> BuiltinFactory.createCadr(convertedArguments, ctx);
             case "infinite" -> BuiltinFactory.createInfinite(convertedArguments);
             case "equal?" -> BuiltinFactory.createEqual(convertedArguments, ctx);
-            case "eval-source" -> BuiltinFactory.createEvalSource(convertedArguments, ctx);
+            case POLYGLOT_EVAL_NAME -> BuiltinFactory.createEvalSource(convertedArguments, ctx);
+            case POLYGLOT_RESOLVE_PROC_NAME -> BuiltinFactory.createPolyglotProcedure(convertedArguments, ctx);
             default ->
                     throw new RuntimeException("Unable to convert builtin procedure from list to AST. Builtin: " + operand);
         };
 
+    }
+
+    public static boolean isBuiltinProcedure(SchemeSymbol symbol) {
+        if (isBuiltinEnabled) {
+            switch (symbol.getValue()) {
+                case "+":
+                case "-":
+                case "/":
+                case "*":
+                case "eval":
+                case "list":
+                case "cons":
+                case "cdr":
+                case "car":
+                case "length":
+                case "append":
+                case "map":
+                case "current-milliseconds":
+                case "display":
+                case "newline":
+                case "=":
+                case "<":
+                case "<=":
+                case ">":
+                case ">=":
+                case "begin":
+                case "list-ref":
+                case "not":
+                case "null?":
+                case "modulo":
+                case "cadr":
+                case "equal?":
+                case "infinite":
+                case POLYGLOT_EVAL_NAME:
+                case POLYGLOT_RESOLVE_PROC_NAME:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+        return false;
     }
 }

@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class EvalSourceTest {
+public class EvalSourceExprNodeTest {
 
     private Context context;
 

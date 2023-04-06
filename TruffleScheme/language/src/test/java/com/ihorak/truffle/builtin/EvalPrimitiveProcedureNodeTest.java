@@ -1,6 +1,6 @@
 package com.ihorak.truffle.builtin;
 
-import com.ihorak.truffle.convertor.util.BuiltinUtils;
+import com.ihorak.truffle.convertor.callable.BuiltinConverter;
 import com.ihorak.truffle.type.UndefinedValue;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
@@ -23,7 +23,7 @@ public class EvalPrimitiveProcedureNodeTest {
 
     @BeforeClass
     public static void before() {
-        BuiltinUtils.isBuiltinEnabled = false;
+        BuiltinConverter.isBuiltinEnabled = false;
     }
 
     @Test
@@ -125,6 +125,6 @@ public class EvalPrimitiveProcedureNodeTest {
 
     @AfterClass
     public static void after() {
-        BuiltinUtils.isBuiltinEnabled = true;
+        BuiltinConverter.isBuiltinEnabled = true;
     }
 }

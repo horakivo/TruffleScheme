@@ -1,6 +1,6 @@
 package com.ihorak.truffle.builtin.arithmetic;
 
-import com.ihorak.truffle.convertor.util.BuiltinUtils;
+import com.ihorak.truffle.convertor.callable.BuiltinConverter;
 import org.graalvm.polyglot.Context;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -21,7 +21,7 @@ public class PlusPrimitiveProcedureTest {
 
     @BeforeClass
     public static void before() {
-        BuiltinUtils.isBuiltinEnabled = false;
+        BuiltinConverter.isBuiltinEnabled = false;
     }
 
     @Test
@@ -83,6 +83,6 @@ public class PlusPrimitiveProcedureTest {
 
     @AfterClass
     public static void after() {
-        BuiltinUtils.isBuiltinEnabled = true;
+        BuiltinConverter.isBuiltinEnabled = true;
     }
 }

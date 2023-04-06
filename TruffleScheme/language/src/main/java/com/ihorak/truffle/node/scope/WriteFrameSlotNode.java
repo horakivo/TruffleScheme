@@ -39,7 +39,6 @@ public abstract class WriteFrameSlotNode extends SchemeNode {
     }
 
     @Specialization(replaces = { "writeBoolean", "writeLong", "writeDouble" })
-    //@Specialization
     protected void writeObject(VirtualFrame frame, Object value) {
         /* No-op if kind is already Object. */
         final FrameDescriptor descriptor = getFrameDescriptor(frame);

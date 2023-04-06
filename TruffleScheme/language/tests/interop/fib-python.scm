@@ -1,2 +1,14 @@
-(cdr (eval-source "js" "a = [1,2,42,4];
-                        Object.freeze(a);"))
+(eval-source "python" "def fibonacci(n):
+                           if n in {0, 1}:
+                               return n
+                           return fibonacci(n - 1) + fibonacci(n - 2)")
+
+
+(define test
+    (lambda (n)
+        ((p-proc 'python 'fibonacci) n)))
+
+
+(test 10)
+
+

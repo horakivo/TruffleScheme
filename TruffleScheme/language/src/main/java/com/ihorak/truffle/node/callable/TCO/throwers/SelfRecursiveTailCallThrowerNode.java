@@ -1,4 +1,4 @@
-package com.ihorak.truffle.node.callable.TCO;
+package com.ihorak.truffle.node.callable.TCO.throwers;
 
 import com.ihorak.truffle.SchemeTruffleLanguage;
 import com.ihorak.truffle.node.SchemeExpression;

@@ -1,4 +1,4 @@
-package com.ihorak.truffle.node.callable.TCO;
+package com.ihorak.truffle.node.callable.TCO.throwers;
 
 import com.ihorak.truffle.SchemeTruffleLanguage;
 import com.ihorak.truffle.node.callable.TCO.exceptions.TailCallException;
@@ -32,22 +32,18 @@ public abstract class TailCallThrowerNode extends SchemeExpression {
     }
 
     @Specialization
-    protected Object doThrow(VirtualFrame frame, UserDefinedProcedure procedure) {
-//        SchemeTruffleLanguage.TCOTarget target = SchemeTruffleLanguage.getTCOTarget(this);
-//        target.target = procedure.getCallTarget();
-//        target.arguments = getArguments(procedure, frame);
-//        throw TailCallException.INSTANCE;
+    protected TailCallException doThrow(VirtualFrame frame, UserDefinedProcedure procedure) {
         throw new TailCallException(procedure, getArguments(procedure, frame));
     }
 
     @ExplodeLoop
-    private Object[] getArguments(UserDefinedProcedure function, VirtualFrame parentFrame) {
+    private Object[] getArguments(UserDefinedProcedure function, VirtualFrame frame) {
         Object[] args = new Object[arguments.length + 1];
         args[0] = function.getParentFrame();
 
         int index = 1;
         for (SchemeExpression expression : arguments) {
-            args[index] = expression.executeGeneric(parentFrame);
+            args[index] = expression.executeGeneric(frame);
             index++;
         }
 

@@ -1,18 +1,11 @@
 package com.ihorak.truffle.node.callable.TCO.loop_nodes;
 
-import com.ihorak.truffle.SchemeTruffleLanguage;
 import com.ihorak.truffle.node.callable.TCO.exceptions.SelfRecursiveTailCallException;
-import com.ihorak.truffle.node.callable.TCO.exceptions.TailCallException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.SchemeNode;
-import com.oracle.truffle.api.CallTarget;
-import com.oracle.truffle.api.CompilerDirectives;
-import com.oracle.truffle.api.Truffle;
-import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.nodes.RepeatingNode;
-import com.oracle.truffle.api.profiles.ConditionProfile;
 
 public class TailRecursiveCallLoopNode extends SchemeNode implements RepeatingNode {
 

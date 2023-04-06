@@ -5,9 +5,12 @@ import com.ihorak.truffle.convertor.SourceSectionUtil;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.exceptions.InterpreterException;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.callable.CallableExprNode;
-import com.ihorak.truffle.node.callable.TCO.SelfRecursiveTailCallThrowerNodeGen;
-import com.ihorak.truffle.node.callable.TCO.TailCallThrowerNodeGen;
+import com.ihorak.truffle.node.callable.CallableExprNodeGen;
+import com.ihorak.truffle.node.callable.TCO.throwers.PolyglotTailCallThrowerNodeGen;
+import com.ihorak.truffle.node.callable.TCO.throwers.SelfRecursiveTailCallThrowerNodeGen;
+import com.ihorak.truffle.node.callable.TCO.throwers.TailCallThrowerNodeGen;
+import com.ihorak.truffle.node.exprs.builtin.EvalSourceExprNode;
+import com.ihorak.truffle.node.polyglot.PProcExprNode;
 import com.ihorak.truffle.node.scope.WriteFrameSlotNode;
 import com.ihorak.truffle.node.scope.WriteFrameSlotNodeGen;
 import com.ihorak.truffle.type.SchemeList;
@@ -43,7 +46,7 @@ public class ProcedureConverter extends AbstractCallableConverter {
             int tailCallTargetSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
             int tailCallResultSlot = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
 
-            var callableExpr = new CallableExprNode(arguments, operandExpr, tailCallArgumentsSlot, tailCallTargetSlot, tailCallResultSlot);
+            var callableExpr = CallableExprNodeGen.create(arguments, operandExpr, tailCallArgumentsSlot, tailCallTargetSlot, tailCallResultSlot);
             return SourceSectionUtil.setSourceSectionAndReturnExpr(callableExpr, procedureCtx);
         }
 
@@ -77,8 +80,13 @@ public class ProcedureConverter extends AbstractCallableConverter {
     }
 
     private static SchemeExpression createTailCallThrower(List<SchemeExpression> arguments, SchemeExpression operandExpr, Object operandIR, @Nullable ParserRuleContext procedureCtx) {
-        var throwerNode = TailCallThrowerNodeGen.create(arguments, operandExpr, operandIR);
-        return SourceSectionUtil.setSourceSectionAndReturnExpr(throwerNode, procedureCtx);
+        if (isPolyglotTailCall(operandExpr)) {
+            var polyglotThrowerNode = PolyglotTailCallThrowerNodeGen.create(arguments, operandExpr, operandIR);
+            return SourceSectionUtil.setSourceSectionAndReturnExpr(polyglotThrowerNode, procedureCtx);
+        } else {
+            var throwerNode = TailCallThrowerNodeGen.create(arguments, operandExpr, operandIR);
+            return SourceSectionUtil.setSourceSectionAndReturnExpr(throwerNode, procedureCtx);
+        }
     }
 
 
@@ -91,5 +99,9 @@ public class ProcedureConverter extends AbstractCallableConverter {
     private static boolean isSelfTailRecursive(Object operand, ParsingContext context) {
         if (context.getFunctionDefinitionName().isEmpty()) return false;
         return operand instanceof SchemeSymbol symbol && symbol.equals(context.getFunctionDefinitionName().get());
+    }
+
+    private static boolean isPolyglotTailCall(SchemeExpression operandExpr) {
+        return (operandExpr instanceof EvalSourceExprNode) || (operandExpr instanceof PProcExprNode);
     }
 }
