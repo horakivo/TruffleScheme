@@ -7,7 +7,6 @@ import com.ihorak.truffle.exceptions.InterpreterException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.callable.CallableExprNode;
 import com.ihorak.truffle.node.callable.CallableExprNodeGen;
-import com.ihorak.truffle.node.callable.TCO.throwers.PolyglotTailCallThrowerNodeGen;
 import com.ihorak.truffle.node.callable.TCO.throwers.SelfRecursiveTailCallThrowerNodeGen;
 import com.ihorak.truffle.node.callable.TCO.throwers.TailCallThrowerNodeGen;
 import com.ihorak.truffle.node.exprs.builtin.EvalSourceExprNode;

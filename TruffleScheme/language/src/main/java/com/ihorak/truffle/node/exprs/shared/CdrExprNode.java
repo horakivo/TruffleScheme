@@ -29,6 +29,11 @@ public abstract class CdrExprNode extends LimitedBuiltin {
         return pair.second();
     }
 
+    @Specialization(guards = "list.isEmpty")
+    protected SchemeList doEmptyList(SchemeList list) {
+        throw SchemeException.contractViolation(this, "cdr", "pair? or list?", list);
+    }
+
     @Specialization(guards = "interopLib.hasArrayElements(obj)", limit = "getInteropCacheLimit()")
     protected Object doForeignObject(Object obj,
                                      @CachedLibrary("obj") InteropLibrary interopLib) {

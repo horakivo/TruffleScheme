@@ -15,6 +15,7 @@ import com.oracle.truffle.api.library.CachedLibrary;
 
 public abstract class CarExprNode extends LimitedBuiltin {
 
+
     @Specialization(guards = "!list.isEmpty")
     protected Object doSchemeList(SchemeList list) {
         return list.car;
@@ -23,6 +24,11 @@ public abstract class CarExprNode extends LimitedBuiltin {
     @Specialization
     protected Object doPairCar(SchemePair pair) {
         return pair.first();
+    }
+
+    @Specialization(guards = "list.isEmpty")
+    protected Object doEmptyList(SchemeList list) {
+        throw SchemeException.contractViolation(this, "car", "pair? or list?", list);
     }
 
     @Specialization(guards = "interopLib.hasArrayElements(obj)", limit = "getInteropCacheLimit()")
