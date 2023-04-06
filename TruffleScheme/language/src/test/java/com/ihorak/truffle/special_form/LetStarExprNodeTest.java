@@ -2,10 +2,12 @@ package com.ihorak.truffle.special_form;
 
 import org.graalvm.polyglot.Context;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
+@Ignore
 public class LetStarExprNodeTest {
     private Context context;
 

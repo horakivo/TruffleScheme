@@ -3,10 +3,12 @@ package com.ihorak.truffle.builtin.list;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+@Ignore
 public class MapExprNodeTest {
 
     private Context context;

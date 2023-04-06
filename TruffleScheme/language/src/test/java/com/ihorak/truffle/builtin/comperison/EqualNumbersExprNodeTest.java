@@ -71,7 +71,7 @@ public class EqualNumbersExprNodeTest {
 
         assertEquals("" +
                 "=: contract violation\n" +
-                "expected: real?\n" +
+                "expected: number?\n" +
                 "given left: 4\n" +
                 "given right: 'a", msg);
     }

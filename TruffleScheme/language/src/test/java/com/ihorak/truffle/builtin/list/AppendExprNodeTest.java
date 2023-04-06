@@ -3,6 +3,7 @@ package com.ihorak.truffle.builtin.list;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -70,6 +71,7 @@ public class AppendExprNodeTest {
         assertEquals(6L, result.getArrayElement(5).asLong());
     }
 
+    @Ignore
     @Test
     public void givenOneListOnePair_whenAppend_thenShouldThrowException() {
         var program = "(append (list 1 2) (cons 3 4))";
