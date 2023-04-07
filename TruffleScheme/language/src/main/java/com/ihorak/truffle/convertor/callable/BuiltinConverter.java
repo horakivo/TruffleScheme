@@ -14,7 +14,7 @@ public class BuiltinConverter extends AbstractCallableConverter {
 
     public static boolean isBuiltinEnabled = true;
     public static final String POLYGLOT_EVAL_NAME = "eval-source";
-    public static final String POLYGLOT_RESOLVE_PROC_NAME = "p-proc";
+    public static final String POLYGLOT_READ_GLOBAL_SCOPE = "p-read-global-scope";
 
 
     private BuiltinConverter() {
@@ -27,7 +27,6 @@ public class BuiltinConverter extends AbstractCallableConverter {
     }
 
     private static SchemeExpression createBuiltin(SchemeSymbol operand, List<SchemeExpression> convertedArguments, ParsingContext context, @Nullable ParserRuleContext ctx) {
-        String a = "aa";
         return switch (operand.getValue()) {
             case "+" -> BuiltinFactory.createPlusBuiltin(convertedArguments, ctx);
             case "-" -> BuiltinFactory.createMinusBuiltin(convertedArguments, ctx);
@@ -56,7 +55,7 @@ public class BuiltinConverter extends AbstractCallableConverter {
             case "infinite" -> BuiltinFactory.createInfinite(convertedArguments);
             case "equal?" -> BuiltinFactory.createEqual(convertedArguments, ctx);
             case POLYGLOT_EVAL_NAME -> BuiltinFactory.createEvalSource(convertedArguments, ctx);
-            case POLYGLOT_RESOLVE_PROC_NAME -> BuiltinFactory.createPolyglotProcedure(convertedArguments, ctx);
+            case POLYGLOT_READ_GLOBAL_SCOPE -> BuiltinFactory.createPolyglotProcedure(convertedArguments, ctx);
             default ->
                     throw new RuntimeException("Unable to convert builtin procedure from list to AST. Builtin: " + operand);
         };
@@ -95,7 +94,7 @@ public class BuiltinConverter extends AbstractCallableConverter {
                 case "equal?":
                 case "infinite":
                 case POLYGLOT_EVAL_NAME:
-                case POLYGLOT_RESOLVE_PROC_NAME:
+                case POLYGLOT_READ_GLOBAL_SCOPE:
                     return true;
                 default:
                     return false;

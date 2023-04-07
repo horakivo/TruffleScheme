@@ -37,8 +37,7 @@ public class UserDefinedProcedure implements TruffleObject {
      * Manages the assumption that the {@link #callTarget} is stable.
      */
     private final CyclicAssumption callTargetStable;
-    //Because of the Interop library
-//    private final DispatchNode dispatchNode = DispatchNodeGen.create();
+
 
 
     public UserDefinedProcedure(RootCallTarget callTarget, int expectedNumberOfArgs, MaterializedFrame frame) {
@@ -118,34 +117,10 @@ public class UserDefinedProcedure implements TruffleObject {
         return true;
     }
 
-//    @ExportMessage
-//    abstract static class Execute {
-//        @Specialization
-//        static Object dispatch(UserDefinedProcedure procedure, Object[] arguments, @Cached DispatchNode dispatchNode) {
-//            return dispatchNode.executeDispatch(procedure, arguments);
-//        }
-//    }
-
     @ExportMessage
-    Object execute(Object[] arguments, @Cached DispatchNode dispatchNode) {
+    Object execute(Object[] arguments,
+                   @Cached DispatchNode dispatchNode) {
         return dispatchNode.executeDispatch(this, arguments);
     }
-//
-//    @ExportMessage
-//    Object execute(Object[] arguments) {
-//        for (Object argument : arguments) {
-//            if (!isSchemeValue(argument)) {
-//                CompilerDirectives.transferToInterpreterAndInvalidate();
-//                throw new SchemeException("'" + argument + "' is not an EasyScript value", null);
-//            }
-//        }
-//        return this.dispatchNode.executeDispatch(getCallTarget(), arguments);
-//    }
-//
-//
-//    private boolean isSchemeValue(Object argument) {
-//        return argument instanceof Long || argument instanceof Double || argument instanceof BigInteger || argument instanceof SchemeCell || argument instanceof UserDefinedProcedure || argument instanceof UndefinedValue;
-//
-//    }
 
 }

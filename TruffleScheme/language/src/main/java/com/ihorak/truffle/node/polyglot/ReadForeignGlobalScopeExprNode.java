@@ -1,13 +1,11 @@
 package com.ihorak.truffle.node.polyglot;
 
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.interop.ForeignToSchemeNode;
-import com.ihorak.truffle.node.polyglot.object.PolyReadMemberNode;
-import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.strings.TruffleString;
+import com.ihorak.truffle.node.polyglot.MemberNodes.ReadMemberNode;
 
 @NodeChild("languageId")
 @NodeChild("procName")
@@ -25,7 +23,7 @@ public abstract class ReadForeignGlobalScopeExprNode extends SchemeExpression {
                                                  @Cached TruffleString.ToJavaStringNode toJavaStringNode,
                                                  @Cached("getGlobalScope(toJavaStringNode.execute(cachedTruffleId))") Object cachedGlobalScope,
                                                  @Cached TruffleString.EqualNode equalNode,
-                                                 @Cached PolyReadMemberNode readMemberNode) {
+                                                 @Cached ReadMemberNode readMemberNode) {
        return readMemberNode.execute(cachedGlobalScope, cachedTruffleIdentifier);
     }
 
@@ -33,7 +31,7 @@ public abstract class ReadForeignGlobalScopeExprNode extends SchemeExpression {
     protected Object findPolyglotProcedureUncached(TruffleString truffleLanguageId,
                                                    TruffleString truffleIdentifier,
                                                    @Cached TruffleString.ToJavaStringNode toJavaStringNode,
-                                                   @Cached PolyReadMemberNode readMemberNode) {
+                                                   @Cached ReadMemberNode readMemberNode) {
         var globalScope = getGlobalScope(toJavaStringNode.execute(truffleLanguageId));
         return readMemberNode.execute(globalScope, truffleIdentifier);
     }

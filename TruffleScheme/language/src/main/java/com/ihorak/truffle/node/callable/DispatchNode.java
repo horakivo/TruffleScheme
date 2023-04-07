@@ -3,6 +3,7 @@ package com.ihorak.truffle.node.callable;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeNode;
 import com.ihorak.truffle.node.polyglot.PolyglotException;
+import com.ihorak.truffle.node.polyglot.TranslateInteropExceptionNode;
 import com.ihorak.truffle.type.UserDefinedProcedure;
 import com.oracle.truffle.api.Assumption;
 import com.oracle.truffle.api.CallTarget;
@@ -45,17 +46,17 @@ public abstract class DispatchNode extends SchemeNode {
 
     @Specialization(guards = "interopLibrary.isExecutable(foreignProcedure)", limit = "getInteropCacheLimit()")
     protected static Object callInteropProcedure(Object foreignProcedure, Object[] arguments,
+                                                 @Cached TranslateInteropExceptionNode translateInteropExceptionNode,
                                                  @CachedLibrary("foreignProcedure") InteropLibrary interopLibrary) {
         try {
             return interopLibrary.execute(foreignProcedure, arguments);
-
         } catch (InteropException e) {
-            throw PolyglotException.executeException(e, foreignProcedure, arguments.length, null);
+            throw translateInteropExceptionNode.execute(e, foreignProcedure, "Execute", arguments);
         }
     }
 
     @Fallback
-    protected static Object fallback(Object procedure, Object[] arguments) {
-        throw SchemeException.notProcedure(procedure, null);
+    protected Object fallback(Object procedure, Object[] arguments) {
+        throw SchemeException.notProcedure(procedure, this);
     }
 }

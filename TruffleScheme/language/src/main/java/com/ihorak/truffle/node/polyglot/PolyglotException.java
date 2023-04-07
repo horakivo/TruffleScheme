@@ -1,17 +1,14 @@
 package com.ihorak.truffle.node.polyglot;
 
-import com.ihorak.truffle.exceptions.SchemeException;
-import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.type.SchemeSymbol;
-import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.exception.AbstractTruffleException;
 import com.oracle.truffle.api.interop.ArityException;
-import com.oracle.truffle.api.interop.InteropException;
 import com.oracle.truffle.api.interop.UnknownIdentifierException;
 import com.oracle.truffle.api.interop.UnsupportedMessageException;
 import com.oracle.truffle.api.interop.UnsupportedTypeException;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
+
+import java.util.Arrays;
 
 public class PolyglotException extends AbstractTruffleException {
 
@@ -19,45 +16,44 @@ public class PolyglotException extends AbstractTruffleException {
         super(message, location);
     }
 
-    @TruffleBoundary
-    public static PolyglotException readMemberException(InteropException e, Object receiver, String memberName, Node node) {
-        if (e instanceof UnsupportedMessageException exception) {
-            var message = unsupportedMessageExceptionText(exception, receiver, "ReadMember");
-            return new PolyglotException(message, node);
-        } else if (e instanceof UnknownIdentifierException exception) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("Object: ").append(receiver).append(" doesn't have member with name ").append(memberName).append("\n");
-            sb.append("Original exception message: ").append(exception.getMessage());
-            return new PolyglotException(sb.toString(), node);
-        }
 
-        throw SchemeException.shouldNotReachHere("Internal error: ReadMember throw unexpected exception", node);
+    @TruffleBoundary
+    public static PolyglotException unsupportedMessageException(UnsupportedMessageException exception, Object receiver, String messageName, Node node) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Receiver: ").append(receiver).append(" doesn't support ").append(messageName).append(" message.\n");
+        sb.append("Original exception message: ").append(exception.getMessage());
+
+        return new PolyglotException(sb.toString(), node);
     }
 
     @TruffleBoundary
-    public static PolyglotException executeException(InteropException e, Object procedure, int numberOfArgs, Node node) {
-        if (e instanceof ArityException exception) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(procedure).append(": contract violation. Wrong number of arguments\n");
-            sb.append("Expected: ").append(exception.getActualArity()).append("\n");
-            sb.append("Given: ").append(numberOfArgs);
-            return new PolyglotException(sb.toString(), node);
-        } else if (e instanceof UnsupportedMessageException exception) {
-            var message = unsupportedMessageExceptionText(exception, procedure, "Execute");
-            return new PolyglotException(message, node);
-        } else if (e instanceof UnsupportedTypeException exception) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(procedure).append(": contract violation. Unexpected argument type\n");
-            return new PolyglotException(sb.toString(), node);
-        }
+    public static PolyglotException unknownIdentifierException(UnknownIdentifierException exception, Object receiver, Node node) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Receiver: ").append(receiver).append(" doesn't have member with name ").append(exception.getUnknownIdentifier()).append("\n");
+        sb.append("Original exception message: ").append(exception.getMessage());
 
-        throw SchemeException.shouldNotReachHere("Internal error: ReadMember throw unexpected exception", node);
+        return new PolyglotException(sb.toString(), node);
     }
 
     @TruffleBoundary
-    public static PolyglotException exception(String message, Node node) {
-        throw new PolyglotException(message, node);
+    public static PolyglotException unsupportedTypeException(UnsupportedTypeException exception, Object receiver, Node node) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Receiver: ").append(receiver).append(": contract violation. Unexpected argument type\n");
+        sb.append("Given: ").append(Arrays.toString(exception.getSuppliedValues())).append("\n");
+        sb.append("Original exception message: ").append(exception.getMessage());
+
+        return new PolyglotException(sb.toString(), node);
     }
+
+    @TruffleBoundary
+    public static PolyglotException arityException(ArityException exception, Object receiver, Object[] arguments, Node node) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(receiver).append(": contract violation. Wrong number of arguments\n");
+        sb.append("Expected: ").append(exception.getActualArity()).append("\n");
+        sb.append("Given: ").append(arguments.length);
+        return new PolyglotException(sb.toString(), node);
+    }
+
 
     @TruffleBoundary
     public static PolyglotException wrongMessageIdentifierType(String operationName, Object identifier, Node node) {
@@ -68,14 +64,4 @@ public class PolyglotException extends AbstractTruffleException {
 
         throw new PolyglotException(sb.toString(), node);
     }
-
-    private static String unsupportedMessageExceptionText(UnsupportedMessageException exception, Object receiver, String messageName) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Receiver: ").append(receiver).append(" doesn't support ").append(messageName).append(" message.\n");
-        sb.append("Original exception message: ").append(exception.getMessage());
-
-        return sb.toString();
-    }
-
-
 }

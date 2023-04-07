@@ -30,7 +30,7 @@ public class GlobalScopeTests {
                                 
                 (define test
                     (lambda (n)
-                        ((p-proc "python" "fibonacci") n)))
+                        ((p-read-global-scope "python" "fibonacci") n)))
                                 
                                 
                 (test 10)
@@ -47,7 +47,7 @@ public class GlobalScopeTests {
                 (eval-source "python" "a = 1")
                                 
                                 
-                (+ 1 (p-proc "python" "a"))
+                (+ 1 (p-read-global-scope "python" "a"))
                 """;
 
         var result = context.eval("scm", program);
