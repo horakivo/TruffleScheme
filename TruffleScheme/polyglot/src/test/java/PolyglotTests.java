@@ -20,7 +20,7 @@ public class PolyglotTests {
     }
 
     @Test
-    public void fib() {
+    public void pythonFib() {
         var program = """
                 (eval-source "python" "def fibonacci(n):
                                            if n in {0, 1}:

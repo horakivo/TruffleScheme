@@ -1,5 +1,7 @@
 package com.ihorak.truffle.exceptions;
 
+import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.node.polyglot.PolyglotException;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.exception.AbstractTruffleException;
 import com.oracle.truffle.api.interop.InteropException;
@@ -77,5 +79,15 @@ public class SchemeException extends AbstractTruffleException {
 
     public static SchemeException shouldNotReachHere(String message, Node location) {
         throw new SchemeException(message, location);
+    }
+
+    @TruffleBoundary
+    public static SchemeException notProcedure(Object notProcedureObject, Node node) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Application: not a procedure\n");
+        sb.append("Expected: procedure that can be applied to arguments\n");
+        sb.append("Given: ").append(notProcedureObject);
+
+        throw new SchemeException(sb.toString(), node);
     }
 }

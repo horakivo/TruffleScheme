@@ -3,6 +3,7 @@ package com.ihorak.truffle.node;
 import com.ihorak.truffle.type.*;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.nodes.RootNode;
 import com.oracle.truffle.api.nodes.UnexpectedResultException;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
@@ -48,6 +49,32 @@ public abstract class SchemeExpression extends SchemeNode {
     public BigInteger executeBigInt(VirtualFrame virtualFrame) throws UnexpectedResultException {
         return SchemeTypesGen.expectBigInteger(executeGeneric(virtualFrame));
     }
+
+    @ExplodeLoop
+    protected Object[] getProcedureArguments(UserDefinedProcedure function, SchemeExpression[] arguments, VirtualFrame frame) {
+        Object[] args = new Object[arguments.length + 1];
+        args[0] = function.getParentFrame();
+
+        int index = 1;
+        for (SchemeExpression expression : arguments) {
+            args[index] = expression.executeGeneric(frame);
+            index++;
+        }
+
+        return args;
+    }
+
+    @ExplodeLoop
+    protected Object[] getForeignProcedureArguments(SchemeExpression[] arguments, VirtualFrame parentFrame) {
+        Object[] args = new Object[arguments.length];
+
+        for (int i = 0; i < arguments.length; i++) {
+            args[i] = arguments[i].executeGeneric(parentFrame);
+        }
+
+        return args;
+    }
+
 
     @Override
     @TruffleBoundary

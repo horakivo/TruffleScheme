@@ -1,13 +1,19 @@
 package com.ihorak.truffle.node.callable.TCO.throwers;
 
 import com.ihorak.truffle.SchemeTruffleLanguage;
+import com.ihorak.truffle.exceptions.SchemeException;
+import com.ihorak.truffle.node.callable.DispatchNode;
 import com.ihorak.truffle.node.callable.TCO.exceptions.TailCallException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.UserDefinedProcedure;
+import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Executed;
+import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.MaterializedFrame;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.interop.InteropLibrary;
+import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 
 import java.util.List;
@@ -33,21 +39,21 @@ public abstract class TailCallThrowerNode extends SchemeExpression {
 
     @Specialization
     protected TailCallException doThrow(VirtualFrame frame, UserDefinedProcedure procedure) {
-        throw new TailCallException(procedure, getArguments(procedure, frame));
+        throw new TailCallException(procedure, getProcedureArguments(procedure, arguments, frame));
     }
 
-    @ExplodeLoop
-    private Object[] getArguments(UserDefinedProcedure function, VirtualFrame frame) {
-        Object[] args = new Object[arguments.length + 1];
-        args[0] = function.getParentFrame();
 
-        int index = 1;
-        for (SchemeExpression expression : arguments) {
-            args[index] = expression.executeGeneric(frame);
-            index++;
-        }
+    @Specialization(guards = "interopLibrary.isExecutable(procedure)", limit = "getInteropCacheLimit()")
+    protected Object doPolyglotThrow(VirtualFrame frame, Object procedure,
+                                     @CachedLibrary("procedure") InteropLibrary interopLibrary,
+                                     @Cached DispatchNode dispatchNode) {
+        return dispatchNode.executeDispatch(procedure, getForeignProcedureArguments(arguments, frame));
+    }
 
-        return args;
+
+    @Fallback
+    protected Object fallback(Object procedure) {
+        throw SchemeException.notProcedure(procedure, this);
     }
 
 

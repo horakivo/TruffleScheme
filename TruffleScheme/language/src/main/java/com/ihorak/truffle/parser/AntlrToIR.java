@@ -58,7 +58,8 @@ public class AntlrToIR extends R5RSBaseVisitor<Object> {
     public TruffleString visitString(R5RSParser.StringContext ctx) {
         var stringWithDoubleQuotes = ctx.STRING().getText();
         var trimmedString = stringWithDoubleQuotes.substring(1, stringWithDoubleQuotes.length() - 1);
-        return TruffleString.fromJavaStringUncached(trimmedString, SchemeTruffleLanguage.STRING_ENCODING);
+        var removedBackslash = trimmedString.replace("\\", "");
+        return TruffleString.fromJavaStringUncached(removedBackslash, SchemeTruffleLanguage.STRING_ENCODING);
     }
 
     @Override

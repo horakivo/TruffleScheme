@@ -81,13 +81,9 @@ public class ProcedureConverter extends AbstractCallableConverter {
     }
 
     private static SchemeExpression createTailCallThrower(List<SchemeExpression> arguments, SchemeExpression operandExpr, Object operandIR, @Nullable ParserRuleContext procedureCtx) {
-        if (isPolyglotTailCall(operandExpr)) {
-            var callableExpr = CallableExprNodeGen.create(arguments, operandExpr, 0,0,0);
-            return SourceSectionUtil.setSourceSectionAndReturnExpr(callableExpr, procedureCtx);
-        } else {
-            var throwerNode = TailCallThrowerNodeGen.create(arguments, operandExpr, operandIR);
-            return SourceSectionUtil.setSourceSectionAndReturnExpr(throwerNode, procedureCtx);
-        }
+        var throwerNode = TailCallThrowerNodeGen.create(arguments, operandExpr, operandIR);
+        return SourceSectionUtil.setSourceSectionAndReturnExpr(throwerNode, procedureCtx);
+
     }
 
 
@@ -100,9 +96,5 @@ public class ProcedureConverter extends AbstractCallableConverter {
     private static boolean isSelfTailRecursive(Object operand, ParsingContext context) {
         if (context.getFunctionDefinitionName().isEmpty()) return false;
         return operand instanceof SchemeSymbol symbol && symbol.equals(context.getFunctionDefinitionName().get());
-    }
-
-    private static boolean isPolyglotTailCall(SchemeExpression operandExpr) {
-        return (operandExpr instanceof EvalSourceExprNode) || (operandExpr instanceof PProcExprNode);
     }
 }

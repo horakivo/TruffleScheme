@@ -9,6 +9,7 @@ import com.ihorak.truffle.type.UserDefinedProcedure;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Executed;
+import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.interop.InteropException;
@@ -40,8 +41,9 @@ public abstract class CallableExprNode extends SchemeExpression {
     }
 
     @Specialization
-    protected Object doUserDefinedProcedure(VirtualFrame frame, UserDefinedProcedure procedure, @Cached DispatchNode dispatchNode) {
-        var args = getProcedureOrMacroArgsNoOptional(procedure, frame);
+    protected Object doUserDefinedProcedure(VirtualFrame frame, UserDefinedProcedure procedure,
+                                            @Cached DispatchNode dispatchNode) {
+        var args = getProcedureArguments(procedure, arguments, frame);
         try {
             return dispatchNode.executeDispatch(procedure, args);
         } catch (TailCallException e) {
@@ -54,42 +56,16 @@ public abstract class CallableExprNode extends SchemeExpression {
     @Specialization(guards = "interopLib.isExecutable(interopProcedure)", limit = "getInteropCacheLimit()")
     protected Object doInteropProcedure(VirtualFrame frame,
                                         Object interopProcedure,
+                                        @Cached DispatchNode dispatchNode,
                                         @CachedLibrary("interopProcedure") InteropLibrary interopLib) {
-
-
-        try {
-            var args = getForeignArgs(frame);
-            return interopLib.execute(interopProcedure, args);
-        } catch (InteropException e) {
-            throw PolyglotException.executeException(e, interopProcedure, arguments.length, this);
-        }
+        return dispatchNode.executeDispatch(interopProcedure, getForeignProcedureArguments(arguments, frame));
     }
 
-
-    @ExplodeLoop
-    private Object[] getProcedureOrMacroArgsNoOptional(UserDefinedProcedure function, VirtualFrame parentFrame) {
-        Object[] args = new Object[arguments.length + 1];
-        args[0] = function.getParentFrame();
-
-        int index = 1;
-        for (SchemeExpression expression : arguments) {
-            args[index] = expression.executeGeneric(parentFrame);
-            index++;
-        }
-
-        return args;
+    @Fallback
+    protected Object fallback(Object procedure) {
+        throw SchemeException.notProcedure(procedure, this);
     }
 
-    @ExplodeLoop
-    private Object[] getForeignArgs(VirtualFrame parentFrame) {
-        Object[] args = new Object[arguments.length];
-
-        for (int i = 0; i < arguments.length; i++) {
-            args[i] = arguments[i].executeGeneric(parentFrame);
-        }
-
-        return args;
-    }
 
 //    @Specialization
 //    protected Object doUserDefinedProcedure(VirtualFrame frame, UserDefinedProcedure function) {
