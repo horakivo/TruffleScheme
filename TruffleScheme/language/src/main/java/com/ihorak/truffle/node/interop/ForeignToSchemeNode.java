@@ -14,6 +14,11 @@ public abstract class ForeignToSchemeNode extends SchemeNode {
     }
 
     @Specialization
+    protected long convertByte(int value) {
+        return value;
+    }
+
+    @Specialization
     protected long convertShort(short value) {
         return value;
     }

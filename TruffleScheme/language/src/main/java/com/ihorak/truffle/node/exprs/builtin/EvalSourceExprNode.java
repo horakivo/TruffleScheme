@@ -51,12 +51,6 @@ public abstract class EvalSourceExprNode extends SchemeExpression {
         return foreignToSchemeNode.executeConvert(foreign);
     }
 
-
-    protected boolean areTruffleStringsEqual(TruffleString.EqualNode equalNode, TruffleString left, TruffleString right) {
-        return equalNode.execute(left, right, SchemeTruffleLanguage.STRING_ENCODING);
-    }
-
-
     protected CallTarget parse(TruffleString id, TruffleString sourceCode) {
         final Source source = Source.newBuilder(id.toJavaStringUncached(), sourceCode.toJavaStringUncached(), "eval-source").build();
         return getContext().parse(source);

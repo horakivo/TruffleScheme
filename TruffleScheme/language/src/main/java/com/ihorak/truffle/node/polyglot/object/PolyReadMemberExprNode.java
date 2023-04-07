@@ -7,6 +7,7 @@ import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.Specialization;
+import com.oracle.truffle.api.strings.TruffleString;
 
 
 @NodeChild("foreignObject")
@@ -15,7 +16,7 @@ public abstract class PolyReadMemberExprNode extends SchemeExpression {
 
 
     @Specialization
-    protected Object doRead(Object foreignObject, SchemeSymbol identifier, @Cached PolyReadMemberNode readMemberNode) {
+    protected Object doRead(Object foreignObject, TruffleString identifier, @Cached PolyReadMemberNode readMemberNode) {
         return readMemberNode.execute(foreignObject, identifier);
     }
 

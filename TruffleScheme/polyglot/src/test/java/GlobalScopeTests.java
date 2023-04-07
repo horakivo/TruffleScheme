@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class PolyglotTests {
+public class GlobalScopeTests {
 
     private Context context;
 
@@ -30,7 +30,7 @@ public class PolyglotTests {
                                 
                 (define test
                     (lambda (n)
-                        ((p-proc 'python 'fibonacci) n)))
+                        ((p-proc "python" "fibonacci") n)))
                                 
                                 
                 (test 10)
@@ -39,5 +39,19 @@ public class PolyglotTests {
         var result = context.eval("scm", program);
 
         assertEquals(55L, result.asLong());
+    }
+
+    @Test
+    public void test() {
+        var program = """
+                (eval-source "python" "a = 1")
+                                
+                                
+                (+ 1 (p-proc "python" "a"))
+                """;
+
+        var result = context.eval("scm", program);
+
+        assertEquals(2L, result.asLong());
     }
 }

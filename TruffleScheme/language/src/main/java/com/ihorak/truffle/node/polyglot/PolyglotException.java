@@ -20,13 +20,13 @@ public class PolyglotException extends AbstractTruffleException {
     }
 
     @TruffleBoundary
-    public static PolyglotException readMemberException(InteropException e, Object receiver, SchemeSymbol memberName, Node node) {
+    public static PolyglotException readMemberException(InteropException e, Object receiver, String memberName, Node node) {
         if (e instanceof UnsupportedMessageException exception) {
             var message = unsupportedMessageExceptionText(exception, receiver, "ReadMember");
             return new PolyglotException(message, node);
         } else if (e instanceof UnknownIdentifierException exception) {
             StringBuilder sb = new StringBuilder();
-            sb.append("Object: ").append(receiver).append(" doesn't have member with name ").append(memberName.getValue()).append("\n");
+            sb.append("Object: ").append(receiver).append(" doesn't have member with name ").append(memberName).append("\n");
             sb.append("Original exception message: ").append(exception.getMessage());
             return new PolyglotException(sb.toString(), node);
         }

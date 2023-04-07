@@ -1,5 +1,6 @@
 package com.ihorak.truffle.node;
 
+import com.ihorak.truffle.SchemeTruffleLanguage;
 import com.ihorak.truffle.type.*;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.frame.VirtualFrame;
@@ -10,6 +11,7 @@ import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 import com.oracle.truffle.api.source.Source;
 import com.oracle.truffle.api.source.SourceSection;
+import com.oracle.truffle.api.strings.TruffleString;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -48,6 +50,10 @@ public abstract class SchemeExpression extends SchemeNode {
 
     public BigInteger executeBigInt(VirtualFrame virtualFrame) throws UnexpectedResultException {
         return SchemeTypesGen.expectBigInteger(executeGeneric(virtualFrame));
+    }
+
+    protected boolean areTruffleStringsEqual(TruffleString.EqualNode equalNode, TruffleString left, TruffleString right) {
+        return equalNode.execute(left, right, SchemeTruffleLanguage.STRING_ENCODING);
     }
 
     @ExplodeLoop
