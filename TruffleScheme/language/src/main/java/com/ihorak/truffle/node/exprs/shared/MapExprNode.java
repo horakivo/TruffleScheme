@@ -3,7 +3,6 @@ package com.ihorak.truffle.node.exprs.shared;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.exprs.ArbitraryBuiltin;
 import com.ihorak.truffle.type.AbstractProcedure;
-import com.ihorak.truffle.type.SchemeCell;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.profiles.BranchProfile;

@@ -8,7 +8,6 @@ import com.ihorak.truffle.node.cast.BooleanCastExprNodeGen;
 import com.ihorak.truffle.node.exprs.builtin.arithmetic.OneArgumentExprNodeGen;
 import com.ihorak.truffle.node.literals.BooleanLiteralNode;
 import com.ihorak.truffle.node.special_form.AndExprNode;
-import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeList;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.jetbrains.annotations.Nullable;

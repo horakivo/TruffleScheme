@@ -3,7 +3,6 @@ package com.ihorak.truffle.node.exprs.shared;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.exprs.LimitedBuiltin;
 import com.ihorak.truffle.node.interop.ForeignToSchemeNode;
-import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemePair;
 import com.oracle.truffle.api.dsl.Cached;

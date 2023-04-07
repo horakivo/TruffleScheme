@@ -1,7 +1,6 @@
 package com.ihorak.truffle.node.exprs.builtin.list;
 
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeList;
 import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.Specialization;

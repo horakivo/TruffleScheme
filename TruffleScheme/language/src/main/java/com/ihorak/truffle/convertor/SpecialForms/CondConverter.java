@@ -9,7 +9,6 @@ import com.ihorak.truffle.node.cast.BooleanCastExprNodeGen;
 import com.ihorak.truffle.node.literals.UndefinedLiteralNode;
 import com.ihorak.truffle.node.special_form.IfElseExprNode;
 import com.ihorak.truffle.node.special_form.IfExprNode;
-import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
 import org.antlr.v4.runtime.ParserRuleContext;

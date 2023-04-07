@@ -1,6 +1,5 @@
 package com.ihorak.truffle.convertor.SpecialForms;
 
-import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.SourceSectionUtil;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.util.TailCallUtil;
@@ -9,7 +8,6 @@ import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
 import com.ihorak.truffle.node.special_form.LetExprNode;
-import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
 import org.antlr.v4.runtime.ParserRuleContext;

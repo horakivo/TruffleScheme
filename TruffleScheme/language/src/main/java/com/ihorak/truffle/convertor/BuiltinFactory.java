@@ -10,7 +10,6 @@ import com.ihorak.truffle.node.exprs.builtin.arithmetic.*;
 import com.ihorak.truffle.node.exprs.builtin.comparison.*;
 import com.ihorak.truffle.node.exprs.builtin.list.AppendExprNode1;
 import com.ihorak.truffle.node.exprs.builtin.list.AppendExprNode1NodeGen;
-import com.ihorak.truffle.node.exprs.builtin.list.ListRefExprNodeGen;
 import com.ihorak.truffle.node.exprs.shared.*;
 import com.ihorak.truffle.node.literals.BooleanLiteralNode;
 import com.ihorak.truffle.node.literals.LongLiteralNode;
@@ -339,15 +338,6 @@ public class BuiltinFactory {
 
     public static SchemeExpression createBegin(List<SchemeExpression> arguments) {
         return new BeginExprNode(arguments);
-    }
-
-    public static SchemeExpression createListRef(List<SchemeExpression> arguments) {
-        if (arguments.size() == 2) {
-            return ListRefExprNodeGen.create(arguments.get(0), arguments.get(1));
-        }
-        throw new SchemeException(
-                "list-ref: arity mismatch; Expected number of arguments does not match the given number\nExpected: 2\nGiven: " + arguments.size(),
-                null);
     }
 
     public static SchemeExpression createNot(List<SchemeExpression> arguments, @Nullable ParserRuleContext ctx) {

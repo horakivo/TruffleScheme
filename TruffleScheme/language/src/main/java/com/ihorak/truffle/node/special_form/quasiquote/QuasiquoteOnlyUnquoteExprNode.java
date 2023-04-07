@@ -1,7 +1,6 @@
 package com.ihorak.truffle.node.special_form.quasiquote;
 
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeList;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.frame.VirtualFrame;

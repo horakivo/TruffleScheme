@@ -10,7 +10,6 @@ import com.ihorak.truffle.exceptions.InterpreterException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
 import com.ihorak.truffle.node.special_form.LetExprNode;
-import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
 import org.antlr.v4.runtime.ParserRuleContext;

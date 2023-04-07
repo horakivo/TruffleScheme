@@ -12,7 +12,6 @@ import com.ihorak.truffle.node.special_form.quasiquote.QuasiquoteOnlyUnquoteExpr
 import com.ihorak.truffle.node.special_form.quasiquote.QuasiquoteOnlyUnquoteSplicingExprNode;
 import com.ihorak.truffle.node.special_form.quasiquote.ReturnGivenObjectNode;
 import com.ihorak.truffle.node.special_form.quasiquote.UnquoteSplicingInsertInfo;
-import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
 import org.antlr.v4.runtime.ParserRuleContext;

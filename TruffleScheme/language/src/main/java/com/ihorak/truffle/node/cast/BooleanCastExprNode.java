@@ -2,7 +2,6 @@ package com.ihorak.truffle.node.cast;
 
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.SchemeNode;
-import com.ihorak.truffle.type.SchemeCell;
 import com.ihorak.truffle.type.SchemePair;
 import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.Specialization;
@@ -30,10 +29,6 @@ public abstract class BooleanCastExprNode extends SchemeNode {
         return true;
     }
 
-    @Specialization
-    protected boolean doSchemeCell(SchemeCell value) {
-        return true;
-    }
 
     @Specialization
     protected boolean doSchemePair(SchemePair value) {
