@@ -34,7 +34,6 @@ public class BuiltinConverter extends AbstractCallableConverter {
             case "-" -> BuiltinFactory.createMinusBuiltin(convertedArguments, ctx);
             case "/" -> BuiltinFactory.createDivideBuiltin(convertedArguments, ctx);
             case "*" -> BuiltinFactory.createMultipleBuiltin(convertedArguments, ctx);
-            case "eval" -> BuiltinFactory.createEvalBuiltin(convertedArguments, context);
             case "list" -> BuiltinFactory.createListBuiltin(convertedArguments, ctx);
             case "cons" -> BuiltinFactory.createConsBuiltin(convertedArguments, ctx);
             case "cdr" -> BuiltinFactory.createCdrBuiltin(convertedArguments, ctx);
@@ -69,7 +68,6 @@ public class BuiltinConverter extends AbstractCallableConverter {
                 case "-":
                 case "/":
                 case "*":
-                case "eval":
                 case "list":
                 case "cons":
                 case "cdr":
