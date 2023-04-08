@@ -10,6 +10,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+import static com.ihorak.truffle.node.polyglot.MemberNodes.*;
+
 public class BuiltinConverter extends AbstractCallableConverter {
 
     public static boolean isBuiltinEnabled = true;
@@ -52,10 +54,9 @@ public class BuiltinConverter extends AbstractCallableConverter {
             case "null?" -> BuiltinFactory.createIsNull(convertedArguments, ctx);
             case "modulo" -> BuiltinFactory.createModulo(convertedArguments, ctx);
             case "cadr" -> BuiltinFactory.createCadr(convertedArguments, ctx);
-            case "infinite" -> BuiltinFactory.createInfinite(convertedArguments);
             case "equal?" -> BuiltinFactory.createEqual(convertedArguments, ctx);
             case POLYGLOT_EVAL_NAME -> BuiltinFactory.createEvalSource(convertedArguments, ctx);
-            case POLYGLOT_READ_GLOBAL_SCOPE -> BuiltinFactory.createPolyglotProcedure(convertedArguments, ctx);
+            case POLYGLOT_READ_GLOBAL_SCOPE -> BuiltinFactory.createReadForeignGlobalScope(convertedArguments, ctx);
             default ->
                     throw new RuntimeException("Unable to convert builtin procedure from list to AST. Builtin: " + operand);
         };
@@ -92,9 +93,21 @@ public class BuiltinConverter extends AbstractCallableConverter {
                 case "modulo":
                 case "cadr":
                 case "equal?":
-                case "infinite":
                 case POLYGLOT_EVAL_NAME:
                 case POLYGLOT_READ_GLOBAL_SCOPE:
+                case HAS_MEMBERS:
+                case GET_MEMBERS:
+                case IS_MEMBER_READABLE:
+                case IS_MEMBER_MODIFIABLE:
+                case IS_MEMBER_INSERTABLE:
+                case IS_MEMBER_REMOVABLE:
+                case IS_MEMBER_INVOCABLE:
+                case IS_MEMBER_WRITABLE:
+                case IS_MEMBER_EXISTING:
+                case READ_MEMBER:
+                case WRITE_MEMBER:
+                case REMOVE_MEMBER:
+                case INVOKE_MEMBER:
                     return true;
                 default:
                     return false;

@@ -1,4 +1,4 @@
-package com.ihorak.truffle.convertor.SpecialForms;
+package com.ihorak.truffle.convertor.special_form;
 
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.util.TailCallUtil;

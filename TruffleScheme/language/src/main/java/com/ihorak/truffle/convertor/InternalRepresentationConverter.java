@@ -1,9 +1,8 @@
 package com.ihorak.truffle.convertor;
 
-import com.ihorak.truffle.convertor.PrimitiveTypes.*;
+import com.ihorak.truffle.convertor.primitive_type.*;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.parser.R5RSParser;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.strings.TruffleString;

@@ -383,10 +383,6 @@ public class BuiltinFactory {
                 null);
     }
 
-    public static SchemeExpression createInfinite(List<SchemeExpression> arguments) {
-        return new WhileInfiniteExprNode(arguments.get(0));
-    }
-
     public static SchemeExpression createEqual(List<SchemeExpression> arguments, @Nullable ParserRuleContext equalCtx) {
         if (arguments.size() == 2) {
             var equalExpr = new EqualExprNode(arguments.get(0), arguments.get(1));
@@ -409,7 +405,7 @@ public class BuiltinFactory {
                 null);
     }
 
-    public static SchemeExpression createPolyglotProcedure(List<SchemeExpression> arguments, @Nullable ParserRuleContext evalSourceCtx) {
+    public static SchemeExpression createReadForeignGlobalScope(List<SchemeExpression> arguments, @Nullable ParserRuleContext evalSourceCtx) {
         if (arguments.size() == 2) {
             var polyglotProc = ReadForeignGlobalScopeExprNodeGen.create(arguments.get(0), arguments.get(1));
             return SourceSectionUtil.setSourceSectionAndReturnExpr(polyglotProc, evalSourceCtx);

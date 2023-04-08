@@ -1,4 +1,4 @@
-package com.ihorak.truffle.convertor.SpecialForms.quasiquote;
+package com.ihorak.truffle.convertor.special_form.quasiquote;
 
 import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.SourceSectionUtil;

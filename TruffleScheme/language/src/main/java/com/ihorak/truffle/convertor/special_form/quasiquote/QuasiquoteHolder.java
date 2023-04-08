@@ -1,4 +1,4 @@
-package com.ihorak.truffle.convertor.SpecialForms.quasiquote;
+package com.ihorak.truffle.convertor.special_form.quasiquote;
 
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.special_form.quasiquote.UnquoteSplicingInsertInfo;

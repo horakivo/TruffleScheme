@@ -1,7 +1,7 @@
 package com.ihorak.truffle.convertor;
 
-import com.ihorak.truffle.convertor.SpecialForms.*;
-import com.ihorak.truffle.convertor.SpecialForms.quasiquote.QuasiquoteConverter;
+import com.ihorak.truffle.convertor.special_form.*;
+import com.ihorak.truffle.convertor.special_form.quasiquote.QuasiquoteConverter;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeList;

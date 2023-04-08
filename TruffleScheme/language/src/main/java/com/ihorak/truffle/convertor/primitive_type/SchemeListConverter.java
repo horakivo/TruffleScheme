@@ -1,4 +1,4 @@
-package com.ihorak.truffle.convertor.PrimitiveTypes;
+package com.ihorak.truffle.convertor.primitive_type;
 
 import com.ihorak.truffle.convertor.callable.CallableConverter;
 import com.ihorak.truffle.convertor.SchemeMacroDefinitionConverter;

@@ -1,9 +1,7 @@
-package com.ihorak.truffle.convertor.SpecialForms;
+package com.ihorak.truffle.convertor.special_form;
 
-import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.SourceSectionUtil;
 import com.ihorak.truffle.convertor.context.ParsingContext;
-import com.ihorak.truffle.convertor.util.TailCallUtil;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.exprs.builtin.arithmetic.OneArgumentExprNodeGen;
 import com.ihorak.truffle.node.literals.BooleanLiteralNode;
@@ -12,7 +10,6 @@ import com.ihorak.truffle.type.SchemeList;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class OrConverter extends AndOrAbstractConverter{
