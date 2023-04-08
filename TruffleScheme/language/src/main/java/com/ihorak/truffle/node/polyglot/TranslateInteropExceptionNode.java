@@ -5,6 +5,7 @@ import com.oracle.truffle.api.dsl.GenerateUncached;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.interop.ArityException;
 import com.oracle.truffle.api.interop.InteropException;
+import com.oracle.truffle.api.interop.InvalidArrayIndexException;
 import com.oracle.truffle.api.interop.UnknownIdentifierException;
 import com.oracle.truffle.api.interop.UnsupportedMessageException;
 import com.oracle.truffle.api.interop.UnsupportedTypeException;
@@ -33,6 +34,11 @@ public abstract class TranslateInteropExceptionNode extends SchemeNode {
     @Specialization
     protected PolyglotException handle(ArityException exception, Object receiver, String messageName, Object[] args) {
         return PolyglotException.arityException(exception, receiver, args, this);
+    }
+
+    @Specialization
+    protected PolyglotException handle(InvalidArrayIndexException exception, Object receiver, String messageName, Object[] args) {
+        return PolyglotException.invalidArrayIndexException(exception, receiver, args, messageName, this);
     }
 
 }

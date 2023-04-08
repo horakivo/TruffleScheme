@@ -101,7 +101,6 @@ public class SchemeList implements Iterable<Object>, TruffleObject {
         return index >= 0 && index < size;
     }
 
-
     @ExportMessage
     long getArraySize() {
         return size;
@@ -113,6 +112,12 @@ public class SchemeList implements Iterable<Object>, TruffleObject {
             error.enter();
             throw InvalidArrayIndexException.create(index);
         }
-        return get((int) index);
+
+        SchemeList currentList = this;
+        for (int i = 0; i < index; i++) {
+            currentList = currentList.cdr;
+        }
+
+        return currentList.car;
     }
 }

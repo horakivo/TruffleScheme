@@ -2,6 +2,7 @@ package com.ihorak.truffle.node.polyglot;
 
 import com.oracle.truffle.api.exception.AbstractTruffleException;
 import com.oracle.truffle.api.interop.ArityException;
+import com.oracle.truffle.api.interop.InvalidArrayIndexException;
 import com.oracle.truffle.api.interop.UnknownIdentifierException;
 import com.oracle.truffle.api.interop.UnsupportedMessageException;
 import com.oracle.truffle.api.interop.UnsupportedTypeException;
@@ -50,7 +51,18 @@ public class PolyglotException extends AbstractTruffleException {
         StringBuilder sb = new StringBuilder();
         sb.append(receiver).append(": contract violation. Wrong number of arguments\n");
         sb.append("Expected: ").append(exception.getActualArity()).append("\n");
-        sb.append("Given: ").append(arguments.length);
+        sb.append("Given: ").append(arguments.length).append("\n");
+        sb.append("Original exception message: ").append(exception.getMessage());
+        return new PolyglotException(sb.toString(), node);
+    }
+
+    @TruffleBoundary
+    public static PolyglotException invalidArrayIndexException(InvalidArrayIndexException exception, Object receiver, Object[] arguments, String message, Node node) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(message).append(": invalid index\n");
+        sb.append("index: ").append(exception.getInvalidIndex());
+        sb.append("in: ").append(receiver).append("\n");
+        sb.append("Original exception message: ").append(exception.getMessage());
         return new PolyglotException(sb.toString(), node);
     }
 
