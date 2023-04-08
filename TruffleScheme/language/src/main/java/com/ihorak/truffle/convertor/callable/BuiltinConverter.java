@@ -40,7 +40,6 @@ public class BuiltinConverter extends AbstractCallableConverter {
             case "car" -> BuiltinFactory.createCarBuiltin(convertedArguments, ctx);
             case "length" -> BuiltinFactory.createLengthBuiltin(convertedArguments, ctx);
             case "append" -> BuiltinFactory.createAppendBuiltin(convertedArguments, ctx);
-            case "map" -> BuiltinFactory.createMapBuiltin(convertedArguments);
             case "<=" -> BuiltinFactory.createLessThenOrEqual(convertedArguments, ctx);
             case "current-milliseconds" -> BuiltinFactory.createCurrentMillisBuiltin(convertedArguments, ctx);
             case "display" -> BuiltinFactory.createDisplayBuiltin(convertedArguments, ctx);
@@ -74,7 +73,6 @@ public class BuiltinConverter extends AbstractCallableConverter {
                 case "car":
                 case "length":
                 case "append":
-                case "map":
                 case "current-milliseconds":
                 case "display":
                 case "=":

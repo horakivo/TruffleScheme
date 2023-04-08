@@ -168,21 +168,6 @@ public class BuiltinFactory {
         }
     }
 
-//    public static SchemeExpression createAppendBuiltin(List<SchemeExpression> arguments) {
-//        return null;
-//    }
-
-    public static SchemeExpression createMapBuiltin(List<SchemeExpression> arguments) {
-        throw new SchemeException("NOT IMPLEMENTED YET", null);
-//        if (arguments.size() > 1) {
-//            return MapExprNodeFactory.create(new ConvertSchemeExprsArgumentsNode(arguments.toArray(SchemeExpression[]::new)));
-//        } else {
-//            throw new SchemeException(
-//                    "map: arity mismatch; Expected number of argument does not match the given number \n expected: at least 2 \n given: " + (arguments.size()),
-//                    null);
-//        }
-    }
-
     public static SchemeExpression createLessThenOrEqual(List<SchemeExpression> arguments, @Nullable ParserRuleContext ctx) {
         if (arguments.size() == 0)
             throw new SchemeException(
