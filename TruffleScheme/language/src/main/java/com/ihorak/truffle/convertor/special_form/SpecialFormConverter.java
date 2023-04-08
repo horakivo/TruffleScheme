@@ -1,4 +1,4 @@
-package com.ihorak.truffle.convertor;
+package com.ihorak.truffle.convertor.special_form;
 
 import com.ihorak.truffle.convertor.special_form.*;
 import com.ihorak.truffle.convertor.special_form.quasiquote.QuasiquoteConverter;

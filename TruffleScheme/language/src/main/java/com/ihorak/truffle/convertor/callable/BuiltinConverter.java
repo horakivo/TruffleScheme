@@ -45,7 +45,6 @@ public class BuiltinConverter extends AbstractCallableConverter {
             case "<=" -> BuiltinFactory.createLessThenOrEqual(convertedArguments, ctx);
             case "current-milliseconds" -> BuiltinFactory.createCurrentMillisBuiltin(convertedArguments, ctx);
             case "display" -> BuiltinFactory.createDisplayBuiltin(convertedArguments, ctx);
-            //case "newline" -> BuiltinFactory.createNewlineBuiltin(convertedArguments);
             case "=" -> BuiltinFactory.createEqualNumbers(convertedArguments, ctx);
             case "<" -> BuiltinFactory.createLessThen(convertedArguments, ctx);
             case ">" -> BuiltinFactory.createMoreThen(convertedArguments, ctx);
@@ -80,14 +79,11 @@ public class BuiltinConverter extends AbstractCallableConverter {
                 case "map":
                 case "current-milliseconds":
                 case "display":
-                case "newline":
                 case "=":
                 case "<":
                 case "<=":
                 case ">":
                 case ">=":
-                case "begin":
-                case "list-ref":
                 case "not":
                 case "null?":
                 case "modulo":

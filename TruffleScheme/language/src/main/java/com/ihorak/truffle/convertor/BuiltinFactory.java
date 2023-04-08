@@ -322,24 +322,6 @@ public class BuiltinFactory {
                 null);
     }
 
-//    public static SchemeExpression createNewlineBuiltin(List<SchemeExpression> arguments) {
-//        if (arguments.size() == 0) {
-//            return new NewlineExprNode();
-//        }
-//        throw new SchemeException(
-//                "newline: arity mismatch; Expected number of arguments does not match the given number\nExpected: 0\nGiven: " + arguments.size(),
-//                null);
-//    }
-
-    public static SchemeExpression createLoop(List<SchemeExpression> arguments) {
-        var number = (LongLiteralNode) arguments.get(0);
-        return new LoopExprNode(number.getValue(), arguments.get(1));
-    }
-
-    public static SchemeExpression createBegin(List<SchemeExpression> arguments) {
-        return new BeginExprNode(arguments);
-    }
-
     public static SchemeExpression createNot(List<SchemeExpression> arguments, @Nullable ParserRuleContext ctx) {
         if (arguments.size() == 1) {
             var expr = new NotExprNode(BooleanCastExprNodeGen.create(arguments.get(0)));
