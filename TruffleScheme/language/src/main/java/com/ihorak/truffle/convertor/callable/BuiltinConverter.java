@@ -15,7 +15,7 @@ import static com.ihorak.truffle.node.polyglot.MemberNodes.*;
 public class BuiltinConverter extends AbstractCallableConverter {
 
     public static boolean isBuiltinEnabled = true;
-    public static final String POLYGLOT_EVAL_NAME = "eval-source";
+    public static final String POLYGLOT_EVAL_SOURCE = "eval-source";
     public static final String POLYGLOT_READ_GLOBAL_SCOPE = "p-read-global-scope";
 
 
@@ -52,7 +52,7 @@ public class BuiltinConverter extends AbstractCallableConverter {
             case "modulo" -> BuiltinFactory.createModulo(convertedArguments, ctx);
             case "cadr" -> BuiltinFactory.createCadr(convertedArguments, ctx);
             case "equal?" -> BuiltinFactory.createEqual(convertedArguments, ctx);
-            case POLYGLOT_EVAL_NAME -> BuiltinFactory.createEvalSource(convertedArguments, ctx);
+            case POLYGLOT_EVAL_SOURCE -> BuiltinFactory.createEvalSource(convertedArguments, ctx);
             case POLYGLOT_READ_GLOBAL_SCOPE -> BuiltinFactory.createReadForeignGlobalScope(convertedArguments, ctx);
             default ->
                     throw new RuntimeException("Unable to convert builtin procedure from list to AST. Builtin: " + operand);
@@ -85,7 +85,7 @@ public class BuiltinConverter extends AbstractCallableConverter {
                 case "modulo":
                 case "cadr":
                 case "equal?":
-                case POLYGLOT_EVAL_NAME:
+                case POLYGLOT_EVAL_SOURCE:
                 case POLYGLOT_READ_GLOBAL_SCOPE:
                 case HAS_MEMBERS:
                 case GET_MEMBERS:

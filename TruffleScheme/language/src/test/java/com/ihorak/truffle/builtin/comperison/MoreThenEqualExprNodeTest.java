@@ -23,8 +23,8 @@ public class MoreThenEqualExprNodeTest {
 
         var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
-        assertEquals(">=: arity mismatch; Expected number of argument does not match the given number\n" +
-                "expected: at least 1\n" +
+        assertEquals(">=: arity mismatch; Expected number of arguments does not match the given number\n" +
+                "expected: 1\n" +
                 "given: 0", msg);
     }
 

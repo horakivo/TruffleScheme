@@ -2,6 +2,7 @@ package com.ihorak.truffle.special_form;
 
 import com.ihorak.truffle.type.UndefinedValue;
 import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.PolyglotException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -156,6 +157,25 @@ public class LambdaExprNodeTest {
         var result = context.eval("scm", program);
 
         assertEquals(15L, result.asLong());
+    }
+
+    @Test
+    public void lexicalScopeIsResolvedCorrectlyWhenGlobalVariableIsNotDefined() {
+        var program = "(define foo (lambda () x)) (define bar (lambda (x) (foo))) (bar 1)";
+
+        var exceptionMsg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+
+        assertEquals("'x: undefined\n" +
+                "cannot reference an identifier before its definition", exceptionMsg);
+    }
+
+    @Test
+    public void lexicalScopeIsResolvedCorrectlyWhenGlobalVariableIsDefined() {
+        var program = "(define foo (lambda () x)) (define bar (lambda (x) (foo))) (define x 88) (bar 1)";
+
+        var result = context.eval("scm", program);
+
+        assertEquals(88L, result.asLong());
     }
 
 //    @Test

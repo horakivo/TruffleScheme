@@ -21,14 +21,15 @@ import javax.xml.transform.Source;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.ihorak.truffle.convertor.callable.BuiltinConverter.*;
+
 public class BuiltinFactory {
 
     public static SchemeExpression createDivideBuiltin(List<SchemeExpression> arguments, @Nullable ParserRuleContext divideCtx) {
-        if (arguments.size() == 0)
-            throw new SchemeException(
-                    "/: arity mismatch; Expected number of arguments does not match the given number\nexpected: at least 1\ngiven: 0", null);
-        if (arguments.size() == 1)
+        if (arguments.size() == 0) throw ConverterException.arityException("/", 1, 0);
+        if (arguments.size() == 1) {
             return SourceSectionUtil.setSourceSectionAndReturnExpr(DivideOneArgumentExprNodeGen.create(arguments.get(0)), divideCtx);
+        }
         return SourceSectionUtil.setSourceSectionAndReturnExpr(reduceDivide(arguments), divideCtx);
     }
 
@@ -42,9 +43,7 @@ public class BuiltinFactory {
     }
 
     public static SchemeExpression createMinusBuiltin(List<SchemeExpression> arguments, @Nullable ParserRuleContext minusCtx) {
-        if (arguments.size() == 0)
-            throw new SchemeException(
-                    "-: arity mismatch; Expected number of arguments does not match the given number\nexpected: at least 1\ngiven: 0", null);
+        if (arguments.size() == 0) throw ConverterException.arityException("-", 1, 0);
         if (arguments.size() == 1)
             return SourceSectionUtil.setSourceSectionAndReturnExpr(NegateNumberExprNodeGen.create(arguments.get(0)), minusCtx);
         var minusExpr = reduceMinus(arguments);
@@ -106,9 +105,7 @@ public class BuiltinFactory {
             var consExpr = ConsExprNodeFactory.create(arguments.toArray(SchemeExpression[]::new));
             return SourceSectionUtil.setSourceSectionAndReturnExpr(consExpr, consCtx);
         } else {
-            throw new SchemeException(
-                    "cons: arity mismatch; Expected number of arguments does not match the given number\nexpected: " + expectedSize + "\ngiven: " + arguments.size(),
-                    null);
+            throw ConverterException.arityException("cons", expectedSize, arguments.size());
         }
     }
 
@@ -118,9 +115,7 @@ public class BuiltinFactory {
             var cdrExpr = CdrExprNodeFactory.create(arguments.toArray(SchemeExpression[]::new));
             return SourceSectionUtil.setSourceSectionAndReturnExpr(cdrExpr, cdrCtx);
         } else {
-            throw new SchemeException(
-                    "cdr: arity mismatch; Expected number of arguments does not match the given number \n expected: 1 \n given: " + arguments.size(),
-                    null);
+            throw ConverterException.arityException("cdr", 1, arguments.size());
         }
     }
 
@@ -130,9 +125,7 @@ public class BuiltinFactory {
             var carExpr = CarExprNodeFactory.create(arguments.toArray(SchemeExpression[]::new));
             return SourceSectionUtil.setSourceSectionAndReturnExpr(carExpr, carCtx);
         } else {
-            throw new SchemeException(
-                    "car: arity mismatch; Expected number of arguments does not match the given number\nexpected: " + expectedSize + "\ngiven: " + arguments.size(),
-                    null);
+            throw ConverterException.arityException("car", expectedSize, arguments.size());
         }
     }
 
@@ -141,9 +134,7 @@ public class BuiltinFactory {
             var expr = LengthExprNodeFactory.create(arguments.toArray(SchemeExpression[]::new));
             return SourceSectionUtil.setSourceSectionAndReturnExpr(expr, lengthCtx);
         } else {
-            throw new SchemeException(
-                    "length: arity mismatch; Expected number of arguments does not match the given number \n expected: 1 \n given: " + arguments.size(),
-                    null);
+            throw ConverterException.arityException("length", 1, arguments.size());
         }
     }
 
@@ -169,9 +160,7 @@ public class BuiltinFactory {
     }
 
     public static SchemeExpression createLessThenOrEqual(List<SchemeExpression> arguments, @Nullable ParserRuleContext ctx) {
-        if (arguments.size() == 0)
-            throw new SchemeException(
-                    "<=: arity mismatch; Expected number of argument does not match the given number\nexpected: at least 1\ngiven: 0", null);
+        if (arguments.size() == 0) throw ConverterException.arityException("<=", 1, 0);
         if (arguments.size() == 1)
             return SourceSectionUtil.setSourceSectionAndReturnExpr(new BooleanLiteralNode(true), ctx);
         if (arguments.size() == 2)
@@ -189,9 +178,7 @@ public class BuiltinFactory {
     }
 
     public static SchemeExpression createEqualNumbers(List<SchemeExpression> arguments, @Nullable ParserRuleContext equalCtx) {
-        if (arguments.size() == 0)
-            throw new SchemeException(
-                    "=: arity mismatch; Expected number of argument does not match the given number\nexpected: at least 1\ngiven: 0", null);
+        if (arguments.size() == 0) throw ConverterException.arityException("=", 1, 0);
         if (arguments.size() == 1) {
             var booleanExpr = new BooleanLiteralNode(true);
             return SourceSectionUtil.setSourceSectionAndReturnExpr(booleanExpr, equalCtx);
@@ -214,9 +201,7 @@ public class BuiltinFactory {
     }
 
     public static SchemeExpression createLessThen(List<SchemeExpression> arguments, @Nullable ParserRuleContext ctx) {
-        if (arguments.size() == 0)
-            throw new SchemeException(
-                    "<: arity mismatch; Expected number of argument does not match the given number\nexpected: at least 1\ngiven: 0", null);
+        if (arguments.size() == 0) throw ConverterException.arityException("<", 1, 0);
         if (arguments.size() == 1)
             return SourceSectionUtil.setSourceSectionAndReturnExpr(new BooleanLiteralNode(true), ctx);
         if (arguments.size() == 2) {
@@ -228,9 +213,7 @@ public class BuiltinFactory {
     }
 
     public static SchemeExpression createMoreThen(List<SchemeExpression> arguments, @Nullable ParserRuleContext ctx) {
-        if (arguments.size() == 0)
-            throw new SchemeException(
-                    ">: arity mismatch; Expected number of argument does not match the given number\nexpected: at least 1\ngiven: 0", null);
+        if (arguments.size() == 0) throw ConverterException.arityException(">", 1, 0);
         if (arguments.size() == 1)
             return SourceSectionUtil.setSourceSectionAndReturnExpr(new BooleanLiteralNode(true), ctx);
         if (arguments.size() == 2)
@@ -249,9 +232,7 @@ public class BuiltinFactory {
     }
 
     public static SchemeExpression createMoreThenEqual(List<SchemeExpression> arguments, @Nullable ParserRuleContext ctx) {
-        if (arguments.size() == 0)
-            throw new SchemeException(
-                    ">=: arity mismatch; Expected number of argument does not match the given number\nexpected: at least 1\ngiven: 0", null);
+        if (arguments.size() == 0) throw ConverterException.arityException(">=", 1, 0);
         if (arguments.size() == 1)
             return SourceSectionUtil.setSourceSectionAndReturnExpr(new BooleanLiteralNode(true), ctx);
         if (arguments.size() == 2)
@@ -281,18 +262,14 @@ public class BuiltinFactory {
         if (arguments.size() == 0) {
             return SourceSectionUtil.setSourceSectionAndReturnExpr(CurrentMillisecondsExprNodeGen.create(), ctx);
         }
-        throw new SchemeException(
-                "current-milliseconds: arity mismatch; Expected number of arguments does not match the given number\nExpected: 0\nGiven: " + arguments.size(),
-                null);
+        throw ConverterException.arityException("current-milliseconds", 0, arguments.size());
     }
 
     public static SchemeExpression createDisplayBuiltin(List<SchemeExpression> arguments, @Nullable ParserRuleContext ctx) {
         if (arguments.size() == 1) {
             return SourceSectionUtil.setSourceSectionAndReturnExpr(DisplayExprNodeGen.create(arguments.get(0)), ctx);
         }
-        throw new SchemeException(
-                "display: arity mismatch; Expected number of arguments does not match the given number\nExpected: 1\nGiven: " + arguments.size(),
-                null);
+        throw ConverterException.arityException("display", 1, arguments.size());
     }
 
     public static SchemeExpression createNot(List<SchemeExpression> arguments, @Nullable ParserRuleContext ctx) {
@@ -300,18 +277,14 @@ public class BuiltinFactory {
             var expr = new NotExprNode(BooleanCastExprNodeGen.create(arguments.get(0)));
             return SourceSectionUtil.setSourceSectionAndReturnExpr(expr, ctx);
         }
-
-        throw new SchemeException(
-                "not: arity mismatch; Expected number of arguments does not match the given number\nExpected: 1\nGiven: " + arguments.size(), null);
+        throw ConverterException.arityException("not", 1, arguments.size());
     }
 
     public static SchemeExpression createIsNull(List<SchemeExpression> arguments, @Nullable ParserRuleContext nullCtx) {
         if (arguments.size() == 1) {
             return SourceSectionUtil.setSourceSectionAndReturnExpr(IsNullExprNodeGen.create(arguments.get(0)), nullCtx);
         }
-
-        throw new SchemeException(
-                "null: arity mismatch; Expected number of arguments does not match the given number\nExpected: 1\nGiven: " + arguments.size(), null);
+        throw ConverterException.arityException("null", 1, arguments.size());
     }
 
     public static SchemeExpression createModulo(List<SchemeExpression> arguments, @Nullable ParserRuleContext moduleCtx) {
@@ -319,10 +292,7 @@ public class BuiltinFactory {
             var moduloExpr = ModuloExprNodeGen.create(arguments.get(0), arguments.get(1));
             return SourceSectionUtil.setSourceSectionAndReturnExpr(moduloExpr, moduleCtx);
         }
-
-        throw new SchemeException(
-                "modulo: arity mismatch; Expected number of arguments does not match the given number\nExpected: 2\nGiven: " + arguments.size(),
-                null);
+        throw ConverterException.arityException("modulo", 2, arguments.size());
     }
 
     public static SchemeExpression createCadr(List<SchemeExpression> arguments, @Nullable ParserRuleContext cadrCtx) {
@@ -332,10 +302,7 @@ public class BuiltinFactory {
 
             return SourceSectionUtil.setSourceSectionAndReturnExpr(carExpr, cadrCtx);
         }
-
-        throw new SchemeException(
-                "cadr: arity mismatch; Expected number of arguments does not match the given number\nExpected: 1\nGiven: " + arguments.size(),
-                null);
+        throw ConverterException.arityException("cadr", 1, arguments.size());
     }
 
     public static SchemeExpression createEqual(List<SchemeExpression> arguments, @Nullable ParserRuleContext equalCtx) {
@@ -343,10 +310,7 @@ public class BuiltinFactory {
             var equalExpr = new EqualExprNode(arguments.get(0), arguments.get(1));
             return SourceSectionUtil.setSourceSectionAndReturnExpr(equalExpr, equalCtx);
         }
-
-        throw new SchemeException(
-                "equal: arity mismatch; Expected number of arguments does not match the given number\nExpected: 2\nGiven: " + arguments.size(),
-                null);
+        throw ConverterException.arityException("equal", 2, arguments.size());
     }
 
     public static SchemeExpression createEvalSource(List<SchemeExpression> arguments, @Nullable ParserRuleContext evalSourceCtx) {
@@ -354,10 +318,7 @@ public class BuiltinFactory {
             var evalSourceExpr = EvalSourceExprNodeGen.create(arguments.get(0), arguments.get(1));
             return SourceSectionUtil.setSourceSectionAndReturnExpr(evalSourceExpr, evalSourceCtx);
         }
-
-        throw new SchemeException(
-                "eval-source: arity mismatch; Expected number of arguments does not match the given number\nExpected: 2\nGiven: " + arguments.size(),
-                null);
+        throw ConverterException.arityException(POLYGLOT_EVAL_SOURCE, 2, arguments.size());
     }
 
     public static SchemeExpression createReadForeignGlobalScope(List<SchemeExpression> arguments, @Nullable ParserRuleContext evalSourceCtx) {
@@ -365,10 +326,7 @@ public class BuiltinFactory {
             var polyglotProc = ReadForeignGlobalScopeExprNodeGen.create(arguments.get(0), arguments.get(1));
             return SourceSectionUtil.setSourceSectionAndReturnExpr(polyglotProc, evalSourceCtx);
         }
-
-        throw new SchemeException(
-                "p-proc: arity mismatch; Expected number of arguments does not match the given number\nExpected: 2\nGiven: " + arguments.size(),
-                null);
+        throw ConverterException.arityException(POLYGLOT_READ_GLOBAL_SCOPE, 2, arguments.size());
     }
 
 }
