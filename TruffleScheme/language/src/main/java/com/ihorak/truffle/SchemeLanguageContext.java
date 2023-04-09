@@ -11,16 +11,19 @@ import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.source.Source;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 
+import java.io.PrintWriter;
 import java.util.Map;
 
 public class SchemeLanguageContext {
 
     private final Map<SchemeSymbol, Object> globalVariableStorage;
     public final TruffleLanguage.Env env;
+    private final PrintWriter output;
 
     public SchemeLanguageContext(SchemeTruffleLanguage language, TruffleLanguage.Env env) {
         this.globalVariableStorage = PrimitiveProcedureGenerator.generate(language);
         this.env = env;
+        this.output = new PrintWriter(env.out(), true);
     }
 
     private static final TruffleLanguage.ContextReference<SchemeLanguageContext> REFERENCE =
@@ -59,5 +62,9 @@ public class SchemeLanguageContext {
         } else {
             addVariable(symbol, userDefinedProcedure);
         }
+    }
+
+    public PrintWriter getOutput() {
+        return output;
     }
 }
