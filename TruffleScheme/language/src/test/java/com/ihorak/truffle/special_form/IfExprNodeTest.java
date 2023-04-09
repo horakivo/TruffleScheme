@@ -51,4 +51,69 @@ public class IfExprNodeTest {
 
         assertTrue(result.isNull());
     }
+
+
+    @Test
+    public void schemeListIsEvaluatedToTrue() {
+        var program = "(if (list 1) 1)";
+
+        var result = context.eval("scm", program);
+
+        assertEquals(1L, result.asLong());
+    }
+
+    @Test
+    public void longIsEvaluatedToTrue() {
+        var program = "(if 1 1)";
+
+        var result = context.eval("scm", program);
+
+        assertEquals(1L, result.asLong());
+    }
+
+    @Test
+    public void doubleIsEvaluatedToTrue() {
+        var program = "(if 1.1 1)";
+
+        var result = context.eval("scm", program);
+
+        assertEquals(1L, result.asLong());
+    }
+
+    @Test
+    public void bigIntegerIsEvaluatedToTrue() {
+        var program = "(if " + "9223372036854775810" + " 1)";
+
+        var result = context.eval("scm", program);
+
+        assertEquals(1L, result.asLong());
+    }
+
+    @Test
+    public void stringIsEvaluatedToTrue() {
+        var program = "(if \"aaa\" 1)";
+
+        var result = context.eval("scm", program);
+
+        assertEquals(1L, result.asLong());
+    }
+
+
+    @Test
+    public void schemeSymbolIsEvaluatedToTrue() {
+        var program = "(if 'a 1)";
+
+        var result = context.eval("scm", program);
+
+        assertEquals(1L, result.asLong());
+    }
+
+    @Test
+    public void undefinedValueIsEvaluatedToTrue() {
+        var program = "(if (if #f 1) 1)";
+
+        var result = context.eval("scm", program);
+
+        assertEquals(1L, result.asLong());
+    }
 }

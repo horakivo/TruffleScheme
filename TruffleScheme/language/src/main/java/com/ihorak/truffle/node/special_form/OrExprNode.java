@@ -43,8 +43,6 @@ public class OrExprNode extends SchemeExpression {
         }
     }
 
-    //TODO what is the benefit here insteal of directly call create BooleanCastExprNodeGen.create(null);
-
     private boolean castToBoolean(Object value) {
         if (leftCast == null) {
             CompilerDirectives.transferToInterpreterAndInvalidate();
@@ -53,12 +51,4 @@ public class OrExprNode extends SchemeExpression {
 
         return leftCast.executeBoolean(value);
     }
-
-
-//    @Override
-//    public void setTailRecursiveAsTrue() {
-//        super.setTailRecursiveAsTrue();
-//        right.setTailRecursiveAsTrue();
-//    }
-
 }

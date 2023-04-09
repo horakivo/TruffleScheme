@@ -28,7 +28,7 @@ public class IsNullTest {
 
         var result = context.eval("scm", program);
 
-        assertTrue(result.asBoolean());
+        assertFalse(result.asBoolean());
     }
 
     @Test
@@ -50,6 +50,6 @@ public class IsNullTest {
 
         var result = context.eval("scm", program);
 
-        assertTrue(result.asBoolean());
+        assertFalse(result.asBoolean());
     }
 }
