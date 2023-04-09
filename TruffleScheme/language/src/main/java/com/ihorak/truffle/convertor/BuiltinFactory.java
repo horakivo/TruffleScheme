@@ -312,7 +312,7 @@ public class BuiltinFactory {
             var equalExpr = new EqualExprNode(arguments.get(0), arguments.get(1));
             return SourceSectionUtil.setSourceSectionAndReturnExpr(equalExpr, equalCtx);
         }
-        throw ConverterException.arityException("equal", 2, arguments.size());
+        throw ConverterException.arityException("equal?", 2, arguments.size());
     }
 
     public static SchemeExpression createEvalSource(List<SchemeExpression> arguments, @Nullable ParserRuleContext evalSourceCtx) {

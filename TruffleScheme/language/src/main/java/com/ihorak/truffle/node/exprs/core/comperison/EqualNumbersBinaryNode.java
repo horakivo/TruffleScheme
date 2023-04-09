@@ -1,6 +1,7 @@
 package com.ihorak.truffle.node.exprs.core.comperison;
 
 import com.ihorak.truffle.exceptions.SchemeException;
+import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.exprs.core.BinaryBooleanOperationNode;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.dsl.Fallback;
@@ -26,9 +27,8 @@ public abstract class EqualNumbersBinaryNode extends BinaryBooleanOperationNode 
         return left == right;
     }
 
-    @TruffleBoundary
     @Fallback
     protected boolean fallback(Object left, Object right) {
-        throw new SchemeException("=: contract violation\nexpected: number?\ngiven left: " + left + "\ngiven right: " + right, this);
+        throw SchemeException.contractViolation(this, "=", "number?", left, right);
     }
 }

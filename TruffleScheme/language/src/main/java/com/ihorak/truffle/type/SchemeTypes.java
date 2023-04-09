@@ -6,13 +6,14 @@ import com.oracle.truffle.api.strings.TruffleString;
 
 import java.math.BigInteger;
 
-@TypeSystem({long.class, double.class, boolean.class, TruffleString.class, SchemeList.class, UserDefinedProcedure.class, BigInteger.class})
+@TypeSystem({long.class, double.class, BigInteger.class, boolean.class, TruffleString.class, SchemeList.class, SchemeSymbol.class, UserDefinedProcedure.class})
 public abstract class SchemeTypes {
 
-//    @ImplicitCast
-//    public static BigInteger convertLongToBigInt(long value) {
-//        return BigInteger.valueOf(value);
-//    }
+    //TODO musi tu byt TruffleBoundary?
+    @ImplicitCast
+    public static BigInteger convertLongToBigInt(long value) {
+        return BigInteger.valueOf(value);
+    }
 
     @ImplicitCast
     public static double convertLongToDouble(long value) {
