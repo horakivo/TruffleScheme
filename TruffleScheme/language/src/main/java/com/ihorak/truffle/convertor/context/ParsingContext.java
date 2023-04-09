@@ -1,8 +1,10 @@
 package com.ihorak.truffle.convertor.context;
 
 import com.ihorak.truffle.SchemeTruffleLanguage;
+import com.ihorak.truffle.convertor.ConverterException;
 import com.ihorak.truffle.exceptions.InterpreterException;
 import com.ihorak.truffle.exceptions.SchemeException;
+import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.CallTarget;
@@ -17,7 +19,7 @@ import java.util.*;
 public class ParsingContext {
 
 
-    private final Map<SchemeSymbol, MacroInfo> macroIndex = new HashMap<>();
+    private final Map<SchemeSymbol, SchemeExpression> macroIndex = new HashMap<>();
     private final Map<SchemeSymbol, LocalVariableInfo> localVariableIndex;
     private final Source source;
 
@@ -129,32 +131,32 @@ public class ParsingContext {
         return language;
     }
 
-    public void addMacro(SchemeSymbol schemeSymbol, CallTarget transformationProcedure, int amountOfArgs) {
-        macroIndex.put(schemeSymbol, new MacroInfo(transformationProcedure, amountOfArgs));
+    public void addMacro(SchemeSymbol schemeSymbol, SchemeExpression transformationProcedureExpr) {
+        macroIndex.put(schemeSymbol, transformationProcedureExpr);
     }
 
     public boolean isMacro(SchemeSymbol schemeSymbol) {
-        var macroInfo = getMacroInfo(schemeSymbol, this);
+        var macroInfo = getMacroTransformationExpr(schemeSymbol, this);
         return macroInfo != null;
     }
 
-    private MacroInfo getMacroInfo(SchemeSymbol schemeSymbol, ParsingContext parsingContext) {
-        var macroInfo = parsingContext.macroIndex.get(schemeSymbol);
-        if (macroInfo != null) return macroInfo;
+    private SchemeExpression getMacroTransformationExpr(SchemeSymbol schemeSymbol, ParsingContext parsingContext) {
+        var transformationExpr = parsingContext.macroIndex.get(schemeSymbol);
+        if (transformationExpr != null) return transformationExpr;
         if (parsingContext.scope == LexicalScope.GLOBAL) return null;
 
-        return getMacroInfo(schemeSymbol, parsingContext.parent);
+        return getMacroTransformationExpr(schemeSymbol, parsingContext.parent);
     }
 
     /*
      * Should be called only when we know that the macro exists
      */
     @NotNull
-    public MacroInfo getMacroTransformationInfo(SchemeSymbol symbol) {
-        var macroInfo = getMacroInfo(symbol, this);
-        if (macroInfo != null) return macroInfo;
+    public SchemeExpression getMacroTransformationExpr(SchemeSymbol symbol) {
+        var transformationExpr = getMacroTransformationExpr(symbol, this);
+        if (transformationExpr != null) return transformationExpr;
 
-        throw InterpreterException.shouldNotReachHere();
+        throw ConverterException.shouldNotReachHere();
     }
 
     public void makeLocalVariablesNullable(List<SchemeSymbol> names) {

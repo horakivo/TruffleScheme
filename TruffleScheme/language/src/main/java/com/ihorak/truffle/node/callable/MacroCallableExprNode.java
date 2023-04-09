@@ -4,45 +4,70 @@ import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.oracle.truffle.api.CallTarget;
-import com.oracle.truffle.api.CompilerAsserts;
+import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
+import com.ihorak.truffle.type.SchemeSymbol;
+import com.ihorak.truffle.type.UserDefinedProcedure;
 import com.oracle.truffle.api.CompilerDirectives;
-import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
+import com.oracle.truffle.api.dsl.Cached;
+import com.oracle.truffle.api.dsl.Executed;
+import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
-import com.oracle.truffle.api.nodes.DirectCallNode;
-import com.oracle.truffle.api.nodes.ExplodeLoop;
-import com.oracle.truffle.api.nodes.UnexpectedResultException;
-import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.List;
 
-public class MacroCallableExprNode extends SchemeExpression {
+public abstract class MacroCallableExprNode extends SchemeExpression {
 
     private final Object[] notEvaluatedArgs;
     private final ParsingContext parsingContext;
+    private final SchemeSymbol name;
 
-    @SuppressWarnings("FieldMayBeFinal")
     @Child
-    private DirectCallNode directDispatchNode;
+    @Executed
+    protected SchemeExpression transformationExpr;
 
-    public MacroCallableExprNode(CallTarget transformationProcedure, List<Object> notEvaluatedArgs, ParsingContext parsingContext) {
-        this.notEvaluatedArgs = new Object[notEvaluatedArgs.size() + 1];
+    public MacroCallableExprNode(SchemeExpression transformationExpr, List<Object> notEvaluatedArgs, ParsingContext parsingContext, SchemeSymbol name) {
+        this.notEvaluatedArgs = notEvaluatedArgs.toArray();
+        this.transformationExpr = transformationExpr;
+        this.parsingContext = parsingContext;
+        this.name = name;
+    }
+
+    @Specialization
+    protected Object doMacroExpansion(VirtualFrame frame,
+                                      UserDefinedProcedure userDefinedProcedure,
+                                      @Cached DispatchNode dispatchNode) {
+        CompilerDirectives.transferToInterpreterAndInvalidate();
+
+        if (userDefinedProcedure.getExpectedNumberOfArgs() != notEvaluatedArgs.length) {
+            throw SchemeException.arityException(this, name.getValue(), userDefinedProcedure.getExpectedNumberOfArgs(), notEvaluatedArgs.length);
+        }
+
+        var args = getArgumentsForMacroExpansion(userDefinedProcedure);
+        var macroExpandedIR = dispatchNode.executeDispatch(userDefinedProcedure, args);
+        var macroExpandedTruffleAST = InternalRepresentationConverter.convert(macroExpandedIR, parsingContext, false, false, null);
+        return replace(macroExpandedTruffleAST).executeGeneric(frame);
+    }
+
+
+    @TruffleBoundary
+    @Specialization
+    Object fallback(Object object) {
+        throw new SchemeException("""
+                macro's body has to be evaluated procedure
+                expected: procedure?
+                given: %s""".formatted(object), this);
+    }
+
+    private Object[] getArgumentsForMacroExpansion(UserDefinedProcedure procedure) {
+        var arguments = new Object[notEvaluatedArgs.length + 1];
+        arguments[0] = procedure.getParentFrame();
+
         int index = 1;
-        for (Object obj : notEvaluatedArgs) {
-            this.notEvaluatedArgs[index] = obj;
+        for (Object argument : notEvaluatedArgs) {
+            arguments[index] = argument;
             index++;
         }
 
-        this.parsingContext = parsingContext;
-        this.directDispatchNode = DirectCallNode.create(transformationProcedure);
-    }
-
-    @Override
-    public Object executeGeneric(final VirtualFrame frame) {
-        CompilerDirectives.transferToInterpreterAndInvalidate();
-        notEvaluatedArgs[0] = frame.materialize();
-        var macroExpandedData = directDispatchNode.call(notEvaluatedArgs);
-        var macroExpandedTruffleAST = InternalRepresentationConverter.convert(macroExpandedData, parsingContext, false, false, null);
-        return replace(macroExpandedTruffleAST).executeGeneric(frame);
+        return arguments;
     }
 }

@@ -42,5 +42,13 @@ public class ConverterException extends AbstractTruffleException {
         return new ConverterException(operationName + ": " + "not allowed in an expression context");
     }
 
+    public static ConverterException shouldNotReachHere() {
+        return new ConverterException(null);
+    }
+
+    public static ConverterException shouldNotReachHere(String message) {
+        return new ConverterException(message);
+    }
+
 
 }

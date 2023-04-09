@@ -16,10 +16,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class SchemeMacroDefinitionConverter {
 
-    private static final int CTX_IDENTIFIER = 2;
     private static final int CTX_TRANSFORMATION_BODY = 3;
 
-    //TODO podivat se jestli tohle je potreba
     private SchemeMacroDefinitionConverter() {
     }
 
@@ -30,11 +28,7 @@ public class SchemeMacroDefinitionConverter {
         var transformationProcedureCtx = macroCtx != null ? (ParserRuleContext) macroCtx.getChild(CTX_TRANSFORMATION_BODY) : null;
         var transformationProcedureExpr = InternalRepresentationConverter.convert(macroList.get(2), context, false, false, transformationProcedureCtx);
 
-        if (!(transformationProcedureExpr instanceof LambdaExprNode lambdaExprNode)) {
-            throw new ParserException("define-marco: contract violation\nExpected: <procedure>\nGiven: " + transformationProcedureExpr);
-        }
-
-        context.addMacro(name, lambdaExprNode.callTarget, lambdaExprNode.amountOfArguments);
+        context.addMacro(name, transformationProcedureExpr);
         return SourceSectionUtil.setSourceSectionAndReturnExpr(new UndefinedLiteralNode(), macroCtx);
     }
 

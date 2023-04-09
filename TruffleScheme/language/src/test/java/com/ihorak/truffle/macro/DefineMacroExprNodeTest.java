@@ -67,10 +67,9 @@ public class DefineMacroExprNodeTest {
         var result = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
         assertEquals("""
-                macro 'new-if was called with wrong number of arguments
+                new-if: arity mismatch; Expected number of arguments does not match the given number
                 expected: 2
-                given: 3
-                """, result);
+                given: 3""", result);
     }
 
     @Test
@@ -110,7 +109,7 @@ public class DefineMacroExprNodeTest {
 
 
     @Test
-    public void givenDefineMacroWithUnknownValue_whenEvaluated_thenSchemeMacroShouldBeReturned() {
+    public void givenDefineMacroWithUnknownValue_whenEvaluated_thenExceptionIsRaised() {
         var program = "(define-macro macro (lambda (test first) (list 'if ivo first #f))) (macro #f 5)";
 
         var result = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
@@ -118,5 +117,17 @@ public class DefineMacroExprNodeTest {
         assertEquals("""
                 'ivo: undefined
                 cannot reference an identifier before its definition""", result);
+    }
+
+    @Test
+    public void givenDefineMacroWhereBodyIsNotProcedure_whenEvaluated_thenExceptionIsRaised() {
+        var program = "(define-macro macro 5) (macro #f 5)";
+
+        var result = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+
+        assertEquals("""
+                macro's body has to be evaluated procedure
+                expected: procedure?
+                given: 5""", result);
     }
 }
