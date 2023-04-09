@@ -4,7 +4,7 @@
                            return fibonacci(n - 1) + fibonacci(n - 2)")
 
 
-(define python-fib (p-read-global-scope "python" "fibonacci"))
+(define python-fib (read-global-scope "python" "fibonacci"))
 
 
  (python-fib 35)

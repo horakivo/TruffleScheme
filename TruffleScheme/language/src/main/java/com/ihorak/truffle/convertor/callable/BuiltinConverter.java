@@ -16,7 +16,7 @@ public class BuiltinConverter extends AbstractCallableConverter {
 
     public static boolean isBuiltinEnabled = true;
     public static final String POLYGLOT_EVAL_SOURCE = "eval-source";
-    public static final String POLYGLOT_READ_GLOBAL_SCOPE = "p-read-global-scope";
+    public static final String POLYGLOT_READ_GLOBAL_SCOPE = "read-global-scope";
 
 
     private BuiltinConverter() {
@@ -54,6 +54,19 @@ public class BuiltinConverter extends AbstractCallableConverter {
             case "equal?" -> BuiltinFactory.createEqual(convertedArguments, ctx);
             case POLYGLOT_EVAL_SOURCE -> BuiltinFactory.createEvalSource(convertedArguments, ctx);
             case POLYGLOT_READ_GLOBAL_SCOPE -> BuiltinFactory.createReadForeignGlobalScope(convertedArguments, ctx);
+            case GET_MEMBERS -> BuiltinFactory.createGetMembers(convertedArguments, ctx);
+            case HAS_MEMBERS -> BuiltinFactory.createHasMembers(convertedArguments, ctx);
+            case IS_MEMBER_READABLE -> BuiltinFactory.createIsMemberReadable(convertedArguments, ctx);
+            case IS_MEMBER_MODIFIABLE -> BuiltinFactory.createIsMemberModifiable(convertedArguments, ctx);
+            case IS_MEMBER_INSERTABLE -> BuiltinFactory.createIsMemberInsertable(convertedArguments, ctx);
+            case IS_MEMBER_REMOVABLE -> BuiltinFactory.createIsMemberRemovable(convertedArguments, ctx);
+            case IS_MEMBER_INVOCABLE -> BuiltinFactory.createIsMemberInvocable(convertedArguments, ctx);
+            case IS_MEMBER_WRITABLE -> BuiltinFactory.createIsMemberWritable(convertedArguments, ctx);
+            case IS_MEMBER_EXISTING -> BuiltinFactory.createIsMemberExisting(convertedArguments, ctx);
+            case READ_MEMBER -> BuiltinFactory.createReadMember(convertedArguments, ctx);
+            case WRITE_MEMBER -> BuiltinFactory.createWriteMember(convertedArguments, ctx);
+            case REMOVE_MEMBER -> BuiltinFactory.createRemoveMember(convertedArguments, ctx);
+            case INVOKE_MEMBER -> BuiltinFactory.createInvokeMember(convertedArguments, ctx);
             default ->
                     throw new RuntimeException("Unable to convert builtin procedure from list to AST. Builtin: " + operand);
         };

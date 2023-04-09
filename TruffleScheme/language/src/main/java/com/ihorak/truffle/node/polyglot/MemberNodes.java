@@ -3,6 +3,7 @@ package com.ihorak.truffle.node.polyglot;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.SchemeNode;
 import com.ihorak.truffle.node.interop.ForeignToSchemeNode;
+import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.UndefinedValue;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Fallback;
@@ -17,7 +18,6 @@ import com.oracle.truffle.api.strings.TruffleString;
 public class MemberNodes {
 
     public static final String HAS_MEMBERS = "has-members?";
-    public static final String GET_MEMBERS = "get-members";
     public static final String IS_MEMBER_READABLE = "is-member-readable?";
     public static final String IS_MEMBER_MODIFIABLE = "is-member-modifiable?";
     public static final String IS_MEMBER_INSERTABLE = "is-member-insertable?";
@@ -25,6 +25,7 @@ public class MemberNodes {
     public static final String IS_MEMBER_INVOCABLE = "is-member-invocable?";
     public static final String IS_MEMBER_WRITABLE = "is-member-writable?";
     public static final String IS_MEMBER_EXISTING = "is-member-existing?";
+    public static final String GET_MEMBERS = "get-members";
     public static final String READ_MEMBER = "read-member";
     public static final String WRITE_MEMBER = "write-member";
     public static final String REMOVE_MEMBER = "remove-member";
@@ -32,7 +33,7 @@ public class MemberNodes {
 
 
     @NodeChild("receiver")
-    public static abstract class GetMembersExprNode extends SchemeExpression {
+    public static abstract class GetMembers extends SchemeExpression {
 
         @Specialization(limit = "getInteropCacheLimit()")
         protected Object getMembers(Object receiver,
@@ -50,7 +51,7 @@ public class MemberNodes {
 
 
     @NodeChild("receiver")
-    public static abstract class HasMembersExprNode extends SchemeExpression {
+    public static abstract class HasMembers extends SchemeExpression {
 
         @Specialization(limit = "getInteropCacheLimit()")
         protected boolean hasMembers(Object receiver,
@@ -61,7 +62,7 @@ public class MemberNodes {
 
     @NodeChild("receiver")
     @NodeChild("member")
-    public static abstract class IsMemberReadableExprNode extends SchemeExpression {
+    public static abstract class IsMemberReadable extends SchemeExpression {
 
         @Specialization(limit = "getInteropCacheLimit()")
         protected boolean hasMembers(Object receiver, TruffleString member,
@@ -239,26 +240,29 @@ public class MemberNodes {
 
     @NodeChild("foreignObject")
     @NodeChild("identifier")
+    @NodeChild("arguments")
     public static abstract class InvokeMember extends SchemeExpression {
+
 
         @Specialization(limit = "getInteropCacheLimit()")
         protected Object invokeMember(Object receiver,
                                       TruffleString identifier,
+                                      Object[] args,
                                       @Cached TruffleString.ToJavaStringNode toJavaStringNode,
                                       @Cached ForeignToSchemeNode foreignToSchemeNode,
                                       @Cached TranslateInteropExceptionNode translateInteropExceptionNode,
                                       @CachedLibrary("receiver") InteropLibrary interopLibrary) {
             try {
-
-                var result = interopLibrary.invokeMember(receiver, toJavaStringNode.execute(identifier));
+                var result = interopLibrary.invokeMember(receiver, toJavaStringNode.execute(identifier), args);
                 return foreignToSchemeNode.executeConvert(result);
             } catch (InteropException exception) {
-                throw translateInteropExceptionNode.execute(exception, receiver, INVOKE_MEMBER, null);
+                throw translateInteropExceptionNode.execute(exception, receiver, INVOKE_MEMBER, args);
             }
         }
 
+
         @Fallback
-        protected Object fallback(Object obj, Object identifier) {
+        protected Object fallback(Object obj, Object identifier, Object arguments) {
             throw PolyglotException.wrongMessageIdentifierType(INVOKE_MEMBER, identifier, this);
         }
     }
@@ -298,6 +302,4 @@ public class MemberNodes {
             throw PolyglotException.wrongMessageIdentifierType(IS_MEMBER_EXISTING, identifier, this);
         }
     }
-
-
 }
