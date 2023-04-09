@@ -40,13 +40,13 @@ public class SchemeMacroDefinitionConverter {
 
 
     private static void validate(SchemeList macroList, boolean isDefinitionAllowed) {
-        if (!isDefinitionAllowed) throw new SchemeException("define-macro: not allowed in an expression context", null);
+        if (!isDefinitionAllowed) throw ConverterException.definitionNotAllowed("define-macro");
         if (macroList.size != 3) {
-            throw new SchemeException("define-macro: contract violation. Wrong number of arguments\nExpected: 3 \nGiven: " + macroList.size, null);
+            throw ConverterException.arityException("define-macro", 3, macroList.size);
         }
 
         if (!(macroList.get(1) instanceof SchemeSymbol)) {
-            throw new SchemeException("define-macro: contract violation. No identifier\nExpected: identifier \nGiven: " + macroList.get(1), null);
+            throw ConverterException.contractViolation("define-macro", "symbol?", macroList.get(1));
         }
     }
 }

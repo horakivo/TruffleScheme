@@ -73,6 +73,41 @@ public class DefineMacroExprNodeTest {
                 """, result);
     }
 
+    @Test
+    public void givenDefineMacroWithWrongNumberOfArgs_whenCalled_thenExceptionIsRaised() {
+        var program = "(define-macro (lambda (condition then) `(if ,condition ,then #f))) (new-if (= 10 5) 5 #f)";
+
+        var result = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+
+        assertEquals("""
+                define-macro: arity mismatch; Expected number of arguments does not match the given number
+                expected: 3
+                given: 2""", result);
+    }
+
+    @Test
+    public void givenDefineMacroWhereDefinitionIsNotAllowed_whenCalled_thenExceptionIsRaised() {
+        var program = "(define test (define-macro (lambda (condition then) `(if ,condition ,then #f))))";
+
+        var result = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+
+        assertEquals("""
+                define-macro: not allowed in an expression context""", result);
+    }
+
+
+    @Test
+    public void givenDefineMacroWithWrongIdentifierType_whenCalled_thenExceptionIsRaised() {
+        var program = "(define-macro \"macro-name\" (lambda (condition then) `(if ,condition ,then #f))) (new-if (= 10 5) 5 #f)";
+
+        var result = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+
+        assertEquals("""
+                define-macro: contract violation
+                expected: symbol?
+                given: macro-name""", result);
+    }
+
 
     @Test
     public void givenDefineMacroWithUnknownValue_whenEvaluated_thenSchemeMacroShouldBeReturned() {

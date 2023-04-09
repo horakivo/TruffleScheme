@@ -1,5 +1,6 @@
 package com.ihorak.truffle.convertor.special_form;
 
+import com.ihorak.truffle.convertor.ConverterException;
 import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.context.LexicalScope;
 import com.ihorak.truffle.convertor.context.ParsingContext;
@@ -59,7 +60,7 @@ public class DefineConverter {
     }
 
     private static void validate(SchemeList defineList, boolean isDefinitionAllowed) {
-        if (!isDefinitionAllowed) throw new SchemeException("define: not allowed in an expression context", null);
+        if (!isDefinitionAllowed) throw ConverterException.definitionNotAllowed("define");
         var identifier = defineList.get(1);
         var body = defineList.cdr.cdr;
 
