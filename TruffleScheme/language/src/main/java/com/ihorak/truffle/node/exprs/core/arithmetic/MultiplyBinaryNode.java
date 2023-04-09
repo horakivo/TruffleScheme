@@ -1,24 +1,30 @@
 package com.ihorak.truffle.node.exprs.core.arithmetic;
 
 import com.ihorak.truffle.node.exprs.core.BinaryOperationNode;
+import com.ihorak.truffle.type.SchemeBigInt;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 
-import java.math.BigInteger;
 
 public abstract class MultiplyBinaryNode extends BinaryOperationNode {
 
     @Specialization(rewriteOn = ArithmeticException.class)
-    public long multipleLongs(long left, long right) {
+    public long doLong(long left, long right) {
         return Math.multiplyExact(left, right);
     }
 
 
     @TruffleBoundary
-    @Specialization(replaces = "multipleLongs")
-    public BigInteger multiplyBigInts(BigInteger left, BigInteger right) {
-        return left.multiply(right);
+    @Specialization(replaces = "doLong")
+    public SchemeBigInt doBigInt(SchemeBigInt left, SchemeBigInt right) {
+        return new SchemeBigInt(left.getValue().multiply(right.getValue()));
     }
+
+    @Specialization
+    public double doDouble(double left, double right) {
+        return left * right;
+    }
+
 
     @Override
     public String toString() {

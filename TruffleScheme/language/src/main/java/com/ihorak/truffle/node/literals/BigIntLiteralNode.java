@@ -1,15 +1,15 @@
 package com.ihorak.truffle.node.literals;
 
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.type.SchemeBigInt;
 import com.oracle.truffle.api.frame.VirtualFrame;
-
-import java.math.BigInteger;
+import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 
 public class BigIntLiteralNode extends SchemeExpression {
 
-    private final BigInteger value;
+    private final SchemeBigInt value;
 
-    public BigIntLiteralNode(BigInteger value) {
+    public BigIntLiteralNode(SchemeBigInt value) {
         this.value = value;
     }
 
@@ -19,12 +19,8 @@ public class BigIntLiteralNode extends SchemeExpression {
     }
 
     @Override
-    public BigInteger executeBigInt(VirtualFrame virtualFrame) {
-        return value;
-    }
-
-    @Override
+    @TruffleBoundary
     public String toString() {
-        return value.toString(10);
+        return value.toString();
     }
 }

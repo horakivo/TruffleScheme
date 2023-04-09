@@ -2,10 +2,10 @@ package com.ihorak.truffle.node.exprs.core.comperison;
 
 import com.ihorak.truffle.node.exprs.core.BinaryBooleanOperationNode;
 import com.ihorak.truffle.node.polyglot.PolyglotException;
+import com.ihorak.truffle.type.SchemeBigInt;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.ihorak.truffle.type.UserDefinedProcedure;
-import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
@@ -14,7 +14,6 @@ import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.profiles.ConditionProfile;
 
-import java.math.BigInteger;
 
 public abstract class EqualBinaryNode extends BinaryBooleanOperationNode {
 
@@ -36,7 +35,7 @@ public abstract class EqualBinaryNode extends BinaryBooleanOperationNode {
 
     @TruffleBoundary
     @Specialization
-    protected boolean doBigInt(BigInteger left, BigInteger right) {
+    protected boolean doBigInt(SchemeBigInt left, SchemeBigInt right) {
         return left.compareTo(right) == 0;
     }
 

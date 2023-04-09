@@ -5,6 +5,8 @@ import org.graalvm.polyglot.PolyglotException;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.math.BigInteger;
+
 import static org.junit.Assert.*;
 
 public class MoreThenEqualExprNodeTest {
@@ -40,6 +42,37 @@ public class MoreThenEqualExprNodeTest {
     @Test
     public void givenTwoArg_whenExecuted_thenShouldReturnTrue() {
         var program = "(>= 4 3)";
+
+        var result =  context.eval("scm", program);
+
+        assertTrue(result.asBoolean());
+    }
+
+    @Test
+    public void givenTwoDouble_whenExecuted_thenShouldReturnTrue() {
+        var program = "(>= 4.3 3)";
+
+        var result =  context.eval("scm", program);
+
+        assertTrue(result.asBoolean());
+    }
+
+    @Test
+    public void givenTwoBigInts_whenExecuted_thenShouldReturnTrue() {
+        var left = BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.TEN);
+        var right = BigInteger.valueOf(Long.MAX_VALUE);
+        var program = "(>= " + left + " " + right + ")";
+
+        var result =  context.eval("scm", program);
+
+        assertTrue(result.asBoolean());
+    }
+
+    @Test
+    public void givenTwoSameBigInts_whenExecuted_thenShouldReturnTrue() {
+        var left = BigInteger.valueOf(Long.MAX_VALUE);
+        var right = BigInteger.valueOf(Long.MAX_VALUE);
+        var program = "(>= " + left + " " + right + ")";
 
         var result =  context.eval("scm", program);
 

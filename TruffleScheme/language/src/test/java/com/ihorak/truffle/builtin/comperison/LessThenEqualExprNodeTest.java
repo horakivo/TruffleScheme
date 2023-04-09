@@ -48,6 +48,15 @@ public class LessThenEqualExprNodeTest {
     }
 
     @Test
+    public void givenTwoDoubles_whenExecuted_thenShouldReturnTrue() {
+        var program = "(<= 3.7 4)";
+
+        var result =  context.eval("scm", program);
+
+        assertTrue(result.asBoolean());
+    }
+
+    @Test
     public void givenArbitraryArg_whenExecuted_thenShouldReturnTrue() {
         var program = "(<= 3 4 5 6 7 8 9 10)";
 

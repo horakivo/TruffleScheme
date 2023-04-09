@@ -46,6 +46,15 @@ public class MoreThenExprNodeTest {
     }
 
     @Test
+    public void givenTwoDoubles_whenExecuted_thenShouldReturnTrue() {
+        var program = "(> 4.3 3)";
+
+        var result =  context.eval("scm", program);
+
+        assertTrue(result.asBoolean());
+    }
+
+    @Test
     public void givenArbitraryArg_whenExecuted_thenShouldReturnTrue() {
         var program = "(> 10 9 8 7 6 5 4 3)";
 

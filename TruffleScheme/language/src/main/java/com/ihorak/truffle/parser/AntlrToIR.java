@@ -1,8 +1,8 @@
 package com.ihorak.truffle.parser;
 
 import com.ihorak.truffle.SchemeTruffleLanguage;
-import com.ihorak.truffle.node.exprs.shared.ListNode;
 import com.ihorak.truffle.node.exprs.shared.ListNodeGen;
+import com.ihorak.truffle.type.SchemeBigInt;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemePair;
 import com.ihorak.truffle.type.SchemeSymbol;
@@ -39,7 +39,7 @@ public class AntlrToIR extends R5RSBaseVisitor<Object> {
         try {
             return Long.parseLong(ctx.NUMBER().getText());
         } catch (NumberFormatException e) {
-            return new BigInteger(ctx.NUMBER().getText());
+            return new SchemeBigInt(new BigInteger(ctx.NUMBER().getText()));
         }
     }
 

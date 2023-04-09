@@ -2,6 +2,7 @@ package com.ihorak.truffle.node.cast;
 
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.SchemeNode;
+import com.ihorak.truffle.type.SchemeBigInt;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemePair;
 import com.ihorak.truffle.type.SchemeSymbol;
@@ -17,7 +18,6 @@ import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.profiles.ConditionProfile;
 import com.oracle.truffle.api.strings.TruffleString;
 
-import java.math.BigInteger;
 
 @NodeChild(value = "value", type = SchemeExpression.class)
 public abstract class BooleanCastExprNode extends SchemeNode {
@@ -43,7 +43,7 @@ public abstract class BooleanCastExprNode extends SchemeNode {
     }
 
     @Specialization
-    protected boolean doBigInteger(BigInteger value) {
+    protected boolean doBigInteger(SchemeBigInt value) {
         return true;
     }
 

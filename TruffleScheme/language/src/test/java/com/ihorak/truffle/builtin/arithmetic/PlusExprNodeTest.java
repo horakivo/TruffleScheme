@@ -54,23 +54,14 @@ public class PlusExprNodeTest {
         assertEquals(12.3D + 5.3 + 1.1, result.asDouble(), 0);
     }
 
-//    @Test
-//    public void givenBigNumber_whenAddThem_thenOverflowShouldOccurAndBigIntShouldBeReturned() {
-//        var program = "(+ 1 2 " + Long.MAX_VALUE + ")";
-//
-//
-//        var result =  context.eval("scm", program);
-//
-//        assertEquals(new BigInteger(String.valueOf(Long.MAX_VALUE)).add(new BigInteger("3")), result);
-//    }
-//
-//    @Test
-//    public void givenNumbersBiggerThenLong_whenAddThem_thenBigIntShouldBeReturned() {
-//        var program = "(+ 1 2 " + BigInteger.TWO.add(BigInteger.valueOf(Long.MAX_VALUE)) + ")";
-//        var expr = Reader.readExpr(CharStreams.fromString(program));
-//        GlobalEnvironment globalEnvironment = new GlobalEnvironment();
-//
-//        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
-//        assertEquals(BigInteger.valueOf(Long.MAX_VALUE).add(new BigInteger("5")), result);
-//    }
+    @Test
+    public void givenBigNumber_whenAddThem_thenOverflowShouldOccurAndBigIntShouldBeReturned() {
+        var program = "(+ 1 " + Long.MAX_VALUE + ")";
+
+        var result =  context.eval("scm", program);
+
+        // Truffle Interop API doesn't support BigInt in version 22.3.1 (it will in 23.0)
+        assertEquals("9223372036854775808", result.toString());
+    }
+
 }

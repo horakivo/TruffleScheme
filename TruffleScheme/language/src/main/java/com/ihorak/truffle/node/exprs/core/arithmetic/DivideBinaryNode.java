@@ -6,7 +6,7 @@ import com.oracle.truffle.api.dsl.Specialization;
 public abstract class DivideBinaryNode extends BinaryOperationNode {
 
     @Specialization
-    protected Object divide(double left, double right) {
+    protected double divide(double left, double right) {
         return left / right;
     }
 

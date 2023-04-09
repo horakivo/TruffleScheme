@@ -1,21 +1,28 @@
 package com.ihorak.truffle.node.exprs.builtin.arithmetic;
 
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.type.SchemeBigInt;
 import com.oracle.truffle.api.dsl.NodeChild;
+import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.dsl.Specialization;
 
-import java.math.BigInteger;
 
 @NodeChild(value = "number")
 public abstract class NegateNumberExprNode extends SchemeExpression {
 
     @Specialization
-    protected long negateLong(long value) {
+    protected long doLong(long value) {
         return -value;
     }
 
-//    @Specialization
-//    protected BigInteger negateBigInt(BigInteger value) {
-//        return value.negate();
-//    }
+    @TruffleBoundary
+    @Specialization
+    protected SchemeBigInt doBigInt(SchemeBigInt value) {
+        return new SchemeBigInt(value.getValue().negate());
+    }
+
+    @Specialization
+    protected double doDouble(double value) {
+        return -value;
+    }
 }

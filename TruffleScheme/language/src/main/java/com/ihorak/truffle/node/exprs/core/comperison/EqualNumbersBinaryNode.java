@@ -3,11 +3,11 @@ package com.ihorak.truffle.node.exprs.core.comperison;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.exprs.core.BinaryBooleanOperationNode;
+import com.ihorak.truffle.type.SchemeBigInt;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
 
-import java.math.BigInteger;
 
 public abstract class EqualNumbersBinaryNode extends BinaryBooleanOperationNode {
 
@@ -18,7 +18,7 @@ public abstract class EqualNumbersBinaryNode extends BinaryBooleanOperationNode 
 
     @TruffleBoundary
     @Specialization
-    protected boolean equalBigInts(BigInteger left, BigInteger right) {
+    protected boolean equalBigInts(SchemeBigInt left, SchemeBigInt right) {
         return left.compareTo(right) == 0;
     }
 

@@ -5,6 +5,7 @@ import org.graalvm.polyglot.PolyglotException;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.math.BigInteger;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
@@ -51,28 +52,37 @@ public class MinusExprNodeTest {
     public void givenOneNegativeNumber_whenMinusIsCalled_thenNumberShouldBePositive() {
         var program = "(- -5)";
 
-
         var result = context.eval("scm", program);
 
         assertEquals(5L, result.asLong());
     }
 
-//    @Test
-//    public void givenNegativeBigInt_whenNegated_thenNegatedBigIntShouldBeReturned() {
-//        var bigInt = BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.TWO).negate();
-//        var program = "(- " + bigInt + ")";
-//        var expr = Reader.readExpr(CharStreams.fromString(program));
-//        GlobalEnvironment globalEnvironment = new GlobalEnvironment();
-//        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
-//        assertEquals(bigInt.negate(), result);
-//    }
+    @Test
+    public void givenDouble_whenNegated_thenNumberShouldBePositive() {
+        var program = "(- -5.3)";
 
-//    @Test
-//    public void givenBigNumbers_whenMinusIsCalled_thenBigIntShouldBeReturned() {
-//        var program = "(- " + Long.MIN_VALUE + " 2 3)";
-//        var expr = Reader.readExpr(CharStreams.fromString(program));
-//        GlobalEnvironment globalEnvironment = new GlobalEnvironment();
-//        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
-//        assertEquals(new BigInteger(String.valueOf(Long.MIN_VALUE)).subtract(new BigInteger("2")).subtract(new BigInteger("3")), result);
-//    }
+        var result = context.eval("scm", program);
+
+        assertEquals(5.3, result.asDouble(), 0);
+    }
+
+    @Test
+    public void givenNegativeBigInt_whenNegated_thenNegatedBigIntShouldBeReturned() {
+        var bigInt = BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.TWO).negate();
+        var program = "(- " + bigInt + ")";
+
+        var result = context.eval("scm", program);
+
+        assertEquals("9223372036854775809", result.toString());
+    }
+
+    @Test
+    public void givenBigNumbers_whenMinusIsCalled_thenBigIntShouldBeReturned() {
+        var bigInt = BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.valueOf(Long.MAX_VALUE));
+        var program = "(- " + bigInt + " 2 3)";
+
+        var result = context.eval("scm", program);
+
+        assertEquals("18446744073709551609", result.toString());
+    }
 }

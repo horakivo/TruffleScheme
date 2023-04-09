@@ -2,11 +2,11 @@ package com.ihorak.truffle.node.exprs.core.arithmetic;
 
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.exprs.core.BinaryOperationNode;
+import com.ihorak.truffle.type.SchemeBigInt;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 
-import java.math.BigInteger;
 
 public abstract class PlusBinaryNode extends BinaryOperationNode {
 
@@ -17,8 +17,8 @@ public abstract class PlusBinaryNode extends BinaryOperationNode {
 
     @TruffleBoundary
     @Specialization(replaces = "addLongs")
-    protected BigInteger addBigInts(BigInteger left, BigInteger right) {
-        return left.add(right);
+    protected SchemeBigInt addBigInts(SchemeBigInt left, SchemeBigInt right) {
+        return new SchemeBigInt(left.getValue().add(right.getValue()));
     }
 
     @Specialization

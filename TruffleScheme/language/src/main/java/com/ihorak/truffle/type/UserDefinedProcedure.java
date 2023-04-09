@@ -5,26 +5,20 @@ import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.callable.DispatchNode;
 import com.ihorak.truffle.node.callable.DispatchNodeGen;
 import com.oracle.truffle.api.Assumption;
-import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.RootCallTarget;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.dsl.Cached;
-import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.MaterializedFrame;
 import com.oracle.truffle.api.interop.TruffleObject;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
-import com.oracle.truffle.api.nodes.DirectCallNode;
-import com.oracle.truffle.api.nodes.IndirectCallNode;
-import com.oracle.truffle.api.profiles.BranchProfile;
 import com.oracle.truffle.api.source.SourceSection;
 import com.oracle.truffle.api.utilities.CyclicAssumption;
 
-import java.math.BigInteger;
 
 @ExportLibrary(InteropLibrary.class)
 public class UserDefinedProcedure implements TruffleObject {

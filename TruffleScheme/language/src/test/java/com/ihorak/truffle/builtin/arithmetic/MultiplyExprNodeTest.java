@@ -7,7 +7,8 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class MultiplyExprNodeTest {
+public class
+MultiplyExprNodeTest {
 
     private Context context;
 
@@ -45,22 +46,13 @@ public class MultiplyExprNodeTest {
     }
 
 
-//    @Test
-//    public void givenBigNumber_whenMultiplied_thenOverflowShouldOccurAndBigIntShouldBeReturned() {
-//        var program = "(* 1 2 " + Long.MAX_VALUE + ")";
-//
-//
-//        var result = context.eval("scm", program);
-//
-//        assertEquals(BigInteger.valueOf(Long.MAX_VALUE).multiply(new BigInteger("2")), result);
-//    }
+    @Test
+    public void givenBigNumber_whenMultiplied_thenOverflowShouldOccurAndBigIntShouldBeReturned() {
+        var program = "(* 1 2 " + Long.MAX_VALUE + ")";
 
-//    @Test
-//    public void givenNumbersBiggerThenLong_whenAddThem_thenBigIntShouldBeReturned() {
-//        var program = "(* 1 2 " + BigInteger.TWO.add(BigInteger.valueOf(Long.MAX_VALUE)) + ")";
-//
-//        var result = context.eval("scm", program);
-//
-//        assertEquals(BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.TWO).multiply(BigInteger.TWO), result);
-//    }
+        var result = context.eval("scm", program);
+
+        assertEquals("18446744073709551614", result.toString());
+    }
+
 }
