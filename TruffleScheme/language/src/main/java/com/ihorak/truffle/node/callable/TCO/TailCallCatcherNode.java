@@ -1,13 +1,11 @@
 package com.ihorak.truffle.node.callable.TCO;
 
 
-
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.callable.TCO.loop_nodes.TailCallLoopNode;
 import com.ihorak.truffle.type.UserDefinedProcedure;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.frame.VirtualFrame;
-import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.nodes.LoopNode;
 
 
@@ -33,7 +31,7 @@ public class TailCallCatcherNode extends SchemeExpression {
     @Override
     public Object executeGeneric(VirtualFrame frame) {
         var procedure = (UserDefinedProcedure) callable.executeGeneric(frame);
-        var args = getArguments(procedure, frame);
+        var args = getProcedureArguments(procedure, this.arguments, frame);
         return call(procedure, args, frame);
     }
 
@@ -45,21 +43,6 @@ public class TailCallCatcherNode extends SchemeExpression {
         loopNode.execute(frame);
 
         return frame.getObject(tailCallResultSlot);
-    }
-
-
-    @ExplodeLoop
-    private Object[] getArguments(UserDefinedProcedure function, VirtualFrame parentFrame) {
-        Object[] args = new Object[arguments.length + 1];
-        args[0] = function.getParentFrame();
-
-        int index = 1;
-        for (SchemeExpression expression : arguments) {
-            args[index] = expression.executeGeneric(parentFrame);
-            index++;
-        }
-
-        return args;
     }
 
 }

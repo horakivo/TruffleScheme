@@ -128,11 +128,11 @@ public class SelfTailCallTests {
         var program = """
                 (define countdown
                   (lambda (n)
-                  (define countdown (lambda (n) 11))
-                      (if (= n 0)
-                          0
-                          (countdown (- n 1)))))
-                        
+                    (define countdown (lambda (n) 11))
+                    (if (= n 0)
+                        0
+                        (countdown (- n 1)))))
+                                
                 (countdown 10)
                 """;
 
