@@ -64,34 +64,34 @@ public class DefineMacroExprNodeTest {
     public void givenMacroWithWrongNumberOfArguments_whenCalled_thenExceptionIsRaised() {
         var program = "(define-macro new-if (lambda (condition then) `(if ,condition ,then #f))) (new-if (= 10 5) 5 #f)";
 
-        var result = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
         assertEquals("""
                 new-if: arity mismatch; Expected number of arguments does not match the given number
                 expected: 2
-                given: 3""", result);
+                given: 3""", msg);
     }
 
     @Test
     public void givenDefineMacroWithWrongNumberOfArgs_whenCalled_thenExceptionIsRaised() {
         var program = "(define-macro (lambda (condition then) `(if ,condition ,then #f))) (new-if (= 10 5) 5 #f)";
 
-        var result = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
         assertEquals("""
                 define-macro: arity mismatch; Expected number of arguments does not match the given number
                 expected: 3
-                given: 2""", result);
+                given: 2""", msg);
     }
 
     @Test
     public void givenDefineMacroWhereDefinitionIsNotAllowed_whenCalled_thenExceptionIsRaised() {
         var program = "(define test (define-macro (lambda (condition then) `(if ,condition ,then #f))))";
 
-        var result = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
         assertEquals("""
-                define-macro: not allowed in an expression context""", result);
+                define-macro: not allowed in an expression context""", msg);
     }
 
 
@@ -99,12 +99,12 @@ public class DefineMacroExprNodeTest {
     public void givenDefineMacroWithWrongIdentifierType_whenCalled_thenExceptionIsRaised() {
         var program = "(define-macro \"macro-name\" (lambda (condition then) `(if ,condition ,then #f))) (new-if (= 10 5) 5 #f)";
 
-        var result = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
         assertEquals("""
                 define-macro: contract violation
                 expected: symbol?
-                given: macro-name""", result);
+                given: macro-name""", msg);
     }
 
 
@@ -112,22 +112,22 @@ public class DefineMacroExprNodeTest {
     public void givenDefineMacroWithUnknownValue_whenEvaluated_thenExceptionIsRaised() {
         var program = "(define-macro macro (lambda (test first) (list 'if ivo first #f))) (macro #f 5)";
 
-        var result = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
         assertEquals("""
                 'ivo: undefined
-                cannot reference an identifier before its definition""", result);
+                cannot reference an identifier before its definition""", msg);
     }
 
     @Test
     public void givenDefineMacroWhereBodyIsNotProcedure_whenEvaluated_thenExceptionIsRaised() {
         var program = "(define-macro macro 5) (macro #f 5)";
 
-        var result = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
         assertEquals("""
                 macro's body has to be evaluated procedure
                 expected: procedure?
-                given: 5""", result);
+                given: 5""", msg);
     }
 }

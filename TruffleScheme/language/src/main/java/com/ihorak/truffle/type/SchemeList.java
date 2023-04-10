@@ -9,6 +9,7 @@ import com.oracle.truffle.api.interop.InvalidArrayIndexException;
 import com.oracle.truffle.api.interop.TruffleObject;
 import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
+import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.profiles.BranchProfile;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.jetbrains.annotations.NotNull;
@@ -44,6 +45,27 @@ public class SchemeList implements Iterable<Object>, TruffleObject {
         }
 
         return currentList.car;
+    }
+
+    @ExplodeLoop
+    public SchemeList shallowClone() {
+        if (isEmpty) return EMPTY_LIST;
+
+        var head = new SchemeList(car, null, size, false);
+        var tail = head;
+        var original = this.cdr;
+
+        for (int i = 1; i < size; i++) {
+            var carValue = original.car instanceof SchemeList list ? list.shallowClone() : original.car;
+            var cell = new SchemeList(carValue, null, tail.size - 1, false);
+            tail.cdr = cell;
+            tail = cell;
+            original = original.cdr;
+        }
+
+        tail.cdr = EMPTY_LIST;
+
+        return head;
     }
 
 

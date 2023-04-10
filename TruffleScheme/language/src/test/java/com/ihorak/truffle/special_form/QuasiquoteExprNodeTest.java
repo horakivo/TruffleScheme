@@ -237,4 +237,20 @@ public class QuasiquoteExprNodeTest {
 
         assertEquals("(1 2 3)", result.toString());
     }
+
+    @Test
+    public void quasiquoteReturnsNewList() {
+        var program = """
+                (define data '`(if ,(+ 1 1) 1 2))
+                (define-macro macro
+                  (lambda () data))
+                    
+                (macro)
+                data
+                """;
+
+        var result = context.eval("scm", program);
+
+        assertEquals("('quasiquote ('if ('unquote ('+ 1 1)) 1 2))", result.toString());
+    }
 }

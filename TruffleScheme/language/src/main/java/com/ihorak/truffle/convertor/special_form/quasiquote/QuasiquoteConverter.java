@@ -31,8 +31,9 @@ public class QuasiquoteConverter {
         var bodyIR = quasiquoteListIR.get(1);
         var bodyCtx = getQuasiquoteBodyCtx(quasiquoteCtx);
         if (bodyIR instanceof SchemeList listIR) {
-            var holder = convertSchemeList(listIR, context, bodyCtx);
-            return convertQuasiquoteHolderToSchemeExpr(holder, listIR, quasiquoteCtx);
+            var clonedListIR = listIR.shallowClone();
+            var holder = convertSchemeList(clonedListIR, context, bodyCtx);
+            return convertQuasiquoteHolderToSchemeExpr(holder, clonedListIR, quasiquoteCtx);
         } else {
             // if the body is not a list it doesn't contain any unquote or unquote-splicing (those are converted to list)
             // therefore it behaves as Quote
