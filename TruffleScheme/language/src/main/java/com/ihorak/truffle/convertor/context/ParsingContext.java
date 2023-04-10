@@ -8,6 +8,7 @@ import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
 import com.oracle.truffle.api.CallTarget;
+import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlotKind;
 import com.oracle.truffle.api.source.Source;
@@ -27,6 +28,7 @@ public class ParsingContext {
     //Method information
 
     private final SchemeSymbol functionDefinitionName;
+    private boolean isDefiningFunctionShadowed = false;
     private boolean isFunctionSelfTailRecursive = false;
     private Integer selfTailRecursionResultIndex;
 
@@ -187,6 +189,22 @@ public class ParsingContext {
 
     public boolean isFunctionSelfTailRecursive() {
         return isFunctionSelfTailRecursive;
+    }
+
+    public boolean isDefiningFunctionShadowed() {
+        return isDefiningFunctionShadowed;
+    }
+
+    public void markDefiningFunctionAsShadowed() {
+        if (functionDefinitionName == null) {
+            throw ConverterException.shouldNotReachHere("Implementation bug. Wanted to mark function as shadowed but functionDefinitionName is null");
+        }
+
+        if (isDefiningFunctionShadowed) {
+            throw ConverterException.shouldNotReachHere("Implementation bug. Procedure is already mark as shadowed");
+        }
+
+        isDefiningFunctionShadowed = true;
     }
 
     public void setFunctionAsSelfTailRecursive() {

@@ -1,5 +1,6 @@
 package com.ihorak.truffle.convertor.special_form;
 
+import com.ihorak.truffle.convertor.ConverterException;
 import com.ihorak.truffle.convertor.SourceSectionUtil;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.util.TailCallUtil;
@@ -64,12 +65,22 @@ public abstract class AbstractLetConverter {
 
     protected static void propagateSelfTCOInfoToParentContext(ParsingContext letContext, ParsingContext parentContext) {
         if (letContext.isFunctionSelfTailRecursive()) {
-            var selfTCOResultFrameSlot = letContext.getSelfTCOResultFrameSlot().orElseThrow(InterpreterException::shouldNotReachHere);
+            var selfTCOResultFrameSlot = letContext.getSelfTCOResultFrameSlot().orElseThrow(ConverterException::shouldNotReachHere);
             parentContext.setFunctionAsSelfTailRecursive();
             parentContext.setSelfTailRecursionResultIndex(selfTCOResultFrameSlot);
         }
     }
 
+
+    protected static boolean isDefiningProcedureShadowed(ParsingContext letContext, List<SchemeSymbol> bindingSymbols) {
+        var isProcedureBeingDefined = letContext.getFunctionDefinitionName().isPresent();
+        if (isProcedureBeingDefined) {
+            var name = letContext.getFunctionDefinitionName().get();
+            return bindingSymbols.contains(name);
+        }
+
+        return false;
+    }
 
     protected static ParserRuleContext getParameterExprCtx(@Nullable ParserRuleContext letParamCtx, int index) {
         if (letParamCtx == null) return null;

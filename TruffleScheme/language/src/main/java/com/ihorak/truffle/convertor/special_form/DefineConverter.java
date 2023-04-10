@@ -29,7 +29,6 @@ public class DefineConverter {
         var isNonGlobalEnv = context.getLexicalScope() != LexicalScope.GLOBAL;
 
 
-        // TODO this is wrong. We need to detect whether we are in lambda or not. If not then the expr will be evaluated
         if (isNonGlobalEnv) {
             context.findOrAddLocalSymbol(identifier);
             context.makeLocalVariablesNullable(List.of(identifier));
@@ -41,6 +40,10 @@ public class DefineConverter {
             context.makeLocalVariablesNonNullable(List.of(identifier));
         }
 
+        if (isDefiningProcedureShadowed(identifier, context)) {
+            context.markDefiningFunctionAsShadowed();
+        }
+
         if (context.getLexicalScope() == LexicalScope.GLOBAL) {
             return CreateWriteExprNode.createWriteGlobalVariableExprNode(identifier, bodyExpr, defineCtx);
         } else {
@@ -48,6 +51,15 @@ public class DefineConverter {
         }
     }
 
+    private static boolean isDefiningProcedureShadowed(SchemeSymbol identifier, ParsingContext context) {
+        var isProcedureBeingDefined = context.getFunctionDefinitionName().isPresent();
+        if (isProcedureBeingDefined) {
+            var name = context.getFunctionDefinitionName().get();
+            return identifier.equals(name);
+        }
+
+        return false;
+    }
 
     private static SchemeExpression convertDefineBodyToSchemeExpr(SchemeList defineList, Object defineBody, ParsingContext context, SchemeSymbol identifier, @Nullable ParserRuleContext defineCtx) {
         var bodyFormCtx = defineCtx != null ? (ParserRuleContext) defineCtx.children.get(CTX_DEFINE_BODY) : null;

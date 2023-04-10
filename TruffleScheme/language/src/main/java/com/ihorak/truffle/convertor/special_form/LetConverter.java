@@ -1,5 +1,6 @@
 package com.ihorak.truffle.convertor.special_form;
 
+import com.ihorak.truffle.convertor.ConverterException;
 import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.util.CreateWriteExprNode;
@@ -46,6 +47,10 @@ public class LetConverter extends AbstractLetConverter {
         for (int i = 0; i < symbols.size(); i++) {
             var identifierCtx = getIdentifierCtx(letParamCtx, i);
             result.add(CreateWriteExprNode.createWriteLocalVariableExprNode(symbols.get(i), expressions.get(i), context, identifierCtx));
+        }
+
+        if (isDefiningProcedureShadowed(context, symbols)) {
+            context.markDefiningFunctionAsShadowed();
         }
 
         return result;

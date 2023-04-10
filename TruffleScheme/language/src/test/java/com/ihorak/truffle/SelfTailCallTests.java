@@ -85,5 +85,63 @@ public class SelfTailCallTests {
         assertEquals(0L, result.asLong());
     }
 
+    @Test
+    public void givenSelfTCO_whenProcedureShadowedByLet_thenSelfTailThrowerIsNotCreated() {
+        var program = """
+                (define countdown
+                  (lambda (n)
+                    (let ((countdown (lambda (n) 11)))
+                      (if (= n 0)
+                          0
+                          (countdown (- n 1))))))
+                        
+                (countdown 10)
+                """;
+
+
+        var result = context.eval("scm", program);
+
+        assertEquals(11L, result.asLong());
+    }
+
+    @Test
+    public void givenSelfTCO_whenProcedureShadowedByLetrec_thenSelfTailThrowerIsNotCreated() {
+        var program = """
+                (define countdown
+                  (lambda (n)
+                    (letrec ((countdown (lambda (n) 11)))
+                      (if (= n 0)
+                          0
+                          (countdown (- n 1))))))
+                        
+                (countdown 10)
+                """;
+
+
+        var result = context.eval("scm", program);
+
+        assertEquals(11L, result.asLong());
+    }
+
+    @Test
+    public void givenSelfTCO_whenProcedureShadowedByDefine_thenSelfTailThrowerIsNotCreated() {
+        var program = """
+                (define countdown
+                  (lambda (n)
+                  (define countdown (lambda (n) 11))
+                      (if (= n 0)
+                          0
+                          (countdown (- n 1)))))
+                        
+                (countdown 10)
+                """;
+
+
+        var result = context.eval("scm", program);
+
+        assertEquals(11L, result.asLong());
+    }
+
+
 
 }

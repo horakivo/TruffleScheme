@@ -92,6 +92,8 @@ public class ProcedureConverter extends AbstractCallableConverter {
 
     private static boolean isSelfTailRecursive(Object operand, ParsingContext context) {
         if (context.getFunctionDefinitionName().isEmpty()) return false;
+        if (context.isDefiningFunctionShadowed()) return false;
+
         return operand instanceof SchemeSymbol symbol && symbol.equals(context.getFunctionDefinitionName().get());
     }
 }
