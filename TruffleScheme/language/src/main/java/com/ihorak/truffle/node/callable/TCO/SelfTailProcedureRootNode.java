@@ -23,14 +23,14 @@ public class SelfTailProcedureRootNode extends SchemeRootNode {
     private LoopNode loop;
 
     @Children
-    private final WriteLocalVariableExprNode[] writeArgumentsExprs;
+    private final SchemeExpression[] writeArgumentsExprs;
 
     private final int resultIndex;
 
     public SelfTailProcedureRootNode(SchemeSymbol name, SchemeTruffleLanguage language, FrameDescriptor frameDescriptor,
-                                     List<SchemeExpression> schemeExpressions, List<WriteLocalVariableExprNode> writeArgumentsExprs, int resultIndex, SourceSection sourceSection) {
+                                     List<SchemeExpression> schemeExpressions, List<SchemeExpression> writeArgumentsExprs, int resultIndex, SourceSection sourceSection) {
         super(language, frameDescriptor, schemeExpressions, name, sourceSection);
-        this.writeArgumentsExprs = writeArgumentsExprs.toArray(WriteLocalVariableExprNode[]::new);
+        this.writeArgumentsExprs = writeArgumentsExprs.toArray(SchemeExpression[]::new);
         this.resultIndex = resultIndex;
         this.loop = Truffle.getRuntime().createLoopNode(new TailRecursiveCallLoopNode(this.schemeExpressions));
     }

@@ -9,7 +9,9 @@ import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.SchemeRootNode;
 import com.ihorak.truffle.node.callable.TCO.SelfTailProcedureRootNode;
+import com.ihorak.truffle.node.callable.TCO.throwers.TailCallThrowerNode;
 import com.ihorak.truffle.node.scope.ReadProcedureArgExprNode;
+import com.ihorak.truffle.node.scope.WriteLocalObjectVariableExprNode;
 import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
 import com.ihorak.truffle.node.special_form.LambdaExprNode;
 import com.ihorak.truffle.type.SchemeList;
@@ -43,8 +45,9 @@ public class LambdaConverter {
         var lambdaBodyIR = lambdaListIR.cdr.cdr;
         var numberOfArguments = numberOfArguments(argumentsIR);
 
-        var writeLocalVariableExpr = createWriteLocalVariableNodes(argumentsIR, lambdaContext, lambdaCtx);
         var bodyExprs = TailCallUtil.convertWithDefinitionsAndWithFrameCreation(lambdaBodyIR, lambdaContext, lambdaCtx, CTX_LAMBDA_BODY_INDEX);
+        var writeLocalVariableExpr = createWriteLocalVariableNodes(argumentsIR, lambdaContext, isOnlyProcedureInvocation(bodyExprs), lambdaCtx);
+
 
         var callTarget = creatCallTarget(writeLocalVariableExpr, bodyExprs, name, lambdaContext, lambdaCtx);
         var lambdaExpr = new LambdaExprNode(callTarget, numberOfArguments);
@@ -52,8 +55,11 @@ public class LambdaConverter {
         return lambdaExpr;
     }
 
+    private static boolean isOnlyProcedureInvocation(List<SchemeExpression> bodyExprs) {
+        return bodyExprs.size() == 1 && bodyExprs.get(0) instanceof TailCallThrowerNode;
+    }
 
-    private static RootCallTarget creatCallTarget(List<WriteLocalVariableExprNode> writeArgsExprs, List<SchemeExpression> bodyExprs, SchemeSymbol name, ParsingContext lambdaContext, @Nullable ParserRuleContext lambdaCtx) {
+    private static RootCallTarget creatCallTarget(List<SchemeExpression> writeArgsExprs, List<SchemeExpression> bodyExprs, SchemeSymbol name, ParsingContext lambdaContext, @Nullable ParserRuleContext lambdaCtx) {
         var frameDescriptor = lambdaContext.buildAndGetFrameDescriptor();
         var sourceSection = createLambdaSourceSection(lambdaContext.getSource(), lambdaCtx);
 
@@ -80,23 +86,31 @@ public class LambdaConverter {
         return source.createSection(startIndex, length);
     }
 
-    private static List<WriteLocalVariableExprNode> createWriteLocalVariableNodes(SchemeList argumentsIR, ParsingContext context, @Nullable ParserRuleContext lambdaCtx) {
+    private static List<SchemeExpression> createWriteLocalVariableNodes(SchemeList argumentsIR, ParsingContext context, boolean isOnlyProcedureInvocation, @Nullable ParserRuleContext lambdaCtx) {
         var paramsCtx = lambdaCtx != null ? (ParserRuleContext) lambdaCtx.getChild(CTX_LAMBDA_PARAMS).getChild(0) : null;
-        return createLocalVariableForSchemeList(argumentsIR, context, paramsCtx);
-//        if (params instanceof SchemeList list) {
-//            return createLocalVariableForSchemeList(list, context, paramsCtx);
-//        } else if (params instanceof SchemePair pair) {
-//            return createLocalVariableForSchemePair(pair, context, paramsCtx);
-//        }
-//        throw InterpreterException.shouldNotReachHere();
+        if (isOnlyProcedureInvocation) {
+            return createObjectLocalVariableForSchemeList(argumentsIR, context, paramsCtx);
+        } else {
+            return createLocalVariableForSchemeList(argumentsIR, context, paramsCtx);
+        }
     }
 
-    private static List<WriteLocalVariableExprNode> createLocalVariableForSchemeList(SchemeList argumentListIR, ParsingContext context, @Nullable ParserRuleContext paramsCtx) {
-        List<WriteLocalVariableExprNode> result = new ArrayList<>();
+    private static List<SchemeExpression> createLocalVariableForSchemeList(SchemeList argumentListIR, ParsingContext context, @Nullable ParserRuleContext paramsCtx) {
+        List<SchemeExpression> result = new ArrayList<>();
         for (int i = 0; i < argumentListIR.size; i++) {
             var symbol = (SchemeSymbol) argumentListIR.get(i);
             var symbolCtx = paramsCtx != null ? (ParserRuleContext) paramsCtx.getChild(i + CTX_PARAMS_OFFSET) : null;
             result.add(CreateWriteExprNode.createWriteLocalVariableExprNode(symbol, new ReadProcedureArgExprNode(i), context, symbolCtx));
+        }
+        return result;
+    }
+
+    private static List<SchemeExpression> createObjectLocalVariableForSchemeList(SchemeList argumentListIR, ParsingContext context, @Nullable ParserRuleContext paramsCtx) {
+        List<SchemeExpression> result = new ArrayList<>();
+        for (int i = 0; i < argumentListIR.size; i++) {
+            var symbol = (SchemeSymbol) argumentListIR.get(i);
+            var symbolCtx = paramsCtx != null ? (ParserRuleContext) paramsCtx.getChild(i + CTX_PARAMS_OFFSET) : null;
+            result.add(CreateWriteExprNode.createWriteObjectLocalVariableExprNode(symbol, new ReadProcedureArgExprNode(i), context, symbolCtx));
         }
         return result;
     }

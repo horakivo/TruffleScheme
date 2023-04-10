@@ -1,5 +1,6 @@
 package com.ihorak.truffle.convertor.util;
 
+import com.ihorak.truffle.convertor.ConverterException;
 import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.exceptions.InterpreterException;
@@ -42,7 +43,7 @@ public class TailCallUtil {
 
             var lastExpr = InternalRepresentationConverter.convert(bodyIR.get(size - 1), context, true, false, currentCtx);
             if (context.isFunctionSelfTailRecursive()) {
-                var resultFrameIndex = context.getSelfTCOResultFrameSlot().orElseThrow(InterpreterException::shouldNotReachHere);
+                var resultFrameIndex = context.getSelfTCOResultFrameSlot().orElseThrow(ConverterException::shouldNotReachHere);
                 lastExpr = StoreSelfTailCallResultInFrameNodeGen.create(lastExpr, resultFrameIndex);
             }
             result.add(lastExpr);
