@@ -239,7 +239,7 @@ public class QuasiquoteExprNodeTest {
     }
 
     @Test
-    public void quasiquoteReturnsNewList() {
+    public void quasiquoteDoesntModifyGivenData() {
         var program = """
                 (define data '`(if ,(+ 1 1) 1 2))
                 (define-macro macro

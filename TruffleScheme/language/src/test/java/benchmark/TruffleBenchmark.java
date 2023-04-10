@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 @Warmup(iterations = 20, time = 1)
 @Measurement(iterations = 20, time = 1)
-@Fork(value = 1, jvmArgsAppend = {"-Dgraalvm.locatorDisabled=true"})
+@Fork(value = 1, jvmArgsAppend = {"-Dgraalvm.locatorDisabled=true", "-Xmx2048m", "-Xmx2048m"})
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 @State(Scope.Benchmark)

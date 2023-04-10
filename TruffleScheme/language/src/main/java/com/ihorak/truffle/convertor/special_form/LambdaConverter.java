@@ -9,10 +9,13 @@ import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.SchemeRootNode;
 import com.ihorak.truffle.node.callable.TCO.SelfTailProcedureRootNode;
+import com.ihorak.truffle.node.callable.TCO.throwers.SelfRecursiveTailCallThrowerNode;
 import com.ihorak.truffle.node.callable.TCO.throwers.TailCallThrowerNode;
 import com.ihorak.truffle.node.scope.ReadProcedureArgExprNode;
+import com.ihorak.truffle.node.scope.StoreSelfTailCallResultInFrame;
 import com.ihorak.truffle.node.scope.WriteLocalObjectVariableExprNode;
 import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
+import com.ihorak.truffle.node.special_form.IfElseExprNode;
 import com.ihorak.truffle.node.special_form.LambdaExprNode;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemePair;
@@ -56,7 +59,17 @@ public class LambdaConverter {
     }
 
     private static boolean isOnlyProcedureInvocation(List<SchemeExpression> bodyExprs) {
-        return bodyExprs.size() == 1 && bodyExprs.get(0) instanceof TailCallThrowerNode;
+        if (bodyExprs.size() != 1) return false;
+        var expr = bodyExprs.get(0);
+
+        // Standard TCO
+        if (expr instanceof TailCallThrowerNode) return true;
+        if (expr instanceof IfElseExprNode ifElseExprNode) {
+            return (ifElseExprNode.thenExpr instanceof TailCallThrowerNode) ||
+                    (ifElseExprNode.elseExpr instanceof TailCallThrowerNode);
+        }
+
+        return false;
     }
 
     private static RootCallTarget creatCallTarget(List<SchemeExpression> writeArgsExprs, List<SchemeExpression> bodyExprs, SchemeSymbol name, ParsingContext lambdaContext, @Nullable ParserRuleContext lambdaCtx) {
