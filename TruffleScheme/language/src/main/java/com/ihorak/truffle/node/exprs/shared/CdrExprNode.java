@@ -1,22 +1,18 @@
 package com.ihorak.truffle.node.exprs.shared;
 
 import com.ihorak.truffle.exceptions.SchemeException;
-import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.exprs.LimitedBuiltin;
-import com.ihorak.truffle.node.interop.ForeignToSchemeNode;
+import com.ihorak.truffle.node.exprs.GivenNumberOfArgsBuiltin;
 import com.ihorak.truffle.node.polyglot.TranslateInteropExceptionNode;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemePair;
-import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.interop.InteropException;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.library.CachedLibrary;
-import com.oracle.truffle.api.profiles.BranchProfile;
 
-public abstract class CdrExprNode extends LimitedBuiltin {
+public abstract class CdrExprNode extends GivenNumberOfArgsBuiltin {
 
 
     @Specialization(guards = "!list.isEmpty")

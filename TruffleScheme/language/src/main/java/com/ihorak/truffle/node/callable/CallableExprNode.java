@@ -4,7 +4,7 @@ import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.callable.TCO.TailCallCatcherNode;
 import com.ihorak.truffle.node.callable.TCO.exceptions.TailCallException;
-import com.ihorak.truffle.node.polyglot.PolyglotException;
+import com.ihorak.truffle.type.ArbitraryArgsPrimitiveProcedure;
 import com.ihorak.truffle.type.UserDefinedProcedure;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.dsl.Cached;
@@ -12,17 +12,16 @@ import com.oracle.truffle.api.dsl.Executed;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
-import com.oracle.truffle.api.interop.InteropException;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.library.CachedLibrary;
-import com.oracle.truffle.api.nodes.ExplodeLoop;
 
 import java.util.List;
 
 public abstract class CallableExprNode extends SchemeExpression {
 
     @Children
-    private final SchemeExpression[] arguments;
+    protected final SchemeExpression[] arguments;
+
     @Child
     @Executed
     protected SchemeExpression callable;
@@ -45,13 +44,37 @@ public abstract class CallableExprNode extends SchemeExpression {
                                             @Cached DispatchNode dispatchNode) {
         var args = getProcedureArguments(procedure, arguments, frame);
         try {
-            return dispatchNode.executeDispatch(procedure, args);
+            var result = dispatchNode.executeDispatch(procedure, args);
+            return result;
         } catch (TailCallException e) {
             CompilerDirectives.transferToInterpreterAndInvalidate();
             var tailCallCatcher = new TailCallCatcherNode(arguments, callable, tailCallArgumentsSlot, tailCallTargetSlot, tailCallResultSlot);
             return replace(tailCallCatcher).executeGeneric(frame);
         }
     }
+
+    @Specialization
+    protected Object doPrimitiveProcedure(
+            VirtualFrame frame,
+            ArbitraryArgsPrimitiveProcedure procedure,
+            @Cached DispatchPrimitiveProcedureNode dispatchNode) {
+        var args = getPrimitiveProcedureArguments(arguments, frame);
+        var result = dispatchNode.execute(frame, procedure, args);
+        return result;
+    }
+
+//    @Specialization
+//    protected Object doPrimitiveProcedure(VirtualFrame frame, UserDefinedProcedure procedure,
+//                                            @Cached DispatchNode dispatchNode) {
+//        var args = getProcedureArguments(procedure, arguments, frame);
+//        try {
+//            return dispatchNode.executeDispatch(procedure, args);
+//        } catch (TailCallException e) {
+//            CompilerDirectives.transferToInterpreterAndInvalidate();
+//            var tailCallCatcher = new TailCallCatcherNode(arguments, callable, tailCallArgumentsSlot, tailCallTargetSlot, tailCallResultSlot);
+//            return replace(tailCallCatcher).executeGeneric(frame);
+//        }
+//    }
 
     @Specialization(guards = "interopLib.isExecutable(interopProcedure)", limit = "getInteropCacheLimit()")
     protected Object doInteropProcedure(VirtualFrame frame,

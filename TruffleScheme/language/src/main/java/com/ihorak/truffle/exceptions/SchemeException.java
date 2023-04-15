@@ -28,6 +28,7 @@ public class SchemeException extends AbstractTruffleException {
         return new SchemeException(sb.toString(), node);
     }
 
+    @TruffleBoundary
     public static SchemeException arityException(Node node, String name, int expected, int given) {
         String msg = name + ": arity mismatch; Expected number of arguments does not match the given number\n" +
                 "expected: " + expected + "\n" +

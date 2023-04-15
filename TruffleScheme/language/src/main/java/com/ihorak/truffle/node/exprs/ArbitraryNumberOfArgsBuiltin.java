@@ -4,7 +4,7 @@ import com.ihorak.truffle.node.SchemeExpression;
 import com.oracle.truffle.api.dsl.GenerateNodeFactory;
 import com.oracle.truffle.api.dsl.NodeChild;
 
-@NodeChild(value = "arguments")
+@NodeChild(value = "arguments", type = ReadProcedureArgsExprNode.class)
 @GenerateNodeFactory
-public abstract class ArbitraryBuiltin extends SchemeExpression {
+public abstract class ArbitraryNumberOfArgsBuiltin extends SchemeExpression {
 }

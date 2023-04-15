@@ -49,7 +49,7 @@ public abstract class SchemeExpression extends SchemeNode {
     }
 
     @ExplodeLoop
-    protected Object[] getProcedureArguments(UserDefinedProcedure function, SchemeExpression[] arguments, VirtualFrame frame) {
+    protected Object[] getProcedureArguments(final UserDefinedProcedure function, final SchemeExpression[] arguments, VirtualFrame frame) {
         Object[] args = new Object[arguments.length + 1];
         args[0] = function.getParentFrame();
 
@@ -57,6 +57,17 @@ public abstract class SchemeExpression extends SchemeNode {
         for (SchemeExpression expression : arguments) {
             args[index] = expression.executeGeneric(frame);
             index++;
+        }
+
+        return args;
+    }
+
+    @ExplodeLoop
+    protected Object[] getPrimitiveProcedureArguments(final SchemeExpression[] arguments, VirtualFrame frame) {
+        Object[] args = new Object[arguments.length];
+
+        for (int i = 0; i < arguments.length; i++) {
+            args[i] = arguments[i].executeGeneric(frame);
         }
 
         return args;

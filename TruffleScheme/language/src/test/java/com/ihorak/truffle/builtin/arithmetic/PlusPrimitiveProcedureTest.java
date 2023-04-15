@@ -10,7 +10,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-@Ignore
 public class PlusPrimitiveProcedureTest {
 
 
@@ -24,6 +23,12 @@ public class PlusPrimitiveProcedureTest {
     @BeforeClass
     public static void before() {
         BuiltinConverter.isBuiltinEnabled = false;
+    }
+
+
+    @AfterClass
+    public static void after() {
+        BuiltinConverter.isBuiltinEnabled = true;
     }
 
     @Test
@@ -62,29 +67,18 @@ public class PlusPrimitiveProcedureTest {
         assertEquals(12.3D + 5.3 + 1.1, result.asDouble(), 0);
     }
 
-//TODO
 //    @Test
-//    public void givenBigNumber_whenAddThem_thenOverflowShouldOccurAndBigIntShouldBeReturned() {
-//        var program = "(+ 1 2 " + Long.MAX_VALUE + ")";
+//    public void aaa() {
+//        var program = """
+//                (define a (+ 1 2))
+//                (define + (lambda (a b) b))
+//                (define b (+ 2 3))
+//                (list a b)
+//                """;
 //
+//        var result = context.eval("scm", program);
 //
-//        var result =  context.eval("scm", program);
-//
-//        assertEquals(new BigInteger(String.valueOf(Long.MAX_VALUE)).add(new BigInteger("3")), result);
+//        assertEquals(3L, result.getArrayElement(0).asLong());
+//        assertEquals(3L, result.getArrayElement(1).asLong());
 //    }
-
-//    @Test
-//    public void givenNumbersBiggerThenLong_whenAddThem_thenBigIntShouldBeReturned() {
-//        var program = "(+ 1 2 " + BigInteger.TWO.add(BigInteger.valueOf(Long.MAX_VALUE)) + ")";
-//        var expr = Reader.readExpr(CharStreams.fromString(program));
-//        GlobalEnvironment globalEnvironment = new GlobalEnvironment();
-//
-//        var result = expr.executeGeneric(globalEnvironment.getGlobalVirtualFrame());
-//        assertEquals(BigInteger.valueOf(Long.MAX_VALUE).add(new BigInteger("5")), result);
-//    }
-
-    @AfterClass
-    public static void after() {
-        BuiltinConverter.isBuiltinEnabled = true;
-    }
 }

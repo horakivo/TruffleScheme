@@ -36,9 +36,6 @@ public class DividePrimitiveProcedureTest {
         assertEquals(1 / 4D, result.asDouble(), 0);
     }
 
-    //polygot text volani napr java kodu
-    //vektor
-    //makroexpanze
 
     @Test
     public void givenNoNumber_whenDivideCalled_thenSchemeExceptionShouldBeThrown() {

@@ -43,7 +43,7 @@ public class LambdaExprNodeTest {
                       (generate len 101 17 3 '()))))
                       
                 ((test 5) 5)
-                
+                                
                 """;
 
         var result = context.eval("scm", program);
@@ -163,10 +163,10 @@ public class LambdaExprNodeTest {
     public void lexicalScopeIsResolvedCorrectlyWhenGlobalVariableIsNotDefined() {
         var program = "(define foo (lambda () x)) (define bar (lambda (x) (foo))) (bar 1)";
 
-        var exceptionMsg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
         assertEquals("'x: undefined\n" +
-                "cannot reference an identifier before its definition", exceptionMsg);
+                "cannot reference an identifier before its definition", msg);
     }
 
     @Test
@@ -178,48 +178,32 @@ public class LambdaExprNodeTest {
         assertEquals(88L, result.asLong());
     }
 
-//    @Test
-//    public void giveLambdaWithOptionalNumberOfArgs_whenExecuted_thenCorrectResultIsReturned() {
-//        var program = "((lambda (x y . rest) (list x y rest)) 1 2)";
-//
-//        var result = context.eval("scm", program);
-//
-//        assertTrue(result.hasArrayElements());
-//        assertEquals(3L, result.getArraySize());
-//        assertEquals(1L, result.getArrayElement(0).asLong());
-//        assertEquals(2L, result.getArrayElement(1).asLong());
-//        assertTrue(result.getArrayElement(2).hasArrayElements());
-//        assertEquals(0L, result.getArrayElement(2).getArraySize());
-//    }
+    @Test
+    public void givenUserProcedure_whenCalledWithWrongNumberOfArgs_thenThrowException() {
+        var program = "(define foo (lambda (a b) (+ a b))) (foo 1 2 3)";
 
-//    @Test
-//    public void giveLambdaWithOptionalNumberOfArgs2_whenExecuted_thenCorrectResultIsReturned() {
-//        var program = "((lambda (x y . rest) (list x y rest)) 1 2 3)";
-//
-//        var result = context.eval("scm", program);
-//
-//        assertTrue(result.hasArrayElements());
-//        assertEquals(3L, result.getArraySize());
-//        assertEquals(1L, result.getArrayElement(0).asLong());
-//        assertEquals(2L, result.getArrayElement(1).asLong());
-//        assertTrue(result.getArrayElement(2).hasArrayElements());
-//        assertEquals(1L, result.getArrayElement(2).getArraySize());
-//        assertEquals(3L, result.getArrayElement(2).getArrayElement(0).asLong());
-//    }
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
-//    @Test
-//    public void giveLambdaWithOptionalNumberOfArgs3_whenExecuted_thenCorrectResultIsReturned() {
-//        var program = "((lambda (x y . rest) (list x y rest)) 1 2 3 4)";
-//
-//        var result = context.eval("scm", program);
-//
-//        assertTrue(result.hasArrayElements());
-//        assertEquals(3L, result.getArraySize());
-//        assertEquals(1L, result.getArrayElement(0).asLong());
-//        assertEquals(2L, result.getArrayElement(1).asLong());
-//        assertTrue(result.getArrayElement(2).hasArrayElements());
-//        assertEquals(2L, result.getArrayElement(2).getArraySize());
-//        assertEquals(3L, result.getArrayElement(2).getArrayElement(0).asLong());
-//        assertEquals(4L, result.getArrayElement(2).getArrayElement(1).asLong());
-//    }
+        assertEquals("""
+                foo: arity mismatch; Expected number of arguments does not match the given number
+                expected: 2
+                given: 3""", msg);
+    }
+
+    @Test
+    public void givenUserProcedureInTCO_whenCalledWithWrongNumberOfArgs_thenThrowException() {
+        var program = """
+                (define foo (lambda (a b) (+ a b)))
+                (define baz (lambda (n) (foo 1 2 3)))
+                                
+                (baz 10)
+                """;
+
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+
+        assertEquals("""
+                foo: arity mismatch; Expected number of arguments does not match the given number
+                expected: 2
+                given: 3""", msg);
+    }
 }

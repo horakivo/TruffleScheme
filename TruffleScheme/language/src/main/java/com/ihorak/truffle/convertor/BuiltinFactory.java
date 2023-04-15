@@ -1,8 +1,6 @@
 package com.ihorak.truffle.convertor;
 
 
-import com.ihorak.truffle.convertor.context.ParsingContext;
-import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.cast.BooleanCastExprNodeGen;
 import com.ihorak.truffle.node.exprs.builtin.*;
@@ -18,7 +16,6 @@ import com.ihorak.truffle.node.polyglot.ReadForeignGlobalScopeExprNodeGen;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.jetbrains.annotations.Nullable;
 
-import javax.xml.transform.Source;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,9 +35,9 @@ public class BuiltinFactory {
     private static SchemeExpression reduceDivide(List<SchemeExpression> arguments) {
         if (arguments.size() > 2) {
             var right = arguments.remove(arguments.size() - 1);
-            return new DivideExprNode(reduceDivide(arguments), right);
+            return DivideExprNodeGen.create(reduceDivide(arguments), right);
         } else {
-            return new DivideExprNode(arguments.get(0), arguments.get(1));
+            return DivideExprNodeGen.create(arguments.get(0), arguments.get(1));
         }
     }
 
@@ -97,7 +94,7 @@ public class BuiltinFactory {
     }
 
     public static SchemeExpression createListBuiltin(List<SchemeExpression> arguments, @Nullable ParserRuleContext listCtx) {
-        var expr = ListExprNodeFactory.create(new ConvertSchemeExprsArgumentsNode(arguments));
+        var expr = ListExprNodeGen.create(new ConvertSchemeExprsArgumentsNode(arguments));
         return SourceSectionUtil.setSourceSectionAndReturnExpr(expr, listCtx);
     }
 
@@ -143,11 +140,11 @@ public class BuiltinFactory {
     //    //TODO this is messy, consider using binary reducibility instead of current approach. Study what is better
     public static SchemeExpression createAppendBuiltin(List<SchemeExpression> arguments, @Nullable ParserRuleContext appendCtx) {
         if (arguments.isEmpty()) {
-            var emptyListExpr = ListExprNodeFactory.create(new ConvertSchemeExprsArgumentsNode(new ArrayList<>()));
+            var emptyListExpr = ListExprNodeGen.create(new ConvertSchemeExprsArgumentsNode(new ArrayList<>()));
             return SourceSectionUtil.setSourceSectionAndReturnExpr(emptyListExpr, appendCtx);
         }
         if (arguments.size() == 1) {
-            var oneElementListExpr = AppendExprNode1NodeGen.create(arguments.get(0), ListExprNodeFactory.create(new ConvertSchemeExprsArgumentsNode(new ArrayList<>())));
+            var oneElementListExpr = AppendExprNode1NodeGen.create(arguments.get(0), ListExprNodeGen.create(new ConvertSchemeExprsArgumentsNode(new ArrayList<>())));
             return SourceSectionUtil.setSourceSectionAndReturnExpr(oneElementListExpr, appendCtx);
         }
         return SourceSectionUtil.setSourceSectionAndReturnExpr(reduceAppend(arguments), appendCtx);

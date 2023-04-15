@@ -1,7 +1,7 @@
 package com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic;
 
 import com.ihorak.truffle.exceptions.SchemeException;
-import com.ihorak.truffle.node.exprs.BinaryReducibleBuiltin;
+import com.ihorak.truffle.node.exprs.ArbitraryNumberOfArgsBuiltin;
 import com.ihorak.truffle.node.exprs.core.BinaryOperationNode;
 import com.ihorak.truffle.node.exprs.core.arithmetic.MinusBinaryNodeGen;
 import com.oracle.truffle.api.dsl.Cached;
@@ -11,7 +11,7 @@ import com.oracle.truffle.api.nodes.ExplodeLoop;
 
 import java.math.BigInteger;
 
-public abstract class MinusPrimitiveProcedureNode extends BinaryReducibleBuiltin {
+public abstract class MinusPrimitiveProcedureNode extends ArbitraryNumberOfArgsBuiltin {
 
     @Child
     private BinaryOperationNode minusOperation = MinusBinaryNodeGen.create();

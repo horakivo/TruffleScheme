@@ -20,6 +20,17 @@ public class IsNullTest {
         this.context.close();
     }
 
+//    @Test
+//    public void javascriptIsNullWhenFalseGiven() {
+//        var program = """
+//                (null? (eval-source "js" "false"))
+//                """;
+//
+//        var result = context.eval("scm", program);
+//
+//        assertTrue(result.asBoolean());
+//    }
+
     @Test
     public void javascriptNull() {
         var program = """
@@ -30,6 +41,7 @@ public class IsNullTest {
 
         assertFalse(result.asBoolean());
     }
+
 
     @Test
     public void javascriptIsNotNull() {

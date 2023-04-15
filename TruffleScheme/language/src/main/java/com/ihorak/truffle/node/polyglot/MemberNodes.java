@@ -26,10 +26,10 @@ public class MemberNodes {
     public static final String IS_MEMBER_WRITABLE = "is-member-writable?";
     public static final String IS_MEMBER_EXISTING = "is-member-existing?";
     public static final String GET_MEMBERS = "get-members";
-    public static final String READ_MEMBER = "read-member";
-    public static final String WRITE_MEMBER = "write-member";
-    public static final String REMOVE_MEMBER = "remove-member";
-    public static final String INVOKE_MEMBER = "invoke-member";
+    public static final String READ_MEMBER = "read-member";//.
+    public static final String WRITE_MEMBER = "write-member";//set!
+    public static final String REMOVE_MEMBER = "remove-member";//
+    public static final String INVOKE_MEMBER = "invoke-member"; //.
 
 
     @NodeChild("receiver")

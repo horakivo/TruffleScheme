@@ -14,7 +14,7 @@ public abstract class ListNode extends SchemeNode {
 
     @ExplodeLoop
     @Specialization(guards = {"!(arguments.length == 0)", "cachedLength == arguments.length"}, limit = "2")
-    protected SchemeList createNonEmptyListFast(Object[] arguments,
+    protected SchemeList doNonEmptyListCached(Object[] arguments,
                                                 @Cached("arguments.length") int cachedLength) {
 
         var head = new SchemeList(arguments[0], null, cachedLength, false);
@@ -31,8 +31,8 @@ public abstract class ListNode extends SchemeNode {
         return head;
     }
 
-    @Specialization(guards = "!(arguments.length == 0)", replaces = "createNonEmptyListFast")
-    protected SchemeList createNonEmptyListSlow(Object[] arguments) {
+    @Specialization(guards = "!(arguments.length == 0)", replaces = "doNonEmptyListCached")
+    protected SchemeList doNonEmptyList(Object[] arguments) {
         var head = new SchemeList(arguments[0], null, arguments.length, false);
         var tail = head;
 

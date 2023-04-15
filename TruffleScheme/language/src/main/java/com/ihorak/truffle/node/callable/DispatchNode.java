@@ -2,11 +2,9 @@ package com.ihorak.truffle.node.callable;
 
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeNode;
-import com.ihorak.truffle.node.polyglot.PolyglotException;
 import com.ihorak.truffle.node.polyglot.TranslateInteropExceptionNode;
 import com.ihorak.truffle.type.UserDefinedProcedure;
 import com.oracle.truffle.api.Assumption;
-import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.RootCallTarget;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Fallback;
@@ -17,6 +15,7 @@ import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.nodes.DirectCallNode;
 import com.oracle.truffle.api.nodes.IndirectCallNode;
+import com.oracle.truffle.api.profiles.BranchProfile;
 
 @GenerateUncached
 public abstract class DispatchNode extends SchemeNode {
@@ -27,16 +26,25 @@ public abstract class DispatchNode extends SchemeNode {
             guards = "userDefinedProcedure.getCallTarget() == cachedRootCallTarget",
             assumptions = "callTargetStableAssumption",
             limit = "3")
-    protected static Object directlyDispatch(UserDefinedProcedure userDefinedProcedure,
-                                             Object[] arguments,
-                                             @Cached("create(userDefinedProcedure.getCallTarget())") DirectCallNode directCallNode,
-                                             @Cached("userDefinedProcedure.getCallTarget()") RootCallTarget cachedRootCallTarget,
-                                             @Cached("userDefinedProcedure.getCallTargetStableAssumption()") Assumption callTargetStableAssumption) {
+    protected static Object doUserDefinedProcedureCached(
+            UserDefinedProcedure userDefinedProcedure,
+            Object[] arguments,
+            @Cached("userDefinedProcedure") UserDefinedProcedure procedureCached,
+            @Cached("procedureCached.getCallTarget()") RootCallTarget cachedRootCallTarget,
+            @Cached("create(cachedRootCallTarget)") DirectCallNode directCallNode,
+            @Cached("procedureCached.getExpectedNumberOfArgs()") int expectedNumberOfArgsCached,
+            @Cached("getArgumentsLength(arguments)") int givenNumberOfArgsCached,
+            @Cached("procedureCached.getCallTargetStableAssumption()") Assumption callTargetStableAssumption,
+            @Cached BranchProfile wrongNumberOfArgsSeen) {
+        if (givenNumberOfArgsCached != expectedNumberOfArgsCached) {
+            wrongNumberOfArgsSeen.enter();
+            throw SchemeException.arityException(null, procedureCached.getName(), expectedNumberOfArgsCached, givenNumberOfArgsCached);
+        }
         return directCallNode.call(arguments);
     }
 
-    @Specialization(replaces = "directlyDispatch")
-    protected static Object indirectlyDispatch(
+    @Specialization(replaces = "doUserDefinedProcedureCached")
+    protected static Object doUserDefinedProcedureUncached(
             UserDefinedProcedure userDefinedProcedure,
             Object[] arguments,
             @Cached IndirectCallNode indirectCallNode) {
@@ -53,6 +61,10 @@ public abstract class DispatchNode extends SchemeNode {
         } catch (InteropException e) {
             throw translateInteropExceptionNode.execute(e, foreignProcedure, "Execute", arguments);
         }
+    }
+
+    protected static int getArgumentsLength(Object[] arguments) {
+        return arguments.length - 1; // first element is parent frame
     }
 
     @Fallback

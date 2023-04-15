@@ -26,6 +26,7 @@ public class UserDefinedProcedure implements TruffleObject {
     private int expectedNumberOfArgs;
     @CompilationFinal private RootCallTarget callTarget;
     private final MaterializedFrame parentFrame;
+    private final String name;
 
     /**
      * Manages the assumption that the {@link #callTarget} is stable.
@@ -34,16 +35,13 @@ public class UserDefinedProcedure implements TruffleObject {
 
 
 
-    public UserDefinedProcedure(RootCallTarget callTarget, int expectedNumberOfArgs, MaterializedFrame frame) {
+    public UserDefinedProcedure(RootCallTarget callTarget, int expectedNumberOfArgs, MaterializedFrame frame, String name) {
         this.callTarget = callTarget;
         this.parentFrame = frame;
+        this.name = name;
         this.expectedNumberOfArgs = expectedNumberOfArgs;
         this.callTargetStable = new CyclicAssumption("user procedure not redefined assumption");
-//        if (hasOptionalArgs) {
-//            this.expectedNumberOfArgs = expectedNumberOfArgs - 1;
-//        } else {
-//            this.expectedNumberOfArgs = expectedNumberOfArgs;
-//        }
+
     }
 
     public void redefine(RootCallTarget callTarget, int expectedNumberOfArgs) {
@@ -71,6 +69,10 @@ public class UserDefinedProcedure implements TruffleObject {
 
     public int getExpectedNumberOfArgs() {
         return expectedNumberOfArgs;
+    }
+
+    public String getName() {
+        return name;
     }
 
     @Override
