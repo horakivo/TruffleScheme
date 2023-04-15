@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class CarExprNodeTest {
+public class CarExprTest {
 
     private Context context;
 

@@ -17,7 +17,7 @@ import com.oracle.truffle.api.library.ExportLibrary;
 @ExportLibrary(InteropLibrary.class)
 public record ArbitraryArgsPrimitiveProcedure(
         String name,
-        NodeFactory<? extends AlwaysInlinedMethodNode> alwaysInlinableFactoryNode
+        NodeFactory<? extends AlwaysInlinedMethodNode> factory
 ) implements TruffleObject {
 
 

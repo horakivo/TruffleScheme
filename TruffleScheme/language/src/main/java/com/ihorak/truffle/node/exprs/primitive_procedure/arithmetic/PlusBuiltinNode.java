@@ -1,18 +1,17 @@
 package com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic;
 
 import com.ihorak.truffle.node.callable.AlwaysInlinedMethodNode;
-import com.ihorak.truffle.node.exprs.ArbitraryNumberOfArgsBuiltin;
-import com.ihorak.truffle.node.exprs.core.BinaryOperationNode;
-import com.ihorak.truffle.node.exprs.core.arithmetic.PlusBinaryNodeGen;
+import com.ihorak.truffle.node.exprs.core.arithmetic.PlusCoreNode;
+import com.ihorak.truffle.node.exprs.core.arithmetic.PlusCoreNodeGen;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 
-public abstract class PlusPrimitiveProcedureNode extends AlwaysInlinedMethodNode {
+public abstract class PlusBuiltinNode extends AlwaysInlinedMethodNode {
 
     @SuppressWarnings("FieldMayBeFinal")
     @Child
-    private BinaryOperationNode plusOperation = PlusBinaryNodeGen.create();
+    private PlusCoreNode plusOperation = PlusCoreNodeGen.create();
 
 
     @Specialization(guards = "arguments.length == 2")

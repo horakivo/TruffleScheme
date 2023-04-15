@@ -1,4 +1,4 @@
-package com.ihorak.truffle.node.exprs.shared;
+package com.ihorak.truffle.node.exprs.core.list;
 
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.exprs.GivenNumberOfArgsBuiltin;
@@ -8,20 +8,23 @@ import com.ihorak.truffle.type.SchemePair;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
+import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.interop.InteropException;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.library.CachedLibrary;
 
-public abstract class CarExprNode extends GivenNumberOfArgsBuiltin {
+public abstract class CarCoreNode extends GivenNumberOfArgsBuiltin {
 
+    public abstract Object execute(VirtualFrame frame);
+    public abstract Object execute(Object object);
 
     @Specialization(guards = "!list.isEmpty")
-    protected Object doSchemeList(SchemeList list) {
+    protected Object doList(SchemeList list) {
         return list.car;
     }
 
     @Specialization
-    protected Object doPairCar(SchemePair pair) {
+    protected Object doPair(SchemePair pair) {
         return pair.first();
     }
 

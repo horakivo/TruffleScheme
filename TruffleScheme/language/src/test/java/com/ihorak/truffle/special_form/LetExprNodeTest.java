@@ -105,7 +105,7 @@ public class LetExprNodeTest {
         assertEquals("""
                 +: contract violation
                 expected: number?
-                given left: 20
+                given left: 40
                 given right: true""", msg);
     }
 

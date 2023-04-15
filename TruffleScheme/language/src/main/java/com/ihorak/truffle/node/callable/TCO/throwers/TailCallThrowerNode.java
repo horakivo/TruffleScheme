@@ -3,8 +3,10 @@ package com.ihorak.truffle.node.callable.TCO.throwers;
 import com.ihorak.truffle.SchemeTruffleLanguage;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.callable.DispatchNode;
+import com.ihorak.truffle.node.callable.DispatchPrimitiveProcedureNode;
 import com.ihorak.truffle.node.callable.TCO.exceptions.TailCallException;
 import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.type.ArbitraryArgsPrimitiveProcedure;
 import com.ihorak.truffle.type.UserDefinedProcedure;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Executed;
@@ -42,11 +44,20 @@ public abstract class TailCallThrowerNode extends SchemeExpression {
         throw new TailCallException(procedure, getProcedureArguments(procedure, arguments, frame));
     }
 
+    @Specialization
+    protected Object doPrimitiveProcedure(
+            VirtualFrame frame,
+            ArbitraryArgsPrimitiveProcedure procedure,
+            @Cached DispatchPrimitiveProcedureNode dispatchNode) {
+
+        return dispatchNode.execute(procedure, getPrimitiveProcedureArguments(arguments, frame));
+    }
+
 
     @Specialization(guards = "interopLibrary.isExecutable(procedure)", limit = "getInteropCacheLimit()")
-    protected Object doPolyglotThrow(VirtualFrame frame, Object procedure,
-                                     @CachedLibrary("procedure") InteropLibrary interopLibrary,
-                                     @Cached DispatchNode dispatchNode) {
+    protected Object doPolyglot(VirtualFrame frame, Object procedure,
+                                @CachedLibrary("procedure") InteropLibrary interopLibrary,
+                                @Cached DispatchNode dispatchNode) {
         return dispatchNode.executeDispatch(procedure, getForeignProcedureArguments(arguments, frame));
     }
 

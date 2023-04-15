@@ -8,6 +8,7 @@ import com.ihorak.truffle.node.exprs.builtin.arithmetic.*;
 import com.ihorak.truffle.node.exprs.builtin.comparison.*;
 import com.ihorak.truffle.node.exprs.builtin.list.AppendExprNode1;
 import com.ihorak.truffle.node.exprs.builtin.list.AppendExprNode1NodeGen;
+import com.ihorak.truffle.node.exprs.core.list.CarCoreNodeFactory;
 import com.ihorak.truffle.node.exprs.shared.*;
 import com.ihorak.truffle.node.literals.BooleanLiteralNode;
 import com.ihorak.truffle.node.literals.LongLiteralNode;
@@ -58,22 +59,22 @@ public class BuiltinFactory {
         }
     }
 
-    public static SchemeExpression createPlusBuiltin(List<SchemeExpression> arguments, @Nullable ParserRuleContext plusCtx) {
-        if (arguments.size() == 0)
-            return SourceSectionUtil.setSourceSectionAndReturnExpr(new LongLiteralNode(0), plusCtx);
-        if (arguments.size() == 1)
-            return SourceSectionUtil.setSourceSectionAndReturnExpr(OneArgumentExprNodeGen.create(arguments.get(0)), plusCtx);
-        var plusExpr = reducePlus(arguments);
-        return SourceSectionUtil.setSourceSectionAndReturnExpr(plusExpr, plusCtx);
-    }
-
-    private static SchemeExpression reducePlus(List<SchemeExpression> arguments) {
-        if (arguments.size() > 2) {
-            return new PlusExprNode(arguments.remove(0), reducePlus(arguments));
-        } else {
-            return new PlusExprNode(arguments.get(0), arguments.get(1));
-        }
-    }
+//    public static SchemeExpression createPlusBuiltin(List<SchemeExpression> arguments, @Nullable ParserRuleContext plusCtx) {
+//        if (arguments.size() == 0)
+//            return SourceSectionUtil.setSourceSectionAndReturnExpr(new LongLiteralNode(0), plusCtx);
+//        if (arguments.size() == 1)
+//            return SourceSectionUtil.setSourceSectionAndReturnExpr(OneArgumentExprNodeGen.create(arguments.get(0)), plusCtx);
+//        var plusExpr = reducePlus(arguments);
+//        return SourceSectionUtil.setSourceSectionAndReturnExpr(plusExpr, plusCtx);
+//    }
+//
+//    private static SchemeExpression reducePlus(List<SchemeExpression> arguments) {
+//        if (arguments.size() > 2) {
+//            return new PlusExprNode(arguments.remove(0), reducePlus(arguments));
+//        } else {
+//            return new PlusExprNode(arguments.get(0), arguments.get(1));
+//        }
+//    }
 
     public static SchemeExpression createMultipleBuiltin(List<SchemeExpression> arguments, @Nullable ParserRuleContext multiplyCtx) {
         if (arguments.size() == 0) {
@@ -119,9 +120,9 @@ public class BuiltinFactory {
     }
 
     public static SchemeExpression createCarBuiltin(List<SchemeExpression> arguments, @Nullable ParserRuleContext carCtx) {
-        int expectedSize = CarExprNodeFactory.getInstance().getExecutionSignature().size();
+        int expectedSize = CarCoreNodeFactory.getInstance().getExecutionSignature().size();
         if (arguments.size() == expectedSize) {
-            var carExpr = CarExprNodeFactory.create(arguments.toArray(SchemeExpression[]::new));
+            var carExpr = CarCoreNodeFactory.create(arguments.toArray(SchemeExpression[]::new));
             return SourceSectionUtil.setSourceSectionAndReturnExpr(carExpr, carCtx);
         } else {
             throw ConverterException.arityException("car", expectedSize, arguments.size());
@@ -297,7 +298,7 @@ public class BuiltinFactory {
     public static SchemeExpression createCadr(List<SchemeExpression> arguments, @Nullable ParserRuleContext cadrCtx) {
         if (arguments.size() == 1) {
             var cdrExpr = CdrExprNodeFactory.create(arguments.toArray(SchemeExpression[]::new));
-            var carExpr = CarExprNodeFactory.create(new SchemeExpression[]{cdrExpr});
+            var carExpr = CarCoreNodeFactory.create(new SchemeExpression[]{cdrExpr});
 
             return SourceSectionUtil.setSourceSectionAndReturnExpr(carExpr, cadrCtx);
         }

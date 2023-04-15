@@ -30,7 +30,7 @@ public class BuiltinConverter extends AbstractCallableConverter {
 
     private static SchemeExpression createBuiltin(SchemeSymbol operand, List<SchemeExpression> convertedArguments, ParsingContext context, @Nullable ParserRuleContext ctx) {
         return switch (operand.getValue()) {
-            case "+" -> BuiltinFactory.createPlusBuiltin(convertedArguments, ctx);
+            //case "+" -> BuiltinFactory.createPlusBuiltin(convertedArguments, ctx);
             case "-" -> BuiltinFactory.createMinusBuiltin(convertedArguments, ctx);
             case "/" -> BuiltinFactory.createDivideBuiltin(convertedArguments, ctx);
             case "*" -> BuiltinFactory.createMultipleBuiltin(convertedArguments, ctx);
@@ -76,7 +76,7 @@ public class BuiltinConverter extends AbstractCallableConverter {
     public static boolean isBuiltinProcedure(SchemeSymbol symbol) {
         if (isBuiltinEnabled) {
             switch (symbol.getValue()) {
-                case "+":
+                //case "+":
                 case "-":
                 case "/":
                 case "*":

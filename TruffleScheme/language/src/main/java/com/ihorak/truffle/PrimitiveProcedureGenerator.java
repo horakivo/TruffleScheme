@@ -1,7 +1,8 @@
 package com.ihorak.truffle;
 
 import com.ihorak.truffle.node.callable.AlwaysInlinedMethodNode;
-import com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic.PlusPrimitiveProcedureNodeFactory;
+import com.ihorak.truffle.node.exprs.core.list.CarCoreNodeFactory;
+import com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic.PlusBuiltinNodeFactory;
 import com.ihorak.truffle.type.ArbitraryArgsPrimitiveProcedure;
 import com.ihorak.truffle.type.FixedArgsPrimitiveProcedure;
 import com.ihorak.truffle.type.SchemeSymbol;
@@ -17,7 +18,7 @@ public class PrimitiveProcedureGenerator {
         HashMap<SchemeSymbol, Object> result = new HashMap<>();
 
 
-        var plusPrimitiveProcedure = new ArbitraryArgsPrimitiveProcedure("+", PlusPrimitiveProcedureNodeFactory.getInstance());
+        var plusPrimitiveProcedure = new ArbitraryArgsPrimitiveProcedure("+", PlusBuiltinNodeFactory.getInstance());
 //        var minusPrimitiveProcedure = createArbitraryPrimitiveProcedure(MinusPrimitiveProcedureNodeFactory.getInstance(), language, "-");
 //        var multiplyPrimitiveProcedure = createArbitraryPrimitiveProcedure(MultiplyPrimitiveProcedureNodeFactory.getInstance(), language, "*");
 //        var dividePrimaryProcedure = createArbitraryPrimitiveProcedure(DividePrimitiveProcedureNodeFactory.getInstance(), language, "/");
@@ -34,7 +35,7 @@ public class PrimitiveProcedureGenerator {
 //        var lessThenEqualPrimitiveProcedure = createArbitraryPrimitiveProcedure(LessThenEqualPrimitiveProcedureNodeFactory.getInstance(), language, "<=");
 //        var lessThenPrimitiveProcedure = createArbitraryPrimitiveProcedure(LessThenPrimitiveProcedureNodeFactory.getInstance(), language, "<");
 //
-        //var carPrimitiveProcedure = new FixedArgsPrimitiveProcedure("car", )
+        //var carPrimitiveProcedure = new FixedArgsPrimitiveProcedure("car", CarCoreNodeFactory.getInstance())
 //        var consPrimitiveProcedure = createLimitedPrimitiveProcedure(ConsExprNodeFactory.getInstance(), language, "cons");
 //        var lengthPrimitiveProcedure = createLimitedPrimitiveProcedure(LengthExprNodeFactory.getInstance(), language, "length");
 //        var cdrPrimitiveProcedure = createLimitedPrimitiveProcedure(CdrExprNodeFactory.getInstance(), language, "cdr");

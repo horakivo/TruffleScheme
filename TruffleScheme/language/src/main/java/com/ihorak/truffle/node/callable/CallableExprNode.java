@@ -59,7 +59,7 @@ public abstract class CallableExprNode extends SchemeExpression {
             ArbitraryArgsPrimitiveProcedure procedure,
             @Cached DispatchPrimitiveProcedureNode dispatchNode) {
         var args = getPrimitiveProcedureArguments(arguments, frame);
-        var result = dispatchNode.execute(frame, procedure, args);
+        var result = dispatchNode.execute(procedure, args);
         return result;
     }
 
