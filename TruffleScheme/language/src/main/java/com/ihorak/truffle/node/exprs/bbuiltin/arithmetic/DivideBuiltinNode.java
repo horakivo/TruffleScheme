@@ -49,7 +49,7 @@ public abstract class DivideBuiltinNode extends AlwaysInlinableProcedureNode {
 
     @Specialization(guards = "arguments.length == 1")
     protected Object doOneArg(Object[] arguments) {
-        return divideOperation.execute(1, arguments[0]);
+        return divideOperation.execute(1L, arguments[0]);
     }
 
 }

@@ -1,7 +1,6 @@
 package com.ihorak.truffle;
 
 import com.ihorak.truffle.node.exprs.bbuiltin.list.ListBuiltinNodeFactory;
-import com.ihorak.truffle.node.exprs.shared.ListNodeGen;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
 import org.junit.Test;

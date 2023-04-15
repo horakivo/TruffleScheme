@@ -32,8 +32,8 @@ public class BuiltinConverter extends AbstractCallableConverter {
         return switch (operand.getValue()) {
             //case "+" -> BuiltinFactory.createPlusBuiltin(convertedArguments, ctx);
             //case "-" -> BuiltinFactory.createMinusBuiltin(convertedArguments, ctx);
-            case "/" -> BuiltinFactory.createDivideBuiltin(convertedArguments, ctx);
-            case "*" -> BuiltinFactory.createMultipleBuiltin(convertedArguments, ctx);
+            //case "/" -> BuiltinFactory.createDivideBuiltin(convertedArguments, ctx);
+            //case "*" -> BuiltinFactory.createMultipleBuiltin(convertedArguments, ctx);
             case "modulo" -> BuiltinFactory.createModulo(convertedArguments, ctx);
            // case "list" -> BuiltinFactory.createListBuiltin(convertedArguments, ctx);
             //case "length" -> BuiltinFactory.createLengthBuiltin(convertedArguments, ctx);
@@ -78,8 +78,8 @@ public class BuiltinConverter extends AbstractCallableConverter {
             switch (symbol.getValue()) {
                 //case "+":
                 //case "-":
-                case "/":
-                case "*":
+               // case "/":
+               // case "*":
                 //case "list":
                // case "cons":
               //  case "cdr":
