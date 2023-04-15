@@ -1,8 +1,7 @@
 package com.ihorak.truffle.node.exprs.core.comperison;
 
 import com.ihorak.truffle.exceptions.SchemeException;
-import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.exprs.core.BinaryBooleanOperationNode;
+import com.ihorak.truffle.node.exprs.bbuiltin.BinaryBooleanOperationNode;
 import com.ihorak.truffle.type.SchemeBigInt;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.dsl.Fallback;

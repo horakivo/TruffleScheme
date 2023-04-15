@@ -1,22 +1,19 @@
 package com.ihorak.truffle.node.callable.TCO.throwers;
 
-import com.ihorak.truffle.SchemeTruffleLanguage;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.callable.DispatchNode;
 import com.ihorak.truffle.node.callable.DispatchPrimitiveProcedureNode;
 import com.ihorak.truffle.node.callable.TCO.exceptions.TailCallException;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.type.ArbitraryArgsPrimitiveProcedure;
+import com.ihorak.truffle.type.PrimitiveProcedure;
 import com.ihorak.truffle.type.UserDefinedProcedure;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Executed;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
-import com.oracle.truffle.api.frame.MaterializedFrame;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.library.CachedLibrary;
-import com.oracle.truffle.api.nodes.ExplodeLoop;
 
 import java.util.List;
 
@@ -47,7 +44,7 @@ public abstract class TailCallThrowerNode extends SchemeExpression {
     @Specialization
     protected Object doPrimitiveProcedure(
             VirtualFrame frame,
-            ArbitraryArgsPrimitiveProcedure procedure,
+            PrimitiveProcedure procedure,
             @Cached DispatchPrimitiveProcedureNode dispatchNode) {
 
         return dispatchNode.execute(procedure, getPrimitiveProcedureArguments(arguments, frame));

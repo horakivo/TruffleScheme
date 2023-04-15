@@ -1,6 +1,6 @@
-package com.ihorak.truffle.node.exprs.shared;
+package com.ihorak.truffle.node.exprs.bbuiltin.list;
 
-import com.ihorak.truffle.node.SchemeNode;
+import com.ihorak.truffle.node.callable.AlwaysInlinableProcedureNode;
 import com.ihorak.truffle.type.SchemeList;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.GenerateUncached;
@@ -8,9 +8,9 @@ import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 
 @GenerateUncached
-public abstract class ListNode extends SchemeNode {
+public abstract class ListBuiltinNode extends AlwaysInlinableProcedureNode {
 
-    public abstract SchemeList execute(Object[] objects);
+    public abstract SchemeList execute(Object[] arguments);
 
     @ExplodeLoop
     @Specialization(guards = {"!(arguments.length == 0)", "cachedLength == arguments.length"}, limit = "2")

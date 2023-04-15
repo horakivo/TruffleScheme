@@ -1,5 +1,6 @@
 package com.ihorak.truffle;
 
+import com.ihorak.truffle.node.exprs.bbuiltin.list.ListBuiltinNodeFactory;
 import com.ihorak.truffle.node.exprs.shared.ListNodeGen;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
@@ -12,7 +13,7 @@ public class SchemeListTest {
     @Test
     public void givenSimpleList_whenCopied_correctResultIsReturned() {
         Object[] array = new Object[]{1, 2, new SchemeSymbol("ivo"), "horak"};
-        var original = ListNodeGen.getUncached().execute(array);
+        var original = ListBuiltinNodeFactory.getUncached().execute(array);
 
         var clone = original.shallowClone();
 

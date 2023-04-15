@@ -1,6 +1,8 @@
 package com.ihorak.truffle.parser;
 
 import com.ihorak.truffle.SchemeTruffleLanguage;
+import com.ihorak.truffle.node.exprs.bbuiltin.list.ListBuiltinNode;
+import com.ihorak.truffle.node.exprs.bbuiltin.list.ListBuiltinNodeFactory;
 import com.ihorak.truffle.node.exprs.shared.ListNodeGen;
 import com.ihorak.truffle.type.SchemeBigInt;
 import com.ihorak.truffle.type.SchemeList;
@@ -30,7 +32,7 @@ public class AntlrToIR extends R5RSBaseVisitor<Object> {
             index++;
         }
 
-        return ListNodeGen.getUncached().execute(objects);
+        return ListBuiltinNodeFactory.getUncached().execute(objects);
 
     }
 
@@ -70,25 +72,25 @@ public class AntlrToIR extends R5RSBaseVisitor<Object> {
     @Override
     public SchemeList visitQuote(R5RSParser.QuoteContext ctx) {
         // 'form -> just take second child since the first one is '
-        return ListNodeGen.getUncached().execute(new Object[]{new SchemeSymbol("quote"), visit(ctx.getChild(1))});
+        return ListBuiltinNodeFactory.getUncached().execute(new Object[]{new SchemeSymbol("quote"), visit(ctx.getChild(1))});
     }
 
     @Override
     public SchemeList visitQuasiquote(R5RSParser.QuasiquoteContext ctx) {
         // `form -> just take second child since the first one is `
-        return ListNodeGen.getUncached().execute(new Object[]{new SchemeSymbol("quasiquote"), visit(ctx.getChild(1))});
+        return ListBuiltinNodeFactory.getUncached().execute(new Object[]{new SchemeSymbol("quasiquote"), visit(ctx.getChild(1))});
     }
 
     @Override
     public SchemeList visitUnquote(R5RSParser.UnquoteContext ctx) {
         // ,form -> just take second child since the first one is ,
-        return ListNodeGen.getUncached().execute(new Object[]{new SchemeSymbol("unquote"), visit(ctx.getChild(1))});
+        return ListBuiltinNodeFactory.getUncached().execute(new Object[]{new SchemeSymbol("unquote"), visit(ctx.getChild(1))});
     }
 
     @Override
     public SchemeList visitUnquote_splicing(R5RSParser.Unquote_splicingContext ctx) {
         // ,@form -> just take second child since the first one is ,@
-        return ListNodeGen.getUncached().execute(new Object[]{new SchemeSymbol("unquote-splicing"), visit(ctx.getChild(1))});
+        return ListBuiltinNodeFactory.getUncached().execute(new Object[]{new SchemeSymbol("unquote-splicing"), visit(ctx.getChild(1))});
     }
 
     @Override

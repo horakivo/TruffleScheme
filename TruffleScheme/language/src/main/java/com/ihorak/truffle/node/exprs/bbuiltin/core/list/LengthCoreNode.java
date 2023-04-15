@@ -1,6 +1,7 @@
-package com.ihorak.truffle.node.exprs.shared;
+package com.ihorak.truffle.node.exprs.bbuiltin.core.list;
 
 import com.ihorak.truffle.exceptions.SchemeException;
+import com.ihorak.truffle.node.SchemeNode;
 import com.ihorak.truffle.node.exprs.GivenNumberOfArgsBuiltin;
 import com.ihorak.truffle.node.polyglot.TranslateInteropExceptionNode;
 import com.ihorak.truffle.type.SchemeList;
@@ -11,7 +12,9 @@ import com.oracle.truffle.api.interop.InteropException;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.library.CachedLibrary;
 
-public abstract class LengthExprNode extends GivenNumberOfArgsBuiltin {
+public abstract class LengthCoreNode extends SchemeNode {
+
+    public abstract long execute(Object list);
 
     @Specialization
     public long doSchemeList(SchemeList list) {
@@ -30,8 +33,8 @@ public abstract class LengthExprNode extends GivenNumberOfArgsBuiltin {
     }
 
     @Fallback
-    protected void fallback(Object object) {
-        throw new SchemeException("length: contract violation\nexpected: list?\ngiven: " + object, this);
+    protected long fallback(Object object) {
+        throw SchemeException.contractViolation(this, "length", "list?", object);
     }
 
 

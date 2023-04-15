@@ -20,8 +20,8 @@ public class SchemeLanguageContext {
     public final TruffleLanguage.Env env;
     private final PrintWriter output;
 
-    public SchemeLanguageContext(SchemeTruffleLanguage language, TruffleLanguage.Env env) {
-        this.globalVariableStorage = PrimitiveProcedureGenerator.generate(language);
+    public SchemeLanguageContext(TruffleLanguage.Env env) {
+        this.globalVariableStorage = PrimitiveProcedureGenerator.generate();
         this.env = env;
         this.output = new PrintWriter(env.out(), true);
     }

@@ -4,7 +4,7 @@ import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.callable.TCO.TailCallCatcherNode;
 import com.ihorak.truffle.node.callable.TCO.exceptions.TailCallException;
-import com.ihorak.truffle.type.ArbitraryArgsPrimitiveProcedure;
+import com.ihorak.truffle.type.PrimitiveProcedure;
 import com.ihorak.truffle.type.UserDefinedProcedure;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.dsl.Cached;
@@ -56,7 +56,7 @@ public abstract class CallableExprNode extends SchemeExpression {
     @Specialization
     protected Object doPrimitiveProcedure(
             VirtualFrame frame,
-            ArbitraryArgsPrimitiveProcedure procedure,
+            PrimitiveProcedure procedure,
             @Cached DispatchPrimitiveProcedureNode dispatchNode) {
         var args = getPrimitiveProcedureArguments(arguments, frame);
         var result = dispatchNode.execute(procedure, args);

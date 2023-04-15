@@ -1,12 +1,12 @@
-package com.ihorak.truffle.node.exprs.core.arithmetic;
+package com.ihorak.truffle.node.exprs.bbuiltin.core.arithmetic;
 
-import com.ihorak.truffle.node.exprs.core.BinaryOperationNode;
+import com.ihorak.truffle.node.exprs.bbuiltin.BinaryObjectOperationNode;
 import com.ihorak.truffle.type.SchemeBigInt;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 
 
-public abstract class MinusBinaryNode extends BinaryOperationNode {
+public abstract class MinusBinaryNode extends BinaryObjectOperationNode {
 
     @Specialization(rewriteOn = ArithmeticException.class)
     protected long doLongs(long left, long right) {

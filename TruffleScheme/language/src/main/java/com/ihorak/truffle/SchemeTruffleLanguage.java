@@ -57,7 +57,7 @@ public class SchemeTruffleLanguage extends TruffleLanguage<SchemeLanguageContext
 
     @Override
     protected SchemeLanguageContext createContext(Env env) {
-        return new SchemeLanguageContext(this, env);
+        return new SchemeLanguageContext(env);
     }
 
 //    public static TCOTarget getTCOTarget(Node node) {

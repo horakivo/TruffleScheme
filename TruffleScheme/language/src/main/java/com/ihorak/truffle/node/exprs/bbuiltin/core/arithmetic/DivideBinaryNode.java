@@ -1,12 +1,11 @@
-package com.ihorak.truffle.node.exprs.core.arithmetic;
+package com.ihorak.truffle.node.exprs.bbuiltin.core.arithmetic;
 
 import com.ihorak.truffle.exceptions.SchemeException;
-import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.exprs.core.BinaryOperationNode;
+import com.ihorak.truffle.node.exprs.bbuiltin.BinaryObjectOperationNode;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
 
-public abstract class DivideBinaryNode extends BinaryOperationNode {
+public abstract class DivideBinaryNode extends BinaryObjectOperationNode {
 
     @Specialization
     protected double divide(double left, double right) {

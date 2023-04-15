@@ -1,6 +1,6 @@
 package com.ihorak.truffle.node.exprs.core.comperison;
 
-import com.ihorak.truffle.node.exprs.core.BinaryBooleanOperationNode;
+import com.ihorak.truffle.node.exprs.bbuiltin.BinaryBooleanOperationNode;
 import com.ihorak.truffle.node.polyglot.PolyglotException;
 import com.ihorak.truffle.type.SchemeBigInt;
 import com.ihorak.truffle.type.SchemeList;

@@ -1,7 +1,7 @@
 package com.ihorak.truffle.node.exprs.builtin.list;
 
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.exprs.shared.ListNode;
+import com.ihorak.truffle.node.exprs.bbuiltin.list.ListBuiltinNode;
 import com.ihorak.truffle.node.polyglot.TranslateInteropExceptionNode;
 import com.ihorak.truffle.type.SchemeList;
 import com.oracle.truffle.api.dsl.Cached;
@@ -44,7 +44,7 @@ public abstract class AppendExprNode1 extends SchemeExpression {
     @Specialization(guards = {"interopLeft.hasArrayElements(left)", " interopRight.hasArrayElements(right)"}, limit = " getInteropCacheLimit()")
     protected Object doInterop(Object left,
                                Object right,
-                               @Cached ListNode listNode,
+                               @Cached ListBuiltinNode listNode,
                                @Cached TranslateInteropExceptionNode translateInteropExceptionNode,
                                @CachedLibrary("left") InteropLibrary interopLeft,
                                @CachedLibrary("right") InteropLibrary interopRight) {

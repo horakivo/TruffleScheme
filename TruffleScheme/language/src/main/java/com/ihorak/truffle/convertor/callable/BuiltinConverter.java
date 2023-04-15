@@ -31,22 +31,22 @@ public class BuiltinConverter extends AbstractCallableConverter {
     private static SchemeExpression createBuiltin(SchemeSymbol operand, List<SchemeExpression> convertedArguments, ParsingContext context, @Nullable ParserRuleContext ctx) {
         return switch (operand.getValue()) {
             //case "+" -> BuiltinFactory.createPlusBuiltin(convertedArguments, ctx);
-            case "-" -> BuiltinFactory.createMinusBuiltin(convertedArguments, ctx);
+            //case "-" -> BuiltinFactory.createMinusBuiltin(convertedArguments, ctx);
             case "/" -> BuiltinFactory.createDivideBuiltin(convertedArguments, ctx);
             case "*" -> BuiltinFactory.createMultipleBuiltin(convertedArguments, ctx);
             case "modulo" -> BuiltinFactory.createModulo(convertedArguments, ctx);
-            case "list" -> BuiltinFactory.createListBuiltin(convertedArguments, ctx);
-            case "length" -> BuiltinFactory.createLengthBuiltin(convertedArguments, ctx);
+           // case "list" -> BuiltinFactory.createListBuiltin(convertedArguments, ctx);
+            //case "length" -> BuiltinFactory.createLengthBuiltin(convertedArguments, ctx);
             case "append" -> BuiltinFactory.createAppendBuiltin(convertedArguments, ctx);
-            case "cons" -> BuiltinFactory.createConsBuiltin(convertedArguments, ctx);
-            case "cdr" -> BuiltinFactory.createCdrBuiltin(convertedArguments, ctx);
-            case "car" -> BuiltinFactory.createCarBuiltin(convertedArguments, ctx);
-            case "cadr" -> BuiltinFactory.createCadr(convertedArguments, ctx);
+           // case "cons" -> BuiltinFactory.createConsBuiltin(convertedArguments, ctx);
+           // case "cdr" -> BuiltinFactory.createCdrBuiltin(convertedArguments, ctx);
+            //case "car" -> BuiltinFactory.createCarBuiltin(convertedArguments, ctx);
+            //case "cadr" -> BuiltinFactory.createCadr(convertedArguments, ctx);
             case "<=" -> BuiltinFactory.createLessThenOrEqual(convertedArguments, ctx);
             case "current-milliseconds" -> BuiltinFactory.createCurrentMillisBuiltin(convertedArguments, ctx);
             case "display" -> BuiltinFactory.createDisplayBuiltin(convertedArguments, ctx);
             case "=" -> BuiltinFactory.createEqualNumbers(convertedArguments, ctx);
-            case "<" -> BuiltinFactory.createLessThen(convertedArguments, ctx);
+            //case "<" -> BuiltinFactory.createLessThen(convertedArguments, ctx);
             case ">" -> BuiltinFactory.createMoreThen(convertedArguments, ctx);
             case ">=" -> BuiltinFactory.createMoreThenEqual(convertedArguments, ctx);
             case "not" -> BuiltinFactory.createNot(convertedArguments, ctx);
@@ -77,26 +77,26 @@ public class BuiltinConverter extends AbstractCallableConverter {
         if (isBuiltinEnabled) {
             switch (symbol.getValue()) {
                 //case "+":
-                case "-":
+                //case "-":
                 case "/":
                 case "*":
-                case "list":
-                case "cons":
-                case "cdr":
-                case "car":
-                case "length":
+                //case "list":
+               // case "cons":
+              //  case "cdr":
+               // case "car":
+                //case "length":
                 case "append":
                 case "current-milliseconds":
                 case "display":
                 case "=":
-                case "<":
+                //case "<":
                 case "<=":
                 case ">":
                 case ">=":
                 case "not":
                 case "null?":
                 case "modulo":
-                case "cadr":
+                //case "cadr":
                 case "equal?":
                 case POLYGLOT_EVAL_SOURCE:
                 case POLYGLOT_READ_GLOBAL_SCOPE:

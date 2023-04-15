@@ -8,7 +8,6 @@ import com.ihorak.truffle.node.exprs.builtin.arithmetic.*;
 import com.ihorak.truffle.node.exprs.builtin.comparison.*;
 import com.ihorak.truffle.node.exprs.builtin.list.AppendExprNode1;
 import com.ihorak.truffle.node.exprs.builtin.list.AppendExprNode1NodeGen;
-import com.ihorak.truffle.node.exprs.core.list.CarCoreNodeFactory;
 import com.ihorak.truffle.node.exprs.shared.*;
 import com.ihorak.truffle.node.literals.BooleanLiteralNode;
 import com.ihorak.truffle.node.literals.LongLiteralNode;
@@ -98,45 +97,45 @@ public class BuiltinFactory {
         var expr = ListExprNodeGen.create(new ConvertSchemeExprsArgumentsNode(arguments));
         return SourceSectionUtil.setSourceSectionAndReturnExpr(expr, listCtx);
     }
+//
+//    public static SchemeExpression createConsBuiltin(List<SchemeExpression> arguments, @Nullable ParserRuleContext consCtx) {
+//        int expectedSize = ConsExprNodeFactory.getInstance().getExecutionSignature().size();
+//        if (arguments.size() == expectedSize) {
+//            var consExpr = ConsExprNodeFactory.create(arguments.toArray(SchemeExpression[]::new));
+//            return SourceSectionUtil.setSourceSectionAndReturnExpr(consExpr, consCtx);
+//        } else {
+//            throw ConverterException.arityException("cons", expectedSize, arguments.size());
+//        }
+//    }
 
-    public static SchemeExpression createConsBuiltin(List<SchemeExpression> arguments, @Nullable ParserRuleContext consCtx) {
-        int expectedSize = ConsExprNodeFactory.getInstance().getExecutionSignature().size();
-        if (arguments.size() == expectedSize) {
-            var consExpr = ConsExprNodeFactory.create(arguments.toArray(SchemeExpression[]::new));
-            return SourceSectionUtil.setSourceSectionAndReturnExpr(consExpr, consCtx);
-        } else {
-            throw ConverterException.arityException("cons", expectedSize, arguments.size());
-        }
-    }
+//    public static SchemeExpression createCdrBuiltin(List<SchemeExpression> arguments, @Nullable ParserRuleContext cdrCtx) {
+//        int expectedSize = CdrExprNodeFactory.getInstance().getExecutionSignature().size();
+//        if (arguments.size() == expectedSize) {
+//            var cdrExpr = CdrExprNodeFactory.create(arguments.toArray(SchemeExpression[]::new));
+//            return SourceSectionUtil.setSourceSectionAndReturnExpr(cdrExpr, cdrCtx);
+//        } else {
+//            throw ConverterException.arityException("cdr", 1, arguments.size());
+//        }
+//    }
 
-    public static SchemeExpression createCdrBuiltin(List<SchemeExpression> arguments, @Nullable ParserRuleContext cdrCtx) {
-        int expectedSize = CdrExprNodeFactory.getInstance().getExecutionSignature().size();
-        if (arguments.size() == expectedSize) {
-            var cdrExpr = CdrExprNodeFactory.create(arguments.toArray(SchemeExpression[]::new));
-            return SourceSectionUtil.setSourceSectionAndReturnExpr(cdrExpr, cdrCtx);
-        } else {
-            throw ConverterException.arityException("cdr", 1, arguments.size());
-        }
-    }
+//    public static SchemeExpression createCarBuiltin(List<SchemeExpression> arguments, @Nullable ParserRuleContext carCtx) {
+//        int expectedSize = CarCoreNodeFactory.getInstance().getExecutionSignature().size();
+//        if (arguments.size() == expectedSize) {
+//            var carExpr = CarCoreNodeFactory.create(arguments.toArray(SchemeExpression[]::new));
+//            return SourceSectionUtil.setSourceSectionAndReturnExpr(carExpr, carCtx);
+//        } else {
+//            throw ConverterException.arityException("car", expectedSize, arguments.size());
+//        }
+//    }
 
-    public static SchemeExpression createCarBuiltin(List<SchemeExpression> arguments, @Nullable ParserRuleContext carCtx) {
-        int expectedSize = CarCoreNodeFactory.getInstance().getExecutionSignature().size();
-        if (arguments.size() == expectedSize) {
-            var carExpr = CarCoreNodeFactory.create(arguments.toArray(SchemeExpression[]::new));
-            return SourceSectionUtil.setSourceSectionAndReturnExpr(carExpr, carCtx);
-        } else {
-            throw ConverterException.arityException("car", expectedSize, arguments.size());
-        }
-    }
-
-    public static SchemeExpression createLengthBuiltin(List<SchemeExpression> arguments, @Nullable ParserRuleContext lengthCtx) {
-        if (arguments.size() == 1) {
-            var expr = LengthExprNodeFactory.create(arguments.toArray(SchemeExpression[]::new));
-            return SourceSectionUtil.setSourceSectionAndReturnExpr(expr, lengthCtx);
-        } else {
-            throw ConverterException.arityException("length", 1, arguments.size());
-        }
-    }
+//    public static SchemeExpression createLengthBuiltin(List<SchemeExpression> arguments, @Nullable ParserRuleContext lengthCtx) {
+//        if (arguments.size() == 1) {
+//            var expr = LengthExprNodeFactory.create(arguments.toArray(SchemeExpression[]::new));
+//            return SourceSectionUtil.setSourceSectionAndReturnExpr(expr, lengthCtx);
+//        } else {
+//            throw ConverterException.arityException("length", 1, arguments.size());
+//        }
+//    }
 
     //    //TODO this is messy, consider using binary reducibility instead of current approach. Study what is better
     public static SchemeExpression createAppendBuiltin(List<SchemeExpression> arguments, @Nullable ParserRuleContext appendCtx) {
@@ -295,15 +294,15 @@ public class BuiltinFactory {
         throw ConverterException.arityException("modulo", 2, arguments.size());
     }
 
-    public static SchemeExpression createCadr(List<SchemeExpression> arguments, @Nullable ParserRuleContext cadrCtx) {
-        if (arguments.size() == 1) {
-            var cdrExpr = CdrExprNodeFactory.create(arguments.toArray(SchemeExpression[]::new));
-            var carExpr = CarCoreNodeFactory.create(new SchemeExpression[]{cdrExpr});
-
-            return SourceSectionUtil.setSourceSectionAndReturnExpr(carExpr, cadrCtx);
-        }
-        throw ConverterException.arityException("cadr", 1, arguments.size());
-    }
+//    public static SchemeExpression createCadr(List<SchemeExpression> arguments, @Nullable ParserRuleContext cadrCtx) {
+//        if (arguments.size() == 1) {
+//            var cdrExpr = CdrExprNodeFactory.create(arguments.toArray(SchemeExpression[]::new));
+//            var carExpr = CarCoreNodeFactory.create(new SchemeExpression[]{cdrExpr});
+//
+//            return SourceSectionUtil.setSourceSectionAndReturnExpr(carExpr, cadrCtx);
+//        }
+//        throw ConverterException.arityException("cadr", 1, arguments.size());
+//    }
 
     public static SchemeExpression createEqual(List<SchemeExpression> arguments, @Nullable ParserRuleContext equalCtx) {
         if (arguments.size() == 2) {

@@ -1,8 +1,7 @@
 package com.ihorak.truffle.node.exprs.builtin.comparison;
 
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.exprs.core.BinaryBooleanOperationNode;
-import com.ihorak.truffle.node.exprs.core.BinaryOperationNode;
+import com.ihorak.truffle.node.exprs.bbuiltin.BinaryBooleanOperationNode;
 import com.ihorak.truffle.node.exprs.core.comperison.MoreThenEqualBinaryNodeGen;
 import com.oracle.truffle.api.frame.VirtualFrame;
 

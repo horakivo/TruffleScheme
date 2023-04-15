@@ -1,7 +1,8 @@
-package com.ihorak.truffle.node.exprs.shared;
+package com.ihorak.truffle.node.exprs.bbuiltin.core.list;
 
 import com.ihorak.truffle.exceptions.SchemeException;
-import com.ihorak.truffle.node.exprs.GivenNumberOfArgsBuiltin;
+import com.ihorak.truffle.node.SchemeNode;
+import com.ihorak.truffle.node.exprs.bbuiltin.list.ListBuiltinNode;
 import com.ihorak.truffle.node.polyglot.TranslateInteropExceptionNode;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemePair;
@@ -12,8 +13,9 @@ import com.oracle.truffle.api.interop.InteropException;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.library.CachedLibrary;
 
-public abstract class CdrExprNode extends GivenNumberOfArgsBuiltin {
+public abstract class CdrCoreNode extends SchemeNode {
 
+    public abstract Object execute(Object object);
 
     @Specialization(guards = "!list.isEmpty")
     protected SchemeList doList(SchemeList list) {
@@ -33,7 +35,7 @@ public abstract class CdrExprNode extends GivenNumberOfArgsBuiltin {
     @Specialization(guards = "interopLib.hasArrayElements(obj)", limit = "getInteropCacheLimit()")
     protected Object doForeignObject(Object obj,
                                      @Cached TranslateInteropExceptionNode translateInteropExceptionNode,
-                                     @Cached ListNode listNode,
+                                     @Cached ListBuiltinNode listNode,
                                      @CachedLibrary("obj") InteropLibrary interopLib) {
         try {
             var size = (int) interopLib.getArraySize(obj);

@@ -2,7 +2,9 @@ package com.ihorak.truffle.node.exprs.primitive_procedure.comparison;
 
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.exprs.ArbitraryNumberOfArgsBuiltin;
-import com.ihorak.truffle.node.exprs.core.BinaryBooleanOperationNode;
+import com.ihorak.truffle.node.exprs.bbuiltin.comparison.ReduceComparisonNode;
+import com.ihorak.truffle.node.exprs.bbuiltin.comparison.ReduceComparisonNodeGen;
+import com.ihorak.truffle.node.exprs.bbuiltin.BinaryBooleanOperationNode;
 import com.ihorak.truffle.node.exprs.core.comperison.MoreThenEqualBinaryNodeGen;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
@@ -11,7 +13,7 @@ import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 public abstract class MoreThenEqualPrimitiveProcedureNode extends ArbitraryNumberOfArgsBuiltin {
 
     @Child private BinaryBooleanOperationNode moreThenEqualOperation = MoreThenEqualBinaryNodeGen.create();
-    @Child private ReduceComparisonPrimitiveProcedureNode reduce = ReduceComparisonPrimitiveProcedureNodeGen.create();
+    @Child private ReduceComparisonNode reduce = ReduceComparisonNodeGen.create();
 
     @TruffleBoundary
     @Specialization(guards = "arguments.length == 0")
@@ -21,6 +23,6 @@ public abstract class MoreThenEqualPrimitiveProcedureNode extends ArbitraryNumbe
 
     @Specialization
     protected boolean reduce(Object[] arguments) {
-        return reduce.execute(arguments, moreThenEqualOperation);
+        return reduce.execute(arguments, moreThenEqualOperation, ">=");
     }
 }

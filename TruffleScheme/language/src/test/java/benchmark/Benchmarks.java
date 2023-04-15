@@ -50,7 +50,7 @@ public class Benchmarks extends TruffleBenchmark {
                   (lambda (l)
                     (cond ((null? l) 'done)
                           ((null? (cdr l)) 'done)
-                          ((<= (car l) (cadr l)) (pivot (cdr l)))
+                          ((<= (car l) (car (cdr l))) (pivot (cdr l)))
                           (#t (car l)))))
 
 
@@ -69,7 +69,7 @@ public class Benchmarks extends TruffleBenchmark {
                           l
                           (let ((parts (partition piv l '() '())))
                             (append (quicksort1 (car parts))
-                                    (quicksort1 (cadr parts))))))))
+                                    (quicksort1 (car (cdr parts)))))))))
 
                 (define random-list
                   (lambda (len)

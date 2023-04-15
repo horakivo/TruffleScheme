@@ -1,25 +1,25 @@
-package com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic;
+package com.ihorak.truffle.node.exprs.bbuiltin.arithmetic;
 
-import com.ihorak.truffle.node.exprs.ArbitraryNumberOfArgsBuiltin;
-import com.ihorak.truffle.node.exprs.core.BinaryOperationNode;
-import com.ihorak.truffle.node.exprs.core.arithmetic.MultiplyBinaryNodeGen;
+import com.ihorak.truffle.node.callable.AlwaysInlinableProcedureNode;
+import com.ihorak.truffle.node.exprs.bbuiltin.BinaryObjectOperationNode;
+import com.ihorak.truffle.node.exprs.bbuiltin.core.arithmetic.MultiplyBinaryNodeGen;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 
-public abstract class MultiplyPrimitiveProcedureNode extends ArbitraryNumberOfArgsBuiltin {
+public abstract class MultiplyBuiltinNode extends AlwaysInlinableProcedureNode {
 
     @Child
-    private BinaryOperationNode multiplyOperation = MultiplyBinaryNodeGen.create();
+    private BinaryObjectOperationNode multiplyOperation = MultiplyBinaryNodeGen.create();
 
     @Specialization(guards = "arguments.length == 2")
-    protected Object multiplyTwoArguments(Object[] arguments) {
+    protected Object doTwoArgs(Object[] arguments) {
         return multiplyOperation.execute(arguments[0], arguments[1]);
     }
 
     @ExplodeLoop
     @Specialization(guards = "cachedLength == arguments.length", limit = "2")
-    protected Object multiplyAnyNumberOfArgsFast(Object[] arguments,
+    protected Object doArbitraryNumberOfArgsCached(Object[] arguments,
                                             @Cached("arguments.length") int cachedLength) {
         Object result = 1L;
 
@@ -30,8 +30,8 @@ public abstract class MultiplyPrimitiveProcedureNode extends ArbitraryNumberOfAr
         return result;
     }
 
-    @Specialization(replaces = "multiplyAnyNumberOfArgsFast")
-    protected Object multiplyAnyNumberOfArgs(Object[] arguments) {
+    @Specialization(replaces = "doArbitraryNumberOfArgsCached")
+    protected Object doUncached(Object[] arguments) {
         Object result = 0L;
 
         for (Object argument : arguments) {

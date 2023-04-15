@@ -3,7 +3,6 @@ package com.ihorak.truffle.node.callable;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeNode;
 import com.ihorak.truffle.node.polyglot.TranslateInteropExceptionNode;
-import com.ihorak.truffle.type.ArbitraryArgsPrimitiveProcedure;
 import com.ihorak.truffle.type.UserDefinedProcedure;
 import com.oracle.truffle.api.Assumption;
 import com.oracle.truffle.api.RootCallTarget;

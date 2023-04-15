@@ -31,6 +31,7 @@ public class BenchmarkTests {
                 (fibonacci 20)
                 """;
 
+
         var result = context.eval("scm", program);
 
         assertEquals(6765, result.asLong());
@@ -118,7 +119,7 @@ public class BenchmarkTests {
                   (lambda (l)
                     (cond ((null? l) 'done)
                           ((null? (cdr l)) 'done)
-                          ((<= (car l) (cadr l)) (pivot (cdr l)))
+                          ((<= (car l) (car (cdr l))) (pivot (cdr l)))
                           (#t (car l)))))
                                 
                                 
@@ -137,7 +138,7 @@ public class BenchmarkTests {
                           l
                           (let ((parts (partition piv l '() '())))
                             (append (quicksort1 (car parts))
-                                    (quicksort1 (cadr parts))))))))
+                                    (quicksort1 (car (cdr parts)))))))))
                                 
                                 
                 (define random-list

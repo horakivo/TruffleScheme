@@ -1,12 +1,19 @@
 package com.ihorak.truffle;
 
-import com.ihorak.truffle.node.callable.AlwaysInlinedMethodNode;
-import com.ihorak.truffle.node.exprs.core.list.CarCoreNodeFactory;
-import com.ihorak.truffle.node.exprs.primitive_procedure.arithmetic.PlusBuiltinNodeFactory;
-import com.ihorak.truffle.type.ArbitraryArgsPrimitiveProcedure;
-import com.ihorak.truffle.type.FixedArgsPrimitiveProcedure;
+import com.ihorak.truffle.node.exprs.bbuiltin.arithmetic.DivideBuiltinNodeFactory;
+import com.ihorak.truffle.node.exprs.bbuiltin.arithmetic.MinusBuiltinNodeFactory;
+import com.ihorak.truffle.node.exprs.bbuiltin.arithmetic.MultiplyBuiltinNodeFactory;
+import com.ihorak.truffle.node.exprs.bbuiltin.arithmetic.PlusBuiltinNodeFactory;
+import com.ihorak.truffle.node.exprs.bbuiltin.comparison.LessThenBuiltinNodeFactory;
+import com.ihorak.truffle.node.exprs.bbuiltin.list.CarBuiltinNodeFactory;
+import com.ihorak.truffle.node.exprs.bbuiltin.list.CdrBuiltinNodeFactory;
+import com.ihorak.truffle.node.exprs.bbuiltin.list.ConsBuiltinNode;
+import com.ihorak.truffle.node.exprs.bbuiltin.list.ConsBuiltinNodeFactory;
+import com.ihorak.truffle.node.exprs.bbuiltin.list.LengthBuiltinNode;
+import com.ihorak.truffle.node.exprs.bbuiltin.list.LengthBuiltinNodeFactory;
+import com.ihorak.truffle.node.exprs.bbuiltin.list.ListBuiltinNodeFactory;
+import com.ihorak.truffle.type.PrimitiveProcedure;
 import com.ihorak.truffle.type.SchemeSymbol;
-import com.oracle.truffle.api.dsl.NodeFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,17 +21,17 @@ import java.util.Map;
 public class PrimitiveProcedureGenerator {
 
 
-    public static Map<SchemeSymbol, Object> generate(SchemeTruffleLanguage language) {
+    public static Map<SchemeSymbol, Object> generate() {
         HashMap<SchemeSymbol, Object> result = new HashMap<>();
 
 
-        var plusPrimitiveProcedure = new ArbitraryArgsPrimitiveProcedure("+", PlusBuiltinNodeFactory.getInstance());
-//        var minusPrimitiveProcedure = createArbitraryPrimitiveProcedure(MinusPrimitiveProcedureNodeFactory.getInstance(), language, "-");
-//        var multiplyPrimitiveProcedure = createArbitraryPrimitiveProcedure(MultiplyPrimitiveProcedureNodeFactory.getInstance(), language, "*");
-//        var dividePrimaryProcedure = createArbitraryPrimitiveProcedure(DividePrimitiveProcedureNodeFactory.getInstance(), language, "/");
+        var plusPrimitiveProcedure = new PrimitiveProcedure("+", PlusBuiltinNodeFactory.getInstance());
+        var minusPrimitiveProcedure = new PrimitiveProcedure("-", MinusBuiltinNodeFactory.getInstance());
+        var multiplyPrimitiveProcedure = new PrimitiveProcedure("*", MultiplyBuiltinNodeFactory.getInstance());
+        var dividePrimaryProcedure = new PrimitiveProcedure("/", DivideBuiltinNodeFactory.getInstance());
 
 
-        //var listPrimitiveProcedure = createArbitraryPrimitiveProcedure(ListExprNodeFactory.getInstance(), language, "list");
+        var listPrimitiveProcedure = new PrimitiveProcedure("list", ListBuiltinNodeFactory.getInstance());
         //var mapPrimitiveProcedure = createArbitraryPrimitiveProcedure(MapExprNodeFactory.getInstance(), language, "map");
         //var appendPrimitiveProcedure = createArbitraryPrimitiveProcedure(AppendExprNodeFactory.getInstance(), language, "append");
 
@@ -33,30 +40,30 @@ public class PrimitiveProcedureGenerator {
 //        var moreThenPrimitiveProcedure = createArbitraryPrimitiveProcedure(MoreThenPrimitiveProcedureNodeFactory.getInstance(), language, ">");
 //        var moreThenEqualPrimitiveProcedure = createArbitraryPrimitiveProcedure(MoreThenEqualPrimitiveProcedureNodeFactory.getInstance(), language, ">=");
 //        var lessThenEqualPrimitiveProcedure = createArbitraryPrimitiveProcedure(LessThenEqualPrimitiveProcedureNodeFactory.getInstance(), language, "<=");
-//        var lessThenPrimitiveProcedure = createArbitraryPrimitiveProcedure(LessThenPrimitiveProcedureNodeFactory.getInstance(), language, "<");
+        var lessThenPrimitiveProcedure = new PrimitiveProcedure("<", LessThenBuiltinNodeFactory.getInstance());
 //
-        //var carPrimitiveProcedure = new FixedArgsPrimitiveProcedure("car", CarCoreNodeFactory.getInstance())
-//        var consPrimitiveProcedure = createLimitedPrimitiveProcedure(ConsExprNodeFactory.getInstance(), language, "cons");
-//        var lengthPrimitiveProcedure = createLimitedPrimitiveProcedure(LengthExprNodeFactory.getInstance(), language, "length");
-//        var cdrPrimitiveProcedure = createLimitedPrimitiveProcedure(CdrExprNodeFactory.getInstance(), language, "cdr");
+        var carPrimitiveProcedure = new PrimitiveProcedure("car", CarBuiltinNodeFactory.getInstance());
+        var consPrimitiveProcedure = new PrimitiveProcedure("cons", ConsBuiltinNodeFactory.getInstance());
+        var lengthPrimitiveProcedure = new PrimitiveProcedure("length", LengthBuiltinNodeFactory.getInstance());
+        var cdrPrimitiveProcedure = new PrimitiveProcedure("cdr", CdrBuiltinNodeFactory.getInstance());
 
 
         result.put(new SchemeSymbol("+"), plusPrimitiveProcedure);
-//        result.put(new SchemeSymbol("-"), minusPrimitiveProcedure);
-//        result.put(new SchemeSymbol("*"), multiplyPrimitiveProcedure);
-//        result.put(new SchemeSymbol("/"), dividePrimaryProcedure);
+        result.put(new SchemeSymbol("-"), minusPrimitiveProcedure);
+        result.put(new SchemeSymbol("*"), multiplyPrimitiveProcedure);
+        result.put(new SchemeSymbol("/"), dividePrimaryProcedure);
 //
 
 
-        //result.put(new SchemeSymbol("car"), carPrimitiveProcedure);
-//        result.put(new SchemeSymbol("cons"), consPrimitiveProcedure);
-//        result.put(new SchemeSymbol("length"), lengthPrimitiveProcedure);
-//        //result.put(new SchemeSymbol("list"), listPrimitiveProcedure);
-//        result.put(new SchemeSymbol("cdr"), cdrPrimitiveProcedure);
+        result.put(new SchemeSymbol("car"), carPrimitiveProcedure);
+        result.put(new SchemeSymbol("cons"), consPrimitiveProcedure);
+        result.put(new SchemeSymbol("length"), lengthPrimitiveProcedure);
+        result.put(new SchemeSymbol("list"), listPrimitiveProcedure);
+        result.put(new SchemeSymbol("cdr"), cdrPrimitiveProcedure);
 //        result.put(new SchemeSymbol("="), equalPrimitiveProcedure);
 //        result.put(new SchemeSymbol(">"), moreThenPrimitiveProcedure);
 //        result.put(new SchemeSymbol(">="), moreThenEqualPrimitiveProcedure);
-//        result.put(new SchemeSymbol("<"), lessThenPrimitiveProcedure);
+        result.put(new SchemeSymbol("<"), lessThenPrimitiveProcedure);
 //        result.put(new SchemeSymbol("<="), lessThenEqualPrimitiveProcedure);
 
 
