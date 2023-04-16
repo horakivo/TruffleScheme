@@ -1,6 +1,8 @@
-package com.ihorak.truffle.convertor;
+package com.ihorak.truffle.convertor.polyglot;
 
 
+import com.ihorak.truffle.convertor.ConverterException;
+import com.ihorak.truffle.convertor.SourceSectionUtil;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.polyglot.ConvertSchemeExprsArgumentsNode;
 import com.ihorak.truffle.node.polyglot.EvalSourceExprNodeGen;
@@ -11,10 +13,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-import static com.ihorak.truffle.convertor.callable.BuiltinConverter.*;
+import static com.ihorak.truffle.convertor.polyglot.PolyglotConverter.*;
 import static com.ihorak.truffle.node.polyglot.MemberNodes.*;
 
-public class BuiltinFactory {
+public class PolyglotFactory {
 
 
     public static SchemeExpression createEvalSource(List<SchemeExpression> arguments, @Nullable ParserRuleContext evalSourceCtx) {
