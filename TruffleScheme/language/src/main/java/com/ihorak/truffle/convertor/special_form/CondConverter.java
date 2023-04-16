@@ -5,10 +5,9 @@ import com.ihorak.truffle.convertor.SourceSectionUtil;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.cast.BooleanCastExprNodeGen;
 import com.ihorak.truffle.node.literals.UndefinedLiteralNode;
-import com.ihorak.truffle.node.special_form.IfElseExprNode;
-import com.ihorak.truffle.node.special_form.IfExprNode;
+import com.ihorak.truffle.node.special_form.IfElseExprNodeGen;
+import com.ihorak.truffle.node.special_form.IfExprNodeGen;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemeSymbol;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -36,7 +35,7 @@ public class CondConverter {
             var thenCtx = getThenCtx(currCondCtx);
             var thenExpr = InternalRepresentationConverter.convert(condIR.get(1), context, isTailCallPosition, false, thenCtx);
 
-            var ifExpr = new IfExprNode(BooleanCastExprNodeGen.create(conditionExpr), thenExpr);
+            var ifExpr = IfExprNodeGen.create(conditionExpr, thenExpr);
             return SourceSectionUtil.setSourceSectionAndReturnExpr(ifExpr, condCtx);
         }
 
@@ -55,7 +54,7 @@ public class CondConverter {
             var thenCtx = getThenCtx(currCondCtx);
             var thenExpr = InternalRepresentationConverter.convert(condExpr.get(1), context, isTailCallPosition, false, thenCtx);
 
-            return new IfElseExprNode(BooleanCastExprNodeGen.create(conditionExpr), thenExpr, reduceCond(condExpressions.cdr, isTailCallPosition, context, condCtx, startCondCtxIndex + 1));
+            return IfElseExprNodeGen.create(conditionExpr, thenExpr, reduceCond(condExpressions.cdr, isTailCallPosition, context, condCtx, startCondCtxIndex + 1));
         } else {
             return convertCondWithTwoConditions(condExpressions, isTailCallPosition, context, condCtx, startCondCtxIndex);
         }
@@ -77,12 +76,12 @@ public class CondConverter {
         var secondThenExpr = InternalRepresentationConverter.convert(secondCondIR.get(1), context, isTailCallPosition, false, secondThenCtx);
 
         if (secondCondIR.get(0).equals(new SchemeSymbol("else"))) {
-            return new IfElseExprNode(BooleanCastExprNodeGen.create(firstConditionExpr), firstThenExpr, secondThenExpr);
+            return IfElseExprNodeGen.create(firstConditionExpr, firstThenExpr, secondThenExpr);
         } else {
             var secondConditionCtx = getConditionCtx(secondCondCtx);
             var secondConditionExpr = InternalRepresentationConverter.convert(secondCondIR.get(0), context, false, false, secondConditionCtx);
-            return new IfElseExprNode(BooleanCastExprNodeGen.create(firstConditionExpr), firstThenExpr,
-                    new IfExprNode(BooleanCastExprNodeGen.create(secondConditionExpr), secondThenExpr));
+            return IfElseExprNodeGen.create(firstConditionExpr, firstThenExpr,
+                    IfExprNodeGen.create(secondConditionExpr, secondThenExpr));
         }
     }
 

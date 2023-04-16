@@ -1,8 +1,8 @@
 package com.ihorak.truffle.node.special_form;
 
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.cast.BooleanCastExprNode;
-import com.ihorak.truffle.node.cast.BooleanCastExprNodeGen;
+import com.ihorak.truffle.node.cast.BooleanCastNode;
+import com.ihorak.truffle.node.cast.BooleanCastNodeGen;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.profiles.ConditionProfile;
@@ -23,7 +23,7 @@ public class OrExprNode extends SchemeExpression {
     private SchemeExpression right;
 
     @Child
-    private BooleanCastExprNode leftCast;
+    private BooleanCastNode leftCast;
     private final ConditionProfile evaluateRightProfile = ConditionProfile.createCountingProfile();
 
 
@@ -46,7 +46,7 @@ public class OrExprNode extends SchemeExpression {
     private boolean castToBoolean(Object value) {
         if (leftCast == null) {
             CompilerDirectives.transferToInterpreterAndInvalidate();
-            leftCast = insert(BooleanCastExprNodeGen.create(null));
+            leftCast = insert(BooleanCastNodeGen.create());
         }
 
         return leftCast.executeBoolean(value);

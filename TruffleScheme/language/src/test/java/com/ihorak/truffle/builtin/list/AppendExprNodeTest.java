@@ -71,7 +71,6 @@ public class AppendExprNodeTest {
         assertEquals(6L, result.getArrayElement(5).asLong());
     }
 
-    @Ignore
     @Test
     public void givenOneListOnePair_whenAppend_thenShouldThrowException() {
         var program = "(append (list 1 2) (cons 3 4))";
@@ -79,19 +78,24 @@ public class AppendExprNodeTest {
 
         var msg = assertThrows(PolyglotException.class, () ->  context.eval("scm", program)).getMessage();
 
-        assertEquals("append: contract violation\n" +
-                "expecting all arguments lists\n" +
-                "given: (3 . 4)", msg);
+        assertEquals("""
+                append: contract violation
+                expected: list?
+                given left: (1 2)
+                given right: (3 . 4)""", msg);
     }
 
 
     @Test
-    public void aaaa() {
+    public void givenList_whenAppend_thenTheArgumentIsNotModified() {
         var program = "(define x (list 1 2)) (append x (list 3 4)) x";
 
 
         var result = context.eval("scm", program);
 
-        System.out.println(result);
+        assertTrue(result.hasArrayElements());
+        assertEquals(2L, result.getArraySize());
+        assertEquals(1L, result.getArrayElement(0).asLong());
+        assertEquals(2L, result.getArrayElement(1).asLong());
     }
 }

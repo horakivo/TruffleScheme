@@ -1,11 +1,12 @@
-package com.ihorak.truffle.node.exprs.builtin.list;
+package com.ihorak.truffle.node.exprs.bbuiltin.core.list;
 
-import com.ihorak.truffle.node.SchemeExpression;
+import com.ihorak.truffle.exceptions.SchemeException;
+import com.ihorak.truffle.node.exprs.bbuiltin.BinaryObjectOperationNode;
 import com.ihorak.truffle.node.exprs.bbuiltin.list.ListBuiltinNode;
 import com.ihorak.truffle.node.polyglot.TranslateInteropExceptionNode;
 import com.ihorak.truffle.type.SchemeList;
 import com.oracle.truffle.api.dsl.Cached;
-import com.oracle.truffle.api.dsl.NodeChild;
+import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.interop.InteropException;
 import com.oracle.truffle.api.interop.InteropLibrary;
@@ -13,10 +14,7 @@ import com.oracle.truffle.api.interop.UnsupportedMessageException;
 import com.oracle.truffle.api.library.CachedLibrary;
 
 
-@NodeChild(value = "left")
-@NodeChild(value = "right")
-public abstract class AppendExprNode1 extends SchemeExpression {
-
+public abstract class AppendBinaryNode extends BinaryObjectOperationNode {
 
     @Specialization(guards = "!left.isEmpty")
     protected SchemeList bothNotEmpty(SchemeList left, SchemeList right) {
@@ -71,6 +69,11 @@ public abstract class AppendExprNode1 extends SchemeExpression {
 
 
         return listNode.execute(array);
+    }
+
+    @Fallback
+    protected Object doThrow(Object left, Object right) {
+        throw SchemeException.contractViolation(this, "append", "list?", left, right);
     }
 
 

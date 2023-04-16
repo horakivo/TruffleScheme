@@ -1,6 +1,5 @@
 package com.ihorak.truffle.node.cast;
 
-import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.SchemeNode;
 import com.ihorak.truffle.type.SchemeBigInt;
 import com.ihorak.truffle.type.SchemeList;
@@ -9,9 +8,7 @@ import com.ihorak.truffle.type.SchemeSymbol;
 import com.ihorak.truffle.type.UndefinedValue;
 import com.ihorak.truffle.type.UserDefinedProcedure;
 import com.oracle.truffle.api.dsl.Cached;
-import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.Specialization;
-import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.UnsupportedMessageException;
 import com.oracle.truffle.api.library.CachedLibrary;
@@ -19,11 +16,7 @@ import com.oracle.truffle.api.profiles.ConditionProfile;
 import com.oracle.truffle.api.strings.TruffleString;
 
 
-@NodeChild(value = "value", type = SchemeExpression.class)
-public abstract class BooleanCastExprNode extends SchemeNode {
-
-
-    public abstract boolean executeBoolean(VirtualFrame frame);
+public abstract class BooleanCastNode extends SchemeNode {
 
     public abstract boolean executeBoolean(Object value);
 

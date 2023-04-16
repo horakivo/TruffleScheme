@@ -43,15 +43,13 @@ public abstract class ReduceComparisonNode extends SchemeNode {
         return result;
     }
 
-    @Specialization(guards = "arguments.length == 0")
-    protected boolean doNoArg(Object[] arguments, BinaryBooleanOperationNode operation, String name) {
-        throw SchemeException.arityException(this, name, 1, 0);
-    }
-
     @Specialization(guards = "arguments.length == 1")
     protected boolean doOneArg(Object[] arguments, BinaryBooleanOperationNode operation, String name) {
         return true;
     }
 
-
+    @Specialization(guards = "arguments.length == 0")
+    protected boolean doThrow(Object[] arguments, BinaryBooleanOperationNode operation, String name) {
+        throw SchemeException.arityException(this, name, 1, 0);
+    }
 }

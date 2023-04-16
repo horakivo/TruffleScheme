@@ -1,4 +1,4 @@
-package com.ihorak.truffle.node.exprs.core.comperison;
+package com.ihorak.truffle.node.exprs.bbuiltin.core.comparison;
 
 import com.ihorak.truffle.node.exprs.bbuiltin.BinaryBooleanOperationNode;
 import com.ihorak.truffle.node.polyglot.PolyglotException;
@@ -12,11 +12,11 @@ import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.library.CachedLibrary;
+import com.oracle.truffle.api.nodes.NodeInfo;
 import com.oracle.truffle.api.profiles.ConditionProfile;
 
-
+@NodeInfo(shortName = "equal?")
 public abstract class EqualBinaryNode extends BinaryBooleanOperationNode {
-
 
     @Specialization
     protected boolean doSchemeSymbolAndLong(long left, SchemeSymbol right) {

@@ -9,7 +9,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
-public class ModuloExprNodeTest {
+public class ModuloCoreNodeTest {
 
     private Context context;
 
@@ -30,6 +30,18 @@ public class ModuloExprNodeTest {
         var result = context.eval("scm", program);
 
         assertEquals(1L, result.asLong());
+    }
+
+    @Test
+    public void givenWrongNumberOfArgs_whenExecuted_thenExceptionIsThrown() {
+        var program = "(modulo 3 2 5)";
+
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+
+        assertEquals("""
+                modulo: arity mismatch; Expected number of arguments does not match the given number
+                expected: 2
+                given: 3""", msg);
     }
 
     @Test

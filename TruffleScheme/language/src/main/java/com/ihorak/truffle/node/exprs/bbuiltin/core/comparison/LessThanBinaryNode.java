@@ -1,4 +1,4 @@
-package com.ihorak.truffle.node.exprs.core.comperison;
+package com.ihorak.truffle.node.exprs.bbuiltin.core.comparison;
 
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.exprs.bbuiltin.BinaryBooleanOperationNode;
@@ -8,7 +8,7 @@ import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 
 
-public abstract class LessThenBinaryNode extends BinaryBooleanOperationNode {
+public abstract class LessThanBinaryNode extends BinaryBooleanOperationNode {
 
     @Specialization
     protected boolean doLong(long left, long right) {

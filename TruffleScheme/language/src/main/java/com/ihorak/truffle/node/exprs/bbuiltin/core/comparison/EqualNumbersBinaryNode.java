@@ -1,4 +1,4 @@
-package com.ihorak.truffle.node.exprs.core.comperison;
+package com.ihorak.truffle.node.exprs.bbuiltin.core.comparison;
 
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.exprs.bbuiltin.BinaryBooleanOperationNode;

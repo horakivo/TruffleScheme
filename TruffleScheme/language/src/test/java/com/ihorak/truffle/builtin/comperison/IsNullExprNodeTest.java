@@ -1,6 +1,7 @@
 package com.ihorak.truffle.builtin.comperison;
 
 import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.PolyglotException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,5 +43,17 @@ public class IsNullExprNodeTest {
         var result = context.eval("scm", program);
 
         assertFalse(result.asBoolean());
+    }
+
+    @Test
+    public void givenWrongNumberOfArgs_whenCalled_thenExceptionIsThrown() {
+        var program = "(null? 1 2)";
+
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+
+        assertEquals("""
+                null?: arity mismatch; Expected number of arguments does not match the given number
+                expected: 1
+                given: 2""", msg);
     }
 }
