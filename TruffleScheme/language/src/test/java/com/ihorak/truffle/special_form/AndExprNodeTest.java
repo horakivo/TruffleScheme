@@ -35,6 +35,15 @@ public class AndExprNodeTest {
     }
 
     @Test
+    public void givenOneBooleanArg_whenEvaluated_thenReturnCorrectResult() {
+        var program = "(and #t)";
+
+        var result = context.eval("scm", program);
+
+        assertTrue(result.asBoolean());
+    }
+
+    @Test
     public void givenNoArg_whenEvaluated_thenTrueIsReturned() {
         var program = "(and)";
 

@@ -1,6 +1,7 @@
 package com.ihorak.truffle.node.cast;
 
 import com.ihorak.truffle.node.SchemeNode;
+import com.ihorak.truffle.type.PrimitiveProcedure;
 import com.ihorak.truffle.type.SchemeBigInt;
 import com.ihorak.truffle.type.SchemeList;
 import com.ihorak.truffle.type.SchemePair;
@@ -62,6 +63,11 @@ public abstract class BooleanCastNode extends SchemeNode {
 
     @Specialization
     protected boolean doUserDefineProcedure(UserDefinedProcedure value) {
+        return true;
+    }
+
+    @Specialization
+    protected boolean doPrimitiveProcedure(PrimitiveProcedure procedure) {
         return true;
     }
 

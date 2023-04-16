@@ -35,6 +35,15 @@ public class OrExprNodeTest {
     }
 
     @Test
+    public void givenOneBooleanArg_whenEvaluated_thenReturnCorrectResult() {
+        var program = "(or #f)";
+
+        var result = context.eval("scm", program);
+
+        assertFalse(result.asBoolean());
+    }
+
+    @Test
     public void givenNoArg_whenEvaluated_thenFalseIsReturned() {
         var program = "(or)";
 
