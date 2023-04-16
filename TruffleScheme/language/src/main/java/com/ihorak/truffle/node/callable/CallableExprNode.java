@@ -63,19 +63,6 @@ public abstract class CallableExprNode extends SchemeExpression {
         return result;
     }
 
-//    @Specialization
-//    protected Object doPrimitiveProcedure(VirtualFrame frame, UserDefinedProcedure procedure,
-//                                            @Cached DispatchNode dispatchNode) {
-//        var args = getProcedureArguments(procedure, arguments, frame);
-//        try {
-//            return dispatchNode.executeDispatch(procedure, args);
-//        } catch (TailCallException e) {
-//            CompilerDirectives.transferToInterpreterAndInvalidate();
-//            var tailCallCatcher = new TailCallCatcherNode(arguments, callable, tailCallArgumentsSlot, tailCallTargetSlot, tailCallResultSlot);
-//            return replace(tailCallCatcher).executeGeneric(frame);
-//        }
-//    }
-
     @Specialization(guards = "interopLib.isExecutable(interopProcedure)", limit = "getInteropCacheLimit()")
     protected Object doInteropProcedure(VirtualFrame frame,
                                         Object interopProcedure,

@@ -1,5 +1,6 @@
 package com.ihorak.truffle;
 
+import com.ihorak.truffle.node.exprs.bbuiltin.DisplayBuiltinNodeFactory;
 import com.ihorak.truffle.node.exprs.bbuiltin.IsNullBuiltinNodeFactory;
 import com.ihorak.truffle.node.exprs.bbuiltin.ModuloBuiltinNodeFactory;
 import com.ihorak.truffle.node.exprs.bbuiltin.NotBuiltinNodeFactory;
@@ -19,6 +20,8 @@ import com.ihorak.truffle.node.exprs.bbuiltin.list.CdrBuiltinNodeFactory;
 import com.ihorak.truffle.node.exprs.bbuiltin.list.ConsBuiltinNodeFactory;
 import com.ihorak.truffle.node.exprs.bbuiltin.list.LengthBuiltinNodeFactory;
 import com.ihorak.truffle.node.exprs.bbuiltin.list.ListBuiltinNodeFactory;
+import com.ihorak.truffle.node.exprs.builtin.CurrentMillisBuiltinNodeFactory;
+import com.ihorak.truffle.node.exprs.builtin.CurrentMillisecondsExprNodeFactory;
 import com.ihorak.truffle.type.PrimitiveProcedure;
 import com.ihorak.truffle.type.SchemeSymbol;
 
@@ -52,6 +55,8 @@ public class PrimitiveProcedureGenerator {
         var moduloPrimitiveProcedure = new PrimitiveProcedure("modulo", ModuloBuiltinNodeFactory.getInstance());
         var isNullPrimitiveProcedure = new PrimitiveProcedure("null?", IsNullBuiltinNodeFactory.getInstance());
         var notPrimitiveProcedure = new PrimitiveProcedure("not", NotBuiltinNodeFactory.getInstance());
+        var displayPrimitiveProcedure = new PrimitiveProcedure("display", DisplayBuiltinNodeFactory.getInstance());
+        var currentMillisPrimitiveProcedure = new PrimitiveProcedure("current-milliseconds", CurrentMillisBuiltinNodeFactory.getInstance());
 //
         var carPrimitiveProcedure = new PrimitiveProcedure("car", CarBuiltinNodeFactory.getInstance());
         var consPrimitiveProcedure = new PrimitiveProcedure("cons", ConsBuiltinNodeFactory.getInstance());
@@ -77,6 +82,8 @@ public class PrimitiveProcedureGenerator {
         result.put(new SchemeSymbol("modulo"), moduloPrimitiveProcedure);
         result.put(new SchemeSymbol("null?"), isNullPrimitiveProcedure);
         result.put(new SchemeSymbol("not"), notPrimitiveProcedure);
+        result.put(new SchemeSymbol("display"), displayPrimitiveProcedure);
+        result.put(new SchemeSymbol("current-milliseconds"), currentMillisPrimitiveProcedure);
 
 
         // result.put(new SchemeSymbol("map"), mapPrimitiveProcedure);

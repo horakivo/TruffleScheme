@@ -43,8 +43,8 @@ public class BuiltinConverter extends AbstractCallableConverter {
             //case "car" -> BuiltinFactory.createCarBuiltin(convertedArguments, ctx);
             //case "cadr" -> BuiltinFactory.createCadr(convertedArguments, ctx);
            // case "<=" -> BuiltinFactory.createLessThenOrEqual(convertedArguments, ctx);
-            case "current-milliseconds" -> BuiltinFactory.createCurrentMillisBuiltin(convertedArguments, ctx);
-            case "display" -> BuiltinFactory.createDisplayBuiltin(convertedArguments, ctx);
+           // case "current-milliseconds" -> BuiltinFactory.createCurrentMillisBuiltin(convertedArguments, ctx);
+           // case "display" -> BuiltinFactory.createDisplayBuiltin(convertedArguments, ctx);
             //case "=" -> BuiltinFactory.createEqualNumbers(convertedArguments, ctx);
             //case "<" -> BuiltinFactory.createLessThen(convertedArguments, ctx);
             //case ">" -> BuiltinFactory.createMoreThen(convertedArguments, ctx);
@@ -86,8 +86,8 @@ public class BuiltinConverter extends AbstractCallableConverter {
                // case "car":
                 //case "length":
                // case "append":
-                case "current-milliseconds":
-                case "display":
+              //  case "current-milliseconds":
+            //    case "display":
                 //case "=":
                 //case "<":
                // case "<=":

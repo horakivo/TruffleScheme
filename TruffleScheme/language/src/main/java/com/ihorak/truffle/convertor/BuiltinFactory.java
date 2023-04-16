@@ -249,19 +249,19 @@ public class BuiltinFactory {
 //        return result;
 //    }
 
-    public static SchemeExpression createCurrentMillisBuiltin(List<SchemeExpression> arguments, @Nullable ParserRuleContext ctx) {
-        if (arguments.size() == 0) {
-            return SourceSectionUtil.setSourceSectionAndReturnExpr(CurrentMillisecondsExprNodeGen.create(), ctx);
-        }
-        throw ConverterException.arityException("current-milliseconds", 0, arguments.size());
-    }
+//    public static SchemeExpression createCurrentMillisBuiltin(List<SchemeExpression> arguments, @Nullable ParserRuleContext ctx) {
+//        if (arguments.size() == 0) {
+//            return SourceSectionUtil.setSourceSectionAndReturnExpr(CurrentMillisecondsExprNodeGen.create(), ctx);
+//        }
+//        throw ConverterException.arityException("current-milliseconds", 0, arguments.size());
+//    }
 
-    public static SchemeExpression createDisplayBuiltin(List<SchemeExpression> arguments, @Nullable ParserRuleContext ctx) {
-        if (arguments.size() == 1) {
-            return SourceSectionUtil.setSourceSectionAndReturnExpr(DisplayExprNodeGen.create(arguments.get(0)), ctx);
-        }
-        throw ConverterException.arityException("display", 1, arguments.size());
-    }
+//    public static SchemeExpression createDisplayBuiltin(List<SchemeExpression> arguments, @Nullable ParserRuleContext ctx) {
+//        if (arguments.size() == 1) {
+//            return SourceSectionUtil.setSourceSectionAndReturnExpr(DisplayExprNodeGen.create(arguments.get(0)), ctx);
+//        }
+//        throw ConverterException.arityException("display", 1, arguments.size());
+//    }
 
 //    public static SchemeExpression createNot(List<SchemeExpression> arguments, @Nullable ParserRuleContext ctx) {
 //        if (arguments.size() == 1) {

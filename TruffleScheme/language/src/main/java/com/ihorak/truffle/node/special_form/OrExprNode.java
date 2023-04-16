@@ -4,6 +4,8 @@ import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.cast.BooleanCastNode;
 import com.ihorak.truffle.node.cast.BooleanCastNodeGen;
 import com.oracle.truffle.api.CompilerDirectives;
+import com.oracle.truffle.api.dsl.Cached;
+import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.profiles.ConditionProfile;
 
@@ -13,7 +15,7 @@ import com.oracle.truffle.api.profiles.ConditionProfile;
  * Short-circuit evaluation is the semantics of some boolean operators where the right argument is executed only
  * if first one is not sufficient to decide the result
  */
-public class OrExprNode extends SchemeExpression {
+public abstract class OrExprNode extends SchemeExpression {
 
     @SuppressWarnings("FieldMayBeFinal")
     @Child
@@ -22,33 +24,24 @@ public class OrExprNode extends SchemeExpression {
     @Child
     private SchemeExpression right;
 
-    @Child
-    private BooleanCastNode leftCast;
-    private final ConditionProfile evaluateRightProfile = ConditionProfile.createCountingProfile();
-
 
     public OrExprNode(SchemeExpression left, SchemeExpression right) {
         this.left = left;
         this.right = right;
     }
 
-    @Override
-    public Object executeGeneric(VirtualFrame frame) {
-        var leftValue = left.executeGeneric(frame);
-        if (evaluateRightProfile.profile(castToBoolean(leftValue))) {
-            return leftValue;
+    @Specialization
+    protected Object doOr(
+            VirtualFrame frame,
+            @Cached BooleanCastNode booleanCastNode,
+            @Cached("createCountingProfile()") ConditionProfile evaluateLeftProfile) {
+        var leftResult = left.executeGeneric(frame);
+        var leftResultBool = booleanCastNode.executeBoolean(leftResult);
+
+        if (evaluateLeftProfile.profile(leftResultBool)) {
+            return leftResult;
         } else {
             return right.executeGeneric(frame);
-
         }
-    }
-
-    private boolean castToBoolean(Object value) {
-        if (leftCast == null) {
-            CompilerDirectives.transferToInterpreterAndInvalidate();
-            leftCast = insert(BooleanCastNodeGen.create());
-        }
-
-        return leftCast.executeBoolean(value);
     }
 }
