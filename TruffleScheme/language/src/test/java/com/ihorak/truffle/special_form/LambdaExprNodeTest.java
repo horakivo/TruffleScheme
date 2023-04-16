@@ -1,6 +1,6 @@
 package com.ihorak.truffle.special_form;
 
-import com.ihorak.truffle.type.UndefinedValue;
+import com.ihorak.truffle.runtime.UndefinedValue;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
 import org.junit.Before;

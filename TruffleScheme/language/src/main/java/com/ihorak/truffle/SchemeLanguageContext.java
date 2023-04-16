@@ -2,10 +2,9 @@ package com.ihorak.truffle;
 
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.scope.ReadGlobalVariableExprNode;
-import com.ihorak.truffle.type.SchemeSymbol;
-import com.ihorak.truffle.type.UserDefinedProcedure;
+import com.ihorak.truffle.runtime.SchemeSymbol;
+import com.ihorak.truffle.runtime.UserDefinedProcedure;
 import com.oracle.truffle.api.CallTarget;
-import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.source.Source;

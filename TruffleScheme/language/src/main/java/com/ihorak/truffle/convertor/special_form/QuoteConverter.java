@@ -4,7 +4,7 @@ import com.ihorak.truffle.convertor.SourceSectionUtil;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.special_form.QuoteExprNode;
-import com.ihorak.truffle.type.SchemeList;
+import com.ihorak.truffle.runtime.SchemeList;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.jetbrains.annotations.Nullable;
 

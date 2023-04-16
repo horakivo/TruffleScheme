@@ -3,11 +3,10 @@ package com.ihorak.truffle.convertor.special_form;
 import com.ihorak.truffle.convertor.SourceSectionUtil;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.exprs.builtin.arithmetic.OneArgumentExprNodeGen;
 import com.ihorak.truffle.node.literals.BooleanLiteralNode;
 import com.ihorak.truffle.node.special_form.AndExprNode;
 import com.ihorak.truffle.node.special_form.AndExprNodeGen;
-import com.ihorak.truffle.type.SchemeList;
+import com.ihorak.truffle.runtime.SchemeList;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,7 +26,7 @@ public class AndConverter extends AndOrAbstractConverter {
             return SourceSectionUtil.setSourceSectionAndReturnExpr(expr, andCtx);
         }
         if (bodyExprs.size() == 1) {
-            var expr = OneArgumentExprNodeGen.create(bodyExprs.get(0));
+            var expr = EvalToSelfExprNodeGen.create(bodyExprs.get(0));
             return SourceSectionUtil.setSourceSectionAndReturnExpr(expr, andCtx);
         }
         var andExpr = reduceAnd(bodyExprs);

@@ -1,13 +1,13 @@
 package com.ihorak.truffle.node.cast;
 
 import com.ihorak.truffle.node.SchemeNode;
-import com.ihorak.truffle.type.PrimitiveProcedure;
-import com.ihorak.truffle.type.SchemeBigInt;
-import com.ihorak.truffle.type.SchemeList;
-import com.ihorak.truffle.type.SchemePair;
-import com.ihorak.truffle.type.SchemeSymbol;
-import com.ihorak.truffle.type.UndefinedValue;
-import com.ihorak.truffle.type.UserDefinedProcedure;
+import com.ihorak.truffle.runtime.PrimitiveProcedure;
+import com.ihorak.truffle.runtime.SchemeBigInt;
+import com.ihorak.truffle.runtime.SchemeList;
+import com.ihorak.truffle.runtime.SchemePair;
+import com.ihorak.truffle.runtime.SchemeSymbol;
+import com.ihorak.truffle.runtime.UndefinedValue;
+import com.ihorak.truffle.runtime.UserDefinedProcedure;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.interop.InteropLibrary;

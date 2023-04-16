@@ -8,8 +8,8 @@ import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.literals.UndefinedLiteralNode;
 import com.ihorak.truffle.node.special_form.IfElseExprNodeGen;
 import com.ihorak.truffle.node.special_form.IfExprNodeGen;
-import com.ihorak.truffle.type.SchemeList;
-import com.ihorak.truffle.type.SchemeSymbol;
+import com.ihorak.truffle.runtime.SchemeList;
+import com.ihorak.truffle.runtime.SchemeSymbol;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.jetbrains.annotations.Nullable;
 

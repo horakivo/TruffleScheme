@@ -1,10 +1,7 @@
 package com.ihorak.truffle.node.special_form;
 
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.callable.DispatchNodeGen;
-import com.ihorak.truffle.type.SchemeSymbol;
-import com.ihorak.truffle.type.UserDefinedProcedure;
-import com.oracle.truffle.api.CallTarget;
+import com.ihorak.truffle.runtime.UserDefinedProcedure;
 import com.oracle.truffle.api.RootCallTarget;
 import com.oracle.truffle.api.frame.VirtualFrame;
 

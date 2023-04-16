@@ -5,7 +5,7 @@ import com.ihorak.truffle.convertor.context.FrameIndexResult;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.scope.*;
-import com.ihorak.truffle.type.SchemeSymbol;
+import com.ihorak.truffle.runtime.SchemeSymbol;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

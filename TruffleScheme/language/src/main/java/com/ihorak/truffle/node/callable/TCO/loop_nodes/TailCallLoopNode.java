@@ -6,7 +6,7 @@ import com.ihorak.truffle.node.callable.DispatchNode;
 import com.ihorak.truffle.node.callable.DispatchNodeGen;
 import com.ihorak.truffle.node.scope.WriteFrameSlotNode;
 import com.ihorak.truffle.node.scope.WriteFrameSlotNodeGen;
-import com.ihorak.truffle.type.UserDefinedProcedure;
+import com.ihorak.truffle.runtime.UserDefinedProcedure;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.RepeatingNode;
 

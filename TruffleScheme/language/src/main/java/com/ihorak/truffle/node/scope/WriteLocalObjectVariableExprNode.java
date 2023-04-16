@@ -1,10 +1,8 @@
 package com.ihorak.truffle.node.scope;
 
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.SchemeNode;
-import com.ihorak.truffle.type.UndefinedValue;
+import com.ihorak.truffle.runtime.UndefinedValue;
 import com.oracle.truffle.api.CompilerDirectives;
-import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.FrameDescriptor;

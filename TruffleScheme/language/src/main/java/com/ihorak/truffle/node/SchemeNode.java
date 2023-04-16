@@ -2,7 +2,7 @@ package com.ihorak.truffle.node;
 
 import com.ihorak.truffle.SchemeLanguageContext;
 import com.ihorak.truffle.SchemeTruffleLanguage;
-import com.ihorak.truffle.type.SchemeTypes;
+import com.ihorak.truffle.runtime.SchemeTypes;
 import com.oracle.truffle.api.dsl.TypeSystemReference;
 import com.oracle.truffle.api.nodes.Node;
 

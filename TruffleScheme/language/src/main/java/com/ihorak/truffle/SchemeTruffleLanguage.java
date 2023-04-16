@@ -1,16 +1,11 @@
 package com.ihorak.truffle;
 
 import java.io.IOException;
-import java.util.List;
 
 import com.ihorak.truffle.convertor.SourceSectionUtil;
 import com.ihorak.truffle.instruments.GlobalScopeAccess;
-import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.parser.AntlrToAST;
-import com.ihorak.truffle.type.SchemeSymbol;
-import com.oracle.truffle.api.CompilerDirectives;
-import com.oracle.truffle.api.source.Source;
-import com.oracle.truffle.api.source.SourceSection;
+import com.ihorak.truffle.runtime.SchemeSymbol;
 import com.oracle.truffle.api.strings.TruffleString;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import org.antlr.v4.runtime.CharStreams;

@@ -1,17 +1,14 @@
 package com.ihorak.truffle.node.scope;
 
 import com.ihorak.truffle.exceptions.SchemeException;
-import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.type.SchemeSymbol;
+import com.ihorak.truffle.runtime.SchemeSymbol;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlotKind;
-import com.oracle.truffle.api.profiles.BranchProfile;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
-import org.jetbrains.annotations.NotNull;
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 
 

@@ -1,29 +1,28 @@
 package com.ihorak.truffle;
 
-import com.ihorak.truffle.node.exprs.bbuiltin.DisplayBuiltinNodeFactory;
-import com.ihorak.truffle.node.exprs.bbuiltin.IsNullBuiltinNodeFactory;
-import com.ihorak.truffle.node.exprs.bbuiltin.ModuloBuiltinNodeFactory;
-import com.ihorak.truffle.node.exprs.bbuiltin.NotBuiltinNodeFactory;
-import com.ihorak.truffle.node.exprs.bbuiltin.arithmetic.DivideBuiltinNodeFactory;
-import com.ihorak.truffle.node.exprs.bbuiltin.arithmetic.MinusBuiltinNodeFactory;
-import com.ihorak.truffle.node.exprs.bbuiltin.arithmetic.MultiplyBuiltinNodeFactory;
-import com.ihorak.truffle.node.exprs.bbuiltin.arithmetic.PlusBuiltinNodeFactory;
-import com.ihorak.truffle.node.exprs.bbuiltin.comparison.EqualBuiltinNodeFactory;
-import com.ihorak.truffle.node.exprs.bbuiltin.comparison.EqualNumbersBuiltinNodeFactory;
-import com.ihorak.truffle.node.exprs.bbuiltin.comparison.LessThanBuiltinNodeFactory;
-import com.ihorak.truffle.node.exprs.bbuiltin.comparison.LessThanEqualBuiltinNodeFactory;
-import com.ihorak.truffle.node.exprs.bbuiltin.comparison.MoreThanBuiltinNodeFactory;
-import com.ihorak.truffle.node.exprs.bbuiltin.comparison.MoreThanEqualBuiltinNodeFactory;
-import com.ihorak.truffle.node.exprs.bbuiltin.list.AppendBuiltinNodeFactory;
-import com.ihorak.truffle.node.exprs.bbuiltin.list.CarBuiltinNodeFactory;
-import com.ihorak.truffle.node.exprs.bbuiltin.list.CdrBuiltinNodeFactory;
-import com.ihorak.truffle.node.exprs.bbuiltin.list.ConsBuiltinNodeFactory;
-import com.ihorak.truffle.node.exprs.bbuiltin.list.LengthBuiltinNodeFactory;
-import com.ihorak.truffle.node.exprs.bbuiltin.list.ListBuiltinNodeFactory;
-import com.ihorak.truffle.node.exprs.builtin.CurrentMillisBuiltinNodeFactory;
-import com.ihorak.truffle.node.exprs.builtin.CurrentMillisecondsExprNodeFactory;
-import com.ihorak.truffle.type.PrimitiveProcedure;
-import com.ihorak.truffle.type.SchemeSymbol;
+import com.ihorak.truffle.node.builtin.CurrentMillisBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.DisplayBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.IsNullBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.ModuloBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.NotBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.arithmetic.DivideBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.arithmetic.MinusBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.arithmetic.MultiplyBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.arithmetic.PlusBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.comparison.EqualBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.comparison.EqualNumbersBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.comparison.LessThanBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.comparison.LessThanEqualBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.comparison.MoreThanBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.comparison.MoreThanEqualBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.list.AppendBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.list.CarBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.list.CdrBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.list.ConsBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.list.LengthBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.list.ListBuiltinNodeFactory;
+import com.ihorak.truffle.runtime.PrimitiveProcedure;
+import com.ihorak.truffle.runtime.SchemeSymbol;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,7 +56,7 @@ public class PrimitiveProcedureGenerator {
         var notPrimitiveProcedure = new PrimitiveProcedure("not", NotBuiltinNodeFactory.getInstance());
         var displayPrimitiveProcedure = new PrimitiveProcedure("display", DisplayBuiltinNodeFactory.getInstance());
         var currentMillisPrimitiveProcedure = new PrimitiveProcedure("current-milliseconds", CurrentMillisBuiltinNodeFactory.getInstance());
-//
+
         var carPrimitiveProcedure = new PrimitiveProcedure("car", CarBuiltinNodeFactory.getInstance());
         var consPrimitiveProcedure = new PrimitiveProcedure("cons", ConsBuiltinNodeFactory.getInstance());
         var lengthPrimitiveProcedure = new PrimitiveProcedure("length", LengthBuiltinNodeFactory.getInstance());
@@ -91,36 +90,4 @@ public class PrimitiveProcedureGenerator {
 
         return result;
     }
-
-//    public static ArbitraryArgsPrimitiveProcedure createArbitraryPrimitiveProcedure(NodeFactory<? extends AlwaysInlinedMethodNode> factory, SchemeTruffleLanguage language, String name) {
-////        var arbitraryBuiltinExpr = factory.createNode(ReadProcedureArgsExprNodeGen.create());
-////        var test = factory.getExecutionSignature().size();
-////        var rootNode = new PrimitiveProcedureRootNode(language, arbitraryBuiltinExpr);
-//
-//
-//        return new ArbitraryArgsPrimitiveProcedure(factory, name);
-//    }
-
-//    public static PrimitiveProcedure createArbitraryPrimitiveProcedure(NodeFactory<? extends ArbitraryNumberOfArgsBuiltin> factory, SchemeTruffleLanguage language, String name) {
-//        var arbitraryBuiltinExpr = factory.createNode(ReadProcedureArgsExprNodeGen.create());
-//        var test = factory.getExecutionSignature().size();
-//        var rootNode = new PrimitiveProcedureRootNode(language, arbitraryBuiltinExpr);
-//
-//
-//        return new PrimitiveProcedure(factory, name);
-//    }
-//
-//    public static PrimitiveProcedure createLimitedPrimitiveProcedure(NodeFactory<? extends GivenNumberOfArgsBuiltin> factory, SchemeTruffleLanguage language, String name) {
-//        var expectedNumberOfArgs = factory.getExecutionSignature().size();
-//        ReadProcedureArgExprNode[] arguments =
-//                IntStream
-//                        .range(0, expectedNumberOfArgs)
-//                        .mapToObj(ReadProcedureArgExprNode::new)
-//                        .toArray(ReadProcedureArgExprNode[]::new);
-//
-//        var expression = factory.createNode((Object) arguments);
-//        var rootNode = new PrimitiveProcedureRootNode(language, expression);
-//
-//        return new PrimitiveProcedure(factory, expectedNumberOfArgs, name);
-//    }
 }

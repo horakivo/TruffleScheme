@@ -9,7 +9,7 @@ import com.ihorak.truffle.node.special_form.IfElseExprNode;
 import com.ihorak.truffle.node.special_form.IfElseExprNodeGen;
 import com.ihorak.truffle.node.special_form.IfExprNode;
 import com.ihorak.truffle.node.special_form.IfExprNodeGen;
-import com.ihorak.truffle.type.SchemeList;
+import com.ihorak.truffle.runtime.SchemeList;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.jetbrains.annotations.Nullable;
 

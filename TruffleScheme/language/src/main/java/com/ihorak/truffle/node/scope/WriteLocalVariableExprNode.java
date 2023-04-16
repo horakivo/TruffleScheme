@@ -1,19 +1,8 @@
 package com.ihorak.truffle.node.scope;
 
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.SchemeNode;
-import com.ihorak.truffle.type.SchemeSymbol;
-import com.ihorak.truffle.type.UndefinedValue;
-import com.oracle.truffle.api.CompilerDirectives;
-import com.oracle.truffle.api.dsl.Fallback;
-import com.oracle.truffle.api.dsl.ImportStatic;
-import com.oracle.truffle.api.dsl.NodeChild;
-import com.oracle.truffle.api.dsl.Specialization;
-import com.oracle.truffle.api.frame.Frame;
-import com.oracle.truffle.api.frame.FrameDescriptor;
-import com.oracle.truffle.api.frame.FrameSlotKind;
+import com.ihorak.truffle.runtime.UndefinedValue;
 import com.oracle.truffle.api.frame.VirtualFrame;
-import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 
 
 public class WriteLocalVariableExprNode extends SchemeExpression {

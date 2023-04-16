@@ -1,15 +1,9 @@
 package com.ihorak.truffle.node.callable.TCO.throwers;
 
-import com.ihorak.truffle.SchemeTruffleLanguage;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.callable.TCO.exceptions.SelfRecursiveTailCallException;
-import com.ihorak.truffle.node.callable.TCO.exceptions.TailCallException;
 import com.ihorak.truffle.node.scope.WriteFrameSlotNode;
-import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
-import com.ihorak.truffle.type.UserDefinedProcedure;
-import com.oracle.truffle.api.dsl.Executed;
 import com.oracle.truffle.api.dsl.Specialization;
-import com.oracle.truffle.api.frame.MaterializedFrame;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 

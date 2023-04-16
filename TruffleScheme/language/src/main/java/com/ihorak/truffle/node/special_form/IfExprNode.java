@@ -2,7 +2,7 @@ package com.ihorak.truffle.node.special_form;
 
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.cast.BooleanCastNode;
-import com.ihorak.truffle.type.UndefinedValue;
+import com.ihorak.truffle.runtime.UndefinedValue;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;

@@ -3,7 +3,7 @@ package com.ihorak.truffle.node.callable.TCO;
 
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.callable.TCO.loop_nodes.TailCallLoopNode;
-import com.ihorak.truffle.type.UserDefinedProcedure;
+import com.ihorak.truffle.runtime.UserDefinedProcedure;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.LoopNode;

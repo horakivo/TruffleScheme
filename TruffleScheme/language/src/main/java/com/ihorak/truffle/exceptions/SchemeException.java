@@ -1,9 +1,6 @@
 package com.ihorak.truffle.exceptions;
 
-import com.ihorak.truffle.convertor.ConverterException;
-import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.polyglot.PolyglotException;
-import com.ihorak.truffle.type.SchemeSymbol;
+import com.ihorak.truffle.runtime.SchemeSymbol;
 import com.oracle.truffle.api.exception.AbstractTruffleException;
 import com.oracle.truffle.api.interop.InteropException;
 import com.oracle.truffle.api.nodes.Node;

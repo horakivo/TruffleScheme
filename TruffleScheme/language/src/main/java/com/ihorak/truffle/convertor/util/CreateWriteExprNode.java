@@ -3,12 +3,11 @@ package com.ihorak.truffle.convertor.util;
 import com.ihorak.truffle.convertor.SourceSectionUtil;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.scope.WriteGlobalVariableExprNode;
 import com.ihorak.truffle.node.scope.WriteGlobalVariableExprNodeGen;
 import com.ihorak.truffle.node.scope.WriteLocalObjectVariableExprNode;
 import com.ihorak.truffle.node.scope.WriteLocalObjectVariableExprNodeGen;
 import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
-import com.ihorak.truffle.type.SchemeSymbol;
+import com.ihorak.truffle.runtime.SchemeSymbol;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.jetbrains.annotations.Nullable;
 

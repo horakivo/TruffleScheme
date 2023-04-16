@@ -1,7 +1,7 @@
 package com.ihorak.truffle.node.callable;
 
 import com.ihorak.truffle.node.SchemeNode;
-import com.ihorak.truffle.type.PrimitiveProcedure;
+import com.ihorak.truffle.runtime.PrimitiveProcedure;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Specialization;
 

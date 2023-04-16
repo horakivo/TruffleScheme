@@ -1,11 +1,9 @@
 package com.ihorak.truffle.node.special_form.quasiquote;
 
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.type.SchemeList;
-import com.oracle.truffle.api.CompilerDirectives;
+import com.ihorak.truffle.runtime.SchemeList;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
-import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 
 import java.util.List;
 

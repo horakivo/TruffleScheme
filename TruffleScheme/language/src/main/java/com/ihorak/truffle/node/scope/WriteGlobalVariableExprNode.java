@@ -1,16 +1,11 @@
 package com.ihorak.truffle.node.scope;
 
-import com.ihorak.truffle.SchemeLanguageContext;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.type.SchemeSymbol;
-import com.ihorak.truffle.type.UndefinedValue;
-import com.ihorak.truffle.type.UserDefinedProcedure;
-import com.oracle.truffle.api.CompilerDirectives;
-import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
+import com.ihorak.truffle.runtime.SchemeSymbol;
+import com.ihorak.truffle.runtime.UndefinedValue;
+import com.ihorak.truffle.runtime.UserDefinedProcedure;
 import com.oracle.truffle.api.dsl.NodeChild;
-import com.oracle.truffle.api.dsl.NodeField;
 import com.oracle.truffle.api.dsl.Specialization;
-import com.oracle.truffle.api.frame.VirtualFrame;
 
 @NodeChild(value = "valueToStore")
 public abstract class WriteGlobalVariableExprNode extends SchemeExpression {

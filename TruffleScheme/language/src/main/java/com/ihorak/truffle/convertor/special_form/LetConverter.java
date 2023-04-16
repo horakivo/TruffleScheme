@@ -1,13 +1,12 @@
 package com.ihorak.truffle.convertor.special_form;
 
-import com.ihorak.truffle.convertor.ConverterException;
 import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.util.CreateWriteExprNode;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
-import com.ihorak.truffle.type.SchemeList;
-import com.ihorak.truffle.type.SchemeSymbol;
+import com.ihorak.truffle.runtime.SchemeList;
+import com.ihorak.truffle.runtime.SchemeSymbol;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.jetbrains.annotations.Nullable;
 

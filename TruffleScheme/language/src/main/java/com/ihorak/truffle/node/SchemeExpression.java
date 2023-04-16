@@ -1,7 +1,8 @@
 package com.ihorak.truffle.node;
 
 import com.ihorak.truffle.SchemeTruffleLanguage;
-import com.ihorak.truffle.type.*;
+import com.ihorak.truffle.runtime.SchemeTypesGen;
+import com.ihorak.truffle.runtime.UserDefinedProcedure;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.nodes.RootNode;

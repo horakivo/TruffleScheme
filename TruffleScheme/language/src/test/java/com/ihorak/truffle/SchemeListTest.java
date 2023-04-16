@@ -1,8 +1,8 @@
 package com.ihorak.truffle;
 
-import com.ihorak.truffle.node.exprs.bbuiltin.list.ListBuiltinNodeFactory;
-import com.ihorak.truffle.type.SchemeList;
-import com.ihorak.truffle.type.SchemeSymbol;
+import com.ihorak.truffle.node.builtin.list.ListBuiltinNodeFactory;
+import com.ihorak.truffle.runtime.SchemeList;
+import com.ihorak.truffle.runtime.SchemeSymbol;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

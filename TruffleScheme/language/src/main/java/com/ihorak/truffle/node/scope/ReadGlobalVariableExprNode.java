@@ -1,9 +1,8 @@
 package com.ihorak.truffle.node.scope;
 
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.type.SchemeSymbol;
+import com.ihorak.truffle.runtime.SchemeSymbol;
 import com.oracle.truffle.api.Assumption;
-import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.profiles.ConditionProfile;
 import com.oracle.truffle.api.utilities.CyclicAssumption;
 import com.oracle.truffle.api.CompilerDirectives;

@@ -1,7 +1,7 @@
 package com.ihorak.truffle.node;
 
 import com.ihorak.truffle.SchemeTruffleLanguage;
-import com.ihorak.truffle.type.SchemeSymbol;
+import com.ihorak.truffle.runtime.SchemeSymbol;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;

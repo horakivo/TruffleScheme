@@ -2,7 +2,7 @@ package com.ihorak.truffle.convertor.special_form.quasiquote;
 
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.special_form.quasiquote.UnquoteSplicingInsertInfo;
-import com.ihorak.truffle.type.SchemeList;
+import com.ihorak.truffle.runtime.SchemeList;
 
 import java.util.List;
 

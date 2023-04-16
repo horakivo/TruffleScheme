@@ -1,6 +1,6 @@
 package com.ihorak.truffle.convertor.util;
 
-import com.ihorak.truffle.type.SchemeSymbol;
+import com.ihorak.truffle.runtime.SchemeSymbol;
 
 public class SpecialFormUtils {
 

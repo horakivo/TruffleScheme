@@ -2,9 +2,7 @@ package com.ihorak.truffle.node.polyglot;
 
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.SchemeNode;
-import com.ihorak.truffle.node.interop.ForeignToSchemeNode;
-import com.ihorak.truffle.type.SchemeList;
-import com.ihorak.truffle.type.UndefinedValue;
+import com.ihorak.truffle.runtime.UndefinedValue;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.NodeChild;

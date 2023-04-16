@@ -1,11 +1,11 @@
 package com.ihorak.truffle.parser;
 
 import com.ihorak.truffle.SchemeTruffleLanguage;
-import com.ihorak.truffle.node.exprs.bbuiltin.list.ListBuiltinNodeFactory;
-import com.ihorak.truffle.type.SchemeBigInt;
-import com.ihorak.truffle.type.SchemeList;
-import com.ihorak.truffle.type.SchemePair;
-import com.ihorak.truffle.type.SchemeSymbol;
+import com.ihorak.truffle.node.builtin.list.ListBuiltinNodeFactory;
+import com.ihorak.truffle.runtime.SchemeBigInt;
+import com.ihorak.truffle.runtime.SchemeList;
+import com.ihorak.truffle.runtime.SchemePair;
+import com.ihorak.truffle.runtime.SchemeSymbol;
 import com.oracle.truffle.api.strings.TruffleString;
 import org.antlr.v4.runtime.tree.TerminalNode;
 

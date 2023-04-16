@@ -10,8 +10,8 @@ import com.ihorak.truffle.node.callable.TCO.throwers.SelfRecursiveTailCallThrowe
 import com.ihorak.truffle.node.callable.TCO.throwers.TailCallThrowerNodeGen;
 import com.ihorak.truffle.node.scope.WriteFrameSlotNode;
 import com.ihorak.truffle.node.scope.WriteFrameSlotNodeGen;
-import com.ihorak.truffle.type.SchemeList;
-import com.ihorak.truffle.type.SchemeSymbol;
+import com.ihorak.truffle.runtime.SchemeList;
+import com.ihorak.truffle.runtime.SchemeSymbol;
 import com.oracle.truffle.api.frame.FrameSlotKind;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.jetbrains.annotations.Nullable;

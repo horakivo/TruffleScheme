@@ -1,7 +1,6 @@
 package com.ihorak.truffle.node.callable.TCO.exceptions;
 
-import com.ihorak.truffle.type.UserDefinedProcedure;
-import com.oracle.truffle.api.CallTarget;
+import com.ihorak.truffle.runtime.UserDefinedProcedure;
 import com.oracle.truffle.api.nodes.ControlFlowException;
 
 public class TailCallException extends ControlFlowException {

@@ -2,12 +2,10 @@ package com.ihorak.truffle.convertor.callable;
 
 import com.ihorak.truffle.convertor.SourceSectionUtil;
 import com.ihorak.truffle.convertor.context.ParsingContext;
-import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.callable.MacroCallableExprNode;
 import com.ihorak.truffle.node.callable.MacroCallableExprNodeGen;
-import com.ihorak.truffle.type.SchemeList;
-import com.ihorak.truffle.type.SchemeSymbol;
+import com.ihorak.truffle.runtime.SchemeList;
+import com.ihorak.truffle.runtime.SchemeSymbol;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.jetbrains.annotations.Nullable;
 

@@ -1,7 +1,7 @@
 package com.ihorak.truffle.node.literals;
 
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.type.SchemeBigInt;
+import com.ihorak.truffle.runtime.SchemeBigInt;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 
