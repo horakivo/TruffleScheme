@@ -1,0 +1,51 @@
+package com.ihorak.truffle.node.builtin;
+
+import com.ihorak.truffle.exceptions.SchemeException;
+import com.ihorak.truffle.node.SchemeNode;
+import com.ihorak.truffle.node.builtin.core.ApplyCoreNode;
+import com.ihorak.truffle.node.callable.AlwaysInlinableProcedureNode;
+import com.ihorak.truffle.node.callable.DispatchNode;
+import com.ihorak.truffle.node.callable.DispatchNodeGen;
+import com.oracle.truffle.api.CompilerDirectives;
+import com.oracle.truffle.api.dsl.Cached;
+import com.oracle.truffle.api.dsl.Fallback;
+import com.oracle.truffle.api.dsl.Specialization;
+import com.oracle.truffle.api.frame.MaterializedFrame;
+import com.oracle.truffle.api.nodes.ExplodeLoop;
+import com.oracle.truffle.api.profiles.BranchProfile;
+
+public abstract class ApplyBuiltinNode extends AlwaysInlinableProcedureNode {
+
+    //Object[] arguments are evaluated arguments for the apply -> (<procedure> (arg1) ... (argN) (list))
+
+    @ExplodeLoop
+    @Specialization(guards = {"argumentsLength == arguments.length", "arguments.length >= 2",}, limit = "2")
+    protected Object doApplyCached(Object[] arguments,
+                                   @Cached("arguments.length") int argumentsLength,
+                                   @Cached ApplyCoreNode applyCoreNode) {
+        Object[] optionalArguments = new Object[argumentsLength - 2];
+        for (int i = 1; i < argumentsLength - 1; i++) {
+            optionalArguments[i - 1] = arguments[i];
+        }
+
+        return applyCoreNode.execute(arguments[0], optionalArguments, arguments[argumentsLength - 1]);
+    }
+
+    @Specialization(guards = "arguments.length >= 2", replaces = "doApplyCached", limit = "2")
+    protected Object doApplyUncached(Object[] arguments,
+                                     @Cached ApplyCoreNode applyCoreNode) {
+        Object[] optionalArguments = new Object[arguments.length - 2];
+        for (int i = 1; i < arguments.length - 1; i++) {
+            optionalArguments[i - 1] = arguments[i];
+        }
+
+        return applyCoreNode.execute(arguments[0], optionalArguments, arguments[arguments.length - 1]);
+    }
+
+
+
+    @Fallback
+    protected Object doThrow(Object[] arguments) {
+        throw SchemeException.arityExceptionAtLeast(this, "apply", 2, arguments.length);
+    }
+}

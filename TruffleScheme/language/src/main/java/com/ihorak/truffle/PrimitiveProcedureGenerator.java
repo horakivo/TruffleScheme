@@ -1,5 +1,6 @@
 package com.ihorak.truffle;
 
+import com.ihorak.truffle.node.builtin.ApplyBuiltinNodeFactory;
 import com.ihorak.truffle.node.builtin.CurrentMillisBuiltinNodeFactory;
 import com.ihorak.truffle.node.builtin.DisplayBuiltinNodeFactory;
 import com.ihorak.truffle.node.builtin.IsNullBuiltinNodeFactory;
@@ -56,6 +57,7 @@ public class PrimitiveProcedureGenerator {
         var notPrimitiveProcedure = new PrimitiveProcedure("not", NotBuiltinNodeFactory.getInstance());
         var displayPrimitiveProcedure = new PrimitiveProcedure("display", DisplayBuiltinNodeFactory.getInstance());
         var currentMillisPrimitiveProcedure = new PrimitiveProcedure("current-milliseconds", CurrentMillisBuiltinNodeFactory.getInstance());
+        var applyPrimitiveProcedure = new PrimitiveProcedure("apply", ApplyBuiltinNodeFactory.getInstance());
 
         var carPrimitiveProcedure = new PrimitiveProcedure("car", CarBuiltinNodeFactory.getInstance());
         var consPrimitiveProcedure = new PrimitiveProcedure("cons", ConsBuiltinNodeFactory.getInstance());
@@ -83,6 +85,7 @@ public class PrimitiveProcedureGenerator {
         result.put(new SchemeSymbol("not"), notPrimitiveProcedure);
         result.put(new SchemeSymbol("display"), displayPrimitiveProcedure);
         result.put(new SchemeSymbol("current-milliseconds"), currentMillisPrimitiveProcedure);
+        result.put(new SchemeSymbol("apply"), applyPrimitiveProcedure);
 
 
         // result.put(new SchemeSymbol("map"), mapPrimitiveProcedure);

@@ -3,9 +3,10 @@ package com.ihorak.truffle.node.callable;
 import com.ihorak.truffle.node.SchemeNode;
 import com.ihorak.truffle.runtime.PrimitiveProcedure;
 import com.oracle.truffle.api.dsl.Cached;
+import com.oracle.truffle.api.dsl.GenerateUncached;
 import com.oracle.truffle.api.dsl.Specialization;
 
-//@GenerateUncached
+@GenerateUncached
 public abstract class DispatchPrimitiveProcedureNode extends SchemeNode {
 
     public abstract Object execute(PrimitiveProcedure procedure, Object[] arguments);
@@ -21,13 +22,13 @@ public abstract class DispatchPrimitiveProcedureNode extends SchemeNode {
         return inlinedMethodNode.execute(arguments);
     }
 
-//    @Specialization(replaces = "doPrimitiveProcedureCached")
-//    protected static Object doPrimitiveProcedureUncached(
-//            ArbitraryArgsPrimitiveProcedure procedure,
-//            Object[] arguments
-//    ) {
-//        return procedure.factory().getUncachedInstance().execute(arguments);
-//    }
+    @Specialization(replaces = "doPrimitiveProcedureCached")
+    protected static Object doPrimitiveProcedureUncached(
+            PrimitiveProcedure procedure,
+            Object[] arguments
+    ) {
+        return procedure.factory().getUncachedInstance().execute(arguments);
+    }
 
 
     protected static AlwaysInlinableProcedureNode createInlinableNode(PrimitiveProcedure procedure) {

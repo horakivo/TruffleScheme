@@ -34,6 +34,15 @@ public class SchemeException extends AbstractTruffleException {
         return new SchemeException(msg, node);
     }
 
+    @TruffleBoundary
+    public static SchemeException arityExceptionAtLeast(Node node, String name, int expected, int given) {
+        String msg = name + ": arity mismatch; Expected number of arguments does not match the given number\n" +
+                "expected: at least " + expected + "\n" +
+                "given: " + given;
+
+        return new SchemeException(msg, node);
+    }
+
 
     @TruffleBoundary
     public static SchemeException interopException(InteropException exception) {
@@ -71,6 +80,10 @@ public class SchemeException extends AbstractTruffleException {
 
     public static SchemeException shouldNotReachHere(String message, Node location) {
         throw new SchemeException(message, location);
+    }
+
+    public static SchemeException shouldNotReachHere() {
+        throw new SchemeException(null, null);
     }
 
     @TruffleBoundary
