@@ -4,6 +4,7 @@ import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeNode;
 import com.ihorak.truffle.node.builtin.BinaryBooleanOperationNode;
 import com.oracle.truffle.api.dsl.Cached;
+import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 
@@ -48,7 +49,7 @@ public abstract class ReduceComparisonNode extends SchemeNode {
         return true;
     }
 
-    @Specialization(guards = "arguments.length == 0")
+    @Fallback
     protected boolean doThrow(Object[] arguments, BinaryBooleanOperationNode operation, String name) {
         throw SchemeException.arityException(this, name, 1, 0);
     }

@@ -4,6 +4,7 @@ import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.builtin.core.IsNullCoreNode;
 import com.ihorak.truffle.node.callable.AlwaysInlinableProcedureNode;
 import com.oracle.truffle.api.dsl.Cached;
+import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
 
 public abstract class IsNullBuiltinNode extends AlwaysInlinableProcedureNode {
@@ -14,7 +15,7 @@ public abstract class IsNullBuiltinNode extends AlwaysInlinableProcedureNode {
     }
 
 
-    @Specialization(guards = "arguments.length != 1")
+    @Fallback
     protected Object doThrow(Object[] arguments) {
         throw SchemeException.arityException(this, "null?", 1, arguments.length);
     }

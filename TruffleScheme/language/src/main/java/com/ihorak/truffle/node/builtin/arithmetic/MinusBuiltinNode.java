@@ -6,6 +6,7 @@ import com.ihorak.truffle.node.callable.AlwaysInlinableProcedureNode;
 import com.ihorak.truffle.node.builtin.BinaryObjectOperationNode;
 import com.ihorak.truffle.runtime.SchemeBigInt;
 import com.oracle.truffle.api.dsl.Cached;
+import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
@@ -62,8 +63,8 @@ public abstract class MinusBuiltinNode extends AlwaysInlinableProcedureNode {
     }
 
 
-    @Specialization(guards = "arguments.length == 0")
-    protected Object noArgs(Object[] arguments) {
+    @Fallback
+    protected Object doThrow(Object[] arguments) {
         throw SchemeException.arityException(this, "-", 1, 0);
     }
 

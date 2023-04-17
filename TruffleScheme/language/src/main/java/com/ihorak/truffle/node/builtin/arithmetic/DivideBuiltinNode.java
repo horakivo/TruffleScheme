@@ -5,6 +5,7 @@ import com.ihorak.truffle.node.builtin.core.arithmetic.DivideBinaryNodeGen;
 import com.ihorak.truffle.node.callable.AlwaysInlinableProcedureNode;
 import com.ihorak.truffle.node.builtin.BinaryObjectOperationNode;
 import com.oracle.truffle.api.dsl.Cached;
+import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 
@@ -42,14 +43,15 @@ public abstract class DivideBuiltinNode extends AlwaysInlinableProcedureNode {
         return result;
     }
 
-    @Specialization(guards = "arguments.length == 0")
-    protected Object doNoArgs(Object[] arguments) {
-        throw SchemeException.arityException(this, "/", 1, 0);
-    }
 
     @Specialization(guards = "arguments.length == 1")
     protected Object doOneArg(Object[] arguments) {
         return divideOperation.execute(1L, arguments[0]);
+    }
+
+    @Fallback
+    protected Object doThrow(Object[] arguments) {
+        throw SchemeException.arityException(this, "/", 1, 0);
     }
 
 }
