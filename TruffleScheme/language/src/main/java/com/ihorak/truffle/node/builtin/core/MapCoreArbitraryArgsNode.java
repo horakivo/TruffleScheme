@@ -69,14 +69,14 @@ public abstract class MapCoreArbitraryArgsNode extends SchemeNode {
     }
 
 
-    @Specialization(guards = {"interop.isExecutable(procedure)", "areArgumentsForeignArrays(arguments, interop)"})
+    @Specialization(guards = {"interopProcedure.isExecutable(procedure)", "areArgumentsForeignArrays(arguments, interop)"}, limit = "getInteropCacheLimit()")
     protected SchemeList doMapWithForeignObjects(Object procedure, Object[] arguments,
                                                  @CachedLibrary(limit = "2") InteropLibrary interop,
+                                                 @CachedLibrary("procedure") InteropLibrary interopProcedure,
                                                  @Cached TranslateInteropExceptionNode translateInteropExceptionNode,
                                                  @Cached IntValueProfile numberOfListsProfile,
                                                  @Cached IntValueProfile numberOfElementsInEachListProfile,
-                                                 @Cached ListBuiltinNode listBuiltinNode,
-                                                 @Cached DispatchPrimitiveProcedureNode dispatchNode) {
+                                                 @Cached ListBuiltinNode listBuiltinNode) {
         int numberOfLists = numberOfListsProfile.profile(arguments.length);
         haveAllListsSameSize(arguments, numberOfLists, interop, translateInteropExceptionNode);
         // all lists have to have same amount of elements
@@ -87,7 +87,7 @@ public abstract class MapCoreArbitraryArgsNode extends SchemeNode {
         var result = new Object[numberOfElementsInEachList];
         for (int i = 0; i < numberOfElementsInEachList; i++) {
             var argsForCall = (Object[]) args[i];
-            result[i] = executeForeignProcedure(procedure, argsForCall, interop, translateInteropExceptionNode);
+            result[i] = executeForeignProcedure(procedure, argsForCall, interopProcedure, translateInteropExceptionNode);
         }
 
         return listBuiltinNode.execute(result);
@@ -190,30 +190,5 @@ public abstract class MapCoreArbitraryArgsNode extends SchemeNode {
         }
 
         return true;
-    }
-
-    private int getForeignArraySize(Object receiver, InteropLibrary interop, TranslateInteropExceptionNode translateInteropExceptionNode) {
-        try {
-            return (int) interop.getArraySize(receiver);
-
-        } catch (UnsupportedMessageException e) {
-            throw translateInteropExceptionNode.execute(e, receiver, "map", null);
-        }
-    }
-
-    private Object readForeignArrayElement(Object receiver, int index, InteropLibrary interop, TranslateInteropExceptionNode translateInteropExceptionNode) {
-        try {
-            return interop.readArrayElement(receiver, index);
-        } catch (InteropException e) {
-            throw translateInteropExceptionNode.execute(e, receiver, "map", null);
-        }
-    }
-
-    private Object executeForeignProcedure(Object procedure, Object[] arguments, InteropLibrary interopLibrary, TranslateInteropExceptionNode translateInteropExceptionNode) {
-        try {
-            return interopLibrary.execute(procedure, arguments);
-        } catch (InteropException e) {
-            throw translateInteropExceptionNode.execute(e, procedure, "map", arguments);
-        }
     }
 }

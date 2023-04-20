@@ -47,6 +47,18 @@ public class MapBuiltinNodeTest {
         assertEquals(-3L, result.getArrayElement(2).asLong());
     }
 
+    @Test
+    public void givenWrongNumberOfArgsInLists_whenCalled_thenExceptionIsThrown() {
+        var program = "(map - (list 1 2) (list 1 2 3))";
+
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+
+        assertEquals("""
+                map: all lists must have same size
+                first list length: 2
+                other list length: 3
+                """, msg);
+    }
 
     @Test
     public void givenWrongNumberOfArgs_whenCalled_thenExceptionIsThrown() {

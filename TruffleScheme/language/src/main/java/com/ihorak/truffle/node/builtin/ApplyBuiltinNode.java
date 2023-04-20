@@ -24,9 +24,7 @@ public abstract class ApplyBuiltinNode extends AlwaysInlinableProcedureNode {
                                    @Cached("arguments.length") int argumentsLength,
                                    @Cached ApplyCoreNode applyCoreNode) {
         Object[] optionalArguments = new Object[argumentsLength - 2];
-        for (int i = 1; i < argumentsLength - 1; i++) {
-            optionalArguments[i - 1] = arguments[i];
-        }
+        System.arraycopy(arguments, 1, optionalArguments, 0, argumentsLength - 2);
 
         return applyCoreNode.execute(arguments[0], optionalArguments, arguments[argumentsLength - 1]);
     }
@@ -35,9 +33,7 @@ public abstract class ApplyBuiltinNode extends AlwaysInlinableProcedureNode {
     protected Object doApplyUncached(Object[] arguments,
                                      @Cached ApplyCoreNode applyCoreNode) {
         Object[] optionalArguments = new Object[arguments.length - 2];
-        for (int i = 1; i < arguments.length - 1; i++) {
-            optionalArguments[i - 1] = arguments[i];
-        }
+        System.arraycopy(arguments, 1, optionalArguments, 0, arguments.length - 2);
 
         return applyCoreNode.execute(arguments[0], optionalArguments, arguments[arguments.length - 1]);
     }
