@@ -56,27 +56,32 @@ public class SchemeException extends AbstractTruffleException {
 
     @TruffleBoundary
     public static SchemeException contractViolation(Node node, String operationName, String expected, Object left, Object right) {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(operationName).append(": ").append("contract violation\n");
-        sb.append("expected: ").append(expected).append("\n");
-        sb.append("given left: ").append(left).append("\n");
-        sb.append("given right: ").append(right);
+        String msg = operationName + ": " + "contract violation\n" +
+                "expected: " + expected + "\n" +
+                "given left: " + left + "\n" +
+                "given right: " + right;
 
 
-        return new SchemeException(sb.toString(), node);
+        return new SchemeException(msg, node);
     }
 
     @TruffleBoundary
     public static SchemeException undefinedIdentifier(Node node, SchemeSymbol name) {
-        StringBuilder sb = new StringBuilder();
+        String msg = name.getValue() + ": " + "undefined\n" +
+                "cannot reference an identifier before its definition";
 
-        sb.append(name.getValue()).append(": ").append("undefined\n");
-        sb.append("cannot reference an identifier before its definition");
-
-        return new SchemeException(sb.toString(), node);
+        return new SchemeException(msg, node);
     }
 
+
+    @TruffleBoundary
+    public static SchemeException invalidIndexException(int index, int arraySize) {
+        String msg = "Index out of bounds\n" +
+                "list size: " + arraySize + "\n" +
+                "given: " + index + "\n";
+
+        return new SchemeException(msg, null);
+    }
 
     public static SchemeException shouldNotReachHere(String message, Node location) {
         throw new SchemeException(message, location);

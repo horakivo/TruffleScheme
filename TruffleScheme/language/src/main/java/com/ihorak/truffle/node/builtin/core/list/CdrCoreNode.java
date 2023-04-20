@@ -3,6 +3,7 @@ package com.ihorak.truffle.node.builtin.core.list;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeNode;
 import com.ihorak.truffle.node.builtin.list.ListBuiltinNode;
+import com.ihorak.truffle.node.polyglot.ForeignToSchemeNode;
 import com.ihorak.truffle.node.polyglot.TranslateInteropExceptionNode;
 import com.ihorak.truffle.runtime.SchemeList;
 import com.ihorak.truffle.runtime.SchemePair;
@@ -36,12 +37,14 @@ public abstract class CdrCoreNode extends SchemeNode {
     protected Object doForeignObject(Object obj,
                                      @Cached TranslateInteropExceptionNode translateInteropExceptionNode,
                                      @Cached ListBuiltinNode listNode,
+                                     @Cached ForeignToSchemeNode foreignToSchemeNode,
                                      @CachedLibrary("obj") InteropLibrary interopLib) {
         try {
             var size = (int) interopLib.getArraySize(obj);
             Object[] array = new Object[size - 1];
             for (int i = 1; i < size; i++) {
-                array[i - 1] = interopLib.readArrayElement(obj, i);
+                var foreignObject = interopLib.readArrayElement(obj, i);
+                array[i - 1] = foreignToSchemeNode.executeConvert(foreignObject);
             }
             return listNode.execute(array);
         } catch (InteropException exception) {

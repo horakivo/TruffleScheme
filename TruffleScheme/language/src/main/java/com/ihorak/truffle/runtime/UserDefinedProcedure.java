@@ -4,6 +4,7 @@ import com.ihorak.truffle.SchemeTruffleLanguage;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.callable.DispatchNode;
 import com.ihorak.truffle.node.callable.DispatchNodeGen;
+import com.ihorak.truffle.node.polyglot.ForeignToSchemeNode;
 import com.oracle.truffle.api.Assumption;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
@@ -32,7 +33,6 @@ public class UserDefinedProcedure implements TruffleObject {
      * Manages the assumption that the {@link #callTarget} is stable.
      */
     private final CyclicAssumption callTargetStable;
-
 
 
     public UserDefinedProcedure(RootCallTarget callTarget, int expectedNumberOfArgs, MaterializedFrame frame, String name) {
@@ -115,8 +115,22 @@ public class UserDefinedProcedure implements TruffleObject {
 
     @ExportMessage
     Object execute(Object[] arguments,
+                   @Cached ForeignToSchemeNode foreignToSchemeNode,
                    @Cached DispatchNode dispatchNode) {
-        return dispatchNode.executeDispatch(this, arguments);
+        var args = convertToSchemeValues(arguments, foreignToSchemeNode);
+        return dispatchNode.executeDispatch(this, args);
+    }
+
+    private Object[] convertToSchemeValues(Object[] argumentsToConvert, ForeignToSchemeNode foreignToSchemeNode) {
+        Object[] result = new Object[argumentsToConvert.length + 1];
+        result[0] = null; // parent frame is not set in the foreign call
+        int index = 1;
+        for (Object argument : argumentsToConvert) {
+            result[index] = foreignToSchemeNode.executeConvert(argument);
+            index++;
+        }
+
+        return result;
     }
 
 }

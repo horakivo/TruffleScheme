@@ -2,9 +2,11 @@ package com.ihorak.truffle.node.polyglot;
 
 import com.ihorak.truffle.node.SchemeNode;
 import com.oracle.truffle.api.dsl.Fallback;
+import com.oracle.truffle.api.dsl.GenerateUncached;
 import com.oracle.truffle.api.dsl.Specialization;
 
 // we are just converting numbers to supported ones
+@GenerateUncached
 public abstract class ForeignToSchemeNode extends SchemeNode {
 
     public abstract Object executeConvert(Object value);

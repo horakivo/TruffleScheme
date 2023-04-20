@@ -4,6 +4,7 @@ import com.ihorak.truffle.node.builtin.ApplyBuiltinNodeFactory;
 import com.ihorak.truffle.node.builtin.CurrentMillisBuiltinNodeFactory;
 import com.ihorak.truffle.node.builtin.DisplayBuiltinNodeFactory;
 import com.ihorak.truffle.node.builtin.IsNullBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.MapBuiltinNodeFactory;
 import com.ihorak.truffle.node.builtin.ModuloBuiltinNodeFactory;
 import com.ihorak.truffle.node.builtin.NotBuiltinNodeFactory;
 import com.ihorak.truffle.node.builtin.arithmetic.DivideBuiltinNodeFactory;
@@ -42,7 +43,7 @@ public class PrimitiveProcedureGenerator {
 
 
         var listPrimitiveProcedure = new PrimitiveProcedure("list", ListBuiltinNodeFactory.getInstance());
-        //var mapPrimitiveProcedure = createArbitraryPrimitiveProcedure(MapExprNodeFactory.getInstance(), language, "map");
+        var mapPrimitiveProcedure = new PrimitiveProcedure("map", MapBuiltinNodeFactory.getInstance());
         var appendPrimitiveProcedure = new PrimitiveProcedure("append", AppendBuiltinNodeFactory.getInstance());
 
         var equalPrimitiveProcedure = new PrimitiveProcedure("equal?", EqualBuiltinNodeFactory.getInstance());
@@ -88,7 +89,7 @@ public class PrimitiveProcedureGenerator {
         result.put(new SchemeSymbol("apply"), applyPrimitiveProcedure);
 
 
-        // result.put(new SchemeSymbol("map"), mapPrimitiveProcedure);
+        result.put(new SchemeSymbol("map"), mapPrimitiveProcedure);
         result.put(new SchemeSymbol("append"), appendPrimitiveProcedure);
 
         return result;

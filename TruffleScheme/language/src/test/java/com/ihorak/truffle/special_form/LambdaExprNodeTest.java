@@ -24,7 +24,7 @@ public class LambdaExprNodeTest {
         var result = context.eval("scm", program);
 
         assertTrue(result.canExecute());
-        var procedureResult = result.execute(UndefinedValue.SINGLETON, 5L);
+        var procedureResult = result.execute(5);
         assertTrue(procedureResult.isBoolean());
         assertFalse(procedureResult.asBoolean());
     }

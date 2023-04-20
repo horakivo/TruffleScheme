@@ -3,6 +3,7 @@ package com.ihorak.truffle.runtime;
 import com.ihorak.truffle.node.callable.AlwaysInlinableProcedureNode;
 import com.ihorak.truffle.node.callable.DispatchNode;
 import com.ihorak.truffle.node.callable.DispatchPrimitiveProcedureNode;
+import com.ihorak.truffle.node.polyglot.ForeignToSchemeNode;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.NodeFactory;
 import com.oracle.truffle.api.interop.InteropLibrary;
@@ -27,7 +28,18 @@ public record PrimitiveProcedure(
 
     @ExportMessage
     Object execute(Object[] arguments,
+                   @Cached ForeignToSchemeNode foreignToSchemeNode,
                    @Cached DispatchPrimitiveProcedureNode dispatchNode) {
-        return dispatchNode.execute(this, arguments);
+        var args = convertToSchemeValues(arguments, foreignToSchemeNode);
+        return dispatchNode.execute(this, args);
+    }
+
+    private Object[] convertToSchemeValues(Object[] argumentsToConvert, ForeignToSchemeNode foreignToSchemeNode) {
+        Object[] result = new Object[argumentsToConvert.length];
+        for (int i = 0; i < argumentsToConvert.length; i++) {
+            result[i] = foreignToSchemeNode.executeConvert(argumentsToConvert[i]);
+        }
+
+        return result;
     }
 }

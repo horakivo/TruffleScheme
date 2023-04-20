@@ -1,5 +1,7 @@
 package com.ihorak.truffle.runtime;
 
+import com.ihorak.truffle.exceptions.SchemeException;
+import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.InvalidArrayIndexException;
@@ -30,7 +32,8 @@ public class SchemeList implements Iterable<Object>, TruffleObject {
 
     public Object get(int index) {
         if (index >= size) {
-            throw new ArrayIndexOutOfBoundsException("SchemeList out of bounds. Index: " + index + ". Size: " + size);
+            CompilerDirectives.transferToInterpreterAndInvalidate();
+            throw SchemeException.invalidIndexException(index, size);
         }
 
         SchemeList currentList = this;
@@ -41,6 +44,7 @@ public class SchemeList implements Iterable<Object>, TruffleObject {
         return currentList.car;
     }
 
+    //TODO useless here?
     @ExplodeLoop
     public SchemeList shallowClone() {
         if (isEmpty) return EMPTY_LIST;

@@ -1,8 +1,42 @@
 package com.ihorak.truffle.node.builtin;
 
-public class MapBuiltinNode {
-}
+import com.ihorak.truffle.exceptions.SchemeException;
+import com.ihorak.truffle.node.builtin.core.MapCoreArbitraryArgsNode;
+import com.ihorak.truffle.node.callable.AlwaysInlinableProcedureNode;
+import com.ihorak.truffle.runtime.SchemeList;
+import com.oracle.truffle.api.dsl.Cached;
+import com.oracle.truffle.api.dsl.Fallback;
+import com.oracle.truffle.api.dsl.Specialization;
 
+public abstract class MapBuiltinNode extends AlwaysInlinableProcedureNode {
+
+    @Specialization(guards = "arguments.length >= 2", rewriteOn = ClassCastException.class)
+    protected Object doMapWithSchemeLists(Object[] arguments,
+                                          @Cached MapCoreArbitraryArgsNode mapNode) {
+
+        SchemeList[] args = new SchemeList[arguments.length - 1];
+        for (int i = 1; i < arguments.length; i++) {
+            args[i - 1] = (SchemeList) arguments[i];
+        }
+        return mapNode.execute(arguments[0], args);
+    }
+
+    @Specialization(guards = "arguments.length >= 2", replaces = "doMapWithSchemeLists")
+    protected Object doMapWithForeignLists(Object[] arguments,
+                                           @Cached MapCoreArbitraryArgsNode mapNode) {
+
+        Object[] args = new Object[arguments.length - 1];
+        for (int i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+        return mapNode.execute(arguments[0], args);
+    }
+
+    @Fallback
+    protected Object doThrow(Object[] arguments) {
+        throw  SchemeException.arityExceptionAtLeast(this, "map", 2, arguments.length);
+    }
+}
 
 
 //public abstract class MapExprNode extends ArbitraryBuiltin {
