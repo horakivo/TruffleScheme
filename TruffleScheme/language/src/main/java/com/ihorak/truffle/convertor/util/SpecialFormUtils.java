@@ -6,7 +6,7 @@ public class SpecialFormUtils {
 
     public static boolean isSpecialForm(SchemeSymbol symbol) {
         return switch (symbol.getValue()) {
-            case "if", "lambda", "define", "quote", "quasiquote", "let", "let*", "and", "or", "cond", "letrec" -> true;
+            case "if", "lambda", "define", "quote", "quasiquote", "let", "and", "or", "cond", "letrec" -> true;
             default -> false;
         };
     }

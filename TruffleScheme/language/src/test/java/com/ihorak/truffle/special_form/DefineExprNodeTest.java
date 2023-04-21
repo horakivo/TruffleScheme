@@ -1,10 +1,12 @@
 package com.ihorak.truffle.special_form;
 
+import com.ihorak.truffle.convertor.polyglot.PolyglotConverter;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
 import org.junit.Before;
 import org.junit.Test;
 
+import static com.ihorak.truffle.node.polyglot.MemberNodes.READ_MEMBER;
 import static org.junit.Assert.*;
 
 public class DefineExprNodeTest {
@@ -86,8 +88,7 @@ public class DefineExprNodeTest {
         assertTrue(result.hasArrayElements());
         assertEquals(1L, result.getArrayElement(0).asLong());
         assertEquals(2L, result.getArrayElement(1).asLong());
-        //TODO should work when I implemented Lib
-        //assertTrue(result.getArrayElement(1).canExecute());
+        assertTrue(result.getArrayElement(2).canExecute());
     }
 
 
@@ -133,7 +134,29 @@ public class DefineExprNodeTest {
         assertEquals(3L, result.getArraySize());
         assertEquals(1L, result.getArrayElement(0).asLong());
         assertEquals(2L, result.getArrayElement(1).asLong());
-        //TODO should work when I implemented Lib
-        //assertTrue(result.getArrayElement(1).canExecute());
+        assertTrue(result.getArrayElement(2).canExecute());
     }
+
+    @Test
+    public void givenSpecialFormSymbol_whenRedefined_thenExceptionIsThrown() {
+        var program = """
+                (define let 5)
+                """;
+
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+
+        assertEquals("define: 'let is a special form which cannot be redefined", msg);
+    }
+
+    @Test
+    public void givenPolyglotAPISymbol_whenRedefined_thenExceptionIsThrown() {
+        var program = """
+                (define %s 5)
+                """.formatted(READ_MEMBER);
+
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+
+        assertEquals("define: cannot redefined 'read-member. This symbol is used as internal polyglot API", msg);
+    }
+
 }

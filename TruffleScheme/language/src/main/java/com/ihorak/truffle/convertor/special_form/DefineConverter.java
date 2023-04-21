@@ -4,6 +4,7 @@ import com.ihorak.truffle.convertor.ConverterException;
 import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.context.LexicalScope;
 import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.convertor.polyglot.PolyglotConverter;
 import com.ihorak.truffle.convertor.util.CreateWriteExprNode;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
@@ -76,12 +77,20 @@ public class DefineConverter {
         var identifier = defineList.get(1);
         var body = defineList.cdr.cdr;
 
-        if (!(identifier instanceof SchemeSymbol)) {
+        if (!(identifier instanceof SchemeSymbol symbol)) {
             throw new SchemeException("define: bad syntax. Not an identifier. Given: " + identifier, null);
         }
 
         if (body.size != 1) {
             throw new SchemeException("define: multiple expressions after identifier", null);
+        }
+
+        if (SpecialFormConverter.isSpecialForm(symbol)) {
+            throw new ConverterException("define: " + symbol + " is a special form which cannot be redefined");
+        }
+
+        if (PolyglotConverter.isPolyglotAPI(symbol)) {
+            throw new ConverterException("define: cannot redefined " + symbol + ". This symbol is used as internal polyglot API");
         }
     }
 

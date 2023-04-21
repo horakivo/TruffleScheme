@@ -17,18 +17,23 @@ public class SpecialFormConverter {
         return switch (operationSymbol.getValue()) {
             case "if" -> IfConverter.convert(specialFormList, isTailCallPosition, context, ctx);
             case "define" -> DefineConverter.convert(specialFormList, context, isDefinitionAllowed, ctx);
-            case "lambda" ->
-                    LambdaConverter.convert(specialFormList, context, new SchemeSymbol(ANONYMOUS_PROCEDURE), ctx);
+            case "lambda" -> LambdaConverter.convert(specialFormList, context, new SchemeSymbol(ANONYMOUS_PROCEDURE), ctx);
             case "quote" -> QuoteConverter.convert(specialFormList, ctx);
             case "quasiquote" -> QuasiquoteConverter.convert(specialFormList, context, ctx);
             case "let" -> LetConverter.convert(specialFormList, context, isTailCallPosition, ctx);
-//            case "let*":
-//                return convertLetStar(specialFormList, context);
             case "letrec" -> LetrecConverter.convert(specialFormList, context, isTailCallPosition, ctx);
             case "and" -> AndConverter.convert(specialFormList, isTailCallPosition, context, ctx);
             case "or" -> OrConverter.convert(specialFormList, isTailCallPosition, context, ctx);
             case "cond" -> CondConverter.convertCond(specialFormList, isTailCallPosition, context, ctx);
             default -> throw new IllegalArgumentException("Unknown special form");
+        };
+    }
+
+
+    public static boolean isSpecialForm(SchemeSymbol symbol) {
+        return switch (symbol.getValue()) {
+            case "if", "lambda", "define", "quote", "quasiquote", "let", "and", "or", "cond", "letrec" -> true;
+            default -> false;
         };
     }
 

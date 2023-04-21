@@ -20,7 +20,7 @@ public class CallableConverter {
     public static SchemeExpression convertListToProcedureCall(SchemeList callableList, ParsingContext context, boolean isTailCall, @Nullable ParserRuleContext callableCtx) {
         validate(callableList);
 
-        if (isBuiltin(callableList)) {
+        if (isPolyglotNode(callableList)) {
             return PolyglotConverter.convert(callableList, context, callableCtx);
         } else if (isMacro(callableList, context)) {
             return MacroConverter.convert(callableList, context, callableCtx);
@@ -30,8 +30,8 @@ public class CallableConverter {
 
     }
 
-    private static boolean isBuiltin(SchemeList callableList) {
-        return callableList.car instanceof SchemeSymbol symbol && PolyglotConverter.isBuiltinProcedure(symbol);
+    private static boolean isPolyglotNode(SchemeList callableList) {
+        return callableList.car instanceof SchemeSymbol symbol && PolyglotConverter.isPolyglotAPI(symbol);
     }
 
     private static boolean isMacro(SchemeList callableList, ParsingContext context) {

@@ -24,10 +24,10 @@ public class PolyglotConverter extends AbstractCallableConverter {
     public static SchemeExpression convert(SchemeList callableListIR, ParsingContext context, @Nullable ParserRuleContext procedureCtx) {
         var symbol = (SchemeSymbol) callableListIR.car;
         List<SchemeExpression> arguments = convertArguments(callableListIR.cdr, context, procedureCtx);
-        return PolyglotConverter.createBuiltin(symbol, arguments, context, procedureCtx);
+        return PolyglotConverter.createPolyglotNode(symbol, arguments, procedureCtx);
     }
 
-    private static SchemeExpression createBuiltin(SchemeSymbol operand, List<SchemeExpression> convertedArguments, ParsingContext context, @Nullable ParserRuleContext ctx) {
+    private static SchemeExpression createPolyglotNode(SchemeSymbol operand, List<SchemeExpression> convertedArguments, @Nullable ParserRuleContext ctx) {
         return switch (operand.getValue()) {
             case POLYGLOT_EVAL_SOURCE -> PolyglotFactory.createEvalSource(convertedArguments, ctx);
             case POLYGLOT_READ_GLOBAL_SCOPE -> PolyglotFactory.createReadForeignGlobalScope(convertedArguments, ctx);
@@ -50,7 +50,7 @@ public class PolyglotConverter extends AbstractCallableConverter {
 
     }
 
-    public static boolean isBuiltinProcedure(SchemeSymbol symbol) {
+    public static boolean isPolyglotAPI(SchemeSymbol symbol) {
         switch (symbol.getValue()) {
             case POLYGLOT_EVAL_SOURCE:
             case POLYGLOT_READ_GLOBAL_SCOPE:
