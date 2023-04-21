@@ -28,7 +28,7 @@ public class PolyglotConverter extends AbstractCallableConverter {
     }
 
     private static SchemeExpression createPolyglotNode(SchemeSymbol operand, List<SchemeExpression> convertedArguments, @Nullable ParserRuleContext ctx) {
-        return switch (operand.getValue()) {
+        return switch (operand.value()) {
             case POLYGLOT_EVAL_SOURCE -> PolyglotFactory.createEvalSource(convertedArguments, ctx);
             case POLYGLOT_READ_GLOBAL_SCOPE -> PolyglotFactory.createReadForeignGlobalScope(convertedArguments, ctx);
             case GET_MEMBERS -> PolyglotFactory.createGetMembers(convertedArguments, ctx);
@@ -51,7 +51,7 @@ public class PolyglotConverter extends AbstractCallableConverter {
     }
 
     public static boolean isPolyglotAPI(SchemeSymbol symbol) {
-        switch (symbol.getValue()) {
+        switch (symbol.value()) {
             case POLYGLOT_EVAL_SOURCE:
             case POLYGLOT_READ_GLOBAL_SCOPE:
             case HAS_MEMBERS:

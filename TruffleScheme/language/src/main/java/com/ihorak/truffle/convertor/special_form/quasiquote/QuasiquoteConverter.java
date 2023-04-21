@@ -182,15 +182,15 @@ public class QuasiquoteConverter {
     }
 
     private static boolean isUnquote(SchemeList list) {
-        return list.car instanceof SchemeSymbol symbol && symbol.getValue().equals("unquote");
+        return list.car instanceof SchemeSymbol symbol && symbol.value().equals("unquote");
     }
 
     private static boolean isUnquoteSplicing(SchemeList list) {
-        return list.car instanceof SchemeSymbol symbol && symbol.getValue().equals("unquote-splicing");
+        return list.car instanceof SchemeSymbol symbol && symbol.value().equals("unquote-splicing");
     }
 
     private static boolean isQuasiquote(SchemeList list) {
-        return list.car instanceof SchemeSymbol symbol && symbol.getValue().equals("quasiquote");
+        return list.car instanceof SchemeSymbol symbol && symbol.value().equals("quasiquote");
     }
 
     private static void validate(SchemeList quasiquoteList) {

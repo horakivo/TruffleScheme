@@ -50,7 +50,7 @@ public class LambdaConverter {
 
 
         var callTarget = creatCallTarget(writeLocalVariableExpr, bodyExprs, name, lambdaContext, lambdaCtx);
-        var lambdaExpr = new LambdaExprNode(callTarget, numberOfArguments, name.getValue());
+        var lambdaExpr = new LambdaExprNode(callTarget, numberOfArguments, name.value());
         SourceSectionUtil.setSourceSection(lambdaExpr, lambdaCtx);
         return lambdaExpr;
     }

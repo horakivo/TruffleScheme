@@ -31,7 +31,20 @@ public class AntlrToIR extends R5RSBaseVisitor<Object> {
         }
 
         return ListBuiltinNodeFactory.getUncached().execute(objects);
+    }
 
+    @Override
+    public Object visitDot_list(R5RSParser.Dot_listContext ctx) {
+        Object[] objects = new Object[ctx.getChildCount() - 2];
+        objects[0] = new SchemeSymbol(".");
+        var index = 1;
+        // here we are ignoring parenthesis and also the '.' since it is termination node -> we convert it to symbol
+        for (int i = 2; i < ctx.getChildCount() - 1; i++) {
+            objects[index] = visit(ctx.getChild(i));
+            index++;
+        }
+
+        return ListBuiltinNodeFactory.getUncached().execute(objects);
     }
 
     @Override
@@ -117,5 +130,4 @@ public class AntlrToIR extends R5RSBaseVisitor<Object> {
             return new SchemePair(arguments.get(0), arguments.get(1));
         }
     }
-
 }

@@ -14,12 +14,20 @@ form
     | unquote
     | unquote_splicing
     | pair
+    | dot_list
     ;
 
-list: '(' form* ')'
+
+list
+    : '(' form* ')'
     ;
 
-pair: '(' form+ '.' form ')'
+dot_list
+    : '(' '.' form* ')'
+    ;
+
+pair
+    : '(' form+ '.' form ')'
     ;
 
 quote
@@ -51,8 +59,7 @@ NUMBER: '-'?DIGIT+;
 FLOAT: '-'?DIGIT+ '.' DIGIT*;
 STRING: '"' ( ~'"' | '\\' '"')* '"';
 BOOLEAN: '#' ('t' | 'T' | 'f' | 'F');
-SYMBOL: ~('@'|','|'`'|'#'|'"'|'\''|[()]|[ \t\r\n]) ~('@'|','|'`'|'"'|'\''|[()]|[ \t\r\n])*;
-
+SYMBOL: ~('@'|','|'`'|'"'|'\''|[()]|[ \t\r\n])+;
 fragment DIGIT: [0-9];
 
 

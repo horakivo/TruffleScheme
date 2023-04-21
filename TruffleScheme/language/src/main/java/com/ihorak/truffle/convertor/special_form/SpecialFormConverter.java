@@ -14,7 +14,7 @@ public class SpecialFormConverter {
 
     public static SchemeExpression convertListToSpecialForm(SchemeList specialFormList, ParsingContext context, boolean isTailCallPosition, boolean isDefinitionAllowed, @Nullable ParserRuleContext ctx) {
         var operationSymbol = (SchemeSymbol) specialFormList.get(0);
-        return switch (operationSymbol.getValue()) {
+        return switch (operationSymbol.value()) {
             case "if" -> IfConverter.convert(specialFormList, isTailCallPosition, context, ctx);
             case "define" -> DefineConverter.convert(specialFormList, context, isDefinitionAllowed, ctx);
             case "lambda" -> LambdaConverter.convert(specialFormList, context, new SchemeSymbol(ANONYMOUS_PROCEDURE), ctx);
@@ -31,7 +31,7 @@ public class SpecialFormConverter {
 
 
     public static boolean isSpecialForm(SchemeSymbol symbol) {
-        return switch (symbol.getValue()) {
+        return switch (symbol.value()) {
             case "if", "lambda", "define", "quote", "quasiquote", "let", "and", "or", "cond", "letrec" -> true;
             default -> false;
         };

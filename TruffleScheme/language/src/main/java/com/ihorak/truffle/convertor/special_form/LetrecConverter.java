@@ -73,7 +73,7 @@ public class LetrecConverter extends AbstractLetConverter {
         return expressionIR instanceof SchemeList list &&
                 !list.isEmpty &&
                 list.get(0) instanceof SchemeSymbol symbol &&
-                symbol.getValue().equals("lambda");
+                symbol.value().equals("lambda");
     }
 
 }

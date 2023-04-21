@@ -43,11 +43,11 @@ public class SchemeRootNode extends RootNode {
 
     @Override
     public String getName() {
-        return name.getValue();
+        return name.value();
     }
 
     @Override
     public String toString() {
-        return name.getValue();
+        return name.value();
     }
 }

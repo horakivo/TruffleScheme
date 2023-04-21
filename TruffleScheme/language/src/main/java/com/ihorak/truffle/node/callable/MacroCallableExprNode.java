@@ -39,7 +39,7 @@ public abstract class MacroCallableExprNode extends SchemeExpression {
         CompilerDirectives.transferToInterpreterAndInvalidate();
 
         if (userDefinedProcedure.getExpectedNumberOfArgs() != notEvaluatedArgs.length) {
-            throw SchemeException.arityException(this, name.getValue(), userDefinedProcedure.getExpectedNumberOfArgs(), notEvaluatedArgs.length);
+            throw SchemeException.arityException(this, name.value(), userDefinedProcedure.getExpectedNumberOfArgs(), notEvaluatedArgs.length);
         }
 
         var args = getArgumentsForMacroExpansion(userDefinedProcedure);

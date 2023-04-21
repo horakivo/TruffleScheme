@@ -67,7 +67,7 @@ public class SchemeException extends AbstractTruffleException {
 
     @TruffleBoundary
     public static SchemeException undefinedIdentifier(Node node, SchemeSymbol name) {
-        String msg = name.getValue() + ": " + "undefined\n" +
+        String msg = name.value() + ": " + "undefined\n" +
                 "cannot reference an identifier before its definition";
 
         return new SchemeException(msg, node);

@@ -4,7 +4,6 @@ import com.ihorak.truffle.convertor.callable.CallableConverter;
 import com.ihorak.truffle.convertor.callable.SchemeMacroDefinitionConverter;
 import com.ihorak.truffle.convertor.special_form.SpecialFormConverter;
 import com.ihorak.truffle.convertor.context.ParsingContext;
-import com.ihorak.truffle.convertor.util.SpecialFormUtils;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.runtime.SchemeList;
 import com.ihorak.truffle.runtime.SchemeSymbol;
@@ -31,7 +30,7 @@ public class SchemeListConverter {
     }
 
     private static boolean isSpecialForm(Object firstElementOfList) {
-        return firstElementOfList instanceof SchemeSymbol symbol && SpecialFormUtils.isSpecialForm(symbol);
+        return firstElementOfList instanceof SchemeSymbol symbol && SpecialFormConverter.isSpecialForm(symbol);
     }
 
     private static boolean isMacroDefinition(Object firstElementOfList) {

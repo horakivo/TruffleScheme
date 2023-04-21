@@ -102,6 +102,6 @@ public class DefineConverter {
         var body = defineList.get(2);
         if (!(body instanceof SchemeList list)) return false;
 
-        return list.get(0) instanceof SchemeSymbol symbol && symbol.getValue().equals("lambda");
+        return list.get(0) instanceof SchemeSymbol symbol && symbol.value().equals("lambda");
     }
 }

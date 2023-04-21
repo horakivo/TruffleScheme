@@ -42,7 +42,7 @@ public abstract class EqualBinaryNode extends BinaryBooleanOperationNode {
     //TODO truffle boundary?
     @Specialization
     protected boolean doSchemeSymbols(SchemeSymbol left, SchemeSymbol right) {
-        return left.getValue().equals(right.getValue());
+        return left.value().equals(right.value());
     }
 
     @Specialization

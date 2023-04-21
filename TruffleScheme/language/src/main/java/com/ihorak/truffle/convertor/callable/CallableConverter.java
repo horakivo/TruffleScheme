@@ -51,11 +51,11 @@ public class CallableConverter {
     }
 
     private static boolean isUnquote(SchemeSymbol schemeSymbol) {
-        return schemeSymbol.getValue().equals("unquote");
+        return schemeSymbol.value().equals("unquote");
     }
 
     private static boolean isUnquoteSplicing(SchemeSymbol schemeSymbol) {
-        return schemeSymbol.getValue().equals("unquote-splicing");
+        return schemeSymbol.value().equals("unquote-splicing");
     }
 
 }
