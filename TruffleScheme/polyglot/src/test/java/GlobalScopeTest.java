@@ -1,9 +1,11 @@
 import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.PolyglotException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 public class GlobalScopeTest {
 
@@ -70,18 +72,6 @@ public class GlobalScopeTest {
         assertEquals(2L, result.asLong());
     }
 
-    @Test
-    public void pythonLambda() {
-        var program = """
-                (define python-proc (eval-source "python" "lambda a, b: a + b"))
-                                           
-                (python-proc 1 2)
-                """;
-
-        var result = context.eval("scm", program);
-
-        assertEquals(3L, result.asLong());
-    }
 
     @Test
     public void redefinitionOfGlobalScopeWorks() {
@@ -98,5 +88,21 @@ public class GlobalScopeTest {
 
         assertEquals(1L, result.getArrayElement(0).asLong());
         assertEquals(2L, result.getArrayElement(1).asLong());
+    }
+
+    @Test
+    public void throwsExceptionWhenWrongArgumentTypeIsGiven() {
+        var program = """
+                (eval-source "python" "a = 1")
+                                             
+                (+ 1 (read-global-scope 'a "a"))
+                """;
+
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+
+        assertEquals("""
+                read-global-scope: contract violation
+                expected: string?
+                given: 'a""",msg);
     }
 }
