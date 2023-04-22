@@ -1,4 +1,4 @@
-package com.ihorak.truffle.node.cast;
+package com.ihorak.truffle.node;
 
 import com.ihorak.truffle.node.SchemeNode;
 import com.ihorak.truffle.runtime.PrimitiveProcedure;

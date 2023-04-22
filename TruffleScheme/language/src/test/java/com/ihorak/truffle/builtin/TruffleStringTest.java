@@ -26,15 +26,4 @@ public class TruffleStringTest {
 
         assertEquals("hello world", result.asString());
     }
-
-    @Test
-    public void aaa() {
-        var program = """
-                (. method obj 43)
-                """;
-
-        var result = context.eval("scm", program);
-
-        assertEquals("hello world", result.asString());
-    }
 }

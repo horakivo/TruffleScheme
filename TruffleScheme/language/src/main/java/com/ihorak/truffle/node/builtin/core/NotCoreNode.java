@@ -1,7 +1,7 @@
 package com.ihorak.truffle.node.builtin.core;
 
 import com.ihorak.truffle.node.SchemeNode;
-import com.ihorak.truffle.node.cast.BooleanCastNode;
+import com.ihorak.truffle.node.BooleanCastNode;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Specialization;
 

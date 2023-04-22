@@ -266,4 +266,22 @@ public class MemberNodesTest {
 
         assertEquals(1L, result.asLong());
     }
+
+    @Test
+    public void invokeMemberWithWrongOrderOfArguments() {
+        var program = """
+                (define object (eval-source "js" "a = { id: 2, method: () => 1 }"))
+                                
+                (if (is-member-invocable? object "method")
+                    (invoke-member "method" object)
+                    #f)
+                """;
+
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+
+        assertTrue(msg.contains("""
+                Interop: contract violation
+                expected: symbol? or string?
+                given: com.oracle.truffle.js.runtime.objects"""));
+    }
 }

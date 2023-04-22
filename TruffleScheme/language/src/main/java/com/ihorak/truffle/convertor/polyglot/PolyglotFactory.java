@@ -142,6 +142,14 @@ public class PolyglotFactory {
         throw ConverterException.arityException(IS_MEMBER_EXISTING, 2, arguments.size());
     }
 
+    public static SchemeExpression createReadOrInvoke(List<SchemeExpression> arguments, @Nullable ParserRuleContext isMemberExistingCtx) {
+        if (arguments.size() == 2) {
+            var expr = MemberNodesFactory.IsMemberExistingNodeGen.create(arguments.get(0), arguments.get(1));
+            return SourceSectionUtil.setSourceSectionAndReturnExpr(expr, isMemberExistingCtx);
+        }
+        throw ConverterException.arityException(IS_MEMBER_EXISTING, 2, arguments.size());
+    }
+
 
 
 }

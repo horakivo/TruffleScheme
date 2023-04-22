@@ -23,11 +23,28 @@ import com.ihorak.truffle.node.builtin.list.CdrBuiltinNodeFactory;
 import com.ihorak.truffle.node.builtin.list.ConsBuiltinNodeFactory;
 import com.ihorak.truffle.node.builtin.list.LengthBuiltinNodeFactory;
 import com.ihorak.truffle.node.builtin.list.ListBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.polyglot.GetMembersBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.polyglot.HasMembersBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.polyglot.InvokeMemberBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.polyglot.IsMemberExistingBuiltinNode;
+import com.ihorak.truffle.node.builtin.polyglot.IsMemberExistingBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.polyglot.IsMemberInsertableBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.polyglot.IsMemberInvocableBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.polyglot.IsMemberModifiableBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.polyglot.IsMemberReadableBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.polyglot.IsMemberRemovableBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.polyglot.IsMemberWritableBuiltinNode;
+import com.ihorak.truffle.node.builtin.polyglot.IsMemberWritableBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.polyglot.ReadMemberBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.polyglot.RemoveMemberBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.polyglot.WriteMemberBuiltinNodeFactory;
 import com.ihorak.truffle.runtime.PrimitiveProcedure;
 import com.ihorak.truffle.runtime.SchemeSymbol;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.ihorak.truffle.node.builtin.core.polyglot.MemberNodes.*;
 
 public class PrimitiveProcedureGenerator {
 
@@ -65,6 +82,21 @@ public class PrimitiveProcedureGenerator {
         var lengthPrimitiveProcedure = new PrimitiveProcedure("length", LengthBuiltinNodeFactory.getInstance());
         var cdrPrimitiveProcedure = new PrimitiveProcedure("cdr", CdrBuiltinNodeFactory.getInstance());
 
+        //polyglot
+        var getMembersPrimitive = new PrimitiveProcedure(GET_MEMBERS, GetMembersBuiltinNodeFactory.getInstance());
+        var hasMembersPrimitive = new PrimitiveProcedure(HAS_MEMBERS, HasMembersBuiltinNodeFactory.getInstance());
+        var isMemberReadablePrimitive = new PrimitiveProcedure(IS_MEMBER_READABLE, IsMemberReadableBuiltinNodeFactory.getInstance());
+        var readMemberPrimitive = new PrimitiveProcedure(READ_MEMBER, ReadMemberBuiltinNodeFactory.getInstance());
+        var isMemberModifiablePrimitive = new PrimitiveProcedure(IS_MEMBER_MODIFIABLE, IsMemberModifiableBuiltinNodeFactory.getInstance());
+        var isMemberInsertablePrimitive = new PrimitiveProcedure(IS_MEMBER_INSERTABLE, IsMemberInsertableBuiltinNodeFactory.getInstance());
+        var writeMemberPrimitive = new PrimitiveProcedure(WRITE_MEMBER, WriteMemberBuiltinNodeFactory.getInstance());
+        var isMemberRemovablePrimitive = new PrimitiveProcedure(IS_MEMBER_REMOVABLE, IsMemberRemovableBuiltinNodeFactory.getInstance());
+        var removeMemberPrimitive = new PrimitiveProcedure(REMOVE_MEMBER, RemoveMemberBuiltinNodeFactory.getInstance());
+        var isMemberInvocablePrimitive = new PrimitiveProcedure(IS_MEMBER_INVOCABLE, IsMemberInvocableBuiltinNodeFactory.getInstance());
+        var invokeMemberPrimitive = new PrimitiveProcedure(INVOKE_MEMBER, InvokeMemberBuiltinNodeFactory.getInstance());
+        var isMemberWritablePrimitive = new PrimitiveProcedure(IS_MEMBER_WRITABLE, IsMemberWritableBuiltinNodeFactory.getInstance());
+        var isMemberExistingPrimitive = new PrimitiveProcedure(IS_MEMBER_EXISTING, IsMemberExistingBuiltinNodeFactory.getInstance());
+
 
         result.put(new SchemeSymbol("+"), plusPrimitiveProcedure);
         result.put(new SchemeSymbol("-"), minusPrimitiveProcedure);
@@ -86,11 +118,23 @@ public class PrimitiveProcedureGenerator {
         result.put(new SchemeSymbol("not"), notPrimitiveProcedure);
         result.put(new SchemeSymbol("display"), displayPrimitiveProcedure);
         result.put(new SchemeSymbol("current-milliseconds"), currentMillisPrimitiveProcedure);
-        result.put(new SchemeSymbol("apply"), applyPrimitiveProcedure);
-
-
-        result.put(new SchemeSymbol("map"), mapPrimitiveProcedure);
         result.put(new SchemeSymbol("append"), appendPrimitiveProcedure);
+        result.put(new SchemeSymbol("apply"), applyPrimitiveProcedure);
+        result.put(new SchemeSymbol("map"), mapPrimitiveProcedure);
+        //polyglot
+        result.put(new SchemeSymbol(GET_MEMBERS), getMembersPrimitive);
+        result.put(new SchemeSymbol(HAS_MEMBERS), hasMembersPrimitive);
+        result.put(new SchemeSymbol(IS_MEMBER_READABLE), isMemberReadablePrimitive);
+        result.put(new SchemeSymbol(READ_MEMBER), readMemberPrimitive);
+        result.put(new SchemeSymbol(IS_MEMBER_MODIFIABLE), isMemberModifiablePrimitive);
+        result.put(new SchemeSymbol(IS_MEMBER_INSERTABLE), isMemberInsertablePrimitive);
+        result.put(new SchemeSymbol(WRITE_MEMBER), writeMemberPrimitive);
+        result.put(new SchemeSymbol(IS_MEMBER_REMOVABLE), isMemberRemovablePrimitive);
+        result.put(new SchemeSymbol(REMOVE_MEMBER), removeMemberPrimitive);
+        result.put(new SchemeSymbol(IS_MEMBER_INVOCABLE), isMemberInvocablePrimitive);
+        result.put(new SchemeSymbol(INVOKE_MEMBER), invokeMemberPrimitive);
+        result.put(new SchemeSymbol(IS_MEMBER_WRITABLE), isMemberWritablePrimitive);
+        result.put(new SchemeSymbol(IS_MEMBER_EXISTING), isMemberExistingPrimitive);
 
         return result;
     }
