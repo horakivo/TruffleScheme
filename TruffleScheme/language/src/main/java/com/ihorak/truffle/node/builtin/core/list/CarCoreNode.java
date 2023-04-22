@@ -2,7 +2,7 @@ package com.ihorak.truffle.node.builtin.core.list;
 
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeNode;
-import com.ihorak.truffle.node.polyglot.ForeignToSchemeNode;
+import com.ihorak.truffle.node.builtin.polyglot.ForeignToSchemeNode;
 import com.ihorak.truffle.runtime.SchemeList;
 import com.ihorak.truffle.runtime.SchemePair;
 import com.oracle.truffle.api.dsl.Cached;

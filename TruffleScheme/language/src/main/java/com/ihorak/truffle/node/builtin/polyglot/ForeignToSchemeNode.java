@@ -1,4 +1,4 @@
-package com.ihorak.truffle.node.polyglot;
+package com.ihorak.truffle.node.builtin.polyglot;
 
 import com.ihorak.truffle.node.SchemeNode;
 import com.oracle.truffle.api.dsl.Fallback;

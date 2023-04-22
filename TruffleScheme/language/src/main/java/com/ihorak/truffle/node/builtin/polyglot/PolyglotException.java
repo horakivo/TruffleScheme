@@ -1,4 +1,4 @@
-package com.ihorak.truffle.node.polyglot;
+package com.ihorak.truffle.node.builtin.polyglot;
 
 import com.oracle.truffle.api.exception.AbstractTruffleException;
 import com.oracle.truffle.api.interop.ArityException;

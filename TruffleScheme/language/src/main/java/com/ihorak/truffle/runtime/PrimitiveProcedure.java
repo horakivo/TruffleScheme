@@ -1,9 +1,8 @@
 package com.ihorak.truffle.runtime;
 
 import com.ihorak.truffle.node.callable.AlwaysInlinableProcedureNode;
-import com.ihorak.truffle.node.callable.DispatchNode;
 import com.ihorak.truffle.node.callable.DispatchPrimitiveProcedureNode;
-import com.ihorak.truffle.node.polyglot.ForeignToSchemeNode;
+import com.ihorak.truffle.node.builtin.polyglot.ForeignToSchemeNode;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.NodeFactory;
 import com.oracle.truffle.api.interop.InteropLibrary;

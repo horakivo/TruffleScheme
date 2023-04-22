@@ -4,7 +4,7 @@ import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeNode;
 import com.ihorak.truffle.node.callable.DispatchNode;
 import com.ihorak.truffle.node.callable.DispatchPrimitiveProcedureNode;
-import com.ihorak.truffle.node.polyglot.TranslateInteropExceptionNode;
+import com.ihorak.truffle.node.builtin.polyglot.TranslateInteropExceptionNode;
 import com.ihorak.truffle.runtime.PrimitiveProcedure;
 import com.ihorak.truffle.runtime.SchemeList;
 import com.ihorak.truffle.runtime.UserDefinedProcedure;
@@ -13,8 +13,6 @@ import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.library.CachedLibrary;
-
-import java.beans.Transient;
 
 public abstract class ApplyCoreNode extends SchemeNode {
 

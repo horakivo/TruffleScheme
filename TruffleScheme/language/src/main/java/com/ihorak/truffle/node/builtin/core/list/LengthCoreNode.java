@@ -2,7 +2,7 @@ package com.ihorak.truffle.node.builtin.core.list;
 
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeNode;
-import com.ihorak.truffle.node.polyglot.TranslateInteropExceptionNode;
+import com.ihorak.truffle.node.builtin.polyglot.TranslateInteropExceptionNode;
 import com.ihorak.truffle.runtime.SchemeList;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Fallback;

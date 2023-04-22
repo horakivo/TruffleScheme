@@ -1,10 +1,8 @@
 package com.ihorak.truffle.runtime;
 
 import com.ihorak.truffle.SchemeTruffleLanguage;
-import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.callable.DispatchNode;
-import com.ihorak.truffle.node.callable.DispatchNodeGen;
-import com.ihorak.truffle.node.polyglot.ForeignToSchemeNode;
+import com.ihorak.truffle.node.builtin.polyglot.ForeignToSchemeNode;
 import com.oracle.truffle.api.Assumption;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;

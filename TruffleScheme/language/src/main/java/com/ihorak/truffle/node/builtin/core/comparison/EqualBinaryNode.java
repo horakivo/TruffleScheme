@@ -1,7 +1,7 @@
 package com.ihorak.truffle.node.builtin.core.comparison;
 
 import com.ihorak.truffle.node.builtin.BinaryBooleanOperationNode;
-import com.ihorak.truffle.node.polyglot.PolyglotException;
+import com.ihorak.truffle.node.builtin.polyglot.PolyglotException;
 import com.ihorak.truffle.runtime.SchemeBigInt;
 import com.ihorak.truffle.runtime.SchemeList;
 import com.ihorak.truffle.runtime.SchemeSymbol;

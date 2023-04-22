@@ -1,8 +1,7 @@
 package com.ihorak.truffle.node;
 
 import com.ihorak.truffle.exceptions.SchemeException;
-import com.ihorak.truffle.node.polyglot.TranslateInteropExceptionNode;
-import com.oracle.truffle.api.CompilerDirectives;
+import com.ihorak.truffle.node.builtin.polyglot.TranslateInteropExceptionNode;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.interop.InteropException;

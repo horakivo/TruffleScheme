@@ -1,10 +1,9 @@
 package com.ihorak.truffle.node.builtin.core.polyglot;
 
-import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.SchemeNode;
 import com.ihorak.truffle.node.ToJavaStringNode;
-import com.ihorak.truffle.node.polyglot.ForeignToSchemeNode;
-import com.ihorak.truffle.node.polyglot.TranslateInteropExceptionNode;
+import com.ihorak.truffle.node.builtin.polyglot.ForeignToSchemeNode;
+import com.ihorak.truffle.node.builtin.polyglot.TranslateInteropExceptionNode;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.interop.InteropException;
