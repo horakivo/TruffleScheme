@@ -1,12 +1,10 @@
 package com.ihorak.truffle.special_form;
 
-import com.ihorak.truffle.convertor.polyglot.PolyglotConverter;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.PolyglotException;
 import org.junit.Before;
 import org.junit.Test;
 
-import static com.ihorak.truffle.node.polyglot.MemberNodes.READ_MEMBER;
 import static org.junit.Assert.*;
 
 public class DefineExprNodeTest {

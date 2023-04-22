@@ -1,4 +1,4 @@
-package com.ihorak.truffle.node.builtin.polyglot;
+package com.ihorak.truffle.node.builtin.polyglot.members;
 
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;

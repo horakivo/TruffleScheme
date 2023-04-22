@@ -1,7 +1,6 @@
 package com.ihorak.truffle.convertor.callable;
 
 import com.ihorak.truffle.convertor.context.ParsingContext;
-import com.ihorak.truffle.convertor.polyglot.PolyglotConverter;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.runtime.SchemeList;
@@ -20,9 +19,7 @@ public class CallableConverter {
     public static SchemeExpression convertListToProcedureCall(SchemeList callableList, ParsingContext context, boolean isTailCall, @Nullable ParserRuleContext callableCtx) {
         validate(callableList);
 
-        if (isPolyglotNode(callableList)) {
-            return PolyglotConverter.convert(callableList, context, callableCtx);
-        } else if (isMacro(callableList, context)) {
+        if (isMacro(callableList, context)) {
             return MacroConverter.convert(callableList, context, callableCtx);
         } else {
             return ProcedureConverter.convert(callableList, isTailCall, context, callableCtx);
@@ -30,9 +27,6 @@ public class CallableConverter {
 
     }
 
-    private static boolean isPolyglotNode(SchemeList callableList) {
-        return callableList.car instanceof SchemeSymbol symbol && PolyglotConverter.isPolyglotAPI(symbol);
-    }
 
     private static boolean isMacro(SchemeList callableList, ParsingContext context) {
         return callableList.car instanceof SchemeSymbol symbol && context.isMacro(symbol);

@@ -82,4 +82,21 @@ public class GlobalScopeTest {
 
         assertEquals(3L, result.asLong());
     }
+
+    @Test
+    public void redefinitionOfGlobalScopeWorks() {
+        var program = """
+                (eval-source "python" "a = 1")
+                (define a (read-global-scope "python" "a"))
+                (eval-source "python" "a = 2")
+                (define b (read-global-scope "python" "a"))
+                                           
+                (list a b)
+                """;
+
+        var result = context.eval("scm", program);
+
+        assertEquals(1L, result.getArrayElement(0).asLong());
+        assertEquals(2L, result.getArrayElement(1).asLong());
+    }
 }

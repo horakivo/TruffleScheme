@@ -23,21 +23,22 @@ import com.ihorak.truffle.node.builtin.list.CdrBuiltinNodeFactory;
 import com.ihorak.truffle.node.builtin.list.ConsBuiltinNodeFactory;
 import com.ihorak.truffle.node.builtin.list.LengthBuiltinNodeFactory;
 import com.ihorak.truffle.node.builtin.list.ListBuiltinNodeFactory;
-import com.ihorak.truffle.node.builtin.polyglot.GetMembersBuiltinNodeFactory;
-import com.ihorak.truffle.node.builtin.polyglot.HasMembersBuiltinNodeFactory;
-import com.ihorak.truffle.node.builtin.polyglot.InvokeMemberBuiltinNodeFactory;
-import com.ihorak.truffle.node.builtin.polyglot.IsMemberExistingBuiltinNode;
-import com.ihorak.truffle.node.builtin.polyglot.IsMemberExistingBuiltinNodeFactory;
-import com.ihorak.truffle.node.builtin.polyglot.IsMemberInsertableBuiltinNodeFactory;
-import com.ihorak.truffle.node.builtin.polyglot.IsMemberInvocableBuiltinNodeFactory;
-import com.ihorak.truffle.node.builtin.polyglot.IsMemberModifiableBuiltinNodeFactory;
-import com.ihorak.truffle.node.builtin.polyglot.IsMemberReadableBuiltinNodeFactory;
-import com.ihorak.truffle.node.builtin.polyglot.IsMemberRemovableBuiltinNodeFactory;
-import com.ihorak.truffle.node.builtin.polyglot.IsMemberWritableBuiltinNode;
-import com.ihorak.truffle.node.builtin.polyglot.IsMemberWritableBuiltinNodeFactory;
-import com.ihorak.truffle.node.builtin.polyglot.ReadMemberBuiltinNodeFactory;
-import com.ihorak.truffle.node.builtin.polyglot.RemoveMemberBuiltinNodeFactory;
-import com.ihorak.truffle.node.builtin.polyglot.WriteMemberBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.polyglot.EvalSourceBuiltinNode;
+import com.ihorak.truffle.node.builtin.polyglot.EvalSourceBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.polyglot.ReadForeignGlobalScopeBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.polyglot.members.GetMembersBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.polyglot.members.HasMembersBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.polyglot.members.InvokeMemberBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.polyglot.members.IsMemberExistingBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.polyglot.members.IsMemberInsertableBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.polyglot.members.IsMemberInvocableBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.polyglot.members.IsMemberModifiableBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.polyglot.members.IsMemberReadableBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.polyglot.members.IsMemberRemovableBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.polyglot.members.IsMemberWritableBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.polyglot.members.ReadMemberBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.polyglot.members.RemoveMemberBuiltinNodeFactory;
+import com.ihorak.truffle.node.builtin.polyglot.members.WriteMemberBuiltinNodeFactory;
 import com.ihorak.truffle.runtime.PrimitiveProcedure;
 import com.ihorak.truffle.runtime.SchemeSymbol;
 
@@ -45,6 +46,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.ihorak.truffle.node.builtin.core.polyglot.MemberNodes.*;
+import static com.ihorak.truffle.node.builtin.core.polyglot.EvalSourceCoreNode.POLYGLOT_EVAL_SOURCE;
+import static com.ihorak.truffle.node.builtin.core.polyglot.ReadForeignGlobalScopeCoreNode.POLYGLOT_READ_GLOBAL_SCOPE;
 
 public class PrimitiveProcedureGenerator {
 
@@ -97,6 +100,9 @@ public class PrimitiveProcedureGenerator {
         var isMemberWritablePrimitive = new PrimitiveProcedure(IS_MEMBER_WRITABLE, IsMemberWritableBuiltinNodeFactory.getInstance());
         var isMemberExistingPrimitive = new PrimitiveProcedure(IS_MEMBER_EXISTING, IsMemberExistingBuiltinNodeFactory.getInstance());
 
+        var evalSourcePrimitive = new PrimitiveProcedure(POLYGLOT_EVAL_SOURCE, EvalSourceBuiltinNodeFactory.getInstance());
+       var readForeignGlobalScopePrimitive = new PrimitiveProcedure(POLYGLOT_READ_GLOBAL_SCOPE, ReadForeignGlobalScopeBuiltinNodeFactory.getInstance());
+
 
         result.put(new SchemeSymbol("+"), plusPrimitiveProcedure);
         result.put(new SchemeSymbol("-"), minusPrimitiveProcedure);
@@ -135,6 +141,8 @@ public class PrimitiveProcedureGenerator {
         result.put(new SchemeSymbol(INVOKE_MEMBER), invokeMemberPrimitive);
         result.put(new SchemeSymbol(IS_MEMBER_WRITABLE), isMemberWritablePrimitive);
         result.put(new SchemeSymbol(IS_MEMBER_EXISTING), isMemberExistingPrimitive);
+        result.put(new SchemeSymbol(POLYGLOT_EVAL_SOURCE), evalSourcePrimitive);
+        result.put(new SchemeSymbol(POLYGLOT_READ_GLOBAL_SCOPE), readForeignGlobalScopePrimitive);
 
         return result;
     }

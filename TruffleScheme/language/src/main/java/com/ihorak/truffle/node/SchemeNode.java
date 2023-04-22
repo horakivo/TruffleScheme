@@ -9,6 +9,7 @@ import com.oracle.truffle.api.interop.InteropException;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.UnsupportedMessageException;
 import com.oracle.truffle.api.nodes.Node;
+import com.oracle.truffle.api.strings.TruffleString;
 
 @TypeSystemReference(SchemeTypes.class)
 public abstract class SchemeNode extends Node {
@@ -25,6 +26,9 @@ public abstract class SchemeNode extends Node {
         return 2;
     }
 
+    protected boolean areTruffleStringsEqual(TruffleString.EqualNode equalNode, TruffleString left, TruffleString right) {
+        return equalNode.execute(left, right, SchemeTruffleLanguage.STRING_ENCODING);
+    }
 
     // interop helper methods
     protected final int getForeignArraySize(Object receiver, InteropLibrary interop, TranslateInteropExceptionNode translateInteropExceptionNode) {

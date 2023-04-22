@@ -45,10 +45,6 @@ public abstract class SchemeExpression extends SchemeNode {
         return SchemeTypesGen.expectDouble(executeGeneric(virtualFrame));
     }
 
-    protected boolean areTruffleStringsEqual(TruffleString.EqualNode equalNode, TruffleString left, TruffleString right) {
-        return equalNode.execute(left, right, SchemeTruffleLanguage.STRING_ENCODING);
-    }
-
     @ExplodeLoop
     protected Object[] getProcedureArguments(final UserDefinedProcedure function, final SchemeExpression[] arguments, VirtualFrame frame) {
         Object[] args = new Object[arguments.length + 1];
