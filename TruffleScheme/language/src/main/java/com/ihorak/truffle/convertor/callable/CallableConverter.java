@@ -30,7 +30,7 @@ public class CallableConverter {
     }
 
     private static boolean isPolyglot(SchemeList callableList) {
-        return callableList.car instanceof SchemeSymbol symbol && symbol.value().equals(".");
+        return callableList.car instanceof SchemeSymbol symbol && PolyglotConverter.isPolyglot(symbol);
     }
 
 

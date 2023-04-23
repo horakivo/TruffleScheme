@@ -101,5 +101,28 @@ public class ReadOrInvokeTest {
         assertTrue(msg.contains("Message is not supported"));
     }
 
+    @Test
+    public void pythonCallingWithWrongNumberOfArgsThrowException() {
+        var program = """
+                (eval-source "python"
+                "class Rectangle:
+                     def __init__(self, height, width):
+                         self.height = height
+                         self.width = width
 
+                     def calcArea(self):
+                         return self.height * self.height
+
+                p1 = Rectangle(10, 10)")
+
+                (define object (read-global-scope "python" "p1"))
+
+
+                (define height (. calcArea object 1))
+                """;
+
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+
+        assertEquals("TypeError: calcArea() takes 1 positional argument but 2 were given", msg);
+    }
 }
