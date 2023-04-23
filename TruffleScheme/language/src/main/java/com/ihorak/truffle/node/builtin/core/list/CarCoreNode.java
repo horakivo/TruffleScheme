@@ -3,12 +3,12 @@ package com.ihorak.truffle.node.builtin.core.list;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeNode;
 import com.ihorak.truffle.node.builtin.polyglot.ForeignToSchemeNode;
+import com.ihorak.truffle.node.builtin.polyglot.TranslateInteropExceptionNode;
 import com.ihorak.truffle.runtime.SchemeList;
 import com.ihorak.truffle.runtime.SchemePair;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
-import com.oracle.truffle.api.interop.InteropException;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.library.CachedLibrary;
 
@@ -31,16 +31,13 @@ public abstract class CarCoreNode extends SchemeNode {
         throw SchemeException.contractViolation(this, "car", "pair? or list?", list);
     }
 
-    @Specialization(guards = "interopLib.hasArrayElements(obj)", limit = "getInteropCacheLimit()")
-    protected Object doForeignObject(Object obj,
-                                     @CachedLibrary("obj") InteropLibrary interopLib,
-                                     @Cached ForeignToSchemeNode foreignToSchemeNode) {
-        try {
-            var foreign = interopLib.readArrayElement(obj, 0);
-            return foreignToSchemeNode.executeConvert(foreign);
-        } catch (InteropException e) {
-            throw SchemeException.interopException(e);
-        }
+    @Specialization(guards = "interopLib.hasArrayElements(receiver)", limit = "getInteropCacheLimit()")
+    protected Object doForeignObject(Object receiver,
+                                     @CachedLibrary("receiver") InteropLibrary interopLib,
+                                     @Cached ForeignToSchemeNode foreignToSchemeNode,
+                                     @Cached TranslateInteropExceptionNode translateInteropExceptionNode) {
+        final var foreign = readForeignArrayElement(receiver, 0, interopLib, translateInteropExceptionNode);
+        return foreignToSchemeNode.executeConvert(foreign);
     }
 
     @Fallback

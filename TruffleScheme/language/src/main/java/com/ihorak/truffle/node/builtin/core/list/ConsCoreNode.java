@@ -28,27 +28,21 @@ public abstract class ConsCoreNode extends SchemeNode {
         return new SchemeList(car, SchemeList.EMPTY_LIST, 1, false);
     }
 
-    @Specialization(guards = "interopLibrary.hasArrayElements(cdr)", limit = "getInteropCacheLimit()")
+    @Specialization(guards = "interopLibrary.hasArrayElements(receiverCdr)", limit = "getInteropCacheLimit()")
     protected SchemeList doInterop(Object car,
-                                   Object cdr,
+                                   Object receiverCdr,
                                    @Cached ListBuiltinNode listNode,
                                    @Cached TranslateInteropExceptionNode translateInteropExceptionNode,
-                                   @CachedLibrary("cdr") InteropLibrary interopLibrary) {
-        try {
-            var size = (int) interopLibrary.getArraySize(cdr);
-            var array = new Object[size + 1];
-            array[0] = car;
+                                   @CachedLibrary("receiverCdr") InteropLibrary interopLibrary) {
+        var size = getForeignArraySize(receiverCdr, interopLibrary, translateInteropExceptionNode);
+        var array = new Object[size + 1];
+        array[0] = car;
 
-            for (int i = 0; i < size; i++) {
-                array[i + 1] = interopLibrary.readArrayElement(cdr, i);
-            }
-
-            return listNode.execute(array);
-
-        } catch (InteropException e) {
-            throw translateInteropExceptionNode.execute(e, cdr, "cons", null);
+        for (int i = 0; i < size; i++) {
+            array[i + 1] = readForeignArrayElement(receiverCdr, i, interopLibrary, translateInteropExceptionNode);
         }
 
+        return listNode.execute(array);
     }
 
     @Fallback
@@ -56,7 +50,4 @@ public abstract class ConsCoreNode extends SchemeNode {
         return new SchemePair(car, cdr);
     }
 
-    public boolean isSchemeList(Object cdr) {
-        return cdr instanceof SchemeList;
-    }
 }

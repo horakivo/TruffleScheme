@@ -20,7 +20,7 @@ public abstract class ToJavaStringNode extends SchemeNode {
         try {
             return interop.asString(valueToConvert);
         } catch (InteropException e) {
-            throw translateInteropExceptionNode.execute(e, valueToConvert, "ToJavaStringNode", null);
+            throw translateInteropExceptionNode.execute(e, valueToConvert);
         }
     }
 

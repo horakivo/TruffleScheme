@@ -44,8 +44,7 @@ public abstract class CallableExprNode extends SchemeExpression {
                                             @Cached DispatchNode dispatchNode) {
         var args = getProcedureArguments(procedure, arguments, frame);
         try {
-            var result = dispatchNode.executeDispatch(procedure, args);
-            return result;
+            return dispatchNode.executeDispatch(procedure, args);
         } catch (TailCallException e) {
             CompilerDirectives.transferToInterpreterAndInvalidate();
             var tailCallCatcher = new TailCallCatcherNode(arguments, callable, tailCallArgumentsSlot, tailCallTargetSlot, tailCallResultSlot);
@@ -58,9 +57,8 @@ public abstract class CallableExprNode extends SchemeExpression {
             VirtualFrame frame,
             PrimitiveProcedure procedure,
             @Cached DispatchPrimitiveProcedureNode dispatchNode) {
-        var args = getPrimitiveProcedureArguments(arguments, frame);
-        var result = dispatchNode.execute(procedure, args);
-        return result;
+        var args = getArgumentsWithoutLexicalScope(arguments, frame);
+        return dispatchNode.execute(procedure, args);
     }
 
     @Specialization(guards = "interopLib.isExecutable(interopProcedure)", limit = "getInteropCacheLimit()")
@@ -68,7 +66,7 @@ public abstract class CallableExprNode extends SchemeExpression {
                                         Object interopProcedure,
                                         @Cached DispatchNode dispatchNode,
                                         @CachedLibrary("interopProcedure") InteropLibrary interopLib) {
-        return dispatchNode.executeDispatch(interopProcedure, getForeignProcedureArguments(arguments, frame));
+        return dispatchNode.executeDispatch(interopProcedure, getArgumentsWithoutLexicalScope(arguments, frame));
     }
 
     @Fallback

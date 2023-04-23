@@ -47,7 +47,7 @@ public abstract class TailCallThrowerNode extends SchemeExpression {
             PrimitiveProcedure procedure,
             @Cached DispatchPrimitiveProcedureNode dispatchNode) {
 
-        return dispatchNode.execute(procedure, getPrimitiveProcedureArguments(arguments, frame));
+        return dispatchNode.execute(procedure, getArgumentsWithoutLexicalScope(arguments, frame));
     }
 
 
@@ -55,7 +55,7 @@ public abstract class TailCallThrowerNode extends SchemeExpression {
     protected Object doPolyglot(VirtualFrame frame, Object procedure,
                                 @CachedLibrary("procedure") InteropLibrary interopLibrary,
                                 @Cached DispatchNode dispatchNode) {
-        return dispatchNode.executeDispatch(procedure, getForeignProcedureArguments(arguments, frame));
+        return dispatchNode.executeDispatch(procedure, getArgumentsWithoutLexicalScope(arguments, frame));
     }
 
 

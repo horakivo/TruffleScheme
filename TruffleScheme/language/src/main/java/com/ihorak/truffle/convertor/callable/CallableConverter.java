@@ -19,12 +19,18 @@ public class CallableConverter {
     public static SchemeExpression convertListToProcedureCall(SchemeList callableList, ParsingContext context, boolean isTailCall, @Nullable ParserRuleContext callableCtx) {
         validate(callableList);
 
-        if (isMacro(callableList, context)) {
+        if (isPolyglot(callableList)) {
+            return PolyglotConverter.convert(callableList, context, callableCtx);
+        } else if (isMacro(callableList, context)) {
             return MacroConverter.convert(callableList, context, callableCtx);
         } else {
             return ProcedureConverter.convert(callableList, isTailCall, context, callableCtx);
         }
 
+    }
+
+    private static boolean isPolyglot(SchemeList callableList) {
+        return callableList.car instanceof SchemeSymbol symbol && symbol.value().equals(".");
     }
 
 

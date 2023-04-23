@@ -10,16 +10,20 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractCallableConverter {
+public class CallableUtil {
+
+    private CallableUtil() {
+
+    }
 
     private static final int CTX_ARGUMENT_OFFSET = 2;
 
 
-    protected static List<SchemeExpression> convertArguments(SchemeList argumentListIR, ParsingContext context, @Nullable ParserRuleContext procedureCtx) {
+    public static List<SchemeExpression> convertArguments(SchemeList argumentListIR, ParsingContext context, @Nullable ParserRuleContext callableCtx) {
         List<SchemeExpression> result = new ArrayList<>();
 
         for (int i = 0; i < argumentListIR.size; i++) {
-            var currentCtx = procedureCtx != null ? (ParserRuleContext) procedureCtx.getChild(i + CTX_ARGUMENT_OFFSET) : null;
+            var currentCtx = callableCtx != null ? (ParserRuleContext) callableCtx.getChild(i + CTX_ARGUMENT_OFFSET) : null;
             result.add(InternalRepresentationConverter.convert(argumentListIR.get(i), context, false, false, currentCtx));
         }
         return result;

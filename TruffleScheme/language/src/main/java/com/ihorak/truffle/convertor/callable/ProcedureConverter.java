@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class ProcedureConverter extends AbstractCallableConverter {
+public class ProcedureConverter {
 
 
     private static final int CTX_CALLABLE_INDEX = 1;
@@ -28,7 +28,7 @@ public class ProcedureConverter extends AbstractCallableConverter {
 
     public static SchemeExpression convert(SchemeList callableList, boolean isTailCallPosition, ParsingContext context, @Nullable ParserRuleContext procedureCtx) {
         var operandIR = callableList.car;
-        List<SchemeExpression> arguments = convertArguments(callableList.cdr, context, procedureCtx);
+        List<SchemeExpression> arguments = CallableUtil.convertArguments(callableList.cdr, context, procedureCtx);
         var callableCtx = procedureCtx != null ? (ParserRuleContext) procedureCtx.getChild(CTX_CALLABLE_INDEX) : null;
         var operandExpr = InternalRepresentationConverter.convert(operandIR, context, false, false, callableCtx);
 

@@ -18,12 +18,13 @@ public class ConverterException extends AbstractTruffleException {
         String sb = name + ": arity mismatch; Expected number of arguments does not match the given number\n" +
                 "expected: " + expected + "\n" +
                 "given: " + given;
+        return new ConverterException(sb);
+    }
 
-//        StringBuilder sb = new StringBuilder();
-//        sb.append(name).append(": arity mismatch; Expected number of arguments does not match the given number\n");
-//        sb.append("expected: ").append(expected).append("\n");
-//        sb.append("given: ").append(given);
-
+    public static ConverterException arityExceptionAtLeast(String name, int expected, int given) {
+        String sb = name + ": arity mismatch; Expected number of arguments does not match the given number\n" +
+                "expected: at least" + expected + "\n" +
+                "given: " + given;
         return new ConverterException(sb);
     }
 

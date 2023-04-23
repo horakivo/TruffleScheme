@@ -33,23 +33,19 @@ public abstract class CdrCoreNode extends SchemeNode {
         throw SchemeException.contractViolation(this, "cdr", "pair? or list?", list);
     }
 
-    @Specialization(guards = "interopLib.hasArrayElements(obj)", limit = "getInteropCacheLimit()")
-    protected Object doForeignObject(Object obj,
+    @Specialization(guards = "interopLib.hasArrayElements(receiver)", limit = "getInteropCacheLimit()")
+    protected Object doForeignObject(Object receiver,
                                      @Cached TranslateInteropExceptionNode translateInteropExceptionNode,
                                      @Cached ListBuiltinNode listNode,
                                      @Cached ForeignToSchemeNode foreignToSchemeNode,
-                                     @CachedLibrary("obj") InteropLibrary interopLib) {
-        try {
-            var size = (int) interopLib.getArraySize(obj);
-            Object[] array = new Object[size - 1];
-            for (int i = 1; i < size; i++) {
-                var foreignObject = interopLib.readArrayElement(obj, i);
-                array[i - 1] = foreignToSchemeNode.executeConvert(foreignObject);
-            }
-            return listNode.execute(array);
-        } catch (InteropException exception) {
-            throw translateInteropExceptionNode.execute(exception, obj, "readArrayElement", null);
+                                     @CachedLibrary("receiver") InteropLibrary interopLib) {
+        var size = getForeignArraySize(receiver, interopLib, translateInteropExceptionNode);
+        Object[] array = new Object[size - 1];
+        for (int i = 1; i < size; i++) {
+            var foreignObject = readForeignArrayElement(receiver, i, interopLib, translateInteropExceptionNode);
+            array[i - 1] = foreignToSchemeNode.executeConvert(foreignObject);
         }
+        return listNode.execute(array);
     }
 
     @Fallback

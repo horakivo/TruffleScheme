@@ -24,11 +24,7 @@ public abstract class LengthCoreNode extends SchemeNode {
     public long doInterop(Object receiver,
                           @Cached TranslateInteropExceptionNode translateInteropExceptionNode,
                           @CachedLibrary("receiver") InteropLibrary interopLibrary) {
-        try {
-            return interopLibrary.getArraySize(receiver);
-        } catch (InteropException e) {
-            throw translateInteropExceptionNode.execute(e, receiver, "length", null);
-        }
+        return getForeignArraySize(receiver, interopLibrary, translateInteropExceptionNode);
     }
 
     @Fallback

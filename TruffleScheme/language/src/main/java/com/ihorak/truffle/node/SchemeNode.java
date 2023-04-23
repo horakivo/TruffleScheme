@@ -34,9 +34,8 @@ public abstract class SchemeNode extends Node {
     protected final int getForeignArraySize(Object receiver, InteropLibrary interop, TranslateInteropExceptionNode translateInteropExceptionNode) {
         try {
             return (int) interop.getArraySize(receiver);
-
         } catch (UnsupportedMessageException e) {
-            throw translateInteropExceptionNode.execute(e, receiver, "map", null);
+            throw translateInteropExceptionNode.execute(e, receiver);
         }
     }
 
@@ -44,15 +43,15 @@ public abstract class SchemeNode extends Node {
         try {
             return interop.readArrayElement(receiver, index);
         } catch (InteropException e) {
-            throw translateInteropExceptionNode.execute(e, receiver, "map", null);
+            throw translateInteropExceptionNode.execute(e, receiver);
         }
     }
 
-    protected final Object executeForeignProcedure(Object procedure, Object[] arguments, InteropLibrary interop, TranslateInteropExceptionNode translateInteropExceptionNode) {
+    protected static Object executeForeignProcedure(Object procedure, Object[] arguments, InteropLibrary interop, TranslateInteropExceptionNode translateInteropExceptionNode) {
         try {
             return interop.execute(procedure, arguments);
         } catch (InteropException e) {
-            throw translateInteropExceptionNode.execute(e, procedure, "map", arguments);
+            throw translateInteropExceptionNode.execute(e, procedure);
         }
     }
 }

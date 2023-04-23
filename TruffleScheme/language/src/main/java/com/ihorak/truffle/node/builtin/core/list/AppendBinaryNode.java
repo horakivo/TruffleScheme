@@ -8,9 +8,7 @@ import com.ihorak.truffle.runtime.SchemeList;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
-import com.oracle.truffle.api.interop.InteropException;
 import com.oracle.truffle.api.interop.InteropLibrary;
-import com.oracle.truffle.api.interop.UnsupportedMessageException;
 import com.oracle.truffle.api.library.CachedLibrary;
 
 
@@ -39,34 +37,24 @@ public abstract class AppendBinaryNode extends BinaryObjectOperationNode {
         return right;
     }
 
-    @Specialization(guards = {"interopLeft.hasArrayElements(left)", " interopRight.hasArrayElements(right)"}, limit = " getInteropCacheLimit()")
-    protected Object doInterop(Object left,
-                               Object right,
+    @Specialization(guards = {"interopLeft.hasArrayElements(receiverLeft)", " interopRight.hasArrayElements(receiverRight)"}, limit = " getInteropCacheLimit()")
+    protected Object doInterop(Object receiverLeft,
+                               Object receiverRight,
                                @Cached ListBuiltinNode listNode,
                                @Cached TranslateInteropExceptionNode translateInteropExceptionNode,
-                               @CachedLibrary("left") InteropLibrary interopLeft,
-                               @CachedLibrary("right") InteropLibrary interopRight) {
-        var leftSize = getInteropArraySize(left, interopLeft, translateInteropExceptionNode);
-        var rightSize = getInteropArraySize(right, interopRight, translateInteropExceptionNode);
+                               @CachedLibrary("receiverLeft") InteropLibrary interopLeft,
+                               @CachedLibrary("receiverRight") InteropLibrary interopRight) {
+        var leftSize = getForeignArraySize(receiverLeft, interopLeft, translateInteropExceptionNode);
+        var rightSize = getForeignArraySize(receiverRight, interopRight, translateInteropExceptionNode);
         var array = new Object[leftSize + rightSize];
 
-        try {
-            for (int i = 0; i < leftSize; i++) {
-                array[i] = interopLeft.readArrayElement(left, i);
-            }
-        } catch (InteropException e) {
-            throw translateInteropExceptionNode.execute(e, left, "append", null);
+        for (int i = 0; i < leftSize; i++) {
+            array[i] = readForeignArrayElement(receiverLeft, i, interopLeft, translateInteropExceptionNode);
         }
 
-
-        try {
-            for (int i = 0; i < rightSize; i++) {
-                array[i + leftSize] = interopRight.readArrayElement(right, i);
-            }
-        } catch (InteropException e) {
-            throw translateInteropExceptionNode.execute(e, right, "append", null);
+        for (int i = 0; i < rightSize; i++) {
+            array[i + leftSize] = readForeignArrayElement(receiverRight, i, interopRight, translateInteropExceptionNode);
         }
-
 
         return listNode.execute(array);
     }
@@ -75,17 +63,4 @@ public abstract class AppendBinaryNode extends BinaryObjectOperationNode {
     protected Object doThrow(Object left, Object right) {
         throw SchemeException.contractViolation(this, "append", "list?", left, right);
     }
-
-
-
-    private int getInteropArraySize(Object receiver, InteropLibrary interopLibrary, TranslateInteropExceptionNode
-            translateInteropExceptionNode) {
-        try {
-            return (int) interopLibrary.getArraySize(receiver);
-        } catch (UnsupportedMessageException e) {
-            throw translateInteropExceptionNode.execute(e, receiver, "append", null);
-        }
-    }
-
-
 }

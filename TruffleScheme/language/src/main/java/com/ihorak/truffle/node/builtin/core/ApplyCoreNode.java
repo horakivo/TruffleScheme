@@ -2,6 +2,7 @@ package com.ihorak.truffle.node.builtin.core;
 
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeNode;
+import com.ihorak.truffle.node.builtin.core.polyglot.MemberNodes;
 import com.ihorak.truffle.node.callable.DispatchNode;
 import com.ihorak.truffle.node.callable.DispatchPrimitiveProcedureNode;
 import com.ihorak.truffle.node.builtin.polyglot.TranslateInteropExceptionNode;

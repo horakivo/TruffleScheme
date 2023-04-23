@@ -55,11 +55,7 @@ public abstract class DispatchNode extends SchemeNode {
     protected static Object callInteropProcedure(Object foreignProcedure, Object[] arguments,
                                                  @Cached TranslateInteropExceptionNode translateInteropExceptionNode,
                                                  @CachedLibrary("foreignProcedure") InteropLibrary interopLibrary) {
-        try {
-            return interopLibrary.execute(foreignProcedure, arguments);
-        } catch (InteropException e) {
-            throw translateInteropExceptionNode.execute(e, foreignProcedure, "Execute", arguments);
-        }
+        return executeForeignProcedure(foreignProcedure, arguments, interopLibrary, translateInteropExceptionNode);
     }
 
     protected static int getArgumentsLength(Object[] arguments) {

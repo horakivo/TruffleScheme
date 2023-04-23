@@ -60,7 +60,7 @@ public abstract class SchemeExpression extends SchemeNode {
     }
 
     @ExplodeLoop
-    protected Object[] getPrimitiveProcedureArguments(final SchemeExpression[] arguments, VirtualFrame frame) {
+    protected Object[] getArgumentsWithoutLexicalScope(final SchemeExpression[] arguments, VirtualFrame frame) {
         Object[] args = new Object[arguments.length];
 
         for (int i = 0; i < arguments.length; i++) {
@@ -69,18 +69,6 @@ public abstract class SchemeExpression extends SchemeNode {
 
         return args;
     }
-
-    @ExplodeLoop
-    protected Object[] getForeignProcedureArguments(SchemeExpression[] arguments, VirtualFrame parentFrame) {
-        Object[] args = new Object[arguments.length];
-
-        for (int i = 0; i < arguments.length; i++) {
-            args[i] = arguments[i].executeGeneric(parentFrame);
-        }
-
-        return args;
-    }
-
 
     @Override
     @TruffleBoundary

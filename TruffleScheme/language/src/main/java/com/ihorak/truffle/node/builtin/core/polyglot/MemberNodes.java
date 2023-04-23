@@ -41,7 +41,7 @@ public class MemberNodes {
                 var foreignObject = interopLibrary.getMembers(receiver);
                 return foreignToSchemeNode.executeConvert(foreignObject);
             } catch (UnsupportedMessageException e) {
-                throw translateInteropExceptionNode.execute(e, receiver, GET_MEMBERS, null);
+                throw translateInteropExceptionNode.execute(e, receiver);
             }
         }
     }
@@ -87,7 +87,7 @@ public class MemberNodes {
                 var foreignObject = interopLibrary.readMember(receiver, name);
                 return foreignToSchemeNode.executeConvert(foreignObject);
             } catch (InteropException e) {
-                throw translateInteropExceptionNode.execute(e, receiver, READ_MEMBER, null);
+                throw translateInteropExceptionNode.execute(e, receiver);
             }
         }
     }
@@ -137,7 +137,7 @@ public class MemberNodes {
                 final var name = toJavaStringNode.execute(identifier);
                 interopLibrary.writeMember(receiver, name, value);
             } catch (InteropException exception) {
-                throw translateInteropExceptionNode.execute(exception, receiver, WRITE_MEMBER, null);
+                throw translateInteropExceptionNode.execute(exception, receiver);
             }
         }
     }
@@ -170,7 +170,7 @@ public class MemberNodes {
                 final var name = toJavaStringNode.execute(identifier);
                 interopLibrary.removeMember(receiver, name);
             } catch (InteropException exception) {
-                throw translateInteropExceptionNode.execute(exception, receiver, REMOVE_MEMBER, null);
+                throw translateInteropExceptionNode.execute(exception, receiver);
             }
         }
     }
@@ -206,7 +206,7 @@ public class MemberNodes {
                 var foreign = interopLibrary.invokeMember(receiver, name, args);
                 return foreignToSchemeNode.executeConvert(foreign);
             } catch (InteropException exception) {
-                throw translateInteropExceptionNode.execute(exception, receiver, INVOKE_MEMBER, args);
+                throw translateInteropExceptionNode.execute(exception, receiver);
             }
         }
     }
