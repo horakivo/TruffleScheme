@@ -16,22 +16,8 @@ import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 @ExportLibrary(InteropLibrary.class)
 public record SchemePair(
         Object first,
-        Object second) implements TruffleObject {
-
-
-    @TruffleBoundary
-    public int size() {
-        CompilerAsserts.neverPartOfCompilation();
-        var currentPair = this;
-        int size = 0;
-        while (currentPair.second instanceof SchemePair pair) {
-            size++;
-            currentPair = pair;
-        }
-
-        //+2 since the last pair is doesn't have in second cell pair -> we need to count first + second
-        return size + 2;
-    }
+        Object second,
+        int size) implements TruffleObject {
 
     @Override
     public String toString() {

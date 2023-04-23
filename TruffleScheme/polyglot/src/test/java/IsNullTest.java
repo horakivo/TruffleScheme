@@ -20,19 +20,19 @@ public class IsNullTest {
         this.context.close();
     }
 
-//    @Test
-//    public void javascriptIsNullWhenFalseGiven() {
-//        var program = """
-//                (null? (eval-source "js" "false"))
-//                """;
-//
-//        var result = context.eval("scm", program);
-//
-//        assertTrue(result.asBoolean());
-//    }
+    @Test
+    public void javascriptIsNullWhenFalseGiven() {
+        var program = """
+                (null? (eval-source "js" "false"))
+                """;
+
+        var result = context.eval("scm", program);
+
+        assertFalse(result.asBoolean());
+    }
 
     @Test
-    public void javascriptNull() {
+    public void javascriptNullIsNotNullInScheme() {
         var program = """
                 (null? (eval-source "js" "null"))
                 """;
@@ -40,6 +40,18 @@ public class IsNullTest {
         var result = context.eval("scm", program);
 
         assertFalse(result.asBoolean());
+    }
+
+
+    @Test
+    public void javascriptEmptyArray() {
+        var program = """
+                (null? (eval-source "js" "[]"))
+                """;
+
+        var result = context.eval("scm", program);
+
+        assertTrue(result.asBoolean());
     }
 
 

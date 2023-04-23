@@ -28,6 +28,11 @@ public abstract class ConsCoreNode extends SchemeNode {
         return new SchemeList(car, SchemeList.EMPTY_LIST, 1, false);
     }
 
+    @Specialization
+    protected SchemePair doSchemePair(Object car, SchemePair pair) {
+        return new SchemePair(car, pair, pair.size() + 1);
+    }
+
     @Specialization(guards = "interopLibrary.hasArrayElements(receiverCdr)", limit = "getInteropCacheLimit()")
     protected SchemeList doInterop(Object car,
                                    Object receiverCdr,
@@ -47,7 +52,7 @@ public abstract class ConsCoreNode extends SchemeNode {
 
     @Fallback
     public SchemePair doSchemePair(Object car, Object cdr) {
-        return new SchemePair(car, cdr);
+        return new SchemePair(car, cdr, 2);
     }
 
 }

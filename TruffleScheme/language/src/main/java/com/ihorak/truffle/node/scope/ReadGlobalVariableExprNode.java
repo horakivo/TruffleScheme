@@ -19,7 +19,7 @@ public class ReadGlobalVariableExprNode extends SchemeExpression {
     private Assumption cachedAssumption;
 
     private final ConditionProfile validProfile = ConditionProfile.createBinaryProfile();
-    private final ConditionProfile cachedProfile = ConditionProfile.createCountingProfile();
+    private final ConditionProfile cachedProfile = ConditionProfile.createBinaryProfile();
 
 
     public ReadGlobalVariableExprNode(SchemeSymbol symbol) {

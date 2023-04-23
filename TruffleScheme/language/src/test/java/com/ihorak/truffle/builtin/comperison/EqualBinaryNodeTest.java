@@ -140,4 +140,103 @@ public class EqualBinaryNodeTest {
         assertFalse(result.asBoolean());
     }
 
+    @Test
+    public void givenTwoSameBooleans_whenExecuted_thenTrueIsReturned() {
+        var program = """
+               (equal? #t #t)
+                """;
+
+        var result = context.eval("scm", program);
+
+        assertTrue(result.asBoolean());
+    }
+
+    @Test
+    public void givenTwoDifferentBooleans_whenExecuted_thenFalseIsReturned() {
+        var program = """
+               (equal? #t #f)
+                """;
+
+        var result = context.eval("scm", program);
+
+        assertFalse(result.asBoolean());
+    }
+
+    @Test
+    public void givenTwoSameStrings_whenExecuted_thenTrueIsReturned() {
+        var program = """
+               (equal? "aa" "aa")
+                """;
+
+        var result = context.eval("scm", program);
+
+        assertTrue(result.asBoolean());
+    }
+
+    @Test
+    public void givenTwoDifferentStrings_whenExecuted_thenFalseIsReturned() {
+        var program = """
+               (equal? "aa" "aaa")
+                """;
+
+        var result = context.eval("scm", program);
+
+        assertFalse(result.asBoolean());
+    }
+
+    @Test
+    public void givenTwoDifferentSchemePairs_whenExecuted_thenFalseIsReturned() {
+        var program = """
+               (equal? (cons 1 (cons 2 3)) (cons 1 (cons 3 4)))
+                """;
+
+        var result = context.eval("scm", program);
+
+        assertFalse(result.asBoolean());
+    }
+
+    @Test
+    public void givenTwoSameSchemePairs_whenExecuted_thenTrueIsReturned() {
+        var program = """
+               (equal? (cons 1 (cons 2 3))  (cons 1 (cons 2 3)))
+                """;
+
+        var result = context.eval("scm", program);
+
+        assertTrue(result.asBoolean());
+    }
+
+    @Test
+    public void givenTwoSamePrimitiveProcedures_whenExecuted_thenTrueIsReturned() {
+        var program = """
+               (equal? + +)
+                """;
+
+        var result = context.eval("scm", program);
+
+        assertTrue(result.asBoolean());
+    }
+
+    @Test
+    public void givenTwoDifferentPrimitiveProcedures_whenExecuted_thenFalseIsReturned() {
+        var program = """
+               (equal? + -)
+                """;
+
+        var result = context.eval("scm", program);
+
+        assertFalse(result.asBoolean());
+    }
+
+    @Test
+    public void givenUndefinedValues_whenExecuted_thenTrueIsReturned() {
+        var program = """
+               (equal? (if #f 5) (if #f 4))
+                """;
+
+        var result = context.eval("scm", program);
+
+        assertTrue(result.asBoolean());
+    }
+
 }

@@ -125,9 +125,11 @@ public class AntlrToIR extends R5RSBaseVisitor<Object> {
 
     private SchemePair createPair(List<Object> arguments) {
         if (arguments.size() > 2) {
-            return new SchemePair(arguments.remove(0), createPair(arguments));
+            var car = arguments.remove(0);
+            var cdr = createPair(arguments);
+            return new SchemePair(car, cdr, cdr.size() + 1);
         } else {
-            return new SchemePair(arguments.get(0), arguments.get(1));
+            return new SchemePair(arguments.get(0), arguments.get(1), 2);
         }
     }
 }

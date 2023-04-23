@@ -43,14 +43,13 @@ public class LambdaConverter {
         var argumentsIR = (SchemeList) lambdaListIR.cdr.car;
         ParsingContext lambdaContext = ParsingContext.createLambdaContext(context, name, argumentsIR);
         var lambdaBodyIR = lambdaListIR.cdr.cdr;
-        var numberOfArguments = numberOfArguments(argumentsIR);
 
         var bodyExprs = TailCallUtil.convertWithDefinitionsAndWithFrameCreation(lambdaBodyIR, lambdaContext, lambdaCtx, CTX_LAMBDA_BODY_INDEX);
         var writeLocalVariableExpr = createWriteLocalVariableNodes(argumentsIR, lambdaContext, isOnlyProcedureInvocation(bodyExprs), lambdaCtx);
 
 
         var callTarget = creatCallTarget(writeLocalVariableExpr, bodyExprs, name, lambdaContext, lambdaCtx);
-        var lambdaExpr = new LambdaExprNode(callTarget, numberOfArguments, name.value());
+        var lambdaExpr = new LambdaExprNode(callTarget, argumentsIR.size, name.value());
         SourceSectionUtil.setSourceSection(lambdaExpr, lambdaCtx);
         return lambdaExpr;
     }
@@ -123,13 +122,6 @@ public class LambdaConverter {
             result.add(CreateWriteExprNode.createWriteObjectLocalVariableExprNode(symbol, new ReadProcedureArgExprNode(i), context, symbolCtx));
         }
         return result;
-    }
-
-    private static int numberOfArguments(Object parametersIR) {
-        if (parametersIR instanceof SchemeList list) return list.size;
-        if (parametersIR instanceof SchemePair pair) return pair.size();
-
-        throw InterpreterException.shouldNotReachHere();
     }
 
     private static List<WriteLocalVariableExprNode> createLocalVariableForSchemePair(SchemePair pair, ParsingContext context, @Nullable ParserRuleContext paramsCtx) {

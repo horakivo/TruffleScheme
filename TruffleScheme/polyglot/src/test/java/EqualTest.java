@@ -20,15 +20,29 @@ public class EqualTest {
         this.context.close();
     }
 
+    // for foreign object we do equals based on the reference
+
     @Test
-    public void equalIsNotSupportedForForeignArrays() {
+    public void twoEqualArraysReturnFalse() {
         var program = """
                 (equal? (eval-source "js" "[2, 3, 4]") (eval-source "js" "[2, 3, 4]"))
                 """;
 
-        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+        var result = context.eval("scm", program);
 
-        assertEquals("Equal? is not supported for foreign arrays", msg);
+        assertFalse(result.asBoolean());
+    }
+
+    @Test
+    public void twoSameReferencesReturnTrue() {
+        var program = """
+                (define a (eval-source "js" "[2, 3, 4]"))
+                (equal? a a)
+                """;
+
+        var result = context.eval("scm", program);
+
+        assertTrue(result.asBoolean());
     }
 
 }
