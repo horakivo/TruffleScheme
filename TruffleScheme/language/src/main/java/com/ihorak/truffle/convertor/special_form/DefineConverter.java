@@ -2,6 +2,7 @@ package com.ihorak.truffle.convertor.special_form;
 
 import com.ihorak.truffle.convertor.ConverterException;
 import com.ihorak.truffle.convertor.InternalRepresentationConverter;
+import com.ihorak.truffle.convertor.callable.PolyglotConverter;
 import com.ihorak.truffle.convertor.context.LexicalScope;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.util.CreateWriteExprNode;
@@ -86,6 +87,10 @@ public class DefineConverter {
 
         if (SpecialFormConverter.isSpecialForm(symbol)) {
             throw new ConverterException("define: " + symbol + " is a special form which cannot be redefined");
+        }
+
+        if (PolyglotConverter.isPolyglot(symbol)) {
+            throw new ConverterException("define: " + symbol + " is polyglot macro which cannot be redefined");
         }
     }
 

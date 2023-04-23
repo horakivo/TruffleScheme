@@ -146,15 +146,15 @@ public class DefineExprNodeTest {
         assertEquals("define: 'let is a special form which cannot be redefined", msg);
     }
 
-//    @Test
-//    public void givenPolyglotAPISymbol_whenRedefined_thenExceptionIsThrown() {
-//        var program = """
-//                (define %s 5)
-//                """.formatted(READ_MEMBER);
-//
-//        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
-//
-//        assertEquals("define: cannot redefined 'read-member. This symbol is used as internal polyglot API", msg);
-//    }
+    @Test
+    public void givenPolyglotAPISymbol_whenRedefined_thenExceptionIsThrown() {
+        var program = """
+                (define set-value! 5)
+                """;
+
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+
+        assertEquals("define: 'set-value! is polyglot macro which cannot be redefined", msg);
+    }
 
 }

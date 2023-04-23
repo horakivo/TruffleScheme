@@ -33,4 +33,23 @@ public class CallableTest {
 //        assertEquals(0L, result.asLong());
 //    }
 
+    @Test
+    public void givenPrimitiveProcedure_whenRedefined_CorrectResultIsReturned() {
+        var program = """
+                (define add (lambda (a b) (+ a b)))
+                
+                (define a (add 1 2))
+                (define + -)
+                (define b (add 1 2))
+                
+                (list a b)
+                """;
+
+
+        var result = context.eval("scm", program);
+
+        assertEquals(3L, result.getArrayElement(0).asLong());
+        assertEquals(-1L, result.getArrayElement(1).asLong());
+    }
+
 }
