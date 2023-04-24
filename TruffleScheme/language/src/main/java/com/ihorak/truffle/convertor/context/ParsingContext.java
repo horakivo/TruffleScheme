@@ -29,6 +29,7 @@ public class ParsingContext {
     private boolean isDefiningFunctionShadowed = false;
     private boolean isFunctionSelfTailRecursive = false;
     private Integer selfTailRecursionResultIndex;
+    private boolean closureVariablesUsed = false;
 
     private final List<Integer> procedureArgumentSlotIndexes;
     private final ParsingContext parent;
@@ -95,8 +96,13 @@ public class ParsingContext {
 
         LocalVariableInfo localVariableInfo = context.localVariableIndex.get(symbol);
         //we found local variable
-        if (localVariableInfo != null)
+        if (localVariableInfo != null) {
+            if (depth != 0) {
+                closureVariablesUsed = true;
+            }
             return new FrameIndexResult(localVariableInfo.getIndex(), localVariableInfo.isNullable(), depth);
+        }
+
 
         //recursive call
         if (context.scope == LexicalScope.LET) {
@@ -113,10 +119,6 @@ public class ParsingContext {
         });
 
         return localInfo.getIndex();
-    }
-
-    public FrameDescriptor buildAndGetFrameDescriptor() {
-        return frameDescriptorBuilder.build();
     }
 
     public FrameDescriptor.Builder getFrameDescriptorBuilder() {
@@ -203,6 +205,14 @@ public class ParsingContext {
         }
 
         isDefiningFunctionShadowed = true;
+    }
+
+    public boolean isClosureVariablesUsed() {
+        return closureVariablesUsed;
+    }
+
+    public void setClosureVariablesUsed(boolean closureVariablesUsed) {
+        this.closureVariablesUsed = closureVariablesUsed;
     }
 
     public void setFunctionAsSelfTailRecursive() {

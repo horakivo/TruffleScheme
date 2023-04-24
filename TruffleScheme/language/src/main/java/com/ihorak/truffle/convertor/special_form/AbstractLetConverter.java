@@ -2,6 +2,7 @@ package com.ihorak.truffle.convertor.special_form;
 
 import com.ihorak.truffle.convertor.ConverterException;
 import com.ihorak.truffle.convertor.SourceSectionUtil;
+import com.ihorak.truffle.convertor.context.LexicalScope;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.util.TailCallUtil;
 import com.ihorak.truffle.exceptions.SchemeException;
@@ -58,11 +59,21 @@ public abstract class AbstractLetConverter {
         var allExprs = Stream.concat(writeLocalsExprs.stream(), bodyExprs.stream()).toList();
 
         propagateSelfTCOInfoToParentContext(letContext, parentContext);
+        propagateClosureVariableUsageToParentFrame(letContext, parentContext);
 
         return SourceSectionUtil.setSourceSectionAndReturnExpr(new LetExprNode(allExprs), letCtx);
     }
 
-    protected static void propagateSelfTCOInfoToParentContext(ParsingContext letContext, ParsingContext parentContext) {
+    private static void propagateClosureVariableUsageToParentFrame(ParsingContext letParsingContext, ParsingContext parentFrame) {
+        if (letParsingContext.isClosureVariablesUsed()) {
+            if (parentFrame.getLexicalScope() == LexicalScope.LAMBDA || parentFrame.getLexicalScope() == LexicalScope.LET) {
+                parentFrame.setClosureVariablesUsed(true);
+            }
+        }
+    }
+
+
+    private static void propagateSelfTCOInfoToParentContext(ParsingContext letContext, ParsingContext parentContext) {
         if (letContext.isFunctionSelfTailRecursive()) {
             var selfTCOResultFrameSlot = letContext.getSelfTCOResultFrameSlot().orElseThrow(ConverterException::shouldNotReachHere);
             parentContext.setFunctionAsSelfTailRecursive();

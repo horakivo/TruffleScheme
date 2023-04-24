@@ -1,6 +1,7 @@
 package com.ihorak.truffle.convertor.special_form;
 
 import com.ihorak.truffle.convertor.SourceSectionUtil;
+import com.ihorak.truffle.convertor.context.LexicalScope;
 import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.util.CreateWriteExprNode;
 import com.ihorak.truffle.convertor.util.TailCallUtil;
@@ -48,10 +49,20 @@ public class LambdaConverter {
         var writeLocalVariableExpr = createWriteLocalVariableNodes(argumentsIR, lambdaContext, isOnlyProcedureInvocation(bodyExprs), lambdaCtx);
 
 
+
+        propagateClosureVariableUsageToParentFrame(lambdaContext, context);
         var callTarget = creatCallTarget(writeLocalVariableExpr, bodyExprs, name, lambdaContext, lambdaCtx);
-        var lambdaExpr = new LambdaExprNode(callTarget, argumentsIR.size, name.value());
+        var lambdaExpr = new LambdaExprNode(callTarget, argumentsIR.size, name.value(), context.isClosureVariablesUsed());
         SourceSectionUtil.setSourceSection(lambdaExpr, lambdaCtx);
         return lambdaExpr;
+    }
+
+    private static void propagateClosureVariableUsageToParentFrame(ParsingContext lambdaContext, ParsingContext parentContext) {
+        if (lambdaContext.isClosureVariablesUsed()) {
+            if (parentContext.getLexicalScope() == LexicalScope.LET || parentContext.getLexicalScope() == LexicalScope.LAMBDA) {
+                parentContext.setClosureVariablesUsed(true);
+            }
+        }
     }
 
     private static boolean isOnlyProcedureInvocation(List<SchemeExpression> bodyExprs) {
@@ -69,7 +80,7 @@ public class LambdaConverter {
     }
 
     private static RootCallTarget creatCallTarget(List<SchemeExpression> writeArgsExprs, List<SchemeExpression> bodyExprs, SchemeSymbol name, ParsingContext lambdaContext, @Nullable ParserRuleContext lambdaCtx) {
-        var frameDescriptor = lambdaContext.buildAndGetFrameDescriptor();
+        var frameDescriptor = lambdaContext.getFrameDescriptorBuilder().build();
         var sourceSection = createLambdaSourceSection(lambdaContext.getSource(), lambdaCtx);
 
         var isSelfTailCall = lambdaContext.isFunctionSelfTailRecursive();

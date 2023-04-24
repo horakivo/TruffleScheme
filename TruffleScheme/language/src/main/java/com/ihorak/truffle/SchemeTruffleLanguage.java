@@ -46,7 +46,7 @@ public class SchemeTruffleLanguage extends TruffleLanguage<SchemeLanguageContext
         var charStream = CharStreams.fromReader(request.getSource().getReader());
         var schemeExprs = AntlrToAST.convert(charStream, globalContext);
         var sourceSection = SourceSectionUtil.createSourceSection(schemeExprs, source);
-        var rootNode = new SchemeRootNode(this, globalContext.buildAndGetFrameDescriptor(), schemeExprs, new SchemeSymbol("ROOT"), sourceSection);
+        var rootNode = new SchemeRootNode(this, globalContext.getFrameDescriptorBuilder().build(), schemeExprs, new SchemeSymbol("ROOT"), sourceSection);
         return rootNode.getCallTarget();
     }
 
