@@ -14,7 +14,8 @@ import com.ihorak.truffle.node.callable.TCO.throwers.TailCallThrowerNode;
 import com.ihorak.truffle.node.scope.ReadProcedureArgExprNode;
 import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
 import com.ihorak.truffle.node.special_form.IfElseExprNode;
-import com.ihorak.truffle.node.special_form.LambdaExprNode;
+import com.ihorak.truffle.node.special_form.lambda.MaterializableLambdaExprNode;
+import com.ihorak.truffle.node.special_form.lambda.NonMaterializableLambdaExprNode;
 import com.ihorak.truffle.runtime.SchemeList;
 import com.ihorak.truffle.runtime.SchemePair;
 import com.ihorak.truffle.runtime.SchemeSymbol;
@@ -39,7 +40,7 @@ public class LambdaConverter {
     private static final int CTX_PARAMS_OFFSET = 1;
 
 
-    public static LambdaExprNode convert(SchemeList lambdaListIR, ParsingContext context, SchemeSymbol name, @Nullable ParserRuleContext lambdaCtx) {
+    public static SchemeExpression convert(SchemeList lambdaListIR, ParsingContext context, SchemeSymbol name, @Nullable ParserRuleContext lambdaCtx) {
         validate(lambdaListIR);
         var argumentsIR = (SchemeList) lambdaListIR.cdr.car;
         ParsingContext lambdaContext = ParsingContext.createLambdaContext(context, name, argumentsIR);
@@ -52,7 +53,13 @@ public class LambdaConverter {
 
         propagateClosureVariableUsageToParentFrame(lambdaContext, context);
         var callTarget = creatCallTarget(writeLocalVariableExpr, bodyExprs, name, lambdaContext, lambdaCtx);
-        var lambdaExpr = new LambdaExprNode(callTarget, argumentsIR.size, name.value(), context.isClosureVariablesUsed());
+        SchemeExpression lambdaExpr;
+        if (context.isClosureVariablesUsed()) {
+            lambdaExpr = new MaterializableLambdaExprNode(callTarget, argumentsIR.size, name.value());
+        } else {
+            lambdaExpr = new NonMaterializableLambdaExprNode(callTarget, argumentsIR.size, name.value());
+        }
+
         SourceSectionUtil.setSourceSection(lambdaExpr, lambdaCtx);
         return lambdaExpr;
     }
