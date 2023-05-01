@@ -14,11 +14,6 @@ public class BooleanLiteralNode extends SchemeExpression {
     }
 
     @Override
-    public boolean executeBoolean(VirtualFrame virtualFrame) {
-        return bool;
-    }
-
-    @Override
     public Object executeGeneric(VirtualFrame virtualFrame) {
         return bool;
     }

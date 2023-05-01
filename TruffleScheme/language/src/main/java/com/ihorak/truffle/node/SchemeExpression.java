@@ -23,27 +23,7 @@ public abstract class SchemeExpression extends SchemeNode {
 
     private boolean hasRootTag = false;
 
-    /**
-     * The execute method when no specialization is possible. This is the most general case,
-     * therefore it must be provided by all subclasses.
-     */
     public abstract Object executeGeneric(VirtualFrame virtualFrame);
-
-    public UserDefinedProcedure executeUserDefinedProcedure(VirtualFrame virtualFrame) throws UnexpectedResultException {
-        return SchemeTypesGen.expectUserDefinedProcedure(executeGeneric(virtualFrame));
-    }
-
-    public boolean executeBoolean(VirtualFrame virtualFrame) throws UnexpectedResultException {
-        return SchemeTypesGen.expectBoolean(executeGeneric(virtualFrame));
-    }
-
-    public long executeLong(VirtualFrame virtualFrame) throws UnexpectedResultException {
-        return SchemeTypesGen.expectLong(executeGeneric(virtualFrame));
-    }
-
-    public double executeDouble(VirtualFrame virtualFrame) throws UnexpectedResultException {
-        return SchemeTypesGen.expectDouble(executeGeneric(virtualFrame));
-    }
 
     @ExplodeLoop
     protected Object[] getProcedureArguments(final UserDefinedProcedure function, final SchemeExpression[] arguments, VirtualFrame frame) {

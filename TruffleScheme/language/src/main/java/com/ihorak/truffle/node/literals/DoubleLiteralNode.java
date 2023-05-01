@@ -14,11 +14,6 @@ public class DoubleLiteralNode extends SchemeExpression {
     }
 
     @Override
-    public double executeDouble(VirtualFrame virtualFrame) {
-        return value;
-    }
-
-    @Override
     public Object executeGeneric(VirtualFrame virtualFrame) {
         return value;
     }
