@@ -5,6 +5,7 @@ import com.ihorak.truffle.node.SchemeNode;
 import com.ihorak.truffle.node.builtin.polyglot.TranslateInteropExceptionNode;
 import com.ihorak.truffle.runtime.UserDefinedProcedure;
 import com.oracle.truffle.api.Assumption;
+import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.RootCallTarget;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Fallback;
@@ -22,10 +23,7 @@ public abstract class DispatchNode extends SchemeNode {
 
     public abstract Object executeDispatch(Object procedure, Object[] arguments);
 
-    @Specialization(
-            guards = "userDefinedProcedure.getCallTarget() == cachedRootCallTarget",
-            assumptions = "callTargetStableAssumption",
-            limit = "3")
+    @Specialization(guards = "userDefinedProcedure.getCallTarget() == cachedRootCallTarget", limit = "3")
     protected static Object doUserDefinedProcedureCached(
             UserDefinedProcedure userDefinedProcedure,
             Object[] arguments,
@@ -33,11 +31,9 @@ public abstract class DispatchNode extends SchemeNode {
             @Cached("procedureCached.getCallTarget()") RootCallTarget cachedRootCallTarget,
             @Cached("create(cachedRootCallTarget)") DirectCallNode directCallNode,
             @Cached("procedureCached.getExpectedNumberOfArgs()") int expectedNumberOfArgsCached,
-            @Cached("getArgumentsLength(arguments)") int givenNumberOfArgsCached,
-            @Cached("procedureCached.getCallTargetStableAssumption()") Assumption callTargetStableAssumption,
-            @Cached BranchProfile wrongNumberOfArgsSeen) {
+            @Cached("getArgumentsLength(arguments)") int givenNumberOfArgsCached) {
         if (givenNumberOfArgsCached != expectedNumberOfArgsCached) {
-            wrongNumberOfArgsSeen.enter();
+            CompilerDirectives.transferToInterpreterAndInvalidate();
             throw SchemeException.arityException(null, procedureCached.getName(), expectedNumberOfArgsCached, givenNumberOfArgsCached);
         }
         return directCallNode.call(arguments);
@@ -59,7 +55,7 @@ public abstract class DispatchNode extends SchemeNode {
     }
 
     protected static int getArgumentsLength(Object[] arguments) {
-        return arguments.length - 1; // first element is parent frame
+        return arguments.length - 1; // first element is parent frame or null
     }
 
     @Fallback

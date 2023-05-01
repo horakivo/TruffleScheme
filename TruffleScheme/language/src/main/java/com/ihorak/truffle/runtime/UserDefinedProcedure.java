@@ -22,15 +22,15 @@ import com.oracle.truffle.api.utilities.CyclicAssumption;
 @ExportLibrary(InteropLibrary.class)
 public class UserDefinedProcedure implements TruffleObject {
 
-    private int expectedNumberOfArgs;
-    @CompilationFinal private RootCallTarget callTarget;
+    private final int expectedNumberOfArgs;
+    private final RootCallTarget callTarget;
     private final MaterializedFrame parentFrame;
     private final String name;
 
     /**
      * Manages the assumption that the {@link #callTarget} is stable.
      */
-    private final CyclicAssumption callTargetStable;
+    //private final CyclicAssumption callTargetStable;
 
 
     public UserDefinedProcedure(RootCallTarget callTarget, int expectedNumberOfArgs, MaterializedFrame frame, String name) {
@@ -38,23 +38,23 @@ public class UserDefinedProcedure implements TruffleObject {
         this.parentFrame = frame;
         this.name = name;
         this.expectedNumberOfArgs = expectedNumberOfArgs;
-        this.callTargetStable = new CyclicAssumption("user procedure not redefined assumption");
+        //this.callTargetStable = new CyclicAssumption("user procedure not redefined assumption");
 
     }
 
-    public void redefine(RootCallTarget callTarget, int expectedNumberOfArgs) {
-        if (this.callTarget != callTarget) {
-            CompilerDirectives.transferToInterpreterAndInvalidate();
-            this.callTarget = callTarget;
-            this.expectedNumberOfArgs = expectedNumberOfArgs;
-            callTargetStable.invalidate();
-        }
-    }
+//    public void redefine(RootCallTarget callTarget, int expectedNumberOfArgs) {
+//        if (this.callTarget != callTarget) {
+//            CompilerDirectives.transferToInterpreterAndInvalidate();
+//            this.callTarget = callTarget;
+//            this.expectedNumberOfArgs = expectedNumberOfArgs;
+//            callTargetStable.invalidate();
+//        }
+//    }
 
     // result of this method should be cached!
-    public Assumption getCallTargetStableAssumption() {
-        return callTargetStable.getAssumption();
-    }
+//    public Assumption getCallTargetStableAssumption() {
+//        return callTargetStable.getAssumption();
+//    }
 
 
     public RootCallTarget getCallTarget() {

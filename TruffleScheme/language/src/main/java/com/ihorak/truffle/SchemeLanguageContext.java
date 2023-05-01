@@ -2,6 +2,7 @@ package com.ihorak.truffle;
 
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.scope.ReadGlobalVariableExprNode;
+import com.ihorak.truffle.runtime.PrimitiveProcedure;
 import com.ihorak.truffle.runtime.SchemeSymbol;
 import com.ihorak.truffle.runtime.UserDefinedProcedure;
 import com.oracle.truffle.api.CallTarget;
@@ -56,11 +57,21 @@ public class SchemeLanguageContext {
     @TruffleBoundary
     public void addUserDefinedProcedure(SchemeSymbol symbol, UserDefinedProcedure userDefinedProcedure) {
         var storedObject = globalVariableStorage.get(symbol);
-        if (storedObject instanceof UserDefinedProcedure procedure) {
-            procedure.redefine(userDefinedProcedure.getCallTarget(), userDefinedProcedure.getExpectedNumberOfArgs());
-        } else {
-            addVariable(symbol, userDefinedProcedure);
+        if (storedObject instanceof UserDefinedProcedure procedure && userDefinedProcedure.getCallTarget() == procedure.getCallTarget()) {
+            // redefining the same user defined procedure -> no reason to invalidate global variables
+            return;
         }
+        addVariable(symbol, userDefinedProcedure);
+    }
+
+    @TruffleBoundary
+    public void addPrimitiveProcedure(SchemeSymbol symbol, PrimitiveProcedure primitiveProcedure) {
+        var storedObject = globalVariableStorage.get(symbol);
+        if (storedObject instanceof PrimitiveProcedure primitive && primitiveProcedure.factory() == primitive.factory()) {
+            // redefining the same primitive defined procedure -> no reason to invalidate global variables
+            return;
+        }
+        addVariable(symbol, primitiveProcedure);
     }
 
     public PrintWriter getOutput() {
