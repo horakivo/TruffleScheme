@@ -68,7 +68,7 @@ public abstract class ApplyCoreNode extends SchemeNode {
 
     private Object[] getArgumentsForUserDefinedProcedure(UserDefinedProcedure procedure, Object[] optionalArguments, SchemeList list) {
         Object[] result = new Object[optionalArguments.length + list.size + 1];
-        result[0] = procedure.getParentFrame();
+        result[0] = procedure.parentFrame();
 
         return mergeOptionalArgumentsWithSchemeList(optionalArguments, list, result, 1);
     }

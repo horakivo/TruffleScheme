@@ -126,7 +126,7 @@ public abstract class MapCoreArbitraryArgsNode extends SchemeNode {
 
         for (int i = 0; i < numberOfElementsInEachList; i++) {
             Object[] argsForCall = new Object[numberOfLists + 1];
-            argsForCall[0] = userDefinedProcedure.getParentFrame();
+            argsForCall[0] = userDefinedProcedure.parentFrame();
             for (int k = 0; k < numberOfLists; k++) {
                 argsForCall[k + 1] = arguments[k].get(i);
             }

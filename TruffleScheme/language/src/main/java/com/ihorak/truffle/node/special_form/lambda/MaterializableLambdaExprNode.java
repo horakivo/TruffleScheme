@@ -19,6 +19,6 @@ public class MaterializableLambdaExprNode extends SchemeExpression {
 
     @Override
     public Object executeGeneric(VirtualFrame virtualFrame) {
-        return new UserDefinedProcedure(callTarget, amountOfArguments, virtualFrame.materialize(), name);
+        return new UserDefinedProcedure(amountOfArguments, callTarget, virtualFrame.materialize(), name);
     }
 }

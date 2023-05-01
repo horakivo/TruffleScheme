@@ -20,27 +20,19 @@ import com.oracle.truffle.api.utilities.CyclicAssumption;
 
 
 @ExportLibrary(InteropLibrary.class)
-public class UserDefinedProcedure implements TruffleObject {
+public record UserDefinedProcedure(
+        int expectedNumberOfArgs,
+        RootCallTarget callTarget,
+        MaterializedFrame parentFrame,
+        String name
+) implements TruffleObject {
 
-    private final int expectedNumberOfArgs;
-    private final RootCallTarget callTarget;
-    private final MaterializedFrame parentFrame;
-    private final String name;
 
     /**
      * Manages the assumption that the {@link #callTarget} is stable.
      */
     //private final CyclicAssumption callTargetStable;
 
-
-    public UserDefinedProcedure(RootCallTarget callTarget, int expectedNumberOfArgs, MaterializedFrame frame, String name) {
-        this.callTarget = callTarget;
-        this.parentFrame = frame;
-        this.name = name;
-        this.expectedNumberOfArgs = expectedNumberOfArgs;
-        //this.callTargetStable = new CyclicAssumption("user procedure not redefined assumption");
-
-    }
 
 //    public void redefine(RootCallTarget callTarget, int expectedNumberOfArgs) {
 //        if (this.callTarget != callTarget) {
@@ -55,23 +47,6 @@ public class UserDefinedProcedure implements TruffleObject {
 //    public Assumption getCallTargetStableAssumption() {
 //        return callTargetStable.getAssumption();
 //    }
-
-
-    public RootCallTarget getCallTarget() {
-        return callTarget;
-    }
-
-    public MaterializedFrame getParentFrame() {
-        return parentFrame;
-    }
-
-    public int getExpectedNumberOfArgs() {
-        return expectedNumberOfArgs;
-    }
-
-    public String getName() {
-        return name;
-    }
 
     @Override
     public String toString() {
@@ -93,7 +68,7 @@ public class UserDefinedProcedure implements TruffleObject {
     @ExportMessage
     @TruffleBoundary
     SourceSection getSourceLocation() {
-        return getCallTarget().getRootNode().getSourceSection();
+        return callTarget.getRootNode().getSourceSection();
     }
 
     @ExportMessage

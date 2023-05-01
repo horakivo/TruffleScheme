@@ -38,8 +38,8 @@ public abstract class MacroCallableExprNode extends SchemeExpression {
                                       @Cached DispatchNode dispatchNode) {
         CompilerDirectives.transferToInterpreterAndInvalidate();
 
-        if (userDefinedProcedure.getExpectedNumberOfArgs() != notEvaluatedArgs.length) {
-            throw SchemeException.arityException(this, name.value(), userDefinedProcedure.getExpectedNumberOfArgs(), notEvaluatedArgs.length);
+        if (userDefinedProcedure.expectedNumberOfArgs() != notEvaluatedArgs.length) {
+            throw SchemeException.arityException(this, name.value(), userDefinedProcedure.expectedNumberOfArgs(), notEvaluatedArgs.length);
         }
 
         var args = getArgumentsForMacroExpansion(userDefinedProcedure);
@@ -60,7 +60,7 @@ public abstract class MacroCallableExprNode extends SchemeExpression {
 
     private Object[] getArgumentsForMacroExpansion(UserDefinedProcedure procedure) {
         var arguments = new Object[notEvaluatedArgs.length + 1];
-        arguments[0] = procedure.getParentFrame();
+        arguments[0] = procedure.parentFrame();
 
         int index = 1;
         for (Object argument : notEvaluatedArgs) {

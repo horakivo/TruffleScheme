@@ -57,7 +57,7 @@ public class SchemeLanguageContext {
     @TruffleBoundary
     public void addUserDefinedProcedure(SchemeSymbol symbol, UserDefinedProcedure userDefinedProcedure) {
         var storedObject = globalVariableStorage.get(symbol);
-        if (storedObject instanceof UserDefinedProcedure procedure && userDefinedProcedure.getCallTarget() == procedure.getCallTarget()) {
+        if (storedObject instanceof UserDefinedProcedure procedure && userDefinedProcedure.callTarget() == procedure.callTarget()) {
             // redefining the same user defined procedure -> no reason to invalidate global variables
             return;
         }

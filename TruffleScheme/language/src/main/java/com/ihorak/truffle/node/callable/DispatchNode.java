@@ -23,18 +23,18 @@ public abstract class DispatchNode extends SchemeNode {
 
     public abstract Object executeDispatch(Object procedure, Object[] arguments);
 
-    @Specialization(guards = "userDefinedProcedure.getCallTarget() == cachedRootCallTarget", limit = "3")
+    @Specialization(guards = "userDefinedProcedure.callTarget() == cachedRootCallTarget", limit = "3")
     protected static Object doUserDefinedProcedureCached(
             UserDefinedProcedure userDefinedProcedure,
             Object[] arguments,
             @Cached("userDefinedProcedure") UserDefinedProcedure procedureCached,
-            @Cached("procedureCached.getCallTarget()") RootCallTarget cachedRootCallTarget,
+            @Cached("procedureCached.callTarget()") RootCallTarget cachedRootCallTarget,
             @Cached("create(cachedRootCallTarget)") DirectCallNode directCallNode,
-            @Cached("procedureCached.getExpectedNumberOfArgs()") int expectedNumberOfArgsCached,
+            @Cached("procedureCached.expectedNumberOfArgs()") int expectedNumberOfArgsCached,
             @Cached("getArgumentsLength(arguments)") int givenNumberOfArgsCached) {
         if (givenNumberOfArgsCached != expectedNumberOfArgsCached) {
             CompilerDirectives.transferToInterpreterAndInvalidate();
-            throw SchemeException.arityException(null, procedureCached.getName(), expectedNumberOfArgsCached, givenNumberOfArgsCached);
+            throw SchemeException.arityException(null, procedureCached.name(), expectedNumberOfArgsCached, givenNumberOfArgsCached);
         }
         return directCallNode.call(arguments);
     }
@@ -44,7 +44,7 @@ public abstract class DispatchNode extends SchemeNode {
             UserDefinedProcedure userDefinedProcedure,
             Object[] arguments,
             @Cached IndirectCallNode indirectCallNode) {
-        return indirectCallNode.call(userDefinedProcedure.getCallTarget(), arguments);
+        return indirectCallNode.call(userDefinedProcedure.callTarget(), arguments);
     }
 
     @Specialization(guards = "interopLibrary.isExecutable(foreignProcedure)", limit = "getInteropCacheLimit()")

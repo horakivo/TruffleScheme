@@ -28,7 +28,7 @@ public abstract class MapCoreOneArgumentNode extends SchemeNode {
         int index = 0;
         var currentList = list;
         while (index < listLengthCached) {
-            var args = new Object[]{procedureCached.getParentFrame(), currentList.car};
+            var args = new Object[]{procedureCached.parentFrame(), currentList.car};
             resultArray[index] = dispatchNode.executeDispatch(userDefinedProcedure, args);
             index++;
             currentList = currentList.cdr;
@@ -47,7 +47,7 @@ public abstract class MapCoreOneArgumentNode extends SchemeNode {
         int index = 0;
         var currentList = list;
         while (index < list.size) {
-            var args = new Object[]{userDefinedProcedure.getParentFrame(), currentList.car};
+            var args = new Object[]{userDefinedProcedure.parentFrame(), currentList.car};
             resultArray[index] = dispatchNode.executeDispatch(userDefinedProcedure, args);
             index++;
             currentList = currentList.cdr;
