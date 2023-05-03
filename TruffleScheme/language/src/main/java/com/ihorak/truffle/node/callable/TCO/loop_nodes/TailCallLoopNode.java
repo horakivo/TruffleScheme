@@ -1,9 +1,9 @@
 package com.ihorak.truffle.node.callable.TCO.loop_nodes;
 
+import com.ihorak.truffle.node.callable.DispatchUserProcedureNodeGen;
 import com.ihorak.truffle.node.callable.TCO.exceptions.TailCallException;
 import com.ihorak.truffle.node.SchemeNode;
-import com.ihorak.truffle.node.callable.DispatchNode;
-import com.ihorak.truffle.node.callable.DispatchNodeGen;
+import com.ihorak.truffle.node.callable.DispatchUserProcedureNode;
 import com.ihorak.truffle.node.scope.WriteFrameSlotNode;
 import com.ihorak.truffle.node.scope.WriteFrameSlotNodeGen;
 import com.ihorak.truffle.runtime.UserDefinedProcedure;
@@ -14,8 +14,9 @@ public class TailCallLoopNode extends SchemeNode implements RepeatingNode {
 
     @SuppressWarnings("FieldMayBeFinal")
     @Child
-    private DispatchNode dispatchNode = DispatchNodeGen.create();
-    @Child private WriteFrameSlotNode writeFrameSlotNode;
+    private DispatchUserProcedureNode dispatchUserProcedureNode;
+    @Child
+    private WriteFrameSlotNode writeFrameSlotNode;
 
     private final int tailCallArgumentsSlot;
     private final int tailCallTargetSlot;
@@ -23,6 +24,7 @@ public class TailCallLoopNode extends SchemeNode implements RepeatingNode {
     public TailCallLoopNode(int tailCallArgumentsSlot, int tailCallTargetSlot, int tailCallResultSlot) {
         this.tailCallArgumentsSlot = tailCallArgumentsSlot;
         this.tailCallTargetSlot = tailCallTargetSlot;
+        dispatchUserProcedureNode = DispatchUserProcedureNodeGen.create();
         writeFrameSlotNode = WriteFrameSlotNodeGen.create(tailCallResultSlot);
     }
 
@@ -31,7 +33,7 @@ public class TailCallLoopNode extends SchemeNode implements RepeatingNode {
         try {
             Object[] arguments = (Object[]) frame.getObject(tailCallArgumentsSlot);
             UserDefinedProcedure procedure = (UserDefinedProcedure) frame.getObject(tailCallTargetSlot);
-            var result = dispatchNode.executeDispatch(procedure, arguments);
+            var result = dispatchUserProcedureNode.executeDispatch(procedure, arguments);
             writeFrameSlotNode.executeWrite(frame, result);
             return false;
         } catch (TailCallException e) {

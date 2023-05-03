@@ -1,11 +1,8 @@
 package com.ihorak.truffle.runtime;
 
 import com.ihorak.truffle.SchemeTruffleLanguage;
-import com.ihorak.truffle.node.callable.DispatchNode;
+import com.ihorak.truffle.node.callable.DispatchUserProcedureNode;
 import com.ihorak.truffle.node.builtin.polyglot.ForeignToSchemeNode;
-import com.oracle.truffle.api.Assumption;
-import com.oracle.truffle.api.CompilerDirectives;
-import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.RootCallTarget;
 import com.oracle.truffle.api.TruffleLanguage;
@@ -16,7 +13,6 @@ import com.oracle.truffle.api.library.ExportLibrary;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.library.ExportMessage;
 import com.oracle.truffle.api.source.SourceSection;
-import com.oracle.truffle.api.utilities.CyclicAssumption;
 
 
 @ExportLibrary(InteropLibrary.class)
@@ -48,9 +44,11 @@ public record UserDefinedProcedure(
 //        return callTargetStable.getAssumption();
 //    }
 
+
+    @TruffleBoundary
     @Override
     public String toString() {
-        return "#<user_procedure>";
+        return "#<user_procedure>:" + name + ">" ;
     }
 
     //----------------InteropLibrary messages–----------------------
@@ -89,9 +87,9 @@ public record UserDefinedProcedure(
     @ExportMessage
     Object execute(Object[] arguments,
                    @Cached ForeignToSchemeNode foreignToSchemeNode,
-                   @Cached DispatchNode dispatchNode) {
+                   @Cached DispatchUserProcedureNode dispatchUserProcedureNode) {
         var args = convertToSchemeValues(arguments, foreignToSchemeNode);
-        return dispatchNode.executeDispatch(this, args);
+        return dispatchUserProcedureNode.executeDispatch(this, args);
     }
 
     private Object[] convertToSchemeValues(Object[] argumentsToConvert, ForeignToSchemeNode foreignToSchemeNode) {

@@ -35,7 +35,7 @@ public abstract class MacroCallableExprNode extends SchemeExpression {
     @Specialization
     protected Object doMacroExpansion(VirtualFrame frame,
                                       UserDefinedProcedure userDefinedProcedure,
-                                      @Cached DispatchNode dispatchNode) {
+                                      @Cached DispatchUserProcedureNode dispatchUserProcedureNode) {
         CompilerDirectives.transferToInterpreterAndInvalidate();
 
         if (userDefinedProcedure.expectedNumberOfArgs() != notEvaluatedArgs.length) {
@@ -43,7 +43,7 @@ public abstract class MacroCallableExprNode extends SchemeExpression {
         }
 
         var args = getArgumentsForMacroExpansion(userDefinedProcedure);
-        var macroExpandedIR = dispatchNode.executeDispatch(userDefinedProcedure, args);
+        var macroExpandedIR = dispatchUserProcedureNode.executeDispatch(userDefinedProcedure, args);
         var macroExpandedTruffleAST = InternalRepresentationConverter.convert(macroExpandedIR, parsingContext, false, false, null);
         return replace(macroExpandedTruffleAST).executeGeneric(frame);
     }

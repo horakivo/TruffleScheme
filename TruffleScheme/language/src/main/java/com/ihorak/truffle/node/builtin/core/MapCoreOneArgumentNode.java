@@ -2,7 +2,7 @@ package com.ihorak.truffle.node.builtin.core;
 
 import com.ihorak.truffle.node.SchemeNode;
 import com.ihorak.truffle.node.builtin.list.ListBuiltinNode;
-import com.ihorak.truffle.node.callable.DispatchNode;
+import com.ihorak.truffle.node.callable.DispatchUserProcedureNode;
 import com.ihorak.truffle.node.callable.DispatchPrimitiveProcedureNode;
 import com.ihorak.truffle.runtime.PrimitiveProcedure;
 import com.ihorak.truffle.runtime.SchemeList;
@@ -23,13 +23,13 @@ public abstract class MapCoreOneArgumentNode extends SchemeNode {
                                                          @Cached ListBuiltinNode listBuiltinNode,
                                                          @Cached("userDefinedProcedure") UserDefinedProcedure procedureCached,
                                                          @Cached("list.size") int listLengthCached,
-                                                         @Cached DispatchNode dispatchNode) {
+                                                         @Cached DispatchUserProcedureNode dispatchUserProcedureNode) {
         Object[] resultArray = new Object[listLengthCached];
         int index = 0;
         var currentList = list;
         while (index < listLengthCached) {
             var args = new Object[]{procedureCached.parentFrame(), currentList.car};
-            resultArray[index] = dispatchNode.executeDispatch(userDefinedProcedure, args);
+            resultArray[index] = dispatchUserProcedureNode.executeDispatch(userDefinedProcedure, args);
             index++;
             currentList = currentList.cdr;
         }
@@ -42,7 +42,7 @@ public abstract class MapCoreOneArgumentNode extends SchemeNode {
     protected SchemeList doMapUserDefinedProcedureUncached(UserDefinedProcedure userDefinedProcedure,
                                                            SchemeList list,
                                                            @Cached ListBuiltinNode listBuiltinNode,
-                                                           @Cached DispatchNode dispatchNode) {
+                                                           @Cached DispatchUserProcedureNode dispatchNode) {
         Object[] resultArray = new Object[list.size];
         int index = 0;
         var currentList = list;

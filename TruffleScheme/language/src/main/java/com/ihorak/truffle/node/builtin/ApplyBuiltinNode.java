@@ -1,18 +1,12 @@
 package com.ihorak.truffle.node.builtin;
 
 import com.ihorak.truffle.exceptions.SchemeException;
-import com.ihorak.truffle.node.SchemeNode;
 import com.ihorak.truffle.node.builtin.core.ApplyCoreNode;
 import com.ihorak.truffle.node.callable.AlwaysInlinableProcedureNode;
-import com.ihorak.truffle.node.callable.DispatchNode;
-import com.ihorak.truffle.node.callable.DispatchNodeGen;
-import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
-import com.oracle.truffle.api.frame.MaterializedFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
-import com.oracle.truffle.api.profiles.BranchProfile;
 
 public abstract class ApplyBuiltinNode extends AlwaysInlinableProcedureNode {
 

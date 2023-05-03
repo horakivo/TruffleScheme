@@ -41,10 +41,10 @@ public abstract class CallableExprNode extends SchemeExpression {
 
     @Specialization
     protected Object doUserDefinedProcedure(VirtualFrame frame, UserDefinedProcedure procedure,
-                                            @Cached DispatchNode dispatchNode) {
+                                            @Cached DispatchUserProcedureNode dispatchUserProcedureNode) {
         var args = getProcedureArguments(procedure, arguments, frame);
         try {
-            return dispatchNode.executeDispatch(procedure, args);
+            return dispatchUserProcedureNode.executeDispatch(procedure, args);
         } catch (TailCallException e) {
             CompilerDirectives.transferToInterpreterAndInvalidate();
             var tailCallCatcher = new TailCallCatcherNode(arguments, callable, tailCallArgumentsSlot, tailCallTargetSlot, tailCallResultSlot);
@@ -64,9 +64,9 @@ public abstract class CallableExprNode extends SchemeExpression {
     @Specialization(guards = "interopLib.isExecutable(interopProcedure)", limit = "getInteropCacheLimit()")
     protected Object doInteropProcedure(VirtualFrame frame,
                                         Object interopProcedure,
-                                        @Cached DispatchNode dispatchNode,
+                                        @Cached DispatchUserProcedureNode dispatchUserProcedureNode,
                                         @CachedLibrary("interopProcedure") InteropLibrary interopLib) {
-        return dispatchNode.executeDispatch(interopProcedure, getArgumentsWithoutLexicalScope(arguments, frame));
+        return dispatchUserProcedureNode.executeDispatch(interopProcedure, getArgumentsWithoutLexicalScope(arguments, frame));
     }
 
     @Fallback

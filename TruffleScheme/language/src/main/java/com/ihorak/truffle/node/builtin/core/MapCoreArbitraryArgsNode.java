@@ -3,7 +3,7 @@ package com.ihorak.truffle.node.builtin.core;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeNode;
 import com.ihorak.truffle.node.builtin.list.ListBuiltinNode;
-import com.ihorak.truffle.node.callable.DispatchNode;
+import com.ihorak.truffle.node.callable.DispatchUserProcedureNode;
 import com.ihorak.truffle.node.callable.DispatchPrimitiveProcedureNode;
 import com.ihorak.truffle.node.builtin.polyglot.TranslateInteropExceptionNode;
 import com.ihorak.truffle.runtime.PrimitiveProcedure;
@@ -49,7 +49,7 @@ public abstract class MapCoreArbitraryArgsNode extends SchemeNode {
                                                                @Cached IntValueProfile numberOfListsProfile,
                                                                @Cached IntValueProfile numberOfElementsInEachListProfile,
                                                                @Cached ListBuiltinNode listBuiltinNode,
-                                                               @Cached DispatchNode dispatchNode) {
+                                                               @Cached DispatchUserProcedureNode dispatchUserProcedureNode) {
         int numberOfLists = numberOfListsProfile.profile(arguments.length);
         haveAllListsSameSize(arguments, numberOfLists);
         // all lists have to have same amount of elements
@@ -60,7 +60,7 @@ public abstract class MapCoreArbitraryArgsNode extends SchemeNode {
         var result = new Object[numberOfElementsInEachList];
         for (int i = 0; i < numberOfElementsInEachList; i++) {
             var argsForCall = (Object[]) args[i];
-            result[i] = dispatchNode.executeDispatch(procedure, argsForCall);
+            result[i] = dispatchUserProcedureNode.executeDispatch(procedure, argsForCall);
         }
 
         return listBuiltinNode.execute(result);

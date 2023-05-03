@@ -1,7 +1,7 @@
 package com.ihorak.truffle.node.callable.TCO.throwers;
 
 import com.ihorak.truffle.exceptions.SchemeException;
-import com.ihorak.truffle.node.callable.DispatchNode;
+import com.ihorak.truffle.node.callable.DispatchUserProcedureNode;
 import com.ihorak.truffle.node.callable.DispatchPrimitiveProcedureNode;
 import com.ihorak.truffle.node.callable.TCO.exceptions.TailCallException;
 import com.ihorak.truffle.node.SchemeExpression;
@@ -54,8 +54,8 @@ public abstract class TailCallThrowerNode extends SchemeExpression {
     @Specialization(guards = "interopLibrary.isExecutable(procedure)", limit = "getInteropCacheLimit()")
     protected Object doPolyglot(VirtualFrame frame, Object procedure,
                                 @CachedLibrary("procedure") InteropLibrary interopLibrary,
-                                @Cached DispatchNode dispatchNode) {
-        return dispatchNode.executeDispatch(procedure, getArgumentsWithoutLexicalScope(arguments, frame));
+                                @Cached DispatchUserProcedureNode dispatchUserProcedureNode) {
+        return dispatchUserProcedureNode.executeDispatch(procedure, getArgumentsWithoutLexicalScope(arguments, frame));
     }
 
 

@@ -2,8 +2,7 @@ package com.ihorak.truffle.node.builtin.core;
 
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeNode;
-import com.ihorak.truffle.node.builtin.core.polyglot.MemberNodes;
-import com.ihorak.truffle.node.callable.DispatchNode;
+import com.ihorak.truffle.node.callable.DispatchUserProcedureNode;
 import com.ihorak.truffle.node.callable.DispatchPrimitiveProcedureNode;
 import com.ihorak.truffle.node.builtin.polyglot.TranslateInteropExceptionNode;
 import com.ihorak.truffle.runtime.PrimitiveProcedure;
@@ -21,10 +20,10 @@ public abstract class ApplyCoreNode extends SchemeNode {
 
     @Specialization
     protected Object doUserDefinedProcedure(UserDefinedProcedure procedure, Object[] optionalArguments, SchemeList list,
-                                            @Cached DispatchNode dispatchNode) {
+                                            @Cached DispatchUserProcedureNode dispatchUserProcedureNode) {
 
         var arguments = getArgumentsForUserDefinedProcedure(procedure, optionalArguments, list);
-        return dispatchNode.executeDispatch(procedure, arguments);
+        return dispatchUserProcedureNode.executeDispatch(procedure, arguments);
     }
 
     @Specialization
