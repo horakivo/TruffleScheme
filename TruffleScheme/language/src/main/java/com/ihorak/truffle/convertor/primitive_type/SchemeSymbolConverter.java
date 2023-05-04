@@ -17,7 +17,7 @@ public class SchemeSymbolConverter {
 
     public static SchemeExpression convert(SchemeSymbol symbol, ParsingContext context, @Nullable ParserRuleContext ctx) {
         var indexPair = context.findClosureSymbol(symbol);
-        var expr = indexPair == null ? new ReadGlobalVariableExprNode(symbol) : createReadVariableExpr(indexPair, symbol);
+        var expr = indexPair == null ? ReadGlobalVariableExprNodeGen.create(symbol) : createReadVariableExpr(indexPair, symbol);
         return SourceSectionUtil.setSourceSectionAndReturnExpr(expr, ctx);
     }
 

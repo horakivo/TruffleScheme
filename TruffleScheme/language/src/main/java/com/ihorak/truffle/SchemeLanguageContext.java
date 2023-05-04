@@ -11,6 +11,7 @@ import com.oracle.truffle.api.interop.TruffleObject;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.source.Source;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
+import com.oracle.truffle.api.utilities.CyclicAssumption;
 
 import java.io.PrintWriter;
 import java.util.Map;
@@ -18,6 +19,7 @@ import java.util.Map;
 public class SchemeLanguageContext implements TruffleObject {
 
     private final Map<SchemeSymbol, Object> globalVariableStorage;
+    public static final CyclicAssumption notRedefinedAssumption = new CyclicAssumption("global variable not redefined");
     public final TruffleLanguage.Env env;
     private final PrintWriter output;
 
@@ -52,7 +54,7 @@ public class SchemeLanguageContext implements TruffleObject {
         var shouldInvalidate = globalVariableStorage.containsKey(symbol);
         globalVariableStorage.put(symbol, valueToStore);
         if (shouldInvalidate) {
-            ReadGlobalVariableExprNode.notRedefinedAssumption.invalidate();
+            notRedefinedAssumption.invalidate();
         }
     }
 
