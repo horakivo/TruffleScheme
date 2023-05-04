@@ -5,6 +5,7 @@ import com.ihorak.truffle.node.ToJavaStringNode;
 import com.ihorak.truffle.node.builtin.polyglot.ForeignToSchemeNode;
 import com.ihorak.truffle.node.builtin.polyglot.TranslateInteropExceptionNode;
 import com.oracle.truffle.api.dsl.Cached;
+import com.oracle.truffle.api.dsl.GenerateUncached;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.interop.InteropException;
 import com.oracle.truffle.api.interop.InteropLibrary;
@@ -28,6 +29,7 @@ public class MemberNodes {
     public static final String INVOKE_MEMBER = "invoke-member"; //.
 
 
+    @GenerateUncached
     public static abstract class GetMembers extends SchemeNode {
 
         public abstract Object execute(Object receiver);
@@ -47,6 +49,7 @@ public class MemberNodes {
     }
 
 
+    @GenerateUncached
     public static abstract class HasMembers extends SchemeNode {
 
         public abstract boolean execute(Object receiver);
@@ -57,6 +60,7 @@ public class MemberNodes {
         }
     }
 
+    @GenerateUncached
     public static abstract class IsMemberReadable extends SchemeNode {
 
         public abstract boolean execute(Object receiver, Object identifier);
@@ -71,6 +75,7 @@ public class MemberNodes {
         }
     }
 
+    @GenerateUncached
     public static abstract class ReadMember extends SchemeNode {
 
         public abstract Object execute(Object receiver, Object identifier);
@@ -93,6 +98,7 @@ public class MemberNodes {
     }
 
 
+    @GenerateUncached
     public static abstract class IsMemberModifiable extends SchemeNode {
 
         public abstract boolean execute(Object receiver, Object identifier);
@@ -107,6 +113,7 @@ public class MemberNodes {
         }
     }
 
+    @GenerateUncached
     public static abstract class IsMemberInsertable extends SchemeNode {
 
         public abstract boolean execute(Object receiver, Object identifier);
@@ -122,6 +129,7 @@ public class MemberNodes {
     }
 
 
+    @GenerateUncached
     public static abstract class WriteMember extends SchemeNode {
 
         public abstract void execute(Object receiver, Object identifier, Object value);
@@ -142,6 +150,7 @@ public class MemberNodes {
         }
     }
 
+    @GenerateUncached
     public static abstract class IsMemberRemovable extends SchemeNode {
 
         public abstract boolean execute(Object receiver, Object identifier);
@@ -156,6 +165,7 @@ public class MemberNodes {
         }
     }
 
+    @GenerateUncached
     public static abstract class RemoveMember extends SchemeNode {
 
         public abstract void execute(Object receiver, Object identifier);
@@ -175,6 +185,7 @@ public class MemberNodes {
         }
     }
 
+    @GenerateUncached
     public static abstract class IsMemberInvocable extends SchemeNode {
 
         public abstract boolean execute(Object receiver, Object identifier);
@@ -189,6 +200,7 @@ public class MemberNodes {
         }
     }
 
+    @GenerateUncached
     public static abstract class InvokeMember extends SchemeNode {
 
         public abstract Object execute(Object receiver, Object identifier, Object[] args);
@@ -211,6 +223,7 @@ public class MemberNodes {
         }
     }
 
+    @GenerateUncached
     public static abstract class IsMemberWritable extends SchemeNode {
 
         public abstract boolean execute(Object receiver, Object identifier);
@@ -225,6 +238,7 @@ public class MemberNodes {
         }
     }
 
+    @GenerateUncached
     public static abstract class IsMemberExisting extends SchemeNode {
 
         public abstract boolean execute(Object receiver, Object identifier);

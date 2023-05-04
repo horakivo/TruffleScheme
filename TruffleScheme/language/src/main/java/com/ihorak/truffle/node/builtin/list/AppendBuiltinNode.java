@@ -10,22 +10,22 @@ import com.oracle.truffle.api.nodes.ExplodeLoop;
 
 public abstract class AppendBuiltinNode extends AlwaysInlinableProcedureNode {
 
-    @Child private AppendBinaryNode appendCoreNode = AppendBinaryNodeGen.create();
-
     @Specialization(guards = "arguments.length == 2")
-    protected Object doTwoArgs(Object[] arguments) {
-        return appendCoreNode.execute(arguments[0], arguments[1]);
+    protected Object doTwoArgs(Object[] arguments,
+                               @Cached AppendBinaryNode appendBinaryNode) {
+        return appendBinaryNode.execute(arguments[0], arguments[1]);
     }
 
     @ExplodeLoop
     @Specialization(guards = "arguments.length > 0", limit = "2")
     protected Object doArbitraryNumberOfArgsCached(Object[] arguments,
+                                                   @Cached AppendBinaryNode appendBinaryNode,
                                                    @Cached("arguments.length") int cachedLength) {
 
         Object result = arguments[0];
 
         for (int i = 1; i < cachedLength; i++) {
-            result = appendCoreNode.execute(result, arguments[i]);
+            result = appendBinaryNode.execute(result, arguments[i]);
         }
 
         return result;
@@ -33,12 +33,13 @@ public abstract class AppendBuiltinNode extends AlwaysInlinableProcedureNode {
 
     @ExplodeLoop
     @Specialization(guards = "arguments.length > 0", replaces = "doArbitraryNumberOfArgsCached")
-    protected Object doArbitraryNumberOfArgsUncached(Object[] arguments) {
+    protected Object doArbitraryNumberOfArgsUncached(Object[] arguments,
+                                                     @Cached AppendBinaryNode appendBinaryNode) {
 
         Object result = arguments[0];
 
         for (int i = 1; i < arguments.length; i++) {
-            result = appendCoreNode.execute(result, arguments[i]);
+            result = appendBinaryNode.execute(result, arguments[i]);
         }
 
         return result;

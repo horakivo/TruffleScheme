@@ -5,10 +5,11 @@ import com.ihorak.truffle.node.SchemeNode;
 import com.ihorak.truffle.node.builtin.BinaryBooleanOperationNode;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Fallback;
+import com.oracle.truffle.api.dsl.GenerateUncached;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 
-
+@GenerateUncached
 public abstract class ReduceComparisonNode extends SchemeNode {
 
     public abstract boolean execute(Object[] arguments, BinaryBooleanOperationNode operation, String name);

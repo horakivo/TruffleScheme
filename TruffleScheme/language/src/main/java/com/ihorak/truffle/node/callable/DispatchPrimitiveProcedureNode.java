@@ -17,16 +17,14 @@ public abstract class DispatchPrimitiveProcedureNode extends SchemeNode {
             PrimitiveProcedure procedure,
             Object[] arguments,
             @Cached("procedure") PrimitiveProcedure procedureCached,
-            @Cached("createInlinableNode(procedureCached)") AlwaysInlinableProcedureNode inlinedMethodNode
-    ) {
+            @Cached("createInlinableNode(procedureCached)") AlwaysInlinableProcedureNode inlinedMethodNode) {
         return inlinedMethodNode.execute(arguments);
     }
 
     @Specialization(replaces = "doPrimitiveProcedureCached")
     protected static Object doPrimitiveProcedureUncached(
             PrimitiveProcedure procedure,
-            Object[] arguments
-    ) {
+            Object[] arguments) {
         return procedure.factory().getUncachedInstance().execute(arguments);
     }
 

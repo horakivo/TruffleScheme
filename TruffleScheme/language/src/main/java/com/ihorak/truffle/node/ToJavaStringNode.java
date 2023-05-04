@@ -3,12 +3,14 @@ package com.ihorak.truffle.node;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.builtin.polyglot.TranslateInteropExceptionNode;
 import com.oracle.truffle.api.dsl.Cached;
+import com.oracle.truffle.api.dsl.GenerateUncached;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.interop.InteropException;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 
+@GenerateUncached
 public abstract class ToJavaStringNode extends SchemeNode {
 
     public abstract String execute(Object value);

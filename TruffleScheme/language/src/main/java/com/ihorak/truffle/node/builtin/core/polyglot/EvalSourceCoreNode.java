@@ -6,6 +6,7 @@ import com.ihorak.truffle.node.builtin.polyglot.ForeignToSchemeNode;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Fallback;
+import com.oracle.truffle.api.dsl.GenerateUncached;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.nodes.DirectCallNode;
 import com.oracle.truffle.api.strings.TruffleString;
@@ -21,7 +22,7 @@ import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
  * possibly inlined.
  */
 
-
+@GenerateUncached
 public abstract class EvalSourceCoreNode extends SchemeNode {
     public static final String POLYGLOT_EVAL_SOURCE = "eval-source";
 

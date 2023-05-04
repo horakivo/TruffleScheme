@@ -4,9 +4,11 @@ import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeNode;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Fallback;
+import com.oracle.truffle.api.dsl.GenerateUncached;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.strings.TruffleString;
 
+@GenerateUncached
 public abstract class ReadForeignGlobalScopeCoreNode extends SchemeNode {
     public static final String POLYGLOT_READ_GLOBAL_SCOPE = "read-global-scope";
 

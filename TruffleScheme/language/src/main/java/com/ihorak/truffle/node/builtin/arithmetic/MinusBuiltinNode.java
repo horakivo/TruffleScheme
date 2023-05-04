@@ -1,6 +1,7 @@
 package com.ihorak.truffle.node.builtin.arithmetic;
 
 import com.ihorak.truffle.exceptions.SchemeException;
+import com.ihorak.truffle.node.builtin.core.arithmetic.MinusBinaryNode;
 import com.ihorak.truffle.node.builtin.core.arithmetic.MinusBinaryNodeGen;
 import com.ihorak.truffle.node.callable.AlwaysInlinableProcedureNode;
 import com.ihorak.truffle.node.builtin.BinaryObjectOperationNode;
@@ -13,34 +14,33 @@ import com.oracle.truffle.api.nodes.ExplodeLoop;
 
 public abstract class MinusBuiltinNode extends AlwaysInlinableProcedureNode {
 
-    @Child
-    private BinaryObjectOperationNode minusOperation = MinusBinaryNodeGen.create();
-
-
     @Specialization(guards = "arguments.length == 2")
-    protected Object doTwoArgs(Object[] arguments) {
-        return minusOperation.execute(arguments[0], arguments[1]);
+    protected Object doTwoArgs(Object[] arguments,
+                               @Cached MinusBinaryNode minusBinaryNode) {
+        return minusBinaryNode.execute(arguments[0], arguments[1]);
     }
 
     @ExplodeLoop
     @Specialization(guards = {"arguments.length >= 2", "arguments.length == cachedLength"}, limit = "2")
     protected Object doArbitraryNumberOfArgsCached(Object[] arguments,
+                                                   @Cached MinusBinaryNode minusBinaryNode,
                                                    @Cached("arguments.length") int cachedLength) {
         Object result = arguments[0];
 
         for (int i = 1; i < cachedLength; i++) {
-            result = minusOperation.execute(result, arguments[i]);
+            result = minusBinaryNode.execute(result, arguments[i]);
         }
 
         return result;
     }
 
     @Specialization(guards = "arguments.length >= 2", replaces = "doArbitraryNumberOfArgsCached")
-    protected Object doUncached(Object[] arguments) {
+    protected Object doUncached(Object[] arguments,
+                                @Cached MinusBinaryNode minusBinaryNode) {
         Object result = arguments[0];
 
         for (int i = 1; i < arguments.length; i++) {
-            result = minusOperation.execute(result, arguments[i]);
+            result = minusBinaryNode.execute(result, arguments[i]);
         }
 
         return result;
@@ -53,12 +53,12 @@ public abstract class MinusBuiltinNode extends AlwaysInlinableProcedureNode {
 
     @TruffleBoundary
     @Specialization(guards = {"arguments.length == 1", "isSchemeBigInt(arguments)"})
-    protected SchemeBigInt oneArgBigInt(Object[] arguments) {
+    protected SchemeBigInt negateBigInt(Object[] arguments) {
         return new SchemeBigInt(((SchemeBigInt) arguments[0]).getValue().negate());
     }
 
     @Specialization(guards = {"arguments.length == 1", "isDouble(arguments)"})
-    protected double oneArgDouble(Object[] arguments) {
+    protected double negateDouble(Object[] arguments) {
         return -((double) arguments[0]);
     }
 

@@ -1,6 +1,5 @@
 package com.ihorak.truffle.node;
 
-import com.ihorak.truffle.node.SchemeNode;
 import com.ihorak.truffle.runtime.PrimitiveProcedure;
 import com.ihorak.truffle.runtime.SchemeBigInt;
 import com.ihorak.truffle.runtime.SchemeList;
@@ -9,6 +8,7 @@ import com.ihorak.truffle.runtime.SchemeSymbol;
 import com.ihorak.truffle.runtime.UndefinedValue;
 import com.ihorak.truffle.runtime.UserDefinedProcedure;
 import com.oracle.truffle.api.dsl.Cached;
+import com.oracle.truffle.api.dsl.GenerateUncached;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.interop.UnsupportedMessageException;
@@ -17,6 +17,7 @@ import com.oracle.truffle.api.profiles.ConditionProfile;
 import com.oracle.truffle.api.strings.TruffleString;
 
 
+@GenerateUncached
 public abstract class BooleanCastNode extends SchemeNode {
 
     public abstract boolean executeBoolean(Object value);

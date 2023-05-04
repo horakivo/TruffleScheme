@@ -12,15 +12,16 @@ import com.ihorak.truffle.runtime.UserDefinedProcedure;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Fallback;
+import com.oracle.truffle.api.dsl.GenerateUncached;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.library.CachedLibrary;
 import com.oracle.truffle.api.profiles.IntValueProfile;
 
+@GenerateUncached
 public abstract class MapCoreArbitraryArgsNode extends SchemeNode {
 
     public abstract Object execute(Object procedure, Object arguments);
-
 
     @Specialization
     protected SchemeList doPrimitiveProcedureWithSchemeLists(PrimitiveProcedure procedure, SchemeList[] arguments,
@@ -181,8 +182,8 @@ public abstract class MapCoreArbitraryArgsNode extends SchemeNode {
     }
 
     protected boolean areArgumentsForeignArrays(Object[] arguments, InteropLibrary interop) {
-        for (int i = 0; i < arguments.length; i++) {
-            if (!interop.hasArrayElements(arguments[i])) {
+        for (Object argument : arguments) {
+            if (!interop.hasArrayElements(argument)) {
                 return false;
             }
         }

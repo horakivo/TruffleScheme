@@ -6,11 +6,13 @@ import com.ihorak.truffle.node.builtin.polyglot.TranslateInteropExceptionNode;
 import com.ihorak.truffle.runtime.SchemeList;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Fallback;
+import com.oracle.truffle.api.dsl.GenerateUncached;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.interop.InteropException;
 import com.oracle.truffle.api.interop.InteropLibrary;
 import com.oracle.truffle.api.library.CachedLibrary;
 
+@GenerateUncached
 public abstract class LengthCoreNode extends SchemeNode {
 
     public abstract long execute(Object list);

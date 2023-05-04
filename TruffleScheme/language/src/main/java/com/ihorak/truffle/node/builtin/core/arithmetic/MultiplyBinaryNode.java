@@ -2,9 +2,9 @@ package com.ihorak.truffle.node.builtin.core.arithmetic;
 
 import com.ihorak.truffle.node.builtin.BinaryObjectOperationNode;
 import com.ihorak.truffle.runtime.SchemeBigInt;
+import com.oracle.truffle.api.dsl.GenerateUncached;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
-
 
 public abstract class MultiplyBinaryNode extends BinaryObjectOperationNode {
 
