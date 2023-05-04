@@ -48,7 +48,7 @@ public class LambdaExprNodeTest {
 
         var result = context.eval("scm", program);
 
-        assertEquals("(1 2 #<user_procedure>)", result.toString());
+        assertEquals("(1 2 #<user_procedure>:generate>)", result.toString());
     }
 
     @Test

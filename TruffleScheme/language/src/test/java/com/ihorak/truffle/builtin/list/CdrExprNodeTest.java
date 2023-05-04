@@ -63,8 +63,9 @@ public class CdrExprNodeTest {
 
         var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
-        assertEquals("cdr: contract violation\n" +
-                "expected: pair? or list?\n" +
-                "given: #<user_procedure>", msg);
+        assertEquals("""
+                cdr: contract violation
+                expected: pair? or list?
+                given: #<user_procedure>:anonymous_procedure>""", msg);
     }
 }

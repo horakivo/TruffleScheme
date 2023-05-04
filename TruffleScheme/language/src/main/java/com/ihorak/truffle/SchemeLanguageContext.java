@@ -7,6 +7,7 @@ import com.ihorak.truffle.runtime.SchemeSymbol;
 import com.ihorak.truffle.runtime.UserDefinedProcedure;
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.TruffleLanguage;
+import com.oracle.truffle.api.interop.TruffleObject;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.source.Source;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
@@ -14,7 +15,7 @@ import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import java.io.PrintWriter;
 import java.util.Map;
 
-public class SchemeLanguageContext {
+public class SchemeLanguageContext implements TruffleObject {
 
     private final Map<SchemeSymbol, Object> globalVariableStorage;
     public final TruffleLanguage.Env env;
@@ -33,6 +34,7 @@ public class SchemeLanguageContext {
         return REFERENCE.get(node);
     }
 
+    @TruffleBoundary
     public Object getVariable(SchemeSymbol symbol) {
         var value = globalVariableStorage.get(symbol);
         if (value == null) {

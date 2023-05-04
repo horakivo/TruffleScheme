@@ -25,11 +25,11 @@ public abstract class DispatchUserProcedureNode extends SchemeNode {
             UserDefinedProcedure userDefinedProcedure,
             Object[] arguments,
             @Cached("userDefinedProcedure") UserDefinedProcedure procedureCached,
-            @Cached("create(procedureCached.callTarget())") DirectCallNode directCallNode,
-            @Cached("getArgumentsLength(arguments)") int givenNumberOfArgsCached) {
-        if (arguments.length - 1 != procedureCached.expectedNumberOfArgs()) {
+            @Cached("create(procedureCached.callTarget())") DirectCallNode directCallNode) {
+        var argumentSize = arguments.length - 1;
+        if (argumentSize != procedureCached.expectedNumberOfArgs()) {
             CompilerDirectives.transferToInterpreterAndInvalidate();
-            throw SchemeException.arityException(null, procedureCached.name(), procedureCached.expectedNumberOfArgs(), givenNumberOfArgsCached);
+            throw SchemeException.arityException(null, procedureCached.name(), procedureCached.expectedNumberOfArgs(), argumentSize);
         }
         return directCallNode.call(arguments);
     }
@@ -47,10 +47,6 @@ public abstract class DispatchUserProcedureNode extends SchemeNode {
                                                  @Cached TranslateInteropExceptionNode translateInteropExceptionNode,
                                                  @CachedLibrary("foreignProcedure") InteropLibrary interopLibrary) {
         return executeForeignProcedure(foreignProcedure, arguments, interopLibrary, translateInteropExceptionNode);
-    }
-
-    protected static int getArgumentsLength(Object[] arguments) {
-        return arguments.length - 1; // first element is parent frame or null
     }
 
     @Fallback
