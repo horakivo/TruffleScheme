@@ -1,7 +1,7 @@
 package com.ihorak.truffle.convertor.special_form;
 
 import com.ihorak.truffle.convertor.SourceSectionUtil;
-import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.convertor.context.ConverterContext;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.literals.BooleanLiteralNode;
 import com.ihorak.truffle.node.special_form.OrExprNode;
@@ -18,7 +18,7 @@ public class OrConverter extends AndOrAbstractConverter {
     private OrConverter() {
     }
 
-    public static SchemeExpression convert(SchemeList orList, boolean isTailCallPosition, ParsingContext context, @Nullable ParserRuleContext orCtx) {
+    public static SchemeExpression convert(SchemeList orList, boolean isTailCallPosition, ConverterContext context, @Nullable ParserRuleContext orCtx) {
         List<SchemeExpression> bodyExprs = getBodyExpr(orList.cdr, isTailCallPosition, context, orCtx);
         if (bodyExprs.isEmpty())
             return SourceSectionUtil.setSourceSectionAndReturnExpr(new BooleanLiteralNode(false), orCtx);

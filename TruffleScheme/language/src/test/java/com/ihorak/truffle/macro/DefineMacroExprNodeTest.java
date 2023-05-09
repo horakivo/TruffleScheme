@@ -37,6 +37,22 @@ public class DefineMacroExprNodeTest {
         assertFalse(result.asBoolean());
     }
 
+    // TODO is this correct?
+    @Test
+    public void aa() {
+        var program = """
+                (define test
+                  (lambda (n)
+                    (define-macro new-if (lambda (condition) `(if ,condition ,n #f)))
+                    (new-if 5)))
+                (test 10)
+                (test 11)
+                """;
+
+        var result = context.eval("scm", program);
+
+    }
+
     @Test
     public void givenMacro_whenCalledMultipleTimesInFunction_thenMacroTreeIsExpandedCorrectlyAndCorrectResultIsReturned() {
         var program = """

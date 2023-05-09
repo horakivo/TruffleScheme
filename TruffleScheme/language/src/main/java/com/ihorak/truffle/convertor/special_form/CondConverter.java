@@ -2,7 +2,7 @@ package com.ihorak.truffle.convertor.special_form;
 
 import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.SourceSectionUtil;
-import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.convertor.context.ConverterContext;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.literals.UndefinedLiteralNode;
@@ -20,7 +20,7 @@ public class CondConverter {
     private CondConverter() {
     }
 
-    public static SchemeExpression convertCond(SchemeList condList, boolean isTailCallPosition, ParsingContext context, @Nullable ParserRuleContext condCtx) {
+    public static SchemeExpression convertCond(SchemeList condList, boolean isTailCallPosition, ConverterContext context, @Nullable ParserRuleContext condCtx) {
         validate(condList);
         var condExpressions = condList.cdr;
         if (condExpressions.size == 0)
@@ -43,7 +43,7 @@ public class CondConverter {
     }
 
     //TODO is it a problem that those doesn't have Source section?
-    private static SchemeExpression reduceCond(SchemeList condExpressions, boolean isTailCallPosition, ParsingContext context, @Nullable ParserRuleContext condCtx, int startCondCtxIndex) {
+    private static SchemeExpression reduceCond(SchemeList condExpressions, boolean isTailCallPosition, ConverterContext context, @Nullable ParserRuleContext condCtx, int startCondCtxIndex) {
         if (condExpressions.size > 2) {
             var condExpr = (SchemeList) condExpressions.get(0);
             var currCondCtx = condCtx != null ? (ParserRuleContext) condCtx.getChild(startCondCtxIndex).getChild(0) : null;
@@ -60,7 +60,7 @@ public class CondConverter {
         }
     }
 
-    private static SchemeExpression convertCondWithTwoConditions(SchemeList condExpressions, boolean isTailCallPosition, ParsingContext context, @Nullable ParserRuleContext condCtx, int startCondCtxIndex) {
+    private static SchemeExpression convertCondWithTwoConditions(SchemeList condExpressions, boolean isTailCallPosition, ConverterContext context, @Nullable ParserRuleContext condCtx, int startCondCtxIndex) {
         var firstCondCtx = condCtx != null ? (ParserRuleContext) condCtx.getChild(startCondCtxIndex).getChild(0) : null;
         var firstCondIR = (SchemeList) condExpressions.get(0);
         var secondCondCtx = condCtx != null ? (ParserRuleContext) condCtx.getChild(startCondCtxIndex + 1).getChild(0) : null;

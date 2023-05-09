@@ -1,10 +1,5 @@
 package com.ihorak.truffle;
 
-import com.ihorak.truffle.convertor.context.LexicalScope;
-import com.ihorak.truffle.convertor.context.ParsingContext;
-import com.ihorak.truffle.parser.AntlrToAST;
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
 import org.graalvm.polyglot.Context;
 import org.junit.Before;
 import org.junit.Test;

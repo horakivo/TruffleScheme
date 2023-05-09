@@ -1,7 +1,7 @@
 package com.ihorak.truffle.convertor.special_form;
 
 import com.ihorak.truffle.convertor.special_form.quasiquote.QuasiquoteConverter;
-import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.convertor.context.ConverterContext;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.runtime.SchemeList;
 import com.ihorak.truffle.runtime.SchemeSymbol;
@@ -12,7 +12,7 @@ public class SpecialFormConverter {
 
     public static final String ANONYMOUS_PROCEDURE = "anonymous_procedure";
 
-    public static SchemeExpression convertListToSpecialForm(SchemeList specialFormList, ParsingContext context, boolean isTailCallPosition, boolean isDefinitionAllowed, @Nullable ParserRuleContext ctx) {
+    public static SchemeExpression convertListToSpecialForm(SchemeList specialFormList, ConverterContext context, boolean isTailCallPosition, boolean isDefinitionAllowed, @Nullable ParserRuleContext ctx) {
         var operationSymbol = (SchemeSymbol) specialFormList.get(0);
         return switch (operationSymbol.value()) {
             case "if" -> IfConverter.convert(specialFormList, isTailCallPosition, context, ctx);

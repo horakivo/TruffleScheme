@@ -1,7 +1,7 @@
 package com.ihorak.truffle.convertor.util;
 
 import com.ihorak.truffle.convertor.SourceSectionUtil;
-import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.convertor.context.ConverterContext;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.scope.WriteGlobalVariableExprNodeGen;
 import com.ihorak.truffle.node.scope.WriteLocalObjectVariableExprNode;
@@ -20,7 +20,7 @@ public class CreateWriteExprNode {
      * ParserRuleContext symbolCtx - ContextForm can be send here since the start and stop index are same
      */
 
-    public static WriteLocalVariableExprNode createWriteLocalVariableExprNode(SchemeSymbol name, SchemeExpression valueToWrite, ParsingContext context, @Nullable ParserRuleContext symbolCtx) {
+    public static WriteLocalVariableExprNode createWriteLocalVariableExprNode(SchemeSymbol name, SchemeExpression valueToWrite, ConverterContext context, @Nullable ParserRuleContext symbolCtx) {
         var index = context.findOrAddLocalSymbol(name);
         var expr = new WriteLocalVariableExprNode(index, valueToWrite);
         SourceSectionUtil.setSourceSection(expr, symbolCtx);
@@ -28,7 +28,7 @@ public class CreateWriteExprNode {
         return expr;
     }
 
-    public static WriteLocalObjectVariableExprNode createWriteObjectLocalVariableExprNode(SchemeSymbol name, SchemeExpression valueToWrite, ParsingContext context, @Nullable ParserRuleContext symbolCtx) {
+    public static WriteLocalObjectVariableExprNode createWriteObjectLocalVariableExprNode(SchemeSymbol name, SchemeExpression valueToWrite, ConverterContext context, @Nullable ParserRuleContext symbolCtx) {
         var index = context.findOrAddLocalSymbol(name);
         var expr = WriteLocalObjectVariableExprNodeGen.create(index, valueToWrite);
         SourceSectionUtil.setSourceSection(expr, symbolCtx);

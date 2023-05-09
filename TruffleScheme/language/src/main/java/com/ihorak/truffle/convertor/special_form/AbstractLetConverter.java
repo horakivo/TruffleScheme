@@ -2,8 +2,8 @@ package com.ihorak.truffle.convertor.special_form;
 
 import com.ihorak.truffle.convertor.ConverterException;
 import com.ihorak.truffle.convertor.SourceSectionUtil;
+import com.ihorak.truffle.convertor.context.ConverterContext;
 import com.ihorak.truffle.convertor.context.LexicalScope;
-import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.util.TailCallUtil;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
@@ -52,7 +52,7 @@ public abstract class AbstractLetConverter {
         }
     }
 
-    protected static SchemeExpression createLetExpr(SchemeList letList, List<WriteLocalVariableExprNode> writeLocalsExprs, ParsingContext letContext, boolean isTailCallPosition, ParsingContext parentContext, @Nullable ParserRuleContext letCtx) {
+    protected static SchemeExpression createLetExpr(SchemeList letList, List<WriteLocalVariableExprNode> writeLocalsExprs, ConverterContext letContext, boolean isTailCallPosition, ConverterContext parentContext, @Nullable ParserRuleContext letCtx) {
         var bodyIR = letList.cdr.cdr;
 
         var bodyExprs = TailCallUtil.convertWithDefinitionsAndNoFrameCreation(bodyIR, letContext, isTailCallPosition, letCtx, CTX_BODY_INDEX);
@@ -64,8 +64,8 @@ public abstract class AbstractLetConverter {
         return SourceSectionUtil.setSourceSectionAndReturnExpr(new LetExprNode(allExprs), letCtx);
     }
 
-    private static void propagateClosureVariableUsageToParentFrame(ParsingContext letParsingContext, ParsingContext parentFrame) {
-        if (letParsingContext.isClosureVariablesUsed()) {
+    private static void propagateClosureVariableUsageToParentFrame(ConverterContext letConverterContext, ConverterContext parentFrame) {
+        if (letConverterContext.isClosureVariablesUsed()) {
             if (parentFrame.getLexicalScope() == LexicalScope.LAMBDA || parentFrame.getLexicalScope() == LexicalScope.LET) {
                 parentFrame.setClosureVariablesUsed(true);
             }
@@ -73,7 +73,7 @@ public abstract class AbstractLetConverter {
     }
 
 
-    private static void propagateSelfTCOInfoToParentContext(ParsingContext letContext, ParsingContext parentContext) {
+    private static void propagateSelfTCOInfoToParentContext(ConverterContext letContext, ConverterContext parentContext) {
         if (letContext.isFunctionSelfTailRecursive()) {
             var selfTCOResultFrameSlot = letContext.getSelfTCOResultFrameSlot().orElseThrow(ConverterException::shouldNotReachHere);
             parentContext.setFunctionAsSelfTailRecursive();
@@ -82,7 +82,7 @@ public abstract class AbstractLetConverter {
     }
 
 
-    protected static boolean isDefiningProcedureShadowed(ParsingContext letContext, List<SchemeSymbol> bindingSymbols) {
+    protected static boolean isDefiningProcedureShadowed(ConverterContext letContext, List<SchemeSymbol> bindingSymbols) {
         var isProcedureBeingDefined = letContext.getFunctionDefinitionName().isPresent();
         if (isProcedureBeingDefined) {
             var name = letContext.getFunctionDefinitionName().get();

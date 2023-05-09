@@ -2,7 +2,7 @@ package com.ihorak.truffle.convertor.callable;
 
 import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.SourceSectionUtil;
-import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.convertor.context.ConverterContext;
 import com.ihorak.truffle.exceptions.InterpreterException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.callable.CallableExprNodeGen;
@@ -26,7 +26,7 @@ public class ProcedureConverter {
     private ProcedureConverter() {
     }
 
-    public static SchemeExpression convert(SchemeList callableList, boolean isTailCallPosition, ParsingContext context, @Nullable ParserRuleContext procedureCtx) {
+    public static SchemeExpression convert(SchemeList callableList, boolean isTailCallPosition, ConverterContext context, @Nullable ParserRuleContext procedureCtx) {
         var operandIR = callableList.car;
         List<SchemeExpression> arguments = CallableUtil.convertArguments(callableList.cdr, context, procedureCtx);
         var callableCtx = procedureCtx != null ? (ParserRuleContext) procedureCtx.getChild(CTX_CALLABLE_INDEX) : null;
@@ -51,7 +51,7 @@ public class ProcedureConverter {
         //return SourceSectionUtil.setSourceSectionAndReturnExpr(new CallableExprNode(arguments, operandExpr), procedureCtx);
     }
 
-    private static SchemeExpression createSelfTailRecursiveThrower(List<SchemeExpression> arguments, ParsingContext context, @Nullable ParserRuleContext procedureCtx) {
+    private static SchemeExpression createSelfTailRecursiveThrower(List<SchemeExpression> arguments, ConverterContext context, @Nullable ParserRuleContext procedureCtx) {
         /*
          * This setFunctionAsSelfTailRecursive can be called twice in the example below
          * e.g.
@@ -84,13 +84,13 @@ public class ProcedureConverter {
     }
 
 
-    private static List<WriteFrameSlotNode> createSelfTCOWriteFrameSlotsNodes(ParsingContext context) {
+    private static List<WriteFrameSlotNode> createSelfTCOWriteFrameSlotsNodes(ConverterContext context) {
         var frameSlotIndexes = context.getFunctionArgumentSlotIndexes().orElseThrow(InterpreterException::shouldNotReachHere);
         return frameSlotIndexes.stream().map(WriteFrameSlotNodeGen::create).toList();
     }
 
 
-    private static boolean isSelfTailRecursive(Object operand, ParsingContext context) {
+    private static boolean isSelfTailRecursive(Object operand, ConverterContext context) {
         if (context.getFunctionDefinitionName().isEmpty()) return false;
         if (context.isDefiningFunctionShadowed()) return false;
 

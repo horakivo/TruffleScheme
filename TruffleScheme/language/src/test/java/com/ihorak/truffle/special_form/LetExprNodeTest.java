@@ -199,4 +199,16 @@ public class LetExprNodeTest {
                 expected size of binding is 2
                 given: 3""", msg);
     }
+
+    @Test
+    public void givenNoArgsInBinding_whenExecuted_thenExceptionIsThrown () {
+        var program = "(let (()) 5)";
+
+        var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
+
+        assertEquals("""
+                let: bad syntax
+                expected size of binding is 2
+                given: 0""", msg);
+    }
 }

@@ -3,8 +3,8 @@ package com.ihorak.truffle.convertor.special_form;
 import com.ihorak.truffle.convertor.ConverterException;
 import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.callable.PolyglotConverter;
+import com.ihorak.truffle.convertor.context.ConverterContext;
 import com.ihorak.truffle.convertor.context.LexicalScope;
-import com.ihorak.truffle.convertor.context.ParsingContext;
 import com.ihorak.truffle.convertor.util.CreateWriteExprNode;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
@@ -22,7 +22,7 @@ public class DefineConverter {
     private DefineConverter() {
     }
 
-    public static SchemeExpression convert(SchemeList defineList, ParsingContext context, boolean isDefinitionAllowed, ParserRuleContext defineCtx) {
+    public static SchemeExpression convert(SchemeList defineList, ConverterContext context, boolean isDefinitionAllowed, ParserRuleContext defineCtx) {
         validate(defineList, isDefinitionAllowed);
 
         var identifier = (SchemeSymbol) defineList.get(1);
@@ -52,7 +52,7 @@ public class DefineConverter {
         }
     }
 
-    private static boolean isDefiningProcedureShadowed(SchemeSymbol identifier, ParsingContext context) {
+    private static boolean isDefiningProcedureShadowed(SchemeSymbol identifier, ConverterContext context) {
         var isProcedureBeingDefined = context.getFunctionDefinitionName().isPresent();
         if (isProcedureBeingDefined) {
             var name = context.getFunctionDefinitionName().get();
@@ -62,7 +62,7 @@ public class DefineConverter {
         return false;
     }
 
-    private static SchemeExpression convertDefineBodyToSchemeExpr(SchemeList defineList, Object defineBody, ParsingContext context, SchemeSymbol identifier, @Nullable ParserRuleContext defineCtx) {
+    private static SchemeExpression convertDefineBodyToSchemeExpr(SchemeList defineList, Object defineBody, ConverterContext context, SchemeSymbol identifier, @Nullable ParserRuleContext defineCtx) {
         var bodyFormCtx = defineCtx != null ? (ParserRuleContext) defineCtx.children.get(CTX_DEFINE_BODY) : null;
         if (isDefun(defineList)) {
             var lambdaCtx = bodyFormCtx != null ? (ParserRuleContext) bodyFormCtx.getChild(0) : null;

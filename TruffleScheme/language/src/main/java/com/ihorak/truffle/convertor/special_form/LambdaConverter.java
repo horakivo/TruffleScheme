@@ -2,7 +2,7 @@ package com.ihorak.truffle.convertor.special_form;
 
 import com.ihorak.truffle.convertor.SourceSectionUtil;
 import com.ihorak.truffle.convertor.context.LexicalScope;
-import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.convertor.context.ConverterContext;
 import com.ihorak.truffle.convertor.util.CreateWriteExprNode;
 import com.ihorak.truffle.convertor.util.TailCallUtil;
 import com.ihorak.truffle.exceptions.InterpreterException;
@@ -40,10 +40,10 @@ public class LambdaConverter {
     private static final int CTX_PARAMS_OFFSET = 1;
 
 
-    public static SchemeExpression convert(SchemeList lambdaListIR, ParsingContext context, SchemeSymbol name, @Nullable ParserRuleContext lambdaCtx) {
+    public static SchemeExpression convert(SchemeList lambdaListIR, ConverterContext context, SchemeSymbol name, @Nullable ParserRuleContext lambdaCtx) {
         validate(lambdaListIR);
         var argumentsIR = (SchemeList) lambdaListIR.cdr.car;
-        ParsingContext lambdaContext = ParsingContext.createLambdaContext(context, name, argumentsIR);
+        ConverterContext lambdaContext = ConverterContext.createLambdaContext(context, name, argumentsIR);
         var lambdaBodyIR = lambdaListIR.cdr.cdr;
 
         var bodyExprs = TailCallUtil.convertWithDefinitionsAndWithFrameCreation(lambdaBodyIR, lambdaContext, lambdaCtx, CTX_LAMBDA_BODY_INDEX);
@@ -64,7 +64,7 @@ public class LambdaConverter {
         return lambdaExpr;
     }
 
-    private static void propagateClosureVariableUsageToParentFrame(ParsingContext lambdaContext, ParsingContext parentContext) {
+    private static void propagateClosureVariableUsageToParentFrame(ConverterContext lambdaContext, ConverterContext parentContext) {
         if (lambdaContext.isClosureVariablesUsed()) {
             if (parentContext.getLexicalScope() == LexicalScope.LET || parentContext.getLexicalScope() == LexicalScope.LAMBDA) {
                 parentContext.setClosureVariablesUsed(true);
@@ -86,7 +86,7 @@ public class LambdaConverter {
         return false;
     }
 
-    private static RootCallTarget creatCallTarget(List<SchemeExpression> writeArgsExprs, List<SchemeExpression> bodyExprs, SchemeSymbol name, ParsingContext lambdaContext, @Nullable ParserRuleContext lambdaCtx) {
+    private static RootCallTarget creatCallTarget(List<SchemeExpression> writeArgsExprs, List<SchemeExpression> bodyExprs, SchemeSymbol name, ConverterContext lambdaContext, @Nullable ParserRuleContext lambdaCtx) {
         var frameDescriptor = lambdaContext.getFrameDescriptorBuilder().build();
         var sourceSection = createLambdaSourceSection(lambdaContext.getSource(), lambdaCtx);
 
@@ -113,7 +113,7 @@ public class LambdaConverter {
         return source.createSection(startIndex, length);
     }
 
-    private static List<SchemeExpression> createWriteLocalVariableNodes(SchemeList argumentsIR, ParsingContext context, boolean isOnlyProcedureInvocation, @Nullable ParserRuleContext lambdaCtx) {
+    private static List<SchemeExpression> createWriteLocalVariableNodes(SchemeList argumentsIR, ConverterContext context, boolean isOnlyProcedureInvocation, @Nullable ParserRuleContext lambdaCtx) {
         var paramsCtx = lambdaCtx != null ? (ParserRuleContext) lambdaCtx.getChild(CTX_LAMBDA_PARAMS).getChild(0) : null;
         if (isOnlyProcedureInvocation) {
             return createObjectLocalVariableForSchemeList(argumentsIR, context, paramsCtx);
@@ -122,7 +122,7 @@ public class LambdaConverter {
         }
     }
 
-    private static List<SchemeExpression> createLocalVariableForSchemeList(SchemeList argumentListIR, ParsingContext context, @Nullable ParserRuleContext paramsCtx) {
+    private static List<SchemeExpression> createLocalVariableForSchemeList(SchemeList argumentListIR, ConverterContext context, @Nullable ParserRuleContext paramsCtx) {
         List<SchemeExpression> result = new ArrayList<>();
         for (int i = 0; i < argumentListIR.size; i++) {
             var symbol = (SchemeSymbol) argumentListIR.get(i);
@@ -132,7 +132,7 @@ public class LambdaConverter {
         return result;
     }
 
-    private static List<SchemeExpression> createObjectLocalVariableForSchemeList(SchemeList argumentListIR, ParsingContext context, @Nullable ParserRuleContext paramsCtx) {
+    private static List<SchemeExpression> createObjectLocalVariableForSchemeList(SchemeList argumentListIR, ConverterContext context, @Nullable ParserRuleContext paramsCtx) {
         List<SchemeExpression> result = new ArrayList<>();
         for (int i = 0; i < argumentListIR.size; i++) {
             var symbol = (SchemeSymbol) argumentListIR.get(i);
@@ -142,7 +142,7 @@ public class LambdaConverter {
         return result;
     }
 
-    private static List<WriteLocalVariableExprNode> createLocalVariableForSchemePair(SchemePair pair, ParsingContext context, @Nullable ParserRuleContext paramsCtx) {
+    private static List<WriteLocalVariableExprNode> createLocalVariableForSchemePair(SchemePair pair, ConverterContext context, @Nullable ParserRuleContext paramsCtx) {
         List<WriteLocalVariableExprNode> result = new ArrayList<>();
         var currentPair = pair;
         var index = 0;

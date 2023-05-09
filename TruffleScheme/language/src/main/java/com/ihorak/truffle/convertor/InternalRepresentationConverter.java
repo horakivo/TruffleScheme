@@ -1,7 +1,7 @@
 package com.ihorak.truffle.convertor;
 
 import com.ihorak.truffle.convertor.primitive_type.*;
-import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.convertor.context.ConverterContext;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.runtime.SchemeBigInt;
 import com.ihorak.truffle.runtime.SchemeList;
@@ -14,7 +14,7 @@ public class InternalRepresentationConverter {
 
     private InternalRepresentationConverter() {}
 
-    public static SchemeExpression convert(Object obj, ParsingContext context, boolean isTailCall, boolean isDefinitionAllowed, ParserRuleContext ctx) {
+    public static SchemeExpression convert(Object obj, ConverterContext context, boolean isTailCall, boolean isDefinitionAllowed, ParserRuleContext ctx) {
         if (obj instanceof Long longValue) {
             return LongConverter.convert(longValue, ctx);
         } else if (obj instanceof SchemeSymbol schemeSymbol) {

@@ -3,7 +3,7 @@ package com.ihorak.truffle.convertor.callable;
 import com.ihorak.truffle.convertor.ConverterException;
 import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.SourceSectionUtil;
-import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.convertor.context.ConverterContext;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.literals.UndefinedLiteralNode;
 import com.ihorak.truffle.runtime.SchemeList;
@@ -18,7 +18,7 @@ public class SchemeMacroDefinitionConverter {
     private SchemeMacroDefinitionConverter() {
     }
 
-    public static SchemeExpression convertMarco(SchemeList macroList, ParsingContext context, boolean isDefinitionAllowed, @Nullable ParserRuleContext macroCtx) {
+    public static SchemeExpression convertMarco(SchemeList macroList, ConverterContext context, boolean isDefinitionAllowed, @Nullable ParserRuleContext macroCtx) {
         validate(macroList, isDefinitionAllowed);
 
         var name = (SchemeSymbol) macroList.get(1);

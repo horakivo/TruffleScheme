@@ -1,7 +1,7 @@
 package com.ihorak.truffle.convertor.special_form;
 
 import com.ihorak.truffle.convertor.InternalRepresentationConverter;
-import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.convertor.context.ConverterContext;
 import com.ihorak.truffle.convertor.util.CreateWriteExprNode;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
@@ -18,9 +18,9 @@ public class LetrecConverter extends AbstractLetConverter {
     private LetrecConverter() {
     }
 
-    public static SchemeExpression convert(SchemeList letrecList, ParsingContext context, boolean isTailCallPosition, @Nullable ParserRuleContext letCtx) {
+    public static SchemeExpression convert(SchemeList letrecList, ConverterContext context, boolean isTailCallPosition, @Nullable ParserRuleContext letCtx) {
         validate(letrecList);
-        ParsingContext letContext = ParsingContext.createLetContext(context);
+        ConverterContext letContext = ConverterContext.createLetContext(context);
 
         var localBindingsIR = (SchemeList) letrecList.get(1);
 
@@ -30,7 +30,7 @@ public class LetrecConverter extends AbstractLetConverter {
 
     // (letrec ((x 1) (y 2)) <body>)
     // 0  1         2
-    private static List<WriteLocalVariableExprNode> createWriteLocalVariables(SchemeList localBindings, ParsingContext letrecContext, @Nullable ParserRuleContext letrecCtx) {
+    private static List<WriteLocalVariableExprNode> createWriteLocalVariables(SchemeList localBindings, ConverterContext letrecContext, @Nullable ParserRuleContext letrecCtx) {
         List<WriteLocalVariableExprNode> result = new ArrayList<>();
         List<SchemeSymbol> symbols = new ArrayList<>();
         List<Object> dataExpressions = new ArrayList<>();

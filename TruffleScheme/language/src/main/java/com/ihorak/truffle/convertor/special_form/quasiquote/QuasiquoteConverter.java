@@ -2,7 +2,7 @@ package com.ihorak.truffle.convertor.special_form.quasiquote;
 
 import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.SourceSectionUtil;
-import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.convertor.context.ConverterContext;
 import com.ihorak.truffle.exceptions.InterpreterException;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
@@ -26,7 +26,7 @@ public class QuasiquoteConverter {
     }
 
     // (quasiquote <body>)
-    public static SchemeExpression convert(SchemeList quasiquoteListIR, ParsingContext context, @Nullable ParserRuleContext quasiquoteCtx) {
+    public static SchemeExpression convert(SchemeList quasiquoteListIR, ConverterContext context, @Nullable ParserRuleContext quasiquoteCtx) {
         validate(quasiquoteListIR);
         var bodyIR = quasiquoteListIR.get(1);
         var bodyCtx = getQuasiquoteBodyCtx(quasiquoteCtx);
@@ -49,7 +49,7 @@ public class QuasiquoteConverter {
     }
 
 
-    private static QuasiquoteHolder convertSchemeList(SchemeList schemeList, ParsingContext context, @Nullable ParserRuleContext listCtx) {
+    private static QuasiquoteHolder convertSchemeList(SchemeList schemeList, ConverterContext context, @Nullable ParserRuleContext listCtx) {
         var quasiquoteHolderResult = new QuasiquoteHolder(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         SchemeList currentList = schemeList;
         //special case when we ,@ or , represent in the IR as (unquote/unquote-splicing ...) so we don't want to remove the '('
@@ -98,7 +98,7 @@ public class QuasiquoteConverter {
     }
 
 
-    private static void handleUnquote(SchemeList unquoteListIR, SchemeList currentCell, QuasiquoteHolder holder, ParsingContext context, @Nullable ParserRuleContext unquoteCtx) {
+    private static void handleUnquote(SchemeList unquoteListIR, SchemeList currentCell, QuasiquoteHolder holder, ConverterContext context, @Nullable ParserRuleContext unquoteCtx) {
         var parameterFormCtx = getUnquoteParserCtx(unquoteCtx);
         var expr = InternalRepresentationConverter.convert(unquoteListIR.get(1), context, false, false, parameterFormCtx);
 
@@ -106,7 +106,7 @@ public class QuasiquoteConverter {
         holder.unquoteToInsert().add(currentCell);
     }
 
-    private static void handleUnquoteSplicing(SchemeList unquoteSplicingListIR, QuasiquoteHolder holder, SchemeList previousCell, SchemeList currentCell, ParsingContext context, @Nullable ParserRuleContext unquoteSplicingCtx) {
+    private static void handleUnquoteSplicing(SchemeList unquoteSplicingListIR, QuasiquoteHolder holder, SchemeList previousCell, SchemeList currentCell, ConverterContext context, @Nullable ParserRuleContext unquoteSplicingCtx) {
         var parameterFormCtx = getUnquoteSplicingParserCtx(unquoteSplicingCtx);
         var expr = InternalRepresentationConverter.convert(unquoteSplicingListIR.get(1), context, false, false, parameterFormCtx);
 
@@ -114,7 +114,7 @@ public class QuasiquoteConverter {
         holder.unquoteSplicingToInsert().add(new UnquoteSplicingInsertInfo(previousCell, currentCell));
     }
 
-    private static void handleList(SchemeList list, QuasiquoteHolder holder, ParsingContext context, @Nullable ParserRuleContext listCtx) {
+    private static void handleList(SchemeList list, QuasiquoteHolder holder, ConverterContext context, @Nullable ParserRuleContext listCtx) {
         var isQuasiquote = isQuasiquote(list);
         var isUnquoteOrUnquoteSplicing = isUnquote(list) || isUnquoteSplicing(list);
 
@@ -163,7 +163,7 @@ public class QuasiquoteConverter {
         }
     }
 
-    private static boolean shouldUnquoteBeDone(SchemeList list, ParsingContext context) {
+    private static boolean shouldUnquoteBeDone(SchemeList list, ConverterContext context) {
         var shouldUnquoteBeDone = isUnquote(list) && context.getQuasiquoteNestedLevel() == 0;
         if (shouldUnquoteBeDone && list.size != 2) {
             throw new SchemeException("unquote: expects exactly one expression in " + list, null);
@@ -172,7 +172,7 @@ public class QuasiquoteConverter {
         return shouldUnquoteBeDone;
     }
 
-    private static boolean shouldUnquoteSplicingBeDone(SchemeList list, ParsingContext context) {
+    private static boolean shouldUnquoteSplicingBeDone(SchemeList list, ConverterContext context) {
         var shouldUnquoteSplicingBeDone = isUnquoteSplicing(list) && context.getQuasiquoteNestedLevel() == 0;
         if (shouldUnquoteSplicingBeDone && list.size != 2) {
             throw new SchemeException("unquote-splicing: expects exactly one expression in " + list, null);

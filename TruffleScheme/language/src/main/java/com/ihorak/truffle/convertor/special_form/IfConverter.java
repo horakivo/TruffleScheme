@@ -2,7 +2,7 @@ package com.ihorak.truffle.convertor.special_form;
 
 import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.SourceSectionUtil;
-import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.convertor.context.ConverterContext;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.special_form.IfElseExprNode;
@@ -22,7 +22,7 @@ public class IfConverter {
     private IfConverter() {
     }
 
-    public static SchemeExpression convert(SchemeList ifList, boolean isTailCallPosition, ParsingContext context, ParserRuleContext ifCtx) {
+    public static SchemeExpression convert(SchemeList ifList, boolean isTailCallPosition, ConverterContext context, ParserRuleContext ifCtx) {
         validate(ifList);
 
 
@@ -33,7 +33,7 @@ public class IfConverter {
         }
     }
 
-    private static IfExprNode covertIfNode(SchemeList ifList, boolean isTailCallPosition, ParsingContext context, ParserRuleContext ifCtx) {
+    private static IfExprNode covertIfNode(SchemeList ifList, boolean isTailCallPosition, ConverterContext context, ParserRuleContext ifCtx) {
         var conditionCtx = getConditionCtxOrNull(ifCtx);
         var thenCtx = getThenCtxOrNull(ifCtx);
 
@@ -45,7 +45,7 @@ public class IfConverter {
         return expr;
     }
 
-    private static IfElseExprNode covertIfElseNode(SchemeList ifList, boolean isTailCallPosition, ParsingContext context, ParserRuleContext ifCtx) {
+    private static IfElseExprNode covertIfElseNode(SchemeList ifList, boolean isTailCallPosition, ConverterContext context, ParserRuleContext ifCtx) {
         var conditionCtx = getConditionCtxOrNull(ifCtx);
         var thenCtx = getThenCtxOrNull(ifCtx);
         var elseCtx = getElseCtxOrNull(ifCtx);

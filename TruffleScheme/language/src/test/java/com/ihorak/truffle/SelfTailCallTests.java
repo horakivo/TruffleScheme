@@ -1,19 +1,8 @@
 package com.ihorak.truffle;
 
-import com.ihorak.truffle.convertor.InternalRepresentationConverter;
-import com.ihorak.truffle.convertor.context.LexicalScope;
-import com.ihorak.truffle.convertor.context.ParsingContext;
-import com.ihorak.truffle.parser.AntlrToIR;
-import com.ihorak.truffle.parser.ParserErrorException;
-import com.ihorak.truffle.parser.R5RSLexer;
-import com.ihorak.truffle.parser.R5RSParser;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
 import org.graalvm.polyglot.Context;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 

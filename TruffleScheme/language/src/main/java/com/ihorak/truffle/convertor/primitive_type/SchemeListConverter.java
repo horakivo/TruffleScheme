@@ -3,7 +3,7 @@ package com.ihorak.truffle.convertor.primitive_type;
 import com.ihorak.truffle.convertor.callable.CallableConverter;
 import com.ihorak.truffle.convertor.callable.SchemeMacroDefinitionConverter;
 import com.ihorak.truffle.convertor.special_form.SpecialFormConverter;
-import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.convertor.context.ConverterContext;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.runtime.SchemeList;
 import com.ihorak.truffle.runtime.SchemeSymbol;
@@ -16,7 +16,7 @@ public class SchemeListConverter {
     }
 
 
-    public static SchemeExpression convert(SchemeList list, ParsingContext context, boolean isTailCallPosition, boolean isDefinitionAllowed, @Nullable ParserRuleContext ctx) {
+    public static SchemeExpression convert(SchemeList list, ConverterContext context, boolean isTailCallPosition, boolean isDefinitionAllowed, @Nullable ParserRuleContext ctx) {
         var firstElement = list.get(0);
         var ctxWithoutForm = ctx != null ? (ParserRuleContext) ctx.getChild(0) : null;
 

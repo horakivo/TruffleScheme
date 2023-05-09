@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class ParsingContext {
+public class ConverterContext {
 
 
     private final Map<SchemeSymbol, SchemeExpression> macroIndex = new HashMap<>();
@@ -32,7 +32,7 @@ public class ParsingContext {
     private boolean closureVariablesUsed = false;
 
     private final List<Integer> procedureArgumentSlotIndexes;
-    private final ParsingContext parent;
+    private final ConverterContext parent;
     private final SchemeTruffleLanguage language;
     private final LexicalScope scope;
     private int quasiquoteNestedLevel = 0;
@@ -40,7 +40,7 @@ public class ParsingContext {
 
 
     // Lambda
-    public ParsingContext(ParsingContext parent, LexicalScope lexicalScope, FrameDescriptor.Builder frameDescriptorBuilder, SchemeSymbol functionDefinitionName, Map<SchemeSymbol, LocalVariableInfo> localVariableIndex, List<Integer> procedureArgumentSlotIndexes) {
+    public ConverterContext(ConverterContext parent, LexicalScope lexicalScope, FrameDescriptor.Builder frameDescriptorBuilder, SchemeSymbol functionDefinitionName, Map<SchemeSymbol, LocalVariableInfo> localVariableIndex, List<Integer> procedureArgumentSlotIndexes) {
         this.frameDescriptorBuilder = frameDescriptorBuilder;
         this.scope = lexicalScope;
         this.functionDefinitionName = functionDefinitionName;
@@ -52,7 +52,7 @@ public class ParsingContext {
     }
 
     // Let
-    public ParsingContext(ParsingContext parent) {
+    public ConverterContext(ConverterContext parent) {
         this.frameDescriptorBuilder = parent.getFrameDescriptorBuilder();
         this.scope = LexicalScope.LET;
         this.functionDefinitionName = parent.functionDefinitionName;
@@ -64,7 +64,7 @@ public class ParsingContext {
     }
 
     // Global Parsing context
-    private ParsingContext(SchemeTruffleLanguage language, Source source) {
+    private ConverterContext(SchemeTruffleLanguage language, Source source) {
         this.frameDescriptorBuilder = FrameDescriptor.newBuilder();
         this.scope = LexicalScope.GLOBAL;
         this.functionDefinitionName = null;
@@ -89,7 +89,7 @@ public class ParsingContext {
 
 
     @Nullable
-    private FrameIndexResult findSymbol(ParsingContext context, SchemeSymbol symbol, int depth) {
+    private FrameIndexResult findSymbol(ConverterContext context, SchemeSymbol symbol, int depth) {
         if (context.getLexicalScope() == LexicalScope.GLOBAL || context.parent == null) {
             return null;
         }
@@ -142,12 +142,12 @@ public class ParsingContext {
         return macroInfo != null;
     }
 
-    private SchemeExpression getMacroTransformationExpr(SchemeSymbol schemeSymbol, ParsingContext parsingContext) {
-        var transformationExpr = parsingContext.macroIndex.get(schemeSymbol);
+    private SchemeExpression getMacroTransformationExpr(SchemeSymbol schemeSymbol, ConverterContext converterContext) {
+        var transformationExpr = converterContext.macroIndex.get(schemeSymbol);
         if (transformationExpr != null) return transformationExpr;
-        if (parsingContext.scope == LexicalScope.GLOBAL) return null;
+        if (converterContext.scope == LexicalScope.GLOBAL) return null;
 
-        return getMacroTransformationExpr(schemeSymbol, parsingContext.parent);
+        return getMacroTransformationExpr(schemeSymbol, converterContext.parent);
     }
 
     /*
@@ -247,15 +247,15 @@ public class ParsingContext {
     }
 
 
-    public static ParsingContext createGlobalParsingContext(SchemeTruffleLanguage language, Source source) {
-        return new ParsingContext(language, source);
+    public static ConverterContext createGlobalParsingContext(SchemeTruffleLanguage language, Source source) {
+        return new ConverterContext(language, source);
     }
 
-    public static ParsingContext createLetContext(ParsingContext parent) {
-        return new ParsingContext(parent);
+    public static ConverterContext createLetContext(ConverterContext parent) {
+        return new ConverterContext(parent);
     }
 
-    public static ParsingContext createLambdaContext(ParsingContext parent, SchemeSymbol functionDefinitionName, SchemeList argumentsIR) {
+    public static ConverterContext createLambdaContext(ConverterContext parent, SchemeSymbol functionDefinitionName, SchemeList argumentsIR) {
         var frameDescriptorBuilder = FrameDescriptor.newBuilder();
         List<Integer> procedureArgumentSlotIndexes = new ArrayList<>();
         Map<SchemeSymbol, LocalVariableInfo> localVariableIndex = new HashMap<>();
@@ -268,6 +268,6 @@ public class ParsingContext {
             localVariableIndex.put(symbol, localVariableInfo);
         }
 
-        return new ParsingContext(parent, LexicalScope.LAMBDA, frameDescriptorBuilder, functionDefinitionName, localVariableIndex, procedureArgumentSlotIndexes);
+        return new ConverterContext(parent, LexicalScope.LAMBDA, frameDescriptorBuilder, functionDefinitionName, localVariableIndex, procedureArgumentSlotIndexes);
     }
 }

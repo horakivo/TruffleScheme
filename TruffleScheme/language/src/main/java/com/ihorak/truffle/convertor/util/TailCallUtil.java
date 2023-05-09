@@ -2,7 +2,7 @@ package com.ihorak.truffle.convertor.util;
 
 import com.ihorak.truffle.convertor.ConverterException;
 import com.ihorak.truffle.convertor.InternalRepresentationConverter;
-import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.convertor.context.ConverterContext;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.scope.StoreSelfTailCallResultInFrameNodeGen;
 import com.ihorak.truffle.runtime.SchemeList;
@@ -26,7 +26,7 @@ public class TailCallUtil {
      * ctxBodyStartIndex - since the body is defined as follows: <definitions>+ <expressions>* we don't know where in the
      * lambda, or we should start. This index is the starting point
      */
-    public static List<SchemeExpression> convertWithDefinitionsAndWithFrameCreation(SchemeList bodyIR, ParsingContext context, @Nullable ParserRuleContext ctx, int ctxBodyStartIndex) {
+    public static List<SchemeExpression> convertWithDefinitionsAndWithFrameCreation(SchemeList bodyIR, ConverterContext context, @Nullable ParserRuleContext ctx, int ctxBodyStartIndex) {
         List<SchemeExpression> result = new ArrayList<>();
         var size = bodyIR.size;
         for (int i = 0; i < size - 1; i++) {
@@ -50,18 +50,18 @@ public class TailCallUtil {
         return result;
     }
 
-    public static List<SchemeExpression> convertWithDefinitionsAndNoFrameCreation(SchemeList expressionsIR, ParsingContext context, boolean isTailCallPosition, @Nullable ParserRuleContext ctx, int ctxBodyStartIndex) {
+    public static List<SchemeExpression> convertWithDefinitionsAndNoFrameCreation(SchemeList expressionsIR, ConverterContext context, boolean isTailCallPosition, @Nullable ParserRuleContext ctx, int ctxBodyStartIndex) {
         return convertWithNoFrameCreation(expressionsIR, context, isTailCallPosition, ctx, ctxBodyStartIndex, true);
     }
 
 
     //TCO: (or <expression>* <tail expression>)
-    public static List<SchemeExpression> convertWithNoDefinitionsAndNoFrameCreation(SchemeList expressionsIR, ParsingContext context, boolean isTailCallPosition, @Nullable ParserRuleContext ctx, int ctxBodyStartIndex) {
+    public static List<SchemeExpression> convertWithNoDefinitionsAndNoFrameCreation(SchemeList expressionsIR, ConverterContext context, boolean isTailCallPosition, @Nullable ParserRuleContext ctx, int ctxBodyStartIndex) {
         return convertWithNoFrameCreation(expressionsIR, context, isTailCallPosition, ctx, ctxBodyStartIndex, false);
     }
 
 
-    private static List<SchemeExpression> convertWithNoFrameCreation(SchemeList expressionsIR, ParsingContext context, boolean isTailCallPosition, @Nullable ParserRuleContext ctx, int ctxBodyStartIndex, boolean definitionAllowed) {
+    private static List<SchemeExpression> convertWithNoFrameCreation(SchemeList expressionsIR, ConverterContext context, boolean isTailCallPosition, @Nullable ParserRuleContext ctx, int ctxBodyStartIndex, boolean definitionAllowed) {
         List<SchemeExpression> result = new ArrayList<>();
         var size = expressionsIR.size;
         for (int i = 0; i < size - 1; i++) {

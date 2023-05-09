@@ -1,7 +1,7 @@
 package com.ihorak.truffle.node.callable;
 
 import com.ihorak.truffle.convertor.InternalRepresentationConverter;
-import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.convertor.context.ConverterContext;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
@@ -18,17 +18,17 @@ import java.util.List;
 public abstract class MacroCallableExprNode extends SchemeExpression {
 
     private final Object[] notEvaluatedArgs;
-    private final ParsingContext parsingContext;
+    private final ConverterContext converterContext;
     private final SchemeSymbol name;
 
     @Child
     @Executed
     protected SchemeExpression transformationExpr;
 
-    public MacroCallableExprNode(SchemeExpression transformationExpr, List<Object> notEvaluatedArgs, ParsingContext parsingContext, SchemeSymbol name) {
+    public MacroCallableExprNode(SchemeExpression transformationExpr, List<Object> notEvaluatedArgs, ConverterContext converterContext, SchemeSymbol name) {
         this.notEvaluatedArgs = notEvaluatedArgs.toArray();
         this.transformationExpr = transformationExpr;
-        this.parsingContext = parsingContext;
+        this.converterContext = converterContext;
         this.name = name;
     }
 
@@ -37,14 +37,13 @@ public abstract class MacroCallableExprNode extends SchemeExpression {
                                       UserDefinedProcedure userDefinedProcedure,
                                       @Cached DispatchUserProcedureNode dispatchUserProcedureNode) {
         CompilerDirectives.transferToInterpreterAndInvalidate();
-
         if (userDefinedProcedure.expectedNumberOfArgs() != notEvaluatedArgs.length) {
             throw SchemeException.arityException(this, name.value(), userDefinedProcedure.expectedNumberOfArgs(), notEvaluatedArgs.length);
         }
 
         var args = getArgumentsForMacroExpansion(userDefinedProcedure);
         var macroExpandedIR = dispatchUserProcedureNode.executeDispatch(userDefinedProcedure, args);
-        var macroExpandedTruffleAST = InternalRepresentationConverter.convert(macroExpandedIR, parsingContext, false, false, null);
+        var macroExpandedTruffleAST = InternalRepresentationConverter.convert(macroExpandedIR, converterContext, false, false, null);
         return replace(macroExpandedTruffleAST).executeGeneric(frame);
     }
 

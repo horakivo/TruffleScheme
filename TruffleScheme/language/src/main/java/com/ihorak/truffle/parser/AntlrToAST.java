@@ -1,6 +1,6 @@
 package com.ihorak.truffle.parser;
 
-import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.convertor.context.ConverterContext;
 import com.ihorak.truffle.node.SchemeExpression;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -14,7 +14,7 @@ public class AntlrToAST {
     }
 
 
-    public static List<SchemeExpression> convert(CharStream charStream, ParsingContext globalParsingContext) {
+    public static List<SchemeExpression> convert(CharStream charStream, ConverterContext globalConverterContext) {
         R5RSLexer lexer = new R5RSLexer(charStream);
         lexer.removeErrorListeners();
         lexer.addErrorListener(ParserErrorException.INSTANCE);
@@ -25,7 +25,7 @@ public class AntlrToAST {
         parser.removeErrorListeners();
         parser.addErrorListener(ParserErrorException.INSTANCE);
 
-        var antlrToSchemeExpr = new AntlrToSchemeExpr(globalParsingContext);
+        var antlrToSchemeExpr = new AntlrToSchemeExpr(globalConverterContext);
         var progCtx = parser.prog();
 
         List<SchemeExpression> schemeExpressions = new ArrayList<>();

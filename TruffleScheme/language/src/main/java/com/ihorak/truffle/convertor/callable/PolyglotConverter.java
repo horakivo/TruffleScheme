@@ -3,7 +3,7 @@ package com.ihorak.truffle.convertor.callable;
 import com.ihorak.truffle.convertor.ConverterException;
 import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.SourceSectionUtil;
-import com.ihorak.truffle.convertor.context.ParsingContext;
+import com.ihorak.truffle.convertor.context.ConverterContext;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.polyglot.InvokeOrReadExprNodeGen;
 import com.ihorak.truffle.node.polyglot.SetValueExprNodeGen;
@@ -18,7 +18,7 @@ public class PolyglotConverter {
 
     }
 
-    public static SchemeExpression convert(SchemeList callableList, ParsingContext context, @Nullable ParserRuleContext callableCtx) {
+    public static SchemeExpression convert(SchemeList callableList, ConverterContext context, @Nullable ParserRuleContext callableCtx) {
         validate(callableList);
         var operation = (SchemeSymbol) callableList.car;
 
@@ -29,7 +29,7 @@ public class PolyglotConverter {
         };
     }
 
-    private static SchemeExpression createSetValueExpr(SchemeList callableList, ParsingContext context, @Nullable ParserRuleContext callableCtx) {
+    private static SchemeExpression createSetValueExpr(SchemeList callableList, ConverterContext context, @Nullable ParserRuleContext callableCtx) {
         if (callableList.size != 4) {
             throw ConverterException.arityException("set-value!", 3, callableList.size - 1);
         }
@@ -43,7 +43,7 @@ public class PolyglotConverter {
         return SourceSectionUtil.setSourceSectionAndReturnExpr(setValueExpr, callableCtx);
     }
 
-    private static SchemeExpression createInvokeOrReadExpr(SchemeList callableList, ParsingContext context, @Nullable ParserRuleContext callableCtx) {
+    private static SchemeExpression createInvokeOrReadExpr(SchemeList callableList, ConverterContext context, @Nullable ParserRuleContext callableCtx) {
         if (callableList.size < 2) {
             throw ConverterException.arityExceptionAtLeast(".", 2, callableList.size);
         }
@@ -56,7 +56,7 @@ public class PolyglotConverter {
         return SourceSectionUtil.setSourceSectionAndReturnExpr(invokeOrRead, callableCtx);
     }
 
-    private static SchemeExpression getReceiverExpr(SchemeList callableList, ParsingContext context, @Nullable ParserRuleContext callableCtx) {
+    private static SchemeExpression getReceiverExpr(SchemeList callableList, ConverterContext context, @Nullable ParserRuleContext callableCtx) {
         var receiverIR = callableList.get(2);
         var receiverCtx = callableCtx != null ? (ParserRuleContext) callableCtx.getChild(3) : null;
         return InternalRepresentationConverter.convert(receiverIR, context, false, false, receiverCtx);
