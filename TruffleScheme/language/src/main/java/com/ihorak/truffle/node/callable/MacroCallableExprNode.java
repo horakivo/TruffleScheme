@@ -10,6 +10,7 @@ import com.ihorak.truffle.runtime.UserDefinedProcedure;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.Executed;
+import com.oracle.truffle.api.dsl.Fallback;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
 
@@ -49,10 +50,10 @@ public abstract class MacroCallableExprNode extends SchemeExpression {
 
 
     @TruffleBoundary
-    @Specialization
+    @Fallback
     Object fallback(Object object) {
         throw new SchemeException("""
-                macro's body has to be evaluated procedure
+                macro's body has to be evaluated to procedure
                 expected: procedure?
                 given: %s""".formatted(object), this);
     }

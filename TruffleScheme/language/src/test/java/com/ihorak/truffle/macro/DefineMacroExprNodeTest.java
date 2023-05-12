@@ -142,7 +142,7 @@ public class DefineMacroExprNodeTest {
         var msg = assertThrows(PolyglotException.class, () -> context.eval("scm", program)).getMessage();
 
         assertEquals("""
-                macro's body has to be evaluated procedure
+                macro's body has to be evaluated to procedure
                 expected: procedure?
                 given: 5""", msg);
     }
