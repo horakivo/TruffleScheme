@@ -1,10 +1,8 @@
 package com.ihorak.truffle.convertor.util;
 
-import com.ihorak.truffle.convertor.ConverterException;
 import com.ihorak.truffle.convertor.InternalRepresentationConverter;
 import com.ihorak.truffle.convertor.context.ConverterContext;
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.scope.StoreSelfTailCallResultInFrameNodeGen;
 import com.ihorak.truffle.runtime.SchemeList;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.jetbrains.annotations.Nullable;
@@ -38,12 +36,7 @@ public class TailCallUtil {
         if (size > 0) {
             var lastIndex = size - 1;
             var currentCtx = getCurrentBodyCtx(ctx, ctxBodyStartIndex, lastIndex);
-
             var lastExpr = InternalRepresentationConverter.convert(bodyIR.get(size - 1), context, true, false, currentCtx);
-            if (context.isFunctionSelfTailRecursive()) {
-                var resultFrameIndex = context.getSelfTCOResultFrameSlot().orElseThrow(ConverterException::shouldNotReachHere);
-                lastExpr = StoreSelfTailCallResultInFrameNodeGen.create(lastExpr, resultFrameIndex);
-            }
             result.add(lastExpr);
         }
 
@@ -84,14 +77,4 @@ public class TailCallUtil {
 
         return (ParserRuleContext) ctx.getChild(ctxBodyStartIndex + index);
     }
-
-//    private static SchemeExpression handlePotentialSelfTailRecursion(SchemeExpression lastExpr) {
-//        if (lastExpr instanceof IfElseExprNode) {
-//
-//        }
-//    }
-//
-//    private static boolean isIfElseExprSelfTCO(IfElseExprNode ifElseExprNode) {
-//
-//    }
 }

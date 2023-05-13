@@ -1,7 +1,7 @@
 package com.ihorak.truffle.node.callable.TCO.throwers;
 
 import com.ihorak.truffle.node.SchemeExpression;
-import com.ihorak.truffle.node.callable.TCO.exceptions.SelfRecursiveTailCallException;
+import com.ihorak.truffle.node.callable.TCO.exceptions.TailRecursiveException;
 import com.ihorak.truffle.node.scope.WriteFrameSlotNode;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
@@ -9,7 +9,7 @@ import com.oracle.truffle.api.nodes.ExplodeLoop;
 
 import java.util.List;
 
-public abstract class SelfRecursiveTailCallThrowerNode extends SchemeExpression {
+public abstract class TailRecursiveThrowerNode extends SchemeExpression {
 
     @Children
     private final SchemeExpression[] arguments;
@@ -18,7 +18,7 @@ public abstract class SelfRecursiveTailCallThrowerNode extends SchemeExpression 
     private final WriteFrameSlotNode[] writeFrameSlotNodes;
 
 
-    public SelfRecursiveTailCallThrowerNode(List<SchemeExpression> arguments, List<WriteFrameSlotNode> writeFrameSlotNodes) {
+    public TailRecursiveThrowerNode(List<SchemeExpression> arguments, List<WriteFrameSlotNode> writeFrameSlotNodes) {
         this.arguments = arguments.toArray(SchemeExpression[]::new);
         this.writeFrameSlotNodes = writeFrameSlotNodes.toArray(WriteFrameSlotNode[]::new);
     }
@@ -26,7 +26,7 @@ public abstract class SelfRecursiveTailCallThrowerNode extends SchemeExpression 
     @Specialization
     protected Object doThrow(VirtualFrame frame) {
         prepareArguments(frame);
-        throw SelfRecursiveTailCallException.INSTANCE;
+        throw TailRecursiveException.INSTANCE;
     }
 
 

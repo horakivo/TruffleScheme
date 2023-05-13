@@ -6,8 +6,8 @@ import com.ihorak.truffle.convertor.context.ConverterContext;
 import com.ihorak.truffle.exceptions.InterpreterException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.callable.CallableExprNodeGen;
-import com.ihorak.truffle.node.callable.TCO.throwers.SelfRecursiveTailCallThrowerNodeGen;
 import com.ihorak.truffle.node.callable.TCO.throwers.TailCallThrowerNodeGen;
+import com.ihorak.truffle.node.callable.TCO.throwers.TailRecursiveThrowerNodeGen;
 import com.ihorak.truffle.node.scope.WriteFrameSlotNode;
 import com.ihorak.truffle.node.scope.WriteFrameSlotNodeGen;
 import com.ihorak.truffle.runtime.SchemeList;
@@ -73,7 +73,7 @@ public class ProcedureConverter {
 
         var writeSlotNodes = createSelfTCOWriteFrameSlotsNodes(context);
         if (writeSlotNodes.size() != arguments.size()) InterpreterException.shouldNotReachHere();
-        var selfTCOThrowerNode = SelfRecursiveTailCallThrowerNodeGen.create(arguments, writeSlotNodes);
+        var selfTCOThrowerNode = TailRecursiveThrowerNodeGen.create(arguments, writeSlotNodes);
         return SourceSectionUtil.setSourceSectionAndReturnExpr(selfTCOThrowerNode, procedureCtx);
     }
 

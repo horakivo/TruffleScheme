@@ -9,7 +9,7 @@ import com.ihorak.truffle.exceptions.InterpreterException;
 import com.ihorak.truffle.exceptions.SchemeException;
 import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.SchemeRootNode;
-import com.ihorak.truffle.node.callable.TCO.SelfTailProcedureRootNode;
+import com.ihorak.truffle.node.callable.TCO.TailRecursiveRootNode;
 import com.ihorak.truffle.node.callable.TCO.throwers.TailCallThrowerNode;
 import com.ihorak.truffle.node.scope.ReadProcedureArgExprNode;
 import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
@@ -94,7 +94,7 @@ public class LambdaConverter {
         SchemeRootNode rootNode;
         if (isSelfTailCall) {
             int resultIndex = lambdaContext.getSelfTCOResultFrameSlot().orElseThrow(InterpreterException::shouldNotReachHere);
-            rootNode = new SelfTailProcedureRootNode(name, lambdaContext.getLanguage(), frameDescriptor, bodyExprs, writeArgsExprs, resultIndex, sourceSection);
+            rootNode = new TailRecursiveRootNode(name, lambdaContext.getLanguage(), frameDescriptor, bodyExprs, writeArgsExprs, resultIndex, sourceSection);
         } else {
             var allExprs = Stream.concat(writeArgsExprs.stream(), bodyExprs.stream()).toList();
             rootNode = new SchemeRootNode(lambdaContext.getLanguage(), frameDescriptor, allExprs, name, sourceSection);
