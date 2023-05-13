@@ -75,9 +75,7 @@ public abstract class AbstractLetConverter {
 
     private static void propagateSelfTCOInfoToParentContext(ConverterContext letContext, ConverterContext parentContext) {
         if (letContext.isFunctionSelfTailRecursive()) {
-            var selfTCOResultFrameSlot = letContext.getSelfTCOResultFrameSlot().orElseThrow(ConverterException::shouldNotReachHere);
             parentContext.setFunctionAsSelfTailRecursive();
-            parentContext.setSelfTailRecursionResultIndex(selfTCOResultFrameSlot);
         }
     }
 

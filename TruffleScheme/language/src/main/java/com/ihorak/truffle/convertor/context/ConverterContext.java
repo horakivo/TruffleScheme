@@ -28,7 +28,6 @@ public class ConverterContext {
     private final SchemeSymbol functionDefinitionName;
     private boolean isDefiningFunctionShadowed = false;
     private boolean isFunctionSelfTailRecursive = false;
-    private Integer selfTailRecursionResultIndex;
     private boolean closureVariablesUsed = false;
 
     private final List<Integer> procedureArgumentSlotIndexes;
@@ -217,17 +216,6 @@ public class ConverterContext {
 
     public void setFunctionAsSelfTailRecursive() {
         isFunctionSelfTailRecursive = true;
-    }
-
-    public void setSelfTailRecursionResultIndex(int selfTailRecursionResultIndex) {
-        if (this.selfTailRecursionResultIndex != null) {
-            throw InterpreterException.shouldNotReachHere("Converter error: selfTailRecursionResultIndex should be set only once!");
-        }
-        this.selfTailRecursionResultIndex = selfTailRecursionResultIndex;
-    }
-
-    public Optional<Integer> getSelfTCOResultFrameSlot() {
-        return Optional.ofNullable(selfTailRecursionResultIndex);
     }
 
     public Source getSource() {

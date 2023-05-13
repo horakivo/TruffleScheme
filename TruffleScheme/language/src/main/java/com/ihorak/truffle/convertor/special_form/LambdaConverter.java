@@ -20,6 +20,7 @@ import com.ihorak.truffle.runtime.SchemeList;
 import com.ihorak.truffle.runtime.SchemePair;
 import com.ihorak.truffle.runtime.SchemeSymbol;
 import com.oracle.truffle.api.RootCallTarget;
+import com.oracle.truffle.api.frame.FrameSlotKind;
 import com.oracle.truffle.api.source.Source;
 import com.oracle.truffle.api.source.SourceSection;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -87,16 +88,16 @@ public class LambdaConverter {
     }
 
     private static RootCallTarget creatCallTarget(List<SchemeExpression> writeArgsExprs, List<SchemeExpression> bodyExprs, SchemeSymbol name, ConverterContext lambdaContext, @Nullable ParserRuleContext lambdaCtx) {
-        var frameDescriptor = lambdaContext.getFrameDescriptorBuilder().build();
         var sourceSection = createLambdaSourceSection(lambdaContext.getSource(), lambdaCtx);
 
-        var isSelfTailCall = lambdaContext.isFunctionSelfTailRecursive();
         SchemeRootNode rootNode;
-        if (isSelfTailCall) {
-            int resultIndex = lambdaContext.getSelfTCOResultFrameSlot().orElseThrow(InterpreterException::shouldNotReachHere);
+        if (lambdaContext.isFunctionSelfTailRecursive()) {
+            var resultIndex = lambdaContext.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
+            var frameDescriptor = lambdaContext.getFrameDescriptorBuilder().build();
             rootNode = new TailRecursiveRootNode(name, lambdaContext.getLanguage(), frameDescriptor, bodyExprs, writeArgsExprs, resultIndex, sourceSection);
         } else {
             var allExprs = Stream.concat(writeArgsExprs.stream(), bodyExprs.stream()).toList();
+            var frameDescriptor = lambdaContext.getFrameDescriptorBuilder().build();
             rootNode = new SchemeRootNode(lambdaContext.getLanguage(), frameDescriptor, allExprs, name, sourceSection);
         }
         return rootNode.getCallTarget();

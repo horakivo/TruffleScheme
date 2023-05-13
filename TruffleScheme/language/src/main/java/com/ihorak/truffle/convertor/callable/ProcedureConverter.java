@@ -65,12 +65,6 @@ public class ProcedureConverter {
          *
          * */
         context.setFunctionAsSelfTailRecursive();
-        if (context.getSelfTCOResultFrameSlot().isEmpty()) {
-            var resultIndex = context.getFrameDescriptorBuilder().addSlot(FrameSlotKind.Object, null, null);
-            context.setSelfTailRecursionResultIndex(resultIndex);
-        }
-
-
         var writeSlotNodes = createSelfTCOWriteFrameSlotsNodes(context);
         if (writeSlotNodes.size() != arguments.size()) InterpreterException.shouldNotReachHere();
         var selfTCOThrowerNode = TailRecursiveThrowerNodeGen.create(arguments, writeSlotNodes);
