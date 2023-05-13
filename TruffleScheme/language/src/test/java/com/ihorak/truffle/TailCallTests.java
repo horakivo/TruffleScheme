@@ -160,7 +160,6 @@ public class TailCallTests {
     @Test
     public void tailCallRecursionIsCorrectlyRecognizedInCondExpression() {
         var program = """
-                                
                 (define ivo
                   (lambda (n)
                     (cond (#f (return-t))
@@ -174,6 +173,33 @@ public class TailCallTests {
                                 
                         
                 (ivo 10)
+                """;
+
+        var result = context.eval("scm", program);
+
+        assertEquals(10L, result.asLong());
+    }
+
+    @Test
+    public void chainTCOCalls() {
+        var program = """
+                (define trampoline
+                  (lambda ()
+                    (foo)))
+                                
+                (define foo
+                  (lambda ()
+                    (bar)))
+                                
+                (define bar
+                  (lambda ()
+                    (baz)))
+                                
+                (define baz
+                  (lambda ()
+                    10))
+                                
+                (trampoline)
                 """;
 
         var result = context.eval("scm", program);
