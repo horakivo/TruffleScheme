@@ -15,13 +15,13 @@ import com.oracle.truffle.api.library.CachedLibrary;
 public class MemberNodes {
 
     public static final String HAS_MEMBERS = "has-members?";
-    public static final String IS_MEMBER_READABLE = "is-member-readable?";
-    public static final String IS_MEMBER_MODIFIABLE = "is-member-modifiable?";
-    public static final String IS_MEMBER_INSERTABLE = "is-member-insertable?";
-    public static final String IS_MEMBER_REMOVABLE = "is-member-removable?";
-    public static final String IS_MEMBER_INVOCABLE = "is-member-invocable?";
-    public static final String IS_MEMBER_WRITABLE = "is-member-writable?";
-    public static final String IS_MEMBER_EXISTING = "is-member-existing?";
+    public static final String IS_MEMBER_READABLE = "member-readable?";
+    public static final String IS_MEMBER_MODIFIABLE = "member-modifiable?";
+    public static final String IS_MEMBER_INSERTABLE = "member-insertable?";
+    public static final String IS_MEMBER_REMOVABLE = "member-removable?";
+    public static final String IS_MEMBER_INVOCABLE = "member-invocable?";
+    public static final String IS_MEMBER_WRITABLE = "member-writable?";
+    public static final String IS_MEMBER_EXISTING = "member-existing?";
     public static final String GET_MEMBERS = "get-members";
     public static final String READ_MEMBER = "read-member";//.
     public static final String WRITE_MEMBER = "write-member";//set!

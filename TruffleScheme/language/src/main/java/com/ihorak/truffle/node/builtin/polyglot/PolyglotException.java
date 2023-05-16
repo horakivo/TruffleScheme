@@ -65,9 +65,9 @@ public class PolyglotException extends AbstractTruffleException {
     @TruffleBoundary
     public static PolyglotException invalidArrayIndexException(InvalidArrayIndexException exception, Object receiver, Node node) {
         StringBuilder sb = new StringBuilder();
-        sb.append("Invalid array index");
+        sb.append("Invalid array index").append("\n");
         sb.append("receiver: ").append(receiver).append("\n");
-        sb.append("index: ").append(exception.getInvalidIndex());
+        sb.append("index: ").append(exception.getInvalidIndex()).append("\n");
         sb.append("Original exception message: ").append(exception.getMessage());
         return new PolyglotException(sb.toString(), node);
     }

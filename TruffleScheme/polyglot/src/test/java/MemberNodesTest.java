@@ -51,7 +51,7 @@ public class MemberNodesTest {
     public void IsMemberReadable() {
         var program = """
                 (define object (eval-source "js" "a = { id: 2, method: x => x+1 }"))
-                (is-member-readable? object "id")
+                (member-readable? object "id")
                 """;
 
         var result = context.eval("scm", program);
@@ -63,7 +63,7 @@ public class MemberNodesTest {
     public void IsMemberModifiable() {
         var program = """
                 (define object (eval-source "js" "a = { id: 2, method: x => x+1 }"))
-                (is-member-modifiable? object "id")
+                (member-modifiable? object "id")
                 """;
 
         var result = context.eval("scm", program);
@@ -76,7 +76,7 @@ public class MemberNodesTest {
     public void IsMemberExisting() {
         var program = """
                 (define object (eval-source "js" "a = { id: 2, method: x => x+1 }"))
-                (is-member-existing? object "id")
+                (member-existing? object "id")
                 """;
 
         var result = context.eval("scm", program);
@@ -88,7 +88,7 @@ public class MemberNodesTest {
     public void IsMemberNotExisting() {
         var program = """
                 (define object (eval-source "js" "a = { id: 2, method: x => x+1 }"))
-                (is-member-existing? object "name")
+                (member-existing? object "name")
                 """;
 
         var result = context.eval("scm", program);
@@ -100,7 +100,7 @@ public class MemberNodesTest {
     public void IsMemberInsertable() {
         var program = """
                 (define object (eval-source "js" "a = { id: 2, method: x => x+1 }"))
-                (is-member-insertable? object "name")
+                (member-insertable? object "name")
                 """;
 
         var result = context.eval("scm", program);
@@ -112,7 +112,7 @@ public class MemberNodesTest {
     public void IsMemberNotInsertable() {
         var program = """
                 (define object (eval-source "js" "a = { id: 2, method: x => x+1 }"))
-                (is-member-insertable? object "id")
+                (member-insertable? object "id")
                 """;
 
         var result = context.eval("scm", program);
@@ -124,7 +124,7 @@ public class MemberNodesTest {
     public void IsMemberRemovable() {
         var program = """
                 (define object (eval-source "js" "a = { id: 2, method: x => x+1 }"))
-                (is-member-removable? object "id")
+                (member-removable? object "id")
                 """;
 
         var result = context.eval("scm", program);
@@ -136,7 +136,7 @@ public class MemberNodesTest {
     public void IsMemberNotRemovable() {
         var program = """
                 (define object (eval-source "js" "a = { id: 2, method: x => x+1 }"))
-                (is-member-removable? object "test")
+                (member-removable? object "test")
                 """;
 
         var result = context.eval("scm", program);
@@ -148,7 +148,7 @@ public class MemberNodesTest {
     public void IsMemberInvocable() {
         var program = """
                 (define object (eval-source "js" "a = { id: 2, method: x => x+1 }"))
-                (is-member-invocable? object "method")
+                (member-invocable? object "method")
                 """;
 
         var result = context.eval("scm", program);
@@ -160,7 +160,7 @@ public class MemberNodesTest {
     public void IsMemberWritableExistingMember() {
         var program = """
                 (define object (eval-source "js" "a = { id: 2, method: x => x+1 }"))
-                (is-member-writable? object "id")
+                (member-writable? object "id")
                 """;
 
         var result = context.eval("scm", program);
@@ -172,7 +172,7 @@ public class MemberNodesTest {
     public void IsMemberWritableNotExistingMember() {
         var program = """
                 (define object (eval-source "js" "a = { id: 2, method: x => x+1 }"))
-                (is-member-writable? object "name")
+                (member-writable? object "name")
                 """;
 
         var result = context.eval("scm", program);
@@ -185,7 +185,7 @@ public class MemberNodesTest {
         var program = """
                 (define object (eval-source "js" "a = { id: 2, method: x => x+1 }"))
                                 
-                (if (is-member-insertable? object "name")
+                (if (member-insertable? object "name")
                     (write-member object "name" "Ivo Horak")
                     (read-member object "name"))
                                 
@@ -202,7 +202,7 @@ public class MemberNodesTest {
         var program = """
                 (define object (eval-source "js" "a = { id: 2, method: x => x+1 }"))
                                 
-                (if (is-member-insertable? object "name")
+                (if (member-insertable? object "name")
                     (write-member "name" "Ivo Horak")
                     (read-member object "name"))
                                 
@@ -222,7 +222,7 @@ public class MemberNodesTest {
         var program = """
                 (define object (eval-source "js" "a = { id: 2, method: x => x+1 }"))
                                 
-                (if (is-member-removable? object "method")
+                (if (member-removable? object "method")
                     (remove-member object "method")
                     #f)
                                 
@@ -242,7 +242,7 @@ public class MemberNodesTest {
         var program = """
                 (define object (eval-source "js" "a = { id: 2, method: x => x+1 }"))
                                 
-                (if (is-member-invocable? object "method")
+                (if (member-invocable? object "method")
                     (invoke-member object "method" 1)
                     #f)
                 """;
@@ -257,7 +257,7 @@ public class MemberNodesTest {
         var program = """
                 (define object (eval-source "js" "a = { id: 2, method: () => 1 }"))
                                 
-                (if (is-member-invocable? object "method")
+                (if (member-invocable? object "method")
                     (invoke-member object "method")
                     #f)
                 """;
@@ -272,7 +272,7 @@ public class MemberNodesTest {
         var program = """
                 (define object (eval-source "js" "a = { id: 2, method: () => 1 }"))
                                 
-                (if (is-member-invocable? object "method")
+                (if (member-invocable? object "method")
                     (invoke-member "method" object)
                     #f)
                 """;

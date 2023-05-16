@@ -1,8 +1,10 @@
 package com.ihorak.truffle.runtime;
 
+import com.ihorak.truffle.SchemeTruffleLanguage;
 import com.ihorak.truffle.node.callable.AlwaysInlinableProcedureNode;
 import com.ihorak.truffle.node.callable.DispatchPrimitiveProcedureNode;
 import com.ihorak.truffle.node.builtin.polyglot.ForeignToSchemeNode;
+import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.dsl.Cached;
 import com.oracle.truffle.api.dsl.NodeFactory;
 import com.oracle.truffle.api.interop.InteropLibrary;
@@ -17,8 +19,17 @@ public record PrimitiveProcedure(
         NodeFactory<? extends AlwaysInlinableProcedureNode> factory
 ) implements TruffleObject {
 
-
 //----------------InteropLibrary messages–----------------------
+
+    @ExportMessage
+    boolean hasLanguage() {
+        return true;
+    }
+
+    @ExportMessage
+    Class<? extends TruffleLanguage<?>> getLanguage() {
+        return SchemeTruffleLanguage.class;
+    }
 
     @ExportMessage
     boolean isExecutable() {
@@ -31,6 +42,11 @@ public record PrimitiveProcedure(
                    @Cached DispatchPrimitiveProcedureNode dispatchNode) {
         var args = convertToSchemeValues(arguments, foreignToSchemeNode);
         return dispatchNode.execute(this, args);
+    }
+
+    @ExportMessage
+    Object toDisplayString(@SuppressWarnings("unused") boolean allowSideEffects) {
+        return name;
     }
 
     private Object[] convertToSchemeValues(Object[] argumentsToConvert, ForeignToSchemeNode foreignToSchemeNode) {
