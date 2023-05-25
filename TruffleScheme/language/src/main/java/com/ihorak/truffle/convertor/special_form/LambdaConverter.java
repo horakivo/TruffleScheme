@@ -11,6 +11,7 @@ import com.ihorak.truffle.node.SchemeExpression;
 import com.ihorak.truffle.node.SchemeRootNode;
 import com.ihorak.truffle.node.callable.TCO.TailRecursiveRootNode;
 import com.ihorak.truffle.node.callable.TCO.throwers.TailCallThrowerNode;
+import com.ihorak.truffle.node.callable.TCO.throwers.TailRecursiveThrowerNode;
 import com.ihorak.truffle.node.scope.ReadProcedureArgExprNode;
 import com.ihorak.truffle.node.scope.WriteLocalVariableExprNode;
 import com.ihorak.truffle.node.special_form.IfElseExprNode;
@@ -48,8 +49,7 @@ public class LambdaConverter {
         var lambdaBodyIR = lambdaListIR.cdr.cdr;
 
         var bodyExprs = TailCallUtil.convertWithDefinitionsAndWithFrameCreation(lambdaBodyIR, lambdaContext, lambdaCtx, CTX_LAMBDA_BODY_INDEX);
-        var writeLocalVariableExpr = createWriteLocalVariableNodes(argumentsIR, lambdaContext, isOnlyProcedureInvocation(bodyExprs), lambdaCtx);
-
+        var writeLocalVariableExpr = createWriteLocalVariableNodes(argumentsIR, lambdaContext, lambdaCtx);
 
 
         propagateClosureVariableUsageToParentFrame(lambdaContext, context);
@@ -71,20 +71,6 @@ public class LambdaConverter {
                 parentContext.setClosureVariablesUsed(true);
             }
         }
-    }
-
-    private static boolean isOnlyProcedureInvocation(List<SchemeExpression> bodyExprs) {
-        if (bodyExprs.size() != 1) return false;
-        var expr = bodyExprs.get(0);
-
-        // Standard TCO
-        if (expr instanceof TailCallThrowerNode) return true;
-        if (expr instanceof IfElseExprNode ifElseExprNode) {
-            return (ifElseExprNode.thenExpr instanceof TailCallThrowerNode) ||
-                    (ifElseExprNode.elseExpr instanceof TailCallThrowerNode);
-        }
-
-        return false;
     }
 
     private static RootCallTarget creatCallTarget(List<SchemeExpression> writeArgsExprs, List<SchemeExpression> bodyExprs, SchemeSymbol name, ConverterContext lambdaContext, @Nullable ParserRuleContext lambdaCtx) {
@@ -114,13 +100,9 @@ public class LambdaConverter {
         return source.createSection(startIndex, length);
     }
 
-    private static List<SchemeExpression> createWriteLocalVariableNodes(SchemeList argumentsIR, ConverterContext context, boolean isOnlyProcedureInvocation, @Nullable ParserRuleContext lambdaCtx) {
+    private static List<SchemeExpression> createWriteLocalVariableNodes(SchemeList argumentsIR, ConverterContext context, @Nullable ParserRuleContext lambdaCtx) {
         var paramsCtx = lambdaCtx != null ? (ParserRuleContext) lambdaCtx.getChild(CTX_LAMBDA_PARAMS).getChild(0) : null;
-        if (isOnlyProcedureInvocation) {
-            return createObjectLocalVariableForSchemeList(argumentsIR, context, paramsCtx);
-        } else {
-            return createLocalVariableForSchemeList(argumentsIR, context, paramsCtx);
-        }
+        return createLocalVariableForSchemeList(argumentsIR, context, paramsCtx);
     }
 
     private static List<SchemeExpression> createLocalVariableForSchemeList(SchemeList argumentListIR, ConverterContext context, @Nullable ParserRuleContext paramsCtx) {
@@ -129,16 +111,6 @@ public class LambdaConverter {
             var symbol = (SchemeSymbol) argumentListIR.get(i);
             var symbolCtx = paramsCtx != null ? (ParserRuleContext) paramsCtx.getChild(i + CTX_PARAMS_OFFSET) : null;
             result.add(CreateWriteExprNode.createWriteLocalVariableExprNode(symbol, new ReadProcedureArgExprNode(i), context, symbolCtx));
-        }
-        return result;
-    }
-
-    private static List<SchemeExpression> createObjectLocalVariableForSchemeList(SchemeList argumentListIR, ConverterContext context, @Nullable ParserRuleContext paramsCtx) {
-        List<SchemeExpression> result = new ArrayList<>();
-        for (int i = 0; i < argumentListIR.size; i++) {
-            var symbol = (SchemeSymbol) argumentListIR.get(i);
-            var symbolCtx = paramsCtx != null ? (ParserRuleContext) paramsCtx.getChild(i + CTX_PARAMS_OFFSET) : null;
-            result.add(CreateWriteExprNode.createWriteObjectLocalVariableExprNode(symbol, new ReadProcedureArgExprNode(i), context, symbolCtx));
         }
         return result;
     }
