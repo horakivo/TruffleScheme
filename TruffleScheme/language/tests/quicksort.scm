@@ -1,3 +1,4 @@
+;;; http://www.cs.hofstra.edu/~cscccl/csc123/quicksort.scm
 
 (define pivot
   (lambda (l)
@@ -42,7 +43,6 @@
 
 
 
-(quicksort1 (random-list 500000))
 (quicksort1 (random-list 500000))
 (quicksort1 (random-list 500000))
 (quicksort1 (random-list 500000))
