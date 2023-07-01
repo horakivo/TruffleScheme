@@ -20,11 +20,11 @@ Složka jdks obsahuje jednotlivá JDK pro různé architektury.
 2. Dále je potřeba, aby počítač měl nainstalovaný Maven. Ten lze stáhnout z: https://maven.apache.org/download.cgi
 3. Následně je možné projekt sestavit (build) pomocí příkazu: 'mvn clean package' ve složce src/TruffleScheme
 Tento příkaz vytvoří:
-    a. ve složce src/TruffleScheme/native exekuční soubor 'scm_native' (AOT compiled)
-    b. ve složce src/TruffleScheme/component vytvoří soubor 'scm-component.jar', což je komponenta, která lze využít
+    a. ve složce src/TruffleScheme/native spustitelný soubor 'scm_native' (AOT compiled)
+    b. ve složce src/TruffleScheme/component vytvoří soubor 'scm-component.jar', což je komponenta, kterou lze využít
     k instalaci TruffleScheme pomocí Graal Updater (viz níže).
 
-4. V tuto chvíli je možné interpret spustit pomocí výše vygenerovaného exekučního programu 'scm_native'
+4. V tuto chvíli je možné interpret spustit pomocí výše vygenerovaného programu 'scm_native'
 Např.: ./TruffleScheme/native/scm_native TruffleScheme/language/tests/fib.scm
 
 5. Možné je také využít komponentu a jazyk nainstalovat pomocí Graal Updater, který je součástí GraalVM.
@@ -37,5 +37,5 @@ Poznámka: Komponentu lze odstranit pomocí příkazu: 'gu remove <componentId>'
 6. V případě, že je komponenta úspěšně nainstalována, interpret možné spustit dvěmi způsoby
     a. nad JVM příkazem: 'scm src/TruffleScheme/language/tests/fib.scm'
     b. pomocí native-image (AOT) příkazem: 'scm-native src/TruffleScheme/language/tests/fib.scm'
-    pozn. jedná se o stejný exekuční soubor jako v kroku 4.
+    pozn. jedná se o stejný spustitelný soubor jako v kroku 4.
 

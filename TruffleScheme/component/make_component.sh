@@ -31,7 +31,7 @@ mkdir -p "$COMPONENT_DIR/META-INF"
   echo "Bundle-Name: Truffle Scheme"
   echo "Bundle-Symbolic-Name: scm"
   echo "Bundle-Version: $GRAALVM_VERSION"
-  echo "Bundle-RequireCapability: org.graalvm; filter:=\"(&(graalvm_version=$GRAALVM_VERSION)(os_arch=aarch64))\""
+  echo "Bundle-RequireCapability: org.graalvm; filter:=\"(&(graalvm_version=$GRAALVM_VERSION))\""
 } >"$COMPONENT_DIR/META-INF/MANIFEST.MF"
 
 (
