@@ -40,13 +40,55 @@
 # SOFTWARE.
 #
 
-
 if [[ $SCM_BUILD_NATIVE == "false" ]]; then
     echo "Skipping the native image build because SCM_BUILD_NATIVE is set to false."
     exit 0
 fi
+
+LANGUAGE_ARGS=()
+
+for opt in "$@"; do
+  case $opt in
+  --python)
+    RESULT=$(gu list python 2>&1)
+    if [ "$RESULT" == "No components found." ]; then
+      echo "You need to install python component. Please use 'gu install python' first."
+      exit 1
+    else
+      LANGUAGE_ARGS+=("--language:python")
+    fi
+    ;;
+  --ruby)
+    RESULT=$(gu list ruby 2>&1)
+    if [ "$RESULT" == "No components found." ]; then
+      echo "You need to install ruby component. Please use 'gu install ruby' first."
+      exit 1
+    else
+      LANGUAGE_ARGS+=("--language:ruby")
+    fi
+    ;;
+  --js)
+    RESULT=$(gu list js 2>&1)
+    if [ "$RESULT" == "No components found." ]; then
+      echo "You need to install javascript component. Please use 'gu install js' first."
+      exit 1
+    else
+      LANGUAGE_ARGS+=("--language:js")
+    fi
+    ;;
+  *)
+    if [ $opt == "llvm" ]; then
+      echo "LLVM is not supported in TruffleScheme, since it only supports binary based sources."
+      exit 1
+    fi
+    echo "Unknown argument: ${opt}. TruffleScheme only supports these languages: Javascript, Python, Ruby."
+    exit 1
+    ;;
+  esac
+done
+
 "$JAVA_HOME"/bin/native-image \
-    --macro:truffle --no-fallback --initialize-at-build-time \
+    "${LANGUAGE_ARGS[@]}" --macro:truffle --no-fallback --initialize-at-build-time \
     -cp ../language/target/truffleScheme.jar:../launcher/target/scm-launcher.jar \
     com.ihorak.truffle.launcher.Main \
     scm_native
