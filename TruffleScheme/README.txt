@@ -4,6 +4,7 @@
 |--------------------------------|
 
 1. Nejprve je potřeba nastavit proměnnou prostředí (environment variable) JAVA_HOME na JDK GraalVM verze 22.3.1.
+Např. 'export JAVA_HOME=path/to/jdk/graalvm-ce-java17-22.3.1/Contents/Home/'
 Složka jdks obsahuje jednotlivá JDK pro různé architektury.
 
 2. Poté je potřeba upravit proměnnou prostředí PATH: 'export PATH=$JAVA_HOME/bin:$PATH'.
