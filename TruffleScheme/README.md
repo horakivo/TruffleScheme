@@ -108,7 +108,7 @@ gu install -L component/scm-component.jar
 
 
 ##  Vytvoření native-image
-Native-image vytvořený pomocí výše zmíněného 'mvn clean package' vytvoří spustitelný soubor obsahující implementaci pouze
+Native-image vytvořený pomocí výše zmíněného `mvn clean package` vytvoří spustitelný soubor obsahující implementaci pouze
 jazyka Scheme. K vytvoření spustitelného souboru obsahující i jiné podporované jazyky, je potřeba využít skript uložený ve složce ``src/TruffleScheme/native/make_native_polyglot.sh``. Tento skript příjímá tři argumenty:
    - `--python` pro instalici jazyka Python
    - `--js` pro instalaci jazyka Javascript
