@@ -91,18 +91,17 @@ Tento příkaz vytvoří:
 
 7. V tuto chvíli je možné interpret spustit pomocí výše vygenerovaného programu `scm_native`
 ```shell
-./native/scm_native ../language/tests/fib.scm
+./native/scm_native language/tests/fib.scm
 ```
 8. Možné je také využít vytvořenou komponentu a jazyk nainstalovat pomocí Graal Updater.
 ```shell
 gu install -L component/scm-component.jar
 ```
-> **Pozn:**  `-L` značí, že se jedná o instalaci z lokálního souboru. Komponentu lze odstranit pomocí příkazu ``gu remove <componentId>``
+> **Pozn:**  `-L` značí, že se jedná o instalaci z lokálního souboru. Komponentu lze odstranit pomocí příkazu ``gu remove scm``
 
 Úspěšná instalace lze ověřit dvěma způsoby:
    - pomocí příkazu ``gu list``. Katalog by měl obsahovat komponentu s ID `scm`
    - Ve složce `$JAVE_HOME/bin` by měly dva nové soubory: `scm` a `scm_native`.
-   - 
 9. V případě, že je komponenta úspěšně nainstalována, interpret je možné spustit dvěmi způsoby:
    - nad JVM příkazem: `scm src/TruffleScheme/language/tests/fib.scm`
    - pomocí native-image (AOT) příkazem: `scm-native src/TruffleScheme/language/tests/fib.scm`
