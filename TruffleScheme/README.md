@@ -102,8 +102,8 @@ gu install -L component/scm-component.jar
 Úspěšná instalace lze ověřit dvěma způsoby:
    - pomocí příkazu ``gu list``. Katalog by měl obsahovat komponentu s ID `scm`
    - Ve složce `$JAVA_HOME/bin` by měly dva nové soubory: `scm` a `scm_native`.
-9. V případě, že je komponenta úspěšně nainstalována, interpret je možné spustit dvěmi způsoby:
-   - nad JVM příkazem: `scm src/TruffleScheme/language/tests/fib.scm`
+9. V případě, že je komponenta úspěšně nainstalována, interpret je možné spustit dvěma způsoby:
+   - nad JVM příkazem: `scm ../../examples/fib.scm`
    - pomocí native-image (AOT) příkazem: `scm-native src/TruffleScheme/language/tests/fib.scm`
 
 
