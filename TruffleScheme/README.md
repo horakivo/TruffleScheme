@@ -32,7 +32,7 @@ export PATH=$JAVA_HOME/bin:$PATH
 #### Nad JVM:
 ```shell
 cd src/TruffleScheme/
-./scm src/TruffleScheme/language/tests/fib.scm
+./scm language/tests/fib.scm
 ```
 
 #### Pomocí předen vytvořených spustitelných souborů
@@ -41,13 +41,13 @@ cd src/TruffleScheme/
 Linux
 ```shell
 cd bin/amd64
-./scm-native <soubor.scm>
+./scm-native language/tests/fib.scm
 ```
 
 MacOS
 ```shell
 cd bin/aarch64
-./scm-native <soubor.scm>
+./scm-native language/tests/fib.scm
 ```
 
 > **Pozn:** Jednotlivé složky obsahují soubor scm-component.jar, který lze využít k instalaci jazyka jako komponenty
