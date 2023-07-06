@@ -27,15 +27,15 @@ export JAVA_HOME=path/to/jdk/graalvm-ce-java17-22.3.1/
 export PATH=$JAVA_HOME/bin:$PATH
 ```
 
-4. Následně je možné spustit interpret dvěma způsoby: <br>
+Následně je možné spustit interpret dvěma způsoby: <br>
 
-#### Nad JVM:
+#### 1. Nad JVM:
 ```shell
 cd src/TruffleScheme/
 ./scm language/tests/fib.scm
 ```
 
-#### Pomocí předen vytvořených spustitelných souborů
+#### 2. Pomocí předem vytvořených spustitelných souborů
 > **Pozn:** Binární soubory jsou sestaveny pro architekturu MacOS aarch64 (Apple silicon) a Linux amd64
 
 Linux
