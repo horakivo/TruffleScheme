@@ -9,13 +9,8 @@ Katedra informatiky <br>
 
 
 ## Spuštění (bez sestavení)
-1. Nejprve je potřeba stáhlnout GraalVM verze 22.3.1 pro Javu 17. JDK je možné stáhnout na
-``
-https://github.com/graalvm/graalvm-ce-builds/releases/tag/vm-22.3.1
-``
-2. Poté je potřeba nastavit proměnnou prostředí (environment variable) JAVA_HOME na JDK GraalVM verze 22.3.1. <br>
-
-
+1. Nejprve je potřeba stáhlnout [JDK GraalVM verze 22.3.1](https://github.com/graalvm/graalvm-ce-builds/releases/tag/vm-22.3.1) pro Javu 17. JDK je možné stáhnout na
+2. Poté je potřeba nastavit proměnnou prostředí (environment variable) `JAVA_HOME` na JDK GraalVM verze 22.3.1. <br>
 
 MacOS: 
 ```shell
@@ -61,11 +56,8 @@ pomocí Graal Updater. (viz krok 7 v BUILD sekci)
 
 
 ## Sestavení (build)
-1. Nejprve je potřeba stáhlnout GraalVM verze 22.3.1 pro Javu 17. JDK je možné stáhnout na
-   ``
-   https://github.com/graalvm/graalvm-ce-builds/releases/tag/vm-22.3.1
-   ``
-2. Poté je potřeba nastavit proměnnou prostředí (environment variable) JAVA_HOME na JDK GraalVM verze 22.3.1. <br>
+1. Nejprve je potřeba stáhlnout [JDK GraalVM verze 22.3.1](https://github.com/graalvm/graalvm-ce-builds/releases/tag/vm-22.3.1) pro Javu 17. JDK je možné stáhnout na
+2. Poté je potřeba nastavit proměnnou prostředí (environment variable) `JAVA_HOME` na JDK GraalVM verze 22.3.1. <br>
 
 MacOS:
 ```shell
@@ -81,7 +73,7 @@ export JAVA_HOME=path/to/jdk/graalvm-ce-java17-22.3.1/
 ```shell
 export PATH=$JAVA_HOME/bin:$PATH
 ```
-4. Dále je potřeba, aby počítač měl nainstalovaný Maven. Ten lze stáhnout z: ``https://maven.apache.org/download.cgi``
+4. Dále je potřeba, aby počítač měl nainstalovaný [Maven](https://maven.apache.org/download.cgi).
 5. Jelikož součástí sestavení je tvorba native-image, je potřeba nainstalovat komponentu s vuyžitím Graal Updater. Ten je součástí distribuce GraalVM.
 ```shell
 gu install native-image
