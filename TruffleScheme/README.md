@@ -41,13 +41,13 @@ cd src/TruffleScheme/
 Linux
 ```shell
 cd bin/amd64
-./scm-native language/tests/fib.scm
+./scm_native ../../examples/fib.scm
 ```
 
 MacOS
 ```shell
 cd bin/aarch64
-./scm-native language/tests/fib.scm
+./scm_native ../../examples/fib.scm
 ```
 
 > **Pozn:** Jednotlivé složky obsahují soubor scm-component.jar, který lze využít k instalaci jazyka jako komponenty
