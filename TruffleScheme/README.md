@@ -89,18 +89,13 @@ Tento příkaz vytvoří:
    - ve složce `native` spustitelný soubor `scm_native` (AOT compiled)
    - ve složce `component` soubor `scm-component.jar`, což je komponenta, kterou lze využít k instalaci TruffleScheme pomocí Graal Updater (viz níže).
 
-```shell
-gu install js
-gu install python
-```
 7. V tuto chvíli je možné interpret spustit pomocí výše vygenerovaného programu `scm_native`
 ```shell
-cd src/TruffleScheme/native
-./scm_native ../language/tests/fib.scm
+./native/scm_native ../language/tests/fib.scm
 ```
 8. Možné je také využít vytvořenou komponentu a jazyk nainstalovat pomocí Graal Updater.
 ```shell
-gu install -L /component/scm-component.jar
+gu install -L component/scm-component.jar
 ```
 > **Pozn:**  `-L` značí, že se jedná o instalaci z lokálního souboru. Komponentu lze odstranit pomocí příkazu ``gu remove <componentId>``
 
