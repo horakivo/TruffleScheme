@@ -36,7 +36,7 @@ cd src/TruffleScheme/
 ```
 
 #### Pomocí předen vytvořených spustitelných souborů
-> **Pozn:** Binární soubory jsou sestaveny na architekturu MacOS aarch64 (Apple silicon) a Linux amd64
+> **Pozn:** Binární soubory jsou sestaveny pro architekturu MacOS aarch64 (Apple silicon) a Linux amd64
 
 Linux
 ```shell
