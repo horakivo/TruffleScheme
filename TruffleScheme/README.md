@@ -83,12 +83,11 @@ gu install native-image
 cd src/TruffleScheme
 mvn clean package -DskipTests
 ```
-> **Pozn:** Testy byly vynechány z důvodu, že jejich součástí jsou i testy pro interoperabilitu. K tomu, aby testy mohly být vykonány, je potřeba instalovat python a javascript komponenty.
-
+> **Pozn:** Testy byly vynechány z důvodu, že jejich součástí jsou i testy pro interoperabilitu. K tomu, aby testy mohly být vykonány, je potřeba instalovat python a javascript komponenty: `gu install js python`.
 
 Tento příkaz vytvoří:
    - ve složce `native` spustitelný soubor `scm_native` (AOT compiled)
-   - ve složce `component` vytvoří soubor `scm-component.jar`, což je komponenta, kterou lze využít k instalaci TruffleScheme pomocí Graal Updater (viz níže).
+   - ve složce `component` soubor `scm-component.jar`, což je komponenta, kterou lze využít k instalaci TruffleScheme pomocí Graal Updater (viz níže).
 
 ```shell
 gu install js
