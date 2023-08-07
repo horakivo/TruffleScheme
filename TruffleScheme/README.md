@@ -50,8 +50,7 @@ cd bin/aarch64
 ./scm_native ../../examples/fib.scm
 ```
 
-> **Pozn:** Jednotlivé složky obsahují soubor scm-component.jar, který lze využít k instalaci jazyka jako komponenty
-pomocí Graal Updater (viz krok 6 v BUILD sekci).
+> **Pozn:** Jednotlivé složky obsahují soubor scm-component.jar, který lze využít k instalaci jazyka jako komponenty pomocí Graal Updater (viz krok 6 v BUILD sekci).
 
 
 
