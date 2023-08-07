@@ -1,5 +1,12 @@
 ;;; http://www.cs.hofstra.edu/~cscccl/csc123/quicksort.scm
 
+(define generate
+  (lambda (len p q s result)
+    (if (= len 0)
+        result
+        (let ((value (modulo (* s s) (* p q))))
+          (generate (- len 1) p q value (cons value result))))))
+
 (define pivot
   (lambda (l)
     (cond ((null? l) 'done)
@@ -30,18 +37,6 @@
     (generate len 101 17 3 '())))
 
 
-(define generate
-  (lambda (len p q s result)
-    (if (= len 0)
-        result
-        (tmp (modulo (* s s) (* p q)) len p q result))))
-
-
-(define tmp
-  (lambda (value len p q result)
-           (generate (- len 1) p q value (cons value result))))
-
-
 
 (quicksort1 (random-list 500000))
 (quicksort1 (random-list 500000))
@@ -56,6 +51,33 @@
 (quicksort1 (random-list 500000))
 (quicksort1 (random-list 500000))
 (quicksort1 (random-list 500000))
+(quicksort1 (random-list 500000))
+(quicksort1 (random-list 500000))
+(quicksort1 (random-list 500000))
+(quicksort1 (random-list 500000))
+(quicksort1 (random-list 500000))
+(quicksort1 (random-list 500000))
+(quicksort1 (random-list 500000))
+(quicksort1 (random-list 500000))
+(quicksort1 (random-list 500000))
+(quicksort1 (random-list 500000))
+(quicksort1 (random-list 500000))
+(quicksort1 (random-list 500000))
+(quicksort1 (random-list 500000))
+(quicksort1 (random-list 500000))
+(quicksort1 (random-list 500000))
+(quicksort1 (random-list 500000))
+(quicksort1 (random-list 500000))
+(quicksort1 (random-list 500000))
+(quicksort1 (random-list 500000))
+(quicksort1 (random-list 500000))
+(quicksort1 (random-list 500000))
+(quicksort1 (random-list 500000))
+(quicksort1 (random-list 500000))
+(quicksort1 (random-list 500000))
+(quicksort1 (random-list 500000))
+(quicksort1 (random-list 500000))
+
 
 
 (define start (current-milliseconds))

@@ -80,14 +80,9 @@ public class Benchmarks extends TruffleBenchmark {
                   (lambda (len p q s result)
                     (if (= len 0)
                         result
-                        (tmp (modulo (* s s) (* p q)) len p q result))))
-
-
-                (define tmp
-                  (lambda (value len p q result)
-                           (generate (- len 1) p q value (cons value result))))
-
-
+                        (let ((value (modulo (* s s) (* p q))))
+                          (generate (- len 1) p q value (cons value result))))))
+                                
 
                 (quicksort1 (random-list 500000))
                 """;
