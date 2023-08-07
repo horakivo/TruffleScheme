@@ -1,0 +1,803 @@
+%%%  KI PřF UP v Olomouci Base Style
+%%%  Copyright (C) 2012 Martin Rotter, <rotter.martinos@gmail.com>
+%%%  Copyright (C) 2014 Jan Outrata, <jan.outrata@upol.cz>
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{kibase}[2012/09/09 KI PrF UP v Olomouci Base Style]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Parametry.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\RequirePackage{kvoptions}
+
+\SetupKeyvalOptions{
+  family=kib,
+  prefix=kib@
+}
+
+%% [init]{name}[default]
+%% tisková verze (nebarevné logo UP a odkazy, odkazy s uvedením adresy,
+%% ne odkaz do rejstříku)
+\DeclareStringOption[false]{printversion}[true]
+%% seznamy (obrázků, tabulek, zdrojových kódů a vět) pod sebou, jinak
+%% na samostatných stranách
+\DeclareStringOption[true]{joinlists}[true]
+%% seznam obrázků
+\DeclareStringOption[true]{figures}[true]
+%% seznam tabulek
+\DeclareStringOption[true]{tables}[true]
+%% seznam vět
+\DeclareStringOption[false]{theorems}[true]
+%% seznam zdrojových kódů
+\DeclareStringOption[false]{sourcecodes}[true]
+%% bibliografie v BibLaTeXu, jinak v prostředí thebibliography
+\DeclareStringOption[false]{biblatex}[true]
+%% jazyk dokumentu: czech, english, slovak
+\DeclareStringOption[czech]{language}[czech]
+%% podpora seznamu zkratek
+\DeclareStringOption[false]{glossaries}[true]
+%% podpora rejstříku
+\DeclareStringOption[false]{index}[true]
+%% font dokumentu: sans, jinak serif
+\DeclareStringOption[serif]{font}[serif]
+%% logo UP: white, black, blue
+\DeclareStringOption[white]{logo}[white]
+%% kódování zdrojového textu dokumentu
+\DeclareStringOption[utf8]{encoding}[utf8]
+%% kódování bibliografie v BibLaTeXu
+\DeclareStringOption[utf8]{bibencoding}[utf8]
+%% styl číslování položek bibliografie v BibLaTeXu: iso, iso-numeric,
+%% iso-authoryear
+\DeclareStringOption[iso-numeric]{bibstyle}[iso-numeric]
+
+%% Nerozpoznaný parametr hodí chybu.
+\DeclareDefaultOption{\PackageWarningNoLine{kibase}{[kibase] Option '\CurrentOption' was not recognized}}
+
+\ProcessKeyvalOptions*
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Balíky.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Kódování zdrojového textu dokumentu.
+\RequirePackage[\kib@encoding]{inputenc}
+
+%% Jazyky.
+\RequirePackage[czech,english,\kib@language]{babel}
+
+% Barvy.
+\RequirePackage[usenames,dvipsnames,table]{xcolor}
+
+%% Klikací odkazy v PDF.
+\RequirePackage[unicode,breaklinks=true]{hyperref}
+%% PDF záložky.
+\RequirePackage[open,atend]{bookmark}
+
+%% Zdrojové kódy.
+\RequirePackage[savemem]{listings}
+
+%% Podmíněný kód.
+\RequirePackage{ifpdf}
+\RequirePackage{ifthen}
+
+%% Seznam zkratek.
+\ifthenelse{\equal{\kib@glossaries}{true}}{
+  %% glossaries definuje \printindex (definovany take makeidx) i kdyz
+  %% by NEMEL bez parametru index!
+  \RequirePackage{savesym}
+  \savesymbol{printindex}
+  \RequirePackage[acronym,nonumberlist,sanitize=none]{glossaries}
+  \restoresymbol{GLS}{printindex}
+}{
+  \relax
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Barvy.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\definecolor{darkgray}{RGB}{60,60,60}
+\definecolor{halfgray}{gray}{0.55}
+\definecolor{lightergray}{gray}{0.99}
+\definecolor{webgreen}{rgb}{0,.5,0}
+\definecolor{webbrown}{rgb}{.6,0,0}
+\definecolor{ultragreen}{RGB}{40,180,10}
+\definecolor{darkblue}{rgb}{0.2, 0.3, 0.6}
+\definecolor{upblue}{RGB}{0, 134, 217}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Dynamické texty.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\kitextdeptcz}{Katedra informatiky}
+\newcommand{\kitextfacultycz}{P\v r\'irodov\v edeck\'a fakulta}
+\newcommand{\kitextunivcz}{Univerzita Palack\'eho v~Olomouci}
+
+\newcommand{\kitextdepten}{Department of Computer Science}
+\newcommand{\kitextfacultyen}{Faculty of Science}
+\newcommand{\kitextuniven}{Palack\'{y} University Olomouc}
+
+%% Čestina.
+\ifthenelse{\equal{\kib@language}{czech}}{
+  \newcommand{\kitextdept}{\kitextdeptcz}
+  \newcommand{\kitextfaculty}{\kitextfacultycz}
+  \newcommand{\kitextuniv}{\kitextunivcz}
+  \def\@texttitle{Tituln\'{i} strana}
+
+  \renewcommand{\lstlistlistingname}{Seznam zdrojov\'ych k\'od\r{u}}
+  \renewcommand{\lstlistingname}{Zdrojov\'y k\'od}
+  \newcommand{\listtheoremname}{Seznam v\v et}
+
+  \def\@textdefinition{Definice}
+  \def\@textlemma{Lemma}
+  \def\@textconsequence{D\r{u}sledek}
+  \def\@textremark{Pozn\'{a}mka}
+  \def\@texttheorem{V\v{e}ta}
+  \def\@textproof{D\r{u}kaz}
+  \def\@textexample{P\v{r}\'{i}klad}
+
+  \ifthenelse{\equal{\kib@glossaries}{true}}{
+    \def\@textindex{Rejst\v{r}\'{i}k}
+    \renewcommand{\acronymname}{Seznam zkratek}
+  }{
+    \relax
+  }
+
+  \newcommand{\buno}{bez \'{u}jmy na obecnosti}
+  \newcommand{\Buno}{Bez \'{u}jmy na obecnosti}
+}{
+	\relax
+}
+
+%% Angličtina.
+\ifthenelse{\equal{\kib@language}{english}}{
+  \newcommand{\kitextdept}{\kitextdepten}
+  \newcommand{\kitextfaculty}{\kitextfacultyen}
+  \newcommand{\kitextuniv}{\kitextuniven}
+  \def\@texttitle{Title page}
+ 
+  \renewcommand{\lstlistlistingname}{List of source codes}
+  \renewcommand{\lstlistingname}{Source code}
+  \newcommand{\listtheoremname}{List of theorems}
+
+  \def\@textdefinition{Definition}
+  \def\@textlemma{Lemma}
+  \def\@textconsequence{Corollary}
+  \def\@textremark{Remark}
+  \def\@texttheorem{Theorem}
+  \def\@textproof{Proof}
+  \def\@textexample{Example}
+
+  \ifthenelse{\equal{\kib@glossaries}{true}}{
+    \def\@textindex{Index}
+    \renewcommand{\acronymname}{List of abbreviations}
+  }{
+    \relax
+  }
+
+  \newcommand{\buno}{without loss of generality}
+  \newcommand{\Buno}{Without loss of generality}
+}{
+	\relax
+}
+
+%% Slovenština.
+\ifthenelse{\equal{\kib@language}{slovak}}{
+  \newcommand{\kitextdept}{\kitextdeptcz}
+  \newcommand{\kitextfaculty}{\kitextfacultycz}
+  \newcommand{\kitextuniv}{\kitextunivcz}
+  \def\@texttitle{Tituln\'{a} strana}
+
+  \renewcommand{\lstlistlistingname}{Zoznam zdrojov\'ych k\'odov}
+  \renewcommand{\lstlistingname}{Zdrojov\'y k\'od}
+  \newcommand{\listtheoremname}{Zoznam viet}
+
+  \def\@textdefinition{Defin\'icia}
+  \def\@textlemma{Lemma}
+  \def\@textconsequence{D\^osledok}
+  \def\@textremark{Pozn\'{a}mka}
+  \def\@texttheorem{Veta}
+  \def\@textproof{D\^okaz}
+  \def\@textexample{Pr\'{i}klad}
+
+  \ifthenelse{\equal{\kib@glossaries}{true}}{
+    \def\@textindex{Register}
+    \renewcommand{\acronymname}{Zoznam skratiek}
+  }{
+    \relax
+  }
+
+  \newcommand{\buno}{bez ujmy na všeobecnosti}
+  \newcommand{\Buno}{Bez ujmy na všeobecnosti}
+}{
+	\relax
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Logo.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\ifthenelse{\equal{\kib@logo}{black}}{
+  \def\@logofile{graphics/UP_znak_cerna}
+}{
+  \ifthenelse{\equal{\kib@logo}{blue}}{
+    \def\@logofile{graphics/UP_znak}
+  }{
+    \ifthenelse{\equal{\kib@printversion}{true}}{
+      \def\@logofile{graphics/UP_znak_outline}
+    }{
+      \def\@logofile{graphics/UP_znak}
+    }
+  }
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Písmo - patkové Latin Modern a bezpatkové Iwona Light.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\ifthenelse{\equal{\kib@font}{sans}}{
+	\RequirePackage[light,math]{iwona}
+}{
+	\RequirePackage{lmodern}
+}
+\RequirePackage[T1]{fontenc}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Obrázky.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\ifthenelse{\boolean{pdf}}{
+	\RequirePackage[pdftex]{graphicx}
+}{
+	\RequirePackage{graphicx}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% České (a slovenské) uvozovky pro balík csquotes.
+%% použití: \enquote{citoslovce}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\RequirePackage[autostyle=try]{csquotes}
+
+\DeclareQuoteStyle{czech}
+	{\quotedblbase}
+	{\textquotedblleft}
+	{\textquoteleft}
+	{\textquoteright}
+
+\DeclareQuoteAlias{czech}{slovak}
+
+%% Redeklarace makra \uv, aby používalo csquotes.
+%% Makro \uv bude tisknout typ uvozovek v závislosti na jazyku prostředí.
+\renewcommand{\uv}[1]{\enquote{#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Hypertextové odkazy a záložky.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Nastaví PDF záložky na kořen -- způsobí vrácení PDF záložek na
+%% kořen, používat zejména pokud dokument obsahuje \part
+%\newcommand{\kiendofmainmatter}{
+%	\bookmarksetup{startatroot}
+%}
+
+%% Potlačení klikacích odkazů.
+\newcommand*{\nohref}[1]{\begin{NoHyper}#1\end{NoHyper}}
+
+%% Barevné odkazy.
+\ifthenelse{\equal{\kib@printversion}{true}}{
+  \hypersetup{
+    colorlinks=false
+  }
+}{
+  \hypersetup{
+    colorlinks=true
+  }
+}
+
+%% Nastavení odkazů a záložek.
+\hypersetup{
+  linktocpage=true, pdfstartpage=1, pageanchor=true,
+  pdfstartview=FitV, breaklinks=true, pdfpagemode=UseNone, 
+  plainpages=false, bookmarksnumbered,
+  hypertexnames=true, pdfhighlight=/O,
+  urlcolor=upblue, linkcolor=upblue, 
+  citecolor=upblue
+}
+
+\let\orghref=\href
+\let\orgurl=\url
+
+%% Zalomitelné \url.
+%% \renewcommand{\url}[1]{\orghref{#1}{#1}}
+
+\ifthenelse{\equal{\kib@printversion}{true}}{
+%% Odkazy s uvedením adresy v tiskové verzi dokumentu.
+  \renewcommand{\href}[2]{#2 (\orghref{#1}{#1})}
+  \newcommand{\mail}[2]{#2 (\orghref{mailto:#1}{#1})}
+}{
+%% Makro pro mail.
+	\newcommand{\mail}[2]{\href{mailto:#1}{#2}}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Zkratky a seznam zkratek.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\ifthenelse{\equal{\kib@glossaries}{true}}{
+	%% Zapnutí generování zkratek.
+	\makeglossaries
+
+	%% Zkratky tučně a bez interpunkce za zkratkou.
+	\renewcommand{\glsnamefont}[1]{\textbf{#1}}
+	\renewcommand{\glspostdescription}{}
+
+	\let\orgprintglossary=\printglossary
+
+  %% Tisk seznamu zkratek od nové strany + záznam do obsahu.
+	\renewcommand{\printglossary}{
+		\clearpage
+		\phantomsection
+		\addcontentsline{toc}{section}{\acronymname}
+		\orgprintglossary[type=\acronymtype]
+	}
+}{
+  \renewcommand{\printglossary}{
+		\relax
+	}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Rejstřík
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\ifthenelse{\equal{\kib@index}{true}}{
+\RequirePackage{makeidx}
+%% Sazba do sloupců.
+\RequirePackage{multicol}
+
+%% Zapne rejstříkování.
+\makeindex
+
+%\let\orgtheindex=\theindex
+%\let\orgendtheindex=\endtheindex
+
+%% Dva sloupce rejstříku.
+\newcommand{\indexcolumns}{2}
+
+%% Předefinování prostředí pro sazbu rejstříku (podle starého stylu).
+\renewenvironment{theindex}{
+  \newpage
+  \bgroup
+  \section*{\@textindex\@mkboth{\@textindex}{\@textindex}}
+  \addcontentsline{toc}{section}{\@textindex}
+  \def\item{\par}
+  \def\subitem{\par---\kern1ex}
+  \def\subsubitem{\par---\kern1ex---\kern1ex}
+  \def\indexspace{\smallskip}
+  \setlength{\parindent}{-2em}
+  \setlength{\leftskip}{2em}
+  \begin{multicols*}{\indexcolumns}
+  } {
+\end{multicols*}
+\egroup
+}
+
+\let\orgprintindex=\printindex
+
+%% Tisk rejstříku od nové strany.
+\renewcommand{\printindex}{
+  \clearpage
+  \phantomsection
+  \orgprintindex
+}
+
+\ifthenelse{\equal{\kib@printversion}{true}}{
+\relax
+}{
+%% Redefinice \index s odkazem do rejstříku.
+%% Odkaz nefunguje pro \index{výraz|makro}, resp. \index{výraz|(makro}.
+\newcounter{indexno}
+\let\orgindex=\index
+\renewcommand{\index}[1]{\stepcounter{indexno}\hyperlink{\arabic{indexno}ind.ind}{$^{\lbrace\arabic{indexno}\rbrace}$}\orgindex{#1|hypertarget{\arabic{indexno}ind.ind}}}
+}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Bibliografie
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% BibLaTeX.
+\ifthenelse{\equal{\kib@biblatex}{true}}{
+  %% Volba backendu.
+  \newcommand{\kibibliobackend}{biber}
+  
+  %% Načtení BibLaTeXu.
+  %% Čestina.
+  \ifthenelse{\equal{\kib@language}{czech}}{
+    \RequirePackage[
+      natbib=true,
+      backend=\kibibliobackend,
+      sortcites=true,
+      style=\kib@bibstyle,
+      babel=other,
+      sortlocale=cs_CZ,
+      bibencoding=\kib@bibencoding
+    ]{biblatex}
+  }{
+    \relax
+  }
+  %% Angličtina.
+  \ifthenelse{\equal{\kib@language}{english}}{
+    \RequirePackage[
+      natbib=true,
+      backend=\kibibliobackend,
+      sortcites=true,
+      style=\kib@bibstyle,
+      babel=other,
+      sortlocale=en_GB,
+      bibencoding=\kib@bibencoding,
+      spacecolon=false
+    ]{biblatex}
+  }{
+    \relax
+  }
+  %% Slovenština.
+  \ifthenelse{\equal{\kib@language}{slovak}}{
+    \RequirePackage[
+      natbib=true,
+      backend=\kibibliobackend,
+      sortcites=true,
+      style=\kib@bibstyle,
+      babel=other,
+      sortlocale=sk_SK,
+      bibencoding=\kib@bibencoding
+    ]{biblatex}
+  }{
+    \relax
+  }
+
+  %% První řádek záznamu nechceme předsazovat.
+  \setlength{\bibhang}{0pt}
+
+  %% Přeformátovat číslo záznamu.
+  \ifthenelse{\equal{\kib@bibstyle}{iso-numeric}}{
+    \renewcommand\MethodFormat{\printtext[labelnumberwidth]{\mkbibbrackets{\printfield{prefixnumber}\printfield{labelnumber}}}}
+  } {
+    \relax  
+  }
+
+  \let\orgprintbibliography=\printbibliography
+
+  %% Tisk bibliografie od nové strany + záznam do obsahu.
+  \renewcommand{\printbibliography}{
+    \clearpage
+    \phantomsection
+    \addcontentsline{toc}{section}{\refname}
+    \orgprintbibliography
+  }
+
+  %% Umlčení TeXu v případě "drobných" přetečení textu, která se v
+  %% bibliografii dějí běžně.
+  \setcounter{biburlnumpenalty}{9000}
+  \setcounter{biburlucpenalty}{9000}
+  \setcounter{biburllcpenalty}{9000}
+}{
+  \relax
+}
+
+%% Redefinice prostředí thebibliography (podle starého stylu).
+\renewenvironment{thebibliography}[1]{
+  \clearpage
+	\section*{\bibname
+    \@mkboth{\MakeUppercase\refname}{\MakeUppercase\refname}}
+	\addcontentsline{toc}{section}{\bibname}
+	\list{\@biblabel{\@arabic\c@enumiv}}
+	{\settowidth\labelwidth{\@biblabel{#1}}
+          %% bez odsazeni (jako v BibLaTeXu)
+    \leftmargin0pt%\labelwidth
+%    \advance\leftmargin\labelsep
+    \@openbib@code
+    \usecounter{enumiv}
+    \let\p@enumiv\@empty
+    \renewcommand\theenumiv{\@arabic\c@enumiv}}
+	\sloppy
+	\clubpenalty4000
+	\@clubpenalty \clubpenalty
+	\widowpenalty4000
+	\sfcode`\.\@m
+} {
+	\def\@noitemerr
+	{\@latex@warning{Empty `thebibliography' environment}}
+  	\endlist
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Obsah.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\let\orgappendix=\appendix
+
+%% Přílohy od nové strany.
+\renewcommand{\appendix}{
+	\clearpage
+	\orgappendix
+}
+
+%% Definice \subsubsubsection
+\setcounter{tocdepth}{5}
+\setcounter{secnumdepth}{5}
+\newcommand{\subsubsubsection}{\@startsection{paragraph}{4}{0ex}
+   {-3.25ex plus -1ex minus -0.2ex}
+   {1.5ex plus 0.2ex}%
+   {\normalfont\normalsize\bfseries}}
+
+\let\orgtableofcontents=\tableofcontents
+
+%% Přidání záznamu do PDF záložek.
+\renewcommand{\tableofcontents}{
+	\cleardoublepage
+	\hypertarget{ki:toc}{}
+	\bookmark[
+		rellevel=1,
+		keeplevel,
+		dest=ki:toc
+	]{\contentsname}
+	\orgtableofcontents
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Zdrojové kódy.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Typewriter font, který umí i bold.
+\renewcommand{\ttdefault}{pcr}
+
+%% Modifikace originálních maker, aby respektovala jiný obsah.
+\lst@UserCommand\lstlistoflistings{\bgroup
+    \let\contentsname\lstlistlistingname
+    \let\lst@temp\@starttoc \def\@starttoc##1{\lst@temp{lol}}
+    \orgtableofcontents \egroup}
+
+%% Definice základního stylu sazby zdroj. kódů.
+\lstdefinestyle{kibasestyle}{
+	breaklines=true,
+	flexiblecolumns=true,
+	basicstyle=\footnotesize\ttfamily,
+	keywordstyle=\bfseries,
+	commentstyle=\color{gray},
+	stringstyle=\color{black},
+	numberbychapter=false,
+	escapeinside={£*}{*£},
+	firstnumber=1,
+	numbers=left,
+	captionpos=b,
+	numbersep=10pt,
+	inputencoding=\kib@encoding,
+	numberstyle=\scriptsize\ttfamily,
+	stepnumber=1,
+	showstringspaces=false,
+	tabsize=2,
+	extendedchars=true,
+	literate=
+        {á}{{\'a}}1
+        {í}{{\'i}}1
+        {é}{{\'e}}1
+        {ý}{{\'y}}1
+        {ú}{{\'u}}1
+        {ó}{{\'o}}1
+        {ě}{{\v{e}}}1
+        {š}{{\v{s}}}1
+        {č}{{\v{c}}}1
+        {ř}{{\v{r}}}1
+        {ž}{{\v{z}}}1
+        {ď}{{\v{d}}}1
+        {ť}{{\v{t}}}1
+        {ň}{{\v{n}}}1                
+        {ů}{{\r{u}}}1
+        {ô}{{\^o}}1
+        {Á}{{\'A}}1
+        {Í}{{\'I}}1
+        {É}{{\'E}}1
+        {Ý}{{\'Y}}1
+        {Ú}{{\'U}}1
+        {Ó}{{\'O}}1
+        {Ě}{{\v{E}}}1
+        {Š}{{\v{S}}}1
+        {Č}{{\v{C}}}1
+        {Ř}{{\v{R}}}1
+        {Ž}{{\v{Z}}}1
+        {Ď}{{\v{D}}}1
+        {Ť}{{\v{T}}}1
+        {Ň}{{\v{N}}}1                
+        {Ů}{{\r{U}}}1    
+        {Ô}{{\^o}}1
+}
+
+%% Definice dodatečných jazyků.
+\lstdefinelanguage{TutorialD}{morekeywords={tuple,matching,insert,divide,by,per,tclose,from,summarize,count,all,but,as,base,rename,prefix,extend,add,compose,union,minus,intersect,update,writeln,init,type,possrep,constraint,and,or,relation,where,base,drop},
+	sensitive=false,
+	morecomment=[s][commentstyle]{/*}{*/},
+	morestring=[b][stringstyle]{"},
+}
+
+\lstdefinelanguage{text}{
+	morekeywords={},
+	sensitive=false,
+}
+
+\lstdefinelanguage{CSS}{	
+  morekeywords={accelerator,azimuth,background,background-attachment,background-color,background-image,background-position,background-position-x,background-position-y,background-repeat,behavior,border,border-bottom,border-bottom-color,border-bottom-style,border-bottom-width,border-collapse,border-color,border-left,border-left-color,border-left-style,border-left-width,border-right,border-right-color,border-right-style,border-right-width,border-spacing,border-style,border-top,border-top-color,border-top-style,border-top-width,border-width,bottom,caption-side,clear,clip,color,content,counter-increment,counter-reset,cue,cue-after,cue-before,cursor,direction,display,elevation,empty-cells,filter,float,font,font-family,font-size,font-size-adjust,font-stretch,font-style,font-variant,font-weight,height,ime-mode,include-source,layer-background-color,layer-background-image,layout-flow,layout-grid,layout-grid-char,layout-grid-char-spacing,layout-grid-line,layout-grid-mode,layout-grid-type,left,letter-spacing,line-break,line-height,list-style,list-style-image,list-style-position,list-style-type,margin,margin-bottom,margin-left,margin-right,margin-top,marker-offset,marks,max-height,max-width,min-height,min-width,-moz-binding,-moz-border-radius,-moz-border-radius-topleft,-moz-border-radius-topright,-moz-border-radius-bottomright,-moz-border-radius-bottomleft,-moz-border-top-colors,-moz-border-right-colors,-moz-border-bottom-colors,-moz-border-left-colors,-moz-opacity,-moz-outline,-moz-outline-color,-moz-outline-style,-moz-outline-width,-moz-user-focus,-moz-user-input,-moz-user-modify,-moz-user-select,orphans,outline,outline-color,outline-style,outline-width,overflow,overflow-X,overflow-Y,padding,padding-bottom,padding-left,padding-right,padding-top,page,page-break-after,page-break-before,page-break-inside,pause,pause-after,pause-before,pitch,pitch-range,play-during,position,quotes,-replace,richness,right,ruby-align,ruby-overhang,ruby-position,-set-link-source,size,speak,speak-header,speak-numeral,speak-punctuation,speech-rate,stress,scrollbar-arrow-color,scrollbar-base-color,scrollbar-dark-shadow-color,scrollbar-face-color,scrollbar-highlight-color,scrollbar-shadow-color,scrollbar-3d-light-color,scrollbar-track-color,table-layout,text-align,text-align-last,text-decoration,text-indent,text-justify,text-overflow,text-shadow,text-transform,text-autospace,text-kashida-space,text-underline-position,top,unicode-bidi,-use-link-source,vertical-align,visibility,voice-family,volume,white-space,widows,width,word-break,word-spacing,word-wrap,writing-mode,z-index,zoom,},
+	sensitive=false,
+	morecomment=[s][commentstyle]{/*}{*/},
+}
+
+\lstdefinelanguage{csharp}{
+	morekeywords={int,ref,static,fixed,unsafe,public,private,protected,return,for,if,void},
+	sensitive=false,
+	morecomment=[s][commentstyle]{/*}{*/},
+	morecomment=[l][commentstyle]{//},
+	morestring=[b][stringstyle]{"},
+}
+
+\lstdefinelanguage{cpp}{
+  morekeywords={int,enum,struct,static,bool,return,for,if,void,ifndef,define,endif,class,constexpr,new,const,auto,double,public,private,protected,signals,slots},
+	sensitive=false,
+	morecomment=[s][commentstyle]{/*}{*/},
+	morecomment=[l][commentstyle]{//},
+	morestring=[b][stringstyle]{"},
+}
+
+\lstdefinelanguage{JavaScript}{
+	keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
+	ndkeywords={class, export, boolean, throw, implements, import, this},
+	sensitive=false,
+	morecomment=[l][commentstyle]{//},
+	morecomment=[s][commentstyle]{/*}{*/},
+	morestring=[b][stringstyle]{'},
+	morestring=[b][stringstyle]{"}
+}
+
+\newcommand{\csharp}{C\kern-.03em\raise.38ex\hbox{\scriptsize{\#}}}
+\newcommand{\cpp}{C\kern-.05em\raise.38ex\hbox{\scriptsize{++}}}
+\newcommand{\keyword}[1]{{\ttfamily\color{darkgray}{#1}}}
+
+%% Načtení jazyků.
+\lstloadlanguages{[ANSI]C,[LaTeX]TeX,PHP,HTML,Lisp,SQL,TeX,Python,Java,TutorialD,text,csharp,cpp,JavaScript,CSS}
+
+%% Definice makra a prostředí pro sazbu zdroj. kódů.
+\newcommand{\kiinlinecode}[3]{\lstinline[style=kibasestyle,alsoletter={\{\}\\},language=#1]#2#3#2\ignorespacesafterend}
+
+\lstnewenvironment{kicode}[3]{
+  \lstset{language=#1,alsoletter={\{\}\\},float=ht,style=kibasestyle,firstnumber=1,caption={#3},label={#2},aboveskip=10px,belowskip=15px}
+}{}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Teorémy.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Stylování teorémů.
+\RequirePackage{amsmath}
+\RequirePackage{amsthm}
+\RequirePackage{thmtools}
+
+%% Definice základných stylů.
+\declaretheoremstyle[
+	headfont=\normalfont\bfseries,
+	notefont=\normalfont\bfseries,
+	bodyfont=\itshape,
+	spaceabove=\baselineskip,
+	spacebelow=\baselineskip,
+	headpunct=\\\indent
+]{kithmstyle}
+
+\declaretheoremstyle[
+	notefont=\bfseries,
+	spaceabove=\baselineskip,
+	spacebelow=\baselineskip,
+	headpunct=\\\indent
+]{kidefstyle}
+
+\declaretheoremstyle[
+	headfont=\normalfont\scshape,
+	notefont=\normalfont\scshape,
+	spaceabove=\baselineskip,
+	spacebelow=\baselineskip,
+	headpunct=\\\indent
+]{kiremexstyle}
+
+\declaretheoremstyle[
+	headfont=\normalfont\itshape,
+	notefont=\normalfont\itshape,
+	spaceabove=\baselineskip,
+	spacebelow=\baselineskip,
+	qed=\qedsymbol,
+	headpunct=\\\indent
+]{kiproofstyle}
+
+%% Zakázání starého prostředí pro sazbu důkazů.
+\let\proof\@undefined
+
+%% Definice prostředí pro sazbu teorémů.
+\declaretheorem[style=kidefstyle,numbered=yes,name=\@textdefinition]{definition}
+\declaretheorem[sibling=definition,style=kithmstyle,numbered=yes,name=\@textlemma]{lemma}
+\declaretheorem[sibling=definition,style=kithmstyle,numbered=yes,name=\@textconsequence]{consequence}
+\declaretheorem[sibling=definition,style=kiremexstyle,numbered=yes,name=\@textremark]{remark}
+\declaretheorem[sibling=definition,style=kiremexstyle,numbered=yes,name=\@textexample]{example}
+\declaretheorem[sibling=definition,style=kithmstyle,numbered=yes,name=\@texttheorem]{theorem}
+\declaretheorem[style=kiproofstyle,numbered=no,name=\@textproof]{proof}
+
+\let\orglistoftheorems=\listoftheorems
+
+%% Seznam teorémů.
+\renewcommand{\listoftheorems}{
+  \orglistoftheorems[ignoreall,show={definition,consequence,lemma,remark,theorem,proof,example}]
+}
+
+%% Čítání rovnic na základě sekcí.
+%\counterwithin{equation}{section}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Sazba seznamů.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\@printlists}{
+  \cleardoublepage
+  \ifthenelse{\equal{\kib@figures}{true}}{
+    \listoffigures
+    \ifthenelse{\equal{\kib@joinlists}{true}}{
+      \relax
+    }{
+      \clearpage
+    }
+  }{
+    \relax
+  }
+  
+  \ifthenelse{\equal{\kib@tables}{true}}{
+    \listoftables
+    \ifthenelse{\equal{\kib@joinlists}{true}}{
+      \relax
+    }{
+      \clearpage
+    }
+  }{
+    \relax
+  }
+
+  \ifthenelse{\equal{\kib@theorems}{true}}{
+    \listoftheorems
+    \ifthenelse{\equal{\kib@joinlists}{true}}{
+      \relax
+    }{
+      \clearpage
+    }
+  }{
+    \relax
+  }
+
+  \ifthenelse{\equal{\kib@sourcecodes}{true}}{
+    \lstlistoflistings
+    \ifthenelse{\equal{\kib@joinlists}{true}}{
+      \relax
+    }{
+      \clearpage
+    }
+  }{
+    \relax
+  }
+  \cleardoublepage
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Další.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Sloupce pro tabulky s uživatelsky stanovenou šířkou a zarovnáním
+%% textu na danou stranu.
+%% Použití: \begin{tabular}{| c | L{3cm} | C{3cm} | R{3cm} |}
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+
+\endinput
