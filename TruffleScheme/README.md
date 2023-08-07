@@ -9,7 +9,7 @@ Katedra informatiky <br>
 
 
 ## Spuštění (bez sestavení)
-1. Nejprve je potřeba stáhlnout [JDK GraalVM verze 22.3.1](https://github.com/graalvm/graalvm-ce-builds/releases/tag/vm-22.3.1) pro Javu 17. JDK je možné stáhnout na
+1. Nejprve je potřeba stáhlnout [JDK GraalVM verze 22.3.1](https://github.com/graalvm/graalvm-ce-builds/releases/tag/vm-22.3.1) pro Javu 17. 
 2. Poté je potřeba nastavit proměnnou prostředí (environment variable) `JAVA_HOME` na JDK GraalVM verze 22.3.1. <br>
 
 MacOS: 
@@ -51,12 +51,12 @@ cd bin/aarch64
 ```
 
 > **Pozn:** Jednotlivé složky obsahují soubor scm-component.jar, který lze využít k instalaci jazyka jako komponenty
-pomocí Graal Updater. (viz krok 7 v BUILD sekci)
+pomocí Graal Updater (viz krok 6 v BUILD sekci).
 
 
 
 ## Sestavení (build)
-1. Nejprve je potřeba stáhlnout [JDK GraalVM verze 22.3.1](https://github.com/graalvm/graalvm-ce-builds/releases/tag/vm-22.3.1) pro Javu 17. JDK je možné stáhnout na
+1. Nejprve je potřeba stáhlnout [JDK GraalVM verze 22.3.1](https://github.com/graalvm/graalvm-ce-builds/releases/tag/vm-22.3.1) pro Javu 17.
 2. Poté je potřeba nastavit proměnnou prostředí (environment variable) `JAVA_HOME` na JDK GraalVM verze 22.3.1. <br>
 
 MacOS:
@@ -86,7 +86,7 @@ mvn clean package -DskipTests
 > **Pozn:** Testy byly vynechány z důvodu, že jejich součástí jsou i testy pro interoperabilitu. K tomu, aby testy mohly být vykonány, je potřeba instalovat python a javascript komponenty: `gu install js python`.
 
 Tento příkaz vytvoří:
-   - ve složce `native` spustitelný soubor `scm_native` (AOT compiled)
+   - ve složce `native` spustitelný soubor `scm_native` (AOT compiled).
    - ve složce `component` soubor `scm-component.jar`, což je komponenta, kterou lze využít k instalaci TruffleScheme pomocí Graal Updater (viz níže).
 
 7. V tuto chvíli je možné interpret spustit pomocí výše vygenerovaného programu `scm_native`
