@@ -9,7 +9,7 @@ Katedra informatiky <br>
 
 
 ## Spuštění (bez sestavení)
-1. Nejprve je potřeba stáhlnout [JDK GraalVM verze 22.3.1](https://github.com/graalvm/graalvm-ce-builds/releases/tag/vm-22.3.1) pro Javu 17. 
+1. Nejprve je potřeba stáhnout [JDK GraalVM verze 22.3.1](https://github.com/graalvm/graalvm-ce-builds/releases/tag/vm-22.3.1) pro Javu 17. 
 2. Poté je potřeba nastavit proměnnou prostředí (environment variable) `JAVA_HOME` na JDK GraalVM verze 22.3.1. <br>
 
 MacOS: 
@@ -56,7 +56,7 @@ pomocí Graal Updater (viz krok 6 v BUILD sekci).
 
 
 ## Sestavení (build)
-1. Nejprve je potřeba stáhlnout [JDK GraalVM verze 22.3.1](https://github.com/graalvm/graalvm-ce-builds/releases/tag/vm-22.3.1) pro Javu 17.
+1. Nejprve je potřeba stáhnout [JDK GraalVM verze 22.3.1](https://github.com/graalvm/graalvm-ce-builds/releases/tag/vm-22.3.1) pro Javu 17.
 2. Poté je potřeba nastavit proměnnou prostředí (environment variable) `JAVA_HOME` na JDK GraalVM verze 22.3.1. <br>
 
 MacOS:
