@@ -6,11 +6,17 @@ on:
       - main
 
 jobs:
-  hello:
+  try-self-hosted:
     runs-on: self-hosted
+    continue-on-error: true # Allows the workflow to continue if this job fails
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Print message
+        run: echo "Running on self-hosted runner"
 
-      - name: Print Hello World
-        run: echo "Hello, World!"
+  fallback:
+    needs: try-self-hosted
+    if: failure() # Only runs if the self-hosted job fails
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print message
+        run: echo "Fallback to GitHub-hosted runner"
